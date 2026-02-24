@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.notifyPlatformWebhook = exports.getConnectEvents = exports.getConnectAnalytics = exports.updateConnectKey = exports.listConnectKeys = exports.revokeConnectKey = exports.issueConnectKey = exports.updateBasePolicies = exports.getPlatform = exports.createPlatform = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const firestore_1 = require("firebase-admin/firestore");
 const nanoid_1 = require("nanoid");
 const db = admin.firestore();
 // ── Create a Platform account ──────────────────────────────────────────────
@@ -29,7 +30,7 @@ exports.createPlatform = functions.https.onCall(async (data, context) => {
         ownerId: context.auth.uid,
         name: name.trim(),
         plan: "starter",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore_1.FieldValue.serverTimestamp(),
         connectEnabled: true,
         totalSubKeys: 0,
         totalCalls: 0,
@@ -43,8 +44,8 @@ exports.createPlatform = functions.https.onCall(async (data, context) => {
         .set({
         rules: [],
         rateLimit: { requestsPerMinute: 60, requestsPerDay: 10000 },
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore_1.FieldValue.serverTimestamp(),
+        updatedAt: firestore_1.FieldValue.serverTimestamp(),
     });
     return { platformId };
 });
@@ -87,7 +88,7 @@ exports.updateBasePolicies = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("permission-denied", "Access denied.");
     }
     const updatePayload = {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firestore_1.FieldValue.serverTimestamp(),
     };
     if (Array.isArray(rules))
         updatePayload.rules = rules;
@@ -142,7 +143,7 @@ exports.issueConnectKey = functions.https.onCall(async (data, context) => {
         customerLabel: customerLabel !== null && customerLabel !== void 0 ? customerLabel : customerId,
         active: true,
         totalCalls: 0,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: firestore_1.FieldValue.serverTimestamp(),
         lastUsedAt: null,
     };
     if (Array.isArray(policyOverrides) && policyOverrides.length > 0) {
@@ -155,7 +156,7 @@ exports.issueConnectKey = functions.https.onCall(async (data, context) => {
     const batch = db.batch();
     batch.set(db.collection("connect_keys").doc(subKeyId), subKeyData);
     batch.update(db.collection("platforms").doc(platformId), {
-        totalSubKeys: admin.firestore.FieldValue.increment(1),
+        totalSubKeys: firestore_1.FieldValue.increment(1),
     });
     await batch.commit();
     return { subKeyId };
@@ -182,7 +183,7 @@ exports.revokeConnectKey = functions.https.onCall(async (data, context) => {
     }
     await db.collection("connect_keys").doc(subKeyId).update({
         active: false,
-        revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+        revokedAt: firestore_1.FieldValue.serverTimestamp(),
     });
     return { success: true };
 });
@@ -247,7 +248,7 @@ exports.updateConnectKey = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("permission-denied", "Access denied.");
     }
     const updatePayload = {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: firestore_1.FieldValue.serverTimestamp(),
     };
     if (typeof customerLabel === "string")
         updatePayload.customerLabel = customerLabel;
@@ -278,7 +279,7 @@ exports.getConnectAnalytics = functions.https.onCall(async (data, context) => {
     const eventsSnap = await db
         .collection("connect_events")
         .where("platformId", "==", platformId)
-        .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since))
+        .where("timestamp", ">=", firestore_1.Timestamp.fromDate(since))
         .orderBy("timestamp", "desc")
         .limit(1000)
         .get();
@@ -340,7 +341,7 @@ exports.getConnectEvents = functions.https.onCall(async (data, context) => {
     let query = db
         .collection("connect_events")
         .where("platformId", "==", platformId)
-        .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since));
+        .where("timestamp", ">=", firestore_1.Timestamp.fromDate(since));
     // Optional filters
     if (customerId) {
         query = query.where("customerId", "==", customerId);

@@ -1,9 +1,11 @@
 import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { GoogleGenAI } from "@google/genai";
 
-admin.initializeApp();
-
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 const db = admin.firestore();
 
 interface PolicyRule {
@@ -86,8 +88,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const latencyMs = Date.now() - startTime;
             Promise.all([
                 db.collection("connect_keys").doc(apiKey).update({
-                    lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    totalCalls: admin.firestore.FieldValue.increment(1),
+                    lastUsedAt: FieldValue.serverTimestamp(),
+                    totalCalls: FieldValue.increment(1),
                 }),
                 db.collection("connect_events").add({
                     platformId,
@@ -98,7 +100,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     decision: decision.decision,
                     reason: decision.reason ?? null,
                     latencyMs,
-                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                    timestamp: FieldValue.serverTimestamp(),
                 }),
             ]).catch((e) => console.error("AgentGate: Non-critical write failed:", e));
 
@@ -232,7 +234,7 @@ async function logAudit(agentId: string, toolName: string, args: string, decisio
             toolName,
             arguments: args,
             decision,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
+            timestamp: FieldValue.serverTimestamp()
         });
     } catch (error) {
         console.error("Failed to log audit event:", error);

@@ -1,5 +1,6 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import { nanoid } from "nanoid";
 
 const db = admin.firestore();
@@ -50,7 +51,7 @@ export const createPlatform = functions.https.onCall(async (data, context) => {
         ownerId: context.auth.uid,
         name: name.trim(),
         plan: "starter",
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
         connectEnabled: true,
         totalSubKeys: 0,
         totalCalls: 0,
@@ -65,8 +66,8 @@ export const createPlatform = functions.https.onCall(async (data, context) => {
         .set({
             rules: [],
             rateLimit: { requestsPerMinute: 60, requestsPerDay: 10000 },
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
-            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            createdAt: FieldValue.serverTimestamp(),
+            updatedAt: FieldValue.serverTimestamp(),
         });
 
     return { platformId };
@@ -125,7 +126,7 @@ export const updateBasePolicies = functions.https.onCall(async (data, context) =
     }
 
     const updatePayload: Record<string, any> = {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
     };
 
     if (Array.isArray(rules)) updatePayload.rules = rules;
@@ -210,7 +211,7 @@ export const issueConnectKey = functions.https.onCall(async (data, context) => {
         customerLabel: customerLabel ?? customerId,
         active: true,
         totalCalls: 0,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: FieldValue.serverTimestamp(),
         lastUsedAt: null,
     };
 
@@ -225,7 +226,7 @@ export const issueConnectKey = functions.https.onCall(async (data, context) => {
     const batch = db.batch();
     batch.set(db.collection("connect_keys").doc(subKeyId), subKeyData);
     batch.update(db.collection("platforms").doc(platformId), {
-        totalSubKeys: admin.firestore.FieldValue.increment(1),
+        totalSubKeys: FieldValue.increment(1),
     });
     await batch.commit();
 
@@ -259,7 +260,7 @@ export const revokeConnectKey = functions.https.onCall(async (data, context) => 
 
     await db.collection("connect_keys").doc(subKeyId).update({
         active: false,
-        revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+        revokedAt: FieldValue.serverTimestamp(),
     });
 
     return { success: true };
@@ -338,7 +339,7 @@ export const updateConnectKey = functions.https.onCall(async (data, context) => 
     }
 
     const updatePayload: Record<string, any> = {
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
     };
 
     if (typeof customerLabel === "string") updatePayload.customerLabel = customerLabel;
@@ -374,7 +375,7 @@ export const getConnectAnalytics = functions.https.onCall(async (data, context) 
     const eventsSnap = await db
         .collection("connect_events")
         .where("platformId", "==", platformId)
-        .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since))
+        .where("timestamp", ">=", Timestamp.fromDate(since))
         .orderBy("timestamp", "desc")
         .limit(1000)
         .get();
@@ -453,7 +454,7 @@ export const getConnectEvents = functions.https.onCall(async (data, context) => 
     let query: admin.firestore.Query = db
         .collection("connect_events")
         .where("platformId", "==", platformId)
-        .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since));
+        .where("timestamp", ">=", Timestamp.fromDate(since));
 
     // Optional filters
     if (customerId) {

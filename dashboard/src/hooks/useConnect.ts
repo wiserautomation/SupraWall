@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { app } from "@/lib/firebase";
-import { getFunctions, httpsCallable } from "firebase/functions";
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
 import type {
     Platform,
     ConnectKey,
@@ -10,7 +10,11 @@ import type {
     RateLimitConfig,
 } from "@/types/connect";
 
-const functions = getFunctions(app);
+const functions = getFunctions(app, "us-central1");
+
+if (typeof window !== "undefined" && window.location.hostname === "localhost") {
+    connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+}
 
 export function usePlatform() {
     const [platform, setPlatform] = useState<Platform | null>(null);

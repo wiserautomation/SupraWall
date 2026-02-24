@@ -3,8 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.generatePolicyRegex = exports.evaluateAction = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
+const firestore_1 = require("firebase-admin/firestore");
 const genai_1 = require("@google/genai");
-admin.initializeApp();
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 const db = admin.firestore();
 exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res) => {
     var _a, _b, _c, _d, _e, _f;
@@ -65,8 +68,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             const latencyMs = Date.now() - startTime;
             Promise.all([
                 db.collection("connect_keys").doc(apiKey).update({
-                    lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
-                    totalCalls: admin.firestore.FieldValue.increment(1),
+                    lastUsedAt: firestore_1.FieldValue.serverTimestamp(),
+                    totalCalls: firestore_1.FieldValue.increment(1),
                 }),
                 db.collection("connect_events").add({
                     platformId,
@@ -77,7 +80,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     decision: decision.decision,
                     reason: (_f = decision.reason) !== null && _f !== void 0 ? _f : null,
                     latencyMs,
-                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                    timestamp: firestore_1.FieldValue.serverTimestamp(),
                 }),
             ]).catch((e) => console.error("AgentGate: Non-critical write failed:", e));
             res.status(200).json(decision);
@@ -184,7 +187,7 @@ async function logAudit(agentId, toolName, args, decision) {
             toolName,
             arguments: args,
             decision,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
+            timestamp: firestore_1.FieldValue.serverTimestamp()
         });
     }
     catch (error) {

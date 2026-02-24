@@ -37642,3 +37642,39 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
     at Console._write (/usr/local/lib/node_modules/firebase-tools/node_modules/winston-transport/modern.js:103:17)
     at doWrite (/usr/local/lib/node_modules/firebase-tools/node_modules/winston-transport/node_modules/readable-stream/lib/_stream_writable.js:390:139)
 [error] 
+[debug] [2026-02-24T19:34:27.284Z] ----------------------------------------------------------------------
+[debug] [2026-02-24T19:34:27.286Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions --project demo-agentgate
+[debug] [2026-02-24T19:34:27.286Z] CLI Version:   14.12.0
+[debug] [2026-02-24T19:34:27.286Z] Platform:      darwin
+[debug] [2026-02-24T19:34:27.286Z] Node Version:  v22.12.0
+[debug] [2026-02-24T19:34:27.286Z] Time:          Tue Feb 24 2026 21:34:27 GMT+0200 (Eastern European Standard Time)
+[debug] [2026-02-24T19:34:27.286Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-02-24T19:34:27.412Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-02-24T19:34:27.412Z] > authorizing via signed-in user (peghin@gmail.com)
+[debug] [2026-02-24T19:34:27.412Z] [iam] checking project demo-agentgate for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-24T19:34:27.413Z] Checked if tokens are valid: false, expires at: 1771960558544
+[debug] [2026-02-24T19:34:27.413Z] Checked if tokens are valid: false, expires at: 1771960558544
+[debug] [2026-02-24T19:34:27.413Z] > refreshing access token with scopes: []
+[debug] [2026-02-24T19:34:27.414Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-02-24T19:34:27.414Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-24T19:34:27.589Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-02-24T19:34:27.589Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions [none]
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions x-goog-quota-user=projects/demo-agentgate
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions 200
+[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions {}
+[debug] [2026-02-24T19:34:28.592Z] [iam] error while checking permissions, command may fail: Authorization failed. This account is missing the following required permissions on project demo-agentgate:
+
+  cloudfunctions.functions.create
+  cloudfunctions.functions.delete
+  cloudfunctions.functions.get
+  cloudfunctions.functions.list
+  cloudfunctions.functions.update
+  cloudfunctions.operations.get
+  firebase.projects.get
+[debug] [2026-02-24T19:34:28.593Z] Checked if tokens are valid: true, expires at: 1771965266589
+[debug] [2026-02-24T19:34:28.593Z] Checked if tokens are valid: true, expires at: 1771965266589
+[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/demo-agentgate/serviceAccounts/demo-agentgate@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/demo-agentgate/serviceAccounts/demo-agentgate@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
