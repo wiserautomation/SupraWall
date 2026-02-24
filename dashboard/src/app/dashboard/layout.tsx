@@ -5,8 +5,7 @@ import { auth } from "@/lib/firebase";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Shield, Activity, Users, LogOut } from "lucide-react";
-
+import { Shield, Activity, Users, LogOut, Key, FileText, Zap } from "lucide-react";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [user, loading] = useAuthState(auth);
     const router = useRouter();
@@ -26,6 +25,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Agents", href: "/dashboard", icon: Users },
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },
+    ];
+
+    const connectNavItems = [
+        { label: "Overview", href: "/connect", icon: Shield },
+        { label: "Keys", href: "/connect/keys", icon: Key },
+        { label: "Analytics", href: "/connect/analytics", icon: Activity },
+        { label: "Events", href: "/connect/events", icon: FileText },
+        { label: "Quickstart", href: "/quickstart", icon: Zap },
     ];
 
     return (
@@ -57,6 +64,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </Link>
                         );
                     })}
+
+                    <div className="mt-6">
+                        <p className="px-6 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                            Connect
+                        </p>
+                        <div className="space-y-1">
+                            {connectNavItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href;
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
+                                            }`}
+                                    >
+                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </nav>
                 <div className="p-4 border-t border-white/[0.05] flex items-center justify-between bg-black/20">
                     <div className="flex flex-col overflow-hidden">
