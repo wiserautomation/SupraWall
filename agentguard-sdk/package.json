@@ -1,5 +1,5 @@
 {
-  "name": "agentgate",
+  "name": "agentgate-sdk",
   "version": "0.1.0",
   "description": "The security gateway for AI agents — auth, rate limiting, and policy enforcement in one line.",
   "main": "dist/index.js",
@@ -26,6 +26,14 @@
   ],
   "author": "AgentGate",
   "license": "MIT",
+  "homepage": "https://agent-gate-rho.vercel.app/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wiserautomation/agentgate"
+  },
+  "bugs": {
+    "url": "https://github.com/wiserautomation/agentgate/issues"
+  },
   "devDependencies": {
     "@types/node": "^25.3.0",
     "typescript": "^5.9.3"
