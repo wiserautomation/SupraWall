@@ -10,8 +10,12 @@ export default function ConnectLayout({
         <div className="min-h-screen bg-gray-50">
             {/* Connect sub-nav */}
             <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-                <div className="max-w-5xl mx-auto px-4">
-                    <div className="flex items-center gap-1 overflow-x-auto">
+                <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row sm:items-center">
+                    <Link href="/dashboard" className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold py-3 pr-6 sm:border-r border-gray-200 sm:mr-4 shrink-0 transition-colors">
+                        <Shield className="w-5 h-5" />
+                        <span>AgentGuard Connect</span>
+                    </Link>
+                    <div className="flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0">
                         {[
                             { label: "Overview", href: "/connect" },
                             { label: "Sub-Keys", href: "/connect/keys" },

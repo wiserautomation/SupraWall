@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Button } from "@/components/ui/button";
@@ -22,24 +22,25 @@ export default function AgentsPage() {
     const [copiedCurl, setCopiedCurl] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newAgentName, setNewAgentName] = useState("");
-
-    const fetchAgents = async () => {
-        if (!user) return;
-        setLoading(true);
-        try {
-            const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-            const querySnapshot = await getDocs(q);
-            const agentsList = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
-            setAgents(agentsList);
-        } catch (e) {
-            console.error(e);
-        }
-        setLoading(false);
-    };
+    const [nameError, setNameError] = useState("");
 
     useEffect(() => {
-        fetchAgents();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        if (!user) {
+            // Wait for user or fallback
+            return;
+        }
+
+        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const agentsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
+            setAgents(agentsList);
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching agents:", error);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, [user]);
 
     const generateApiKey = () => {
@@ -47,20 +48,32 @@ export default function AgentsPage() {
     };
 
     const createAgent = async () => {
-        if (!user || !newAgentName.trim()) return;
+        const trimmedName = newAgentName.trim();
+        if (!user || !trimmedName) {
+            setNameError("Agent name cannot be empty.");
+            return;
+        }
 
+        const isTaken = agents.some(a => a.name.toLowerCase() === trimmedName.toLowerCase());
+        if (isTaken) {
+            setNameError(`The name "${trimmedName}" is already taken.`);
+            return;
+        }
+
+        setNameError("");
         try {
             const newAgent: Agent = {
                 userId: user.uid,
-                name: newAgentName.trim(),
+                name: trimmedName,
                 apiKey: generateApiKey(),
             };
             await addDoc(collection(db, "agents"), newAgent);
             setNewAgentName("");
             setIsCreateModalOpen(false);
-            fetchAgents();
+            // No need to fetchAgents() manually because onSnapshot handles it instantly!
         } catch (e) {
             console.error("Error creating agent", e);
+            setNameError("Failed to create the agent. Please try again.");
         }
     };
 
@@ -190,7 +203,13 @@ await securedAgent.executeTool("Start task", {});`;
             </Card>
 
             {/* Create Agent Modal */}
-            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <Dialog open={isCreateModalOpen} onOpenChange={(open) => {
+                setIsCreateModalOpen(open);
+                if (!open) {
+                    setNewAgentName("");
+                    setNameError("");
+                }
+            }}>
                 <DialogContent className="sm:max-w-md bg-neutral-900 border-neutral-800 text-white">
                     <DialogHeader>
                         <DialogTitle className="text-xl font-bold">Create New Agent</DialogTitle>
@@ -206,14 +225,20 @@ await securedAgent.executeTool("Start task", {});`;
                             <input
                                 id="name"
                                 value={newAgentName}
-                                onChange={(e) => setNewAgentName(e.target.value)}
+                                onChange={(e) => {
+                                    setNewAgentName(e.target.value);
+                                    if (nameError) setNameError("");
+                                }}
                                 placeholder="e.g. Browser Assistant"
-                                className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                className={`w-full bg-neutral-800 border ${nameError ? "border-red-500" : "border-neutral-700"} rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') createAgent();
                                 }}
                                 autoFocus
                             />
+                            {nameError && (
+                                <p className="text-red-400 text-xs mt-1.5 font-medium">{nameError}</p>
+                            )}
                         </div>
                     </div>
                     <div className="flex justify-end gap-3">
