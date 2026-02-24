@@ -1,0 +1,91 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "connect_keys",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "platformId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "active",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "createdAt",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "connect_keys",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "platformId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "customerId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "active",
+                    "order": "ASCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "connect_events",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "platformId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "timestamp",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "connect_events",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "platformId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "customerId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "timestamp",
+                    "order": "DESCENDING"
+                }
+            ]
+        },
+        {
+            "collectionGroup": "connect_events",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "platformId",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "decision",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "timestamp",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

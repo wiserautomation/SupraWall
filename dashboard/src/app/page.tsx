@@ -158,7 +158,7 @@ export default function LandingPage() {
                             <div className="pl-4">apiKey: <span className="text-emerald-400">process.env.AGENTGUARD_KEY</span>,</div>
                             <div>{"});"}</div>
                             <div className="mt-4 text-neutral-500">{"// Action evaluation: 'rm -rf /' -> 🚨 DENIED"}</div>
-                            <div><span className="text-purple-400">await</span> secureAgent.<span className="text-blue-400">invoke</span>({"{"} input: <span className="text-emerald-400">"Wipe the target server"</span> {"}"});</div>
+                            <div><span className="text-purple-400">await</span> secureAgent.<span className="text-blue-400">invoke</span>({"{"} input: <span className="text-emerald-400">&quot;Wipe the target server&quot;</span> {"}"});</div>
                         </div>
 
                         {/* Decorative glass overlay gradient */}

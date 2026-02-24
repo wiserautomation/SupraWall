@@ -1,39 +1,39 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Function to check if a user is logged in
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    // Function to check if the user is the owner
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+
+    // ── Existing: single-tenant API keys ────────────────────────────────
+    match /api_keys/{keyId} {
+      allow read, write: if false; // Cloud Functions only
     }
 
-    match /agents/{agentId} {
-      // User can read, create, update, delete their own agents
-      allow read, write: if isOwner(resource.data.userId) || isOwner(request.resource.data.userId);
+    // ── Connect: platforms ───────────────────────────────────────────────
+    match /platforms/{platformId} {
+      allow read: if request.auth != null
+        && resource.data.ownerId == request.auth.uid;
+      allow write: if false; // Cloud Functions only
+
+      match /base_policies/{policyId} {
+        allow read: if request.auth != null
+          && get(/databases/$(database)/documents/platforms/$(platformId))
+             .data.ownerId == request.auth.uid;
+        allow write: if false; // Cloud Functions only
+      }
     }
 
-    match /policies/{policyId} {
-      // User can read/write policies if they own the associated agent
-      // Note: In a production environment, doing a `get` to verify agent ownership
-      // is ideal. For the MVP, we assume the dashboard enforces the correct agentId
-      // and checking if `request.auth.uid` matches the agent's userId.
-      allow read, write: if isAuthenticated() && 
-        get(/databases/$(database)/documents/agents/$(resource.data.agentId != null ? resource.data.agentId : request.resource.data.agentId)).data.userId == request.auth.uid;
+    // ── Connect: sub-keys ────────────────────────────────────────────────
+    match /connect_keys/{subKeyId} {
+      allow read, write: if false; // Cloud Functions only
     }
 
-    match /audit_logs/{logId} {
-      // Users can only read audit logs for their agents
-      allow read: if isAuthenticated() &&
-        get(/databases/$(database)/documents/agents/$(resource.data.agentId)).data.userId == request.auth.uid;
-      // Writing is purely handled by Cloud Functions, thus `allow write: if false;`
-      // Server APIs bypass these rules
-      allow write: if false;
+    // ── Connect: audit events ────────────────────────────────────────────
+    match /connect_events/{eventId} {
+      allow read, write: if false; // Cloud Functions only
+    }
+
+    // ── Rate limit counters (internal only) ──────────────────────────────
+    match /rate_limit_counters/{counterId} {
+      allow read, write: if false; // Cloud Functions only
     }
   }
 }

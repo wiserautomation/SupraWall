@@ -30,8 +30,8 @@ export default function AuditPage() {
     // Listen to audit logs real-time
     useEffect(() => {
         if (!user || agents.length === 0) {
-            setLoading(false);
-            return;
+            const timeoutId = setTimeout(() => setLoading(false), 0);
+            return () => clearTimeout(timeoutId);
         }
 
         // In a prod environment we'd use 'in' query for agentIds but it has a limit of 10.

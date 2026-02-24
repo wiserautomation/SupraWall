@@ -37,6 +37,7 @@ export default function AgentsPage() {
 
     useEffect(() => {
         fetchAgents();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const generateApiKey = () => {
@@ -77,19 +78,19 @@ export default function AgentsPage() {
     };
 
     const getNodeCode = (apiKey: string) => `import { Agent } from 'your-ai-framework';
-import { withGateAPI } from '@gateapi/sdk';
+import { withAgentGuard } from 'agentguard-sdk';
 
 // 1. Initialize your AI Agent
 const myAgent = new Agent();
 
 // 2. Secure it with your GateAPI Key
-const securedAgent = withGateAPI(myAgent, {
+const securedAgent = withAgentGuard(myAgent, {
   apiKey: "${apiKey}",
-  endpoint: "https://[YOUR_FIREBASE_PROJECT_URL]/evaluateAction"
+  // endpoint: "https://agentguard.com/evaluateAction" // optional fallback
 });
 
 // 3. Run your agent safely
-await securedAgent.execute("Start task");`;
+await securedAgent.executeTool("Start task", {});`;
 
     const getCurlCode = (apiKey: string) => `curl -X POST https://[YOUR_FIREBASE_PROJECT_URL]/evaluateAction \\
   -H "Content-Type: application/json" \\
@@ -153,7 +154,7 @@ await securedAgent.execute("Start task");`;
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {agents.map((agent, i) => (
+                                {agents.map((agent) => (
                                     <TableRow
                                         key={agent.id}
                                         className="border-white/[0.02] hover:bg-white/[0.02] transition-colors group/row"
@@ -168,9 +169,9 @@ await securedAgent.execute("Start task");`;
                                             {agent.id}
                                         </TableCell>
                                         <TableCell className="px-6 py-4 text-right">
-                                            <Button 
-                                                variant="outline" 
-                                                size="sm" 
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
                                                 className="bg-white/5 border-white/10 hover:bg-white/10 hover:text-white transition-colors text-neutral-300"
                                                 onClick={() => setSelectedAgent(agent)}
                                             >
@@ -194,7 +195,7 @@ await securedAgent.execute("Start task");`;
                             Connect {selectedAgent?.name}
                         </DialogTitle>
                         <DialogDescription className="text-neutral-400">
-                            Copy and paste this code into your AI agent's codebase to secure it with GateAPI.
+                            Copy and paste this code into your AI agent&apos;s codebase to secure it with GateAPI.
                         </DialogDescription>
                     </DialogHeader>
 

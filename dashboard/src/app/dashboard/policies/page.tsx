@@ -61,6 +61,7 @@ export default function PoliciesPage() {
 
     useEffect(() => {
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
 
     const handleCreatePolicy = async (e: React.FormEvent) => {

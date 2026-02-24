@@ -21,5 +21,6 @@ export interface AuditLog {
   toolName: string;
   arguments: string; // stringified JSON
   decision: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timestamp: any; // Firestore timestamp
 }

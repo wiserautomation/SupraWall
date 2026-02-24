@@ -1,108 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generatePolicyRegex = exports.evaluateAction = void 0;
-const https_1 = require("firebase-functions/v2/https");
+exports.notifyPlatformWebhook = exports.getConnectEvents = exports.getConnectAnalytics = exports.updateConnectKey = exports.listConnectKeys = exports.revokeConnectKey = exports.issueConnectKey = exports.updateBasePolicies = exports.getPlatform = exports.createPlatform = exports.generatePolicyRegex = exports.evaluateAction = void 0;
 const admin = require("firebase-admin");
-const genai_1 = require("@google/genai");
-admin.initializeApp();
-const db = admin.firestore();
-exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (request, response) => {
-    if (request.method !== "POST") {
-        response.status(405).send("Method Not Allowed");
-        return;
-    }
-    try {
-        const { apiKey, toolName, args } = request.body;
-        // Reject if missing required fields
-        if (!apiKey || !toolName || args === undefined) {
-            response.status(400).json({ error: "Missing required fields" });
-            return;
-        }
-        const argsString = typeof args === 'string' ? args : JSON.stringify(args);
-        // 1. Find the agent by apiKey
-        const agentsSnapshot = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
-        if (agentsSnapshot.empty) {
-            await logAudit("unknown", toolName, argsString, "DENY");
-            response.status(403).json({ decision: "DENY", reason: "Invalid API Key" });
-            return;
-        }
-        const agentDoc = agentsSnapshot.docs[0];
-        const agentId = agentDoc.id;
-        // 2. Query policies for this agent and toolName
-        const policiesSnapshot = await db.collection("policies")
-            .where("agentId", "==", agentId)
-            .where("toolName", "==", toolName)
-            .get();
-        let finalDecision = "ALLOW";
-        // 3. Evaluate policies against regex conditions
-        for (const doc of policiesSnapshot.docs) {
-            const policy = doc.data();
-            const conditionRegex = new RegExp(policy.condition);
-            if (conditionRegex.test(argsString)) {
-                finalDecision = policy.ruleType;
-                // If DENY is encountered, we can stop evaluating
-                // as DENY is usually the most restrictive
-                if (finalDecision === "DENY") {
-                    break;
-                }
-            }
-        }
-        // 4. Log the audit event
-        await logAudit(agentId, toolName, argsString, finalDecision);
-        // 5. Return the decision
-        response.status(200).json({ decision: finalDecision });
-        return;
-    }
-    catch (error) {
-        console.error("Error evaluating action:", error);
-        response.status(500).json({ error: "Internal Server Error", decision: "DENY" });
-        return;
-    }
-});
-async function logAudit(agentId, toolName, args, decision) {
-    try {
-        await db.collection("audit_logs").add({
-            agentId,
-            toolName,
-            arguments: args,
-            decision,
-            timestamp: admin.firestore.FieldValue.serverTimestamp()
-        });
-    }
-    catch (error) {
-        console.error("Failed to log audit event:", error);
-    }
+// Initialize Firebase Admin once at the top level
+if (!admin.apps.length) {
+    admin.initializeApp();
 }
-exports.generatePolicyRegex = (0, https_1.onRequest)({ cors: true }, async (request, response) => {
-    var _a;
-    if (request.method !== "POST") {
-        response.status(405).send("Method Not Allowed");
-        return;
-    }
-    try {
-        const { prompt, toolName } = request.body;
-        if (!prompt || !toolName) {
-            response.status(400).json({ error: "Missing required fields: prompt, toolName" });
-            return;
-        }
-        const ai = new genai_1.GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        const systemPrompt = `You are an expert cybersecurity engineer. The user wants to restrict an AI agent using the tool '${toolName}'. They will describe the restriction in plain English: '${prompt}'. Return ONLY a raw Regular Expression string that matches the user's intent. Do not include markdown formatting, backticks, or explanations. If they want to BLOCK something, write a regex that matches the blocked pattern. If they want to ONLY ALLOW something, write a regex that matches the allowed pattern.`;
-        const aiResponse = await ai.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents: systemPrompt,
-        });
-        let regexString = ((_a = aiResponse.text) === null || _a === void 0 ? void 0 : _a.trim()) || ".*";
-        // Remove markdown formatting if the model slipped it in
-        if (regexString.startsWith("\`\`\`")) {
-            regexString = regexString.replace(/\`\`\`(regex)?/gi, "").trim();
-        }
-        response.status(200).json({ regex: regexString });
-        return;
-    }
-    catch (error) {
-        console.error("Error generating regex via Gemini:", error);
-        response.status(500).json({ error: "Internal Server Error" });
-        return;
-    }
-});
+// Core evaluation endpoint (existing)
+var evaluateAction_1 = require("./evaluateAction");
+Object.defineProperty(exports, "evaluateAction", { enumerable: true, get: function () { return evaluateAction_1.evaluateAction; } });
+Object.defineProperty(exports, "generatePolicyRegex", { enumerable: true, get: function () { return evaluateAction_1.generatePolicyRegex; } });
+// AgentGate Connect — multi-tenant management
+var connect_1 = require("./connect");
+Object.defineProperty(exports, "createPlatform", { enumerable: true, get: function () { return connect_1.createPlatform; } });
+Object.defineProperty(exports, "getPlatform", { enumerable: true, get: function () { return connect_1.getPlatform; } });
+Object.defineProperty(exports, "updateBasePolicies", { enumerable: true, get: function () { return connect_1.updateBasePolicies; } });
+Object.defineProperty(exports, "issueConnectKey", { enumerable: true, get: function () { return connect_1.issueConnectKey; } });
+Object.defineProperty(exports, "revokeConnectKey", { enumerable: true, get: function () { return connect_1.revokeConnectKey; } });
+Object.defineProperty(exports, "listConnectKeys", { enumerable: true, get: function () { return connect_1.listConnectKeys; } });
+Object.defineProperty(exports, "updateConnectKey", { enumerable: true, get: function () { return connect_1.updateConnectKey; } });
+Object.defineProperty(exports, "getConnectAnalytics", { enumerable: true, get: function () { return connect_1.getConnectAnalytics; } });
+Object.defineProperty(exports, "getConnectEvents", { enumerable: true, get: function () { return connect_1.getConnectEvents; } });
+Object.defineProperty(exports, "notifyPlatformWebhook", { enumerable: true, get: function () { return connect_1.notifyPlatformWebhook; } });
 //# sourceMappingURL=index.js.map
