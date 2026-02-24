@@ -20,6 +20,8 @@ export default function AgentsPage() {
     const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
     const [copiedNode, setCopiedNode] = useState(false);
     const [copiedCurl, setCopiedCurl] = useState(false);
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [newAgentName, setNewAgentName] = useState("");
 
     const fetchAgents = async () => {
         if (!user) return;
@@ -45,17 +47,17 @@ export default function AgentsPage() {
     };
 
     const createAgent = async () => {
-        if (!user) return;
-        const name = window.prompt("Enter a name for your new Agent (e.g. 'Browser Assistant'):");
-        if (!name) return;
+        if (!user || !newAgentName.trim()) return;
 
         try {
             const newAgent: Agent = {
                 userId: user.uid,
-                name,
+                name: newAgentName.trim(),
                 apiKey: generateApiKey(),
             };
             await addDoc(collection(db, "agents"), newAgent);
+            setNewAgentName("");
+            setIsCreateModalOpen(false);
             fetchAgents();
         } catch (e) {
             console.error("Error creating agent", e);
@@ -113,7 +115,7 @@ await securedAgent.executeTool("Start task", {});`;
                     <p className="text-neutral-400 text-sm">Manage your connected AI agents and generate API keys.</p>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button onClick={createAgent} className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition-all font-medium">
+                    <Button onClick={() => setIsCreateModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition-all font-medium">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Agent
                     </Button>
@@ -186,6 +188,44 @@ await securedAgent.executeTool("Start task", {});`;
                     )}
                 </CardContent>
             </Card>
+
+            {/* Create Agent Modal */}
+            <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+                <DialogContent className="sm:max-w-md bg-neutral-900 border-neutral-800 text-white">
+                    <DialogHeader>
+                        <DialogTitle className="text-xl font-bold">Create New Agent</DialogTitle>
+                        <DialogDescription className="text-neutral-400">
+                            Give your AI agent a name to generate a unique API key.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                            <label htmlFor="name" className="text-sm font-medium text-neutral-300">
+                                Agent Name
+                            </label>
+                            <input
+                                id="name"
+                                value={newAgentName}
+                                onChange={(e) => setNewAgentName(e.target.value)}
+                                placeholder="e.g. Browser Assistant"
+                                className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') createAgent();
+                                }}
+                                autoFocus
+                            />
+                        </div>
+                    </div>
+                    <div className="flex justify-end gap-3">
+                        <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                            Cancel
+                        </Button>
+                        <Button onClick={createAgent} className="bg-indigo-600 hover:bg-indigo-500 text-white border-transparent">
+                            Create Agent
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             {/* Integration Modal */}
             <Dialog open={!!selectedAgent} onOpenChange={(open) => !open && setSelectedAgent(null)}>
