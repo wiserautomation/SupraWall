@@ -26,6 +26,9 @@ export default function AdminAuditPage() {
             }));
             setLogs(logsData);
             setLoading(false);
+        }, (error) => {
+            console.error("Firebase onSnapshot error:", error);
+            setLoading(false);
         });
 
         return () => unsubscribe();

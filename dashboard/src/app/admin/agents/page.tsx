@@ -29,6 +29,9 @@ export default function AdminAgentsPage() {
 
             setAgents(enhancedAgents.sort((a, b) => b.createdAt - a.createdAt));
             setLoading(false);
+        }, (error) => {
+            console.error("Firebase onSnapshot error:", error);
+            setLoading(false);
         });
 
         return () => unsubscribe();

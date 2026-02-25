@@ -1,7 +1,8 @@
 "use client";
 
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
@@ -22,6 +23,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             } else if (user.email && !ADMIN_EMAILS.includes(user.email)) {
                 // Not an admin, redirect to normal dashboard
                 router.push("/dashboard");
+            } else {
+                // Register admin in Firestore so they appear in standard tables
+                setDoc(doc(db, "users", user.uid), {
+                    email: user.email,
+                    createdAt: user.metadata?.creationTime || new Date().toISOString(),
+                    lastLogin: new Date().toISOString(),
+                    isAdmin: true
+                }, { merge: true }).catch(console.error);
             }
         }
     }, [user, loading, router]);

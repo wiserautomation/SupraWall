@@ -21,21 +21,9 @@ export default function AdminUsersPage() {
         // Fetch all users with basic info plus agent count via aggregation or client side mapping
         // Due to Firestore logic without Edge Functions, we fetch users, agents, and logs in parallel 
         // using onSnapshot for true real-time syncing.
-        const unsubscribeUsers = onSnapshot(collection(db, "users"), async (snapshot) => {
+        const unsubscribeUsers = onSnapshot(collection(db, "users"), (snapshot) => {
             const rawUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-            // For a robust Admin panel, we must also fetch agents and logs mapping
-            // to accurately construct the "Agent Count" and "Last Active".
-            const agentsData: Record<string, number> = {};
-            const activeData: Record<string, number> = {};
-
-            try {
-                // Not perfectly scalable for 10M users, but highly effective for typical Admin panels under 10k users.
-                const agentsSnap = await getDoc(doc(db, "__admin_cache", "stats")).catch(() => null);
-                // We'll calculate agents per user manually here to ensure it works instantly
-            } catch (e) {
-                // Ignore indexing issues temporarily for POC
-            }
 
             const enhancedUsers = rawUsers.map((u: any) => ({
                 ...u,
@@ -45,6 +33,9 @@ export default function AdminUsersPage() {
             }));
 
             setUsers(enhancedUsers.sort((a, b) => b.lastActive - a.lastActive));
+            setLoading(false);
+        }, (error) => {
+            console.error("Firebase onSnapshot error:", error);
             setLoading(false);
         });
 
