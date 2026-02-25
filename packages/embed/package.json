@@ -1,0 +1,13 @@
+{
+    "name": "@agentgate/embed",
+    "version": "1.0.0",
+    "description": "Iframe-based AgentGate embed snippets",
+    "main": "dist/embed.js",
+    "scripts": {
+        "build": "esbuild src/embed.ts --bundle --minify --outfile=public/embed.js"
+    },
+    "devDependencies": {
+        "esbuild": "^0.19.5",
+        "typescript": "^5.0.0"
+    }
+}
