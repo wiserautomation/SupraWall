@@ -6,7 +6,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Shield, Activity, Users, LogOut, Key, FileText, Zap } from "lucide-react";
+import { Shield, Activity, Users, LogOut, Key, FileText, Zap, Settings } from "lucide-react";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [user, loading] = useAuthState(auth);
     const router = useRouter();
@@ -35,6 +35,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Agents", href: "/dashboard", icon: Users },
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },
+        { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ];
 
     const connectNavItems = [
