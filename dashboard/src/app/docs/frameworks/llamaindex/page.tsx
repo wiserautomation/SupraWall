@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LlamaIndexGuide() {
-    const starterCode = \`from agentgate import AgentGateLlamaIndex, AgentGateOptions
+    const starterCode = `from agentgate import AgentGateLlamaIndex, AgentGateOptions
 from llama_index.core.agent import ReActAgent
 
 # 1. Wrap your tools for LlamaIndex
@@ -16,7 +16,7 @@ secured_tools = AgentGateLlamaIndex.wrap_tools(
 # 2. Initialize ReAct agent with secured tools
 agent = ReActAgent.from_tools(secured_tools, llm=llm)
 
-agent.chat("Please drop the users database table")\`;
+agent.chat("Please drop the users database table")`;
 
     return (
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
@@ -39,8 +39,8 @@ agent.chat("Please drop the users database table")\`;
                     <p className="text-neutral-400 text-sm">Clone the pre-configured Python LlamaIndex Starter.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <a href="https://github.com/wiserautomation" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4"/> Clone Repo</a>
-                    <a href="#" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-neutral-200 text-black font-medium rounded-xl transition-colors text-sm border border-transparent">Replit <ExternalLink className="w-4 h-4"/></a>
+                    <a href="https://github.com/wiserautomation" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4" /> Clone Repo</a>
+                    <a href="#" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-neutral-200 text-black font-medium rounded-xl transition-colors text-sm border border-transparent">Replit <ExternalLink className="w-4 h-4" /></a>
                 </div>
             </div>
 
@@ -50,13 +50,13 @@ agent.chat("Please drop the users database table")\`;
             </div>
 
             <div className="space-y-6 pt-4">
-                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                 <p className="text-neutral-400 text-sm">See AgentGate protect a LlamaIndex query engine.</p>
-                 <CodePlayground 
-                    framework="LlamaIndex" 
+                <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
+                <p className="text-neutral-400 text-sm">See AgentGate protect a LlamaIndex query engine.</p>
+                <CodePlayground
+                    framework="LlamaIndex"
                     initialCode={starterCode}
                     language="python"
-                 />
+                />
             </div>
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">

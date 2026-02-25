@@ -1,10 +1,10 @@
 import { CodeBlock } from "@/components/CodeBlock";
 import { CodePlayground } from "@/components/CodePlayground";
 import Link from "next/link";
-import { ArrowRight, Github, ExternalLink } from "lucide-react";
+import { ArrowRight, Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LangchainGuide() {
-    const starterCode = \`import { AgentGateLangChainCallback, AgentGateOptions } from "agentgate";
+    const starterCode = `import { AgentGateLangChainCallback, AgentGateOptions } from "agentgate";
 import { AgentExecutor } from "langchain/agents";
 
 // 1. Setup your secure callback
@@ -19,7 +19,7 @@ const agentExecutor = new AgentExecutor({
     callbacks: [callback] // <-- Everything is now governed
 });
 
-await agentExecutor.invoke({ input: "List all files in the secret folder" });\`;
+await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
     return (
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
@@ -42,8 +42,8 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });\`;
                     <p className="text-neutral-400 text-sm">Clone the pre-configured TypeScript Starter repository.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <a href="https://github.com/wiserautomation" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4"/> Clone Repo</a>
-                    <a href="#" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-neutral-200 text-black font-medium rounded-xl transition-colors text-sm border border-transparent">Deploy <ExternalLink className="w-4 h-4"/></a>
+                    <a href="https://github.com/wiserautomation" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4" /> Clone Repo</a>
+                    <a href="#" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-neutral-200 text-black font-medium rounded-xl transition-colors text-sm border border-transparent">Deploy <ExternalLink className="w-4 h-4" /></a>
                 </div>
             </div>
 
@@ -53,31 +53,31 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });\`;
             </div>
 
             <div className="space-y-6 pt-4">
-                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                 <p className="text-neutral-400 text-sm">See how AgentGate dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
-                 <CodePlayground 
-                    framework="LangChain" 
+                <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
+                <p className="text-neutral-400 text-sm">See how AgentGate dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
+                <CodePlayground
+                    framework="LangChain"
                     initialCode={starterCode}
                     language="typescript"
-                 />
+                />
             </div>
 
-             <div className="space-y-6 pt-4">
+            <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Python Implementation</h2>
                 <p className="text-neutral-400 text-sm">AgentGate provides a native callback handler for Python LangChain agents as well.</p>
                 <CodeBlock language="python" code={\`from agentgate import AgentGateLangChainCallback, AgentGateOptions
-from langchain.agents import AgentExecutor
+                from langchain.agents import AgentExecutor
 
-# 1. Setup callback
-callback = AgentGateLangChainCallback(
-    AgentGateOptions(api_key="ag_your_api_key_here")
-)
+                # 1. Setup callback
+                callback = AgentGateLangChainCallback(
+                AgentGateOptions(api_key="ag_your_api_key_here")
+                )
 
-# 2. Attach to executor
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    callbacks=[callback]
+                # 2. Attach to executor
+                agent_executor = AgentExecutor(
+                agent=agent,
+                tools=tools,
+                callbacks=[callback]
 )\`} />
             </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
+import { agentgate } from "@/lib/agentgate";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
@@ -68,7 +69,9 @@ export default function AgentsPage() {
                 name: trimmedName,
                 apiKey: generateApiKey(),
             };
-            await addDoc(collection(db, "agents"), newAgent);
+
+            // Replaced generic Firebase addDoc with our database-agnostic agentgate core SDK
+            await agentgate.agents.create(newAgent);
             setNewAgentName("");
             setIsCreateModalOpen(false);
             sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
