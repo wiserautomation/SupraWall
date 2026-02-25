@@ -90,8 +90,7 @@ export default function PoliciesPage() {
         if (!toolName || !aiPrompt) return;
         setIsGenerating(true);
         try {
-            const projectId = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "agentguard-1b9e9";
-            const url = `http://127.0.0.1:5001/${projectId}/us-central1/generatePolicyRegex`;
+            const url = `/api/generate`;
             const res = await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
