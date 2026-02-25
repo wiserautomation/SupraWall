@@ -65,7 +65,7 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Python Implementation</h2>
                 <p className="text-neutral-400 text-sm">AgentGate provides a native callback handler for Python LangChain agents as well.</p>
-                <CodeBlock language="python" code={\`from agentgate import AgentGateLangChainCallback, AgentGateOptions
+                <CodeBlock language="python" code={`from agentgate import AgentGateLangChainCallback, AgentGateOptions
                 from langchain.agents import AgentExecutor
 
                 # 1. Setup callback
@@ -78,7 +78,7 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
                 agent=agent,
                 tools=tools,
                 callbacks=[callback]
-)\`} />
+)`} />
             </div>
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
