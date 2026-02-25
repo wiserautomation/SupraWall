@@ -1,0 +1,17 @@
+{
+    "name": "@agentgate/vue",
+    "version": "0.1.0",
+    "description": "Drop-in Vue components for AgentGate.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "peerDependencies": {
+        "vue": "^3.0.0"
+    },
+    "scripts": {
+        "build": "vue-tsc"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0",
+        "vue": "^3.0.0"
+    }
+}

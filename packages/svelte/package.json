@@ -1,0 +1,13 @@
+{
+    "name": "@agentgate/svelte",
+    "version": "0.1.0",
+    "description": "Drop-in Svelte components for AgentGate.",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "peerDependencies": {
+        "svelte": "^4.0.0"
+    },
+    "devDependencies": {
+        "svelte": "^4.0.0"
+    }
+}
