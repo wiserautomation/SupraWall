@@ -1,6 +1,36 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    
+    // Admin check function
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == "peghin@gmail.com";
+    }
+
+    // ── Users ────────────────────────────────────────────────────────────
+    match /users/{userId} {
+      allow read, write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // ── Agents ───────────────────────────────────────────────────────────
+    match /agents/{agentId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if request.auth != null && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // ── Policies ─────────────────────────────────────────────────────────
+    match /policies/{policyId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if request.auth != null && (request.resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+    }
+
+    // ── Audit Logs ───────────────────────────────────────────────────────
+    match /audit_logs/{logId} {
+      allow read: if request.auth != null && (resource.data.userId == request.auth.uid || isAdmin());
+      allow write: if false; // Cloud Functions only or Agent writes
+    }
 
     // ── Existing: single-tenant API keys ────────────────────────────────
     match /api_keys/{keyId} {

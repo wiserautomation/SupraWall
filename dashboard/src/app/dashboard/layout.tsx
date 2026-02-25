@@ -1,7 +1,8 @@
 "use client";
 
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
@@ -12,8 +13,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const pathname = usePathname();
 
     useEffect(() => {
-        if (!loading && !user) {
-            router.push("/login");
+        if (!loading) {
+            if (!user) {
+                router.push("/login");
+            } else {
+                // Ensure user exists in Firestore for the Admin Panel
+                setDoc(doc(db, "users", user.uid), {
+                    email: user.email,
+                    createdAt: user.metadata.creationTime,
+                    lastLogin: new Date().toISOString()
+                }, { merge: true }).catch(console.error);
+            }
         }
     }, [user, loading, router]);
 
