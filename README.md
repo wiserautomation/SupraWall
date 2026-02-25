@@ -14,6 +14,19 @@
 
 </div>
 
+## 🚀 New in v1.0: The Stripe Moment
+
+- ✅ **8 Languages**: Python, TypeScript, Go, Ruby, PHP, Java, Rust, C#
+- ✅ **5 Databases**: Postgres, MySQL, MongoDB, Supabase, Firebase
+- ✅ **Self-Host**: `docker run agentgate/server`
+- ✅ **CLI Tool**: `npm install -g @agentgate/cli`
+- ✅ **Framework Plugins**: LangChain, LlamaIndex, AutoGen, Vercel AI, CrewAI
+- ✅ **Webhooks**: Real-time event streaming to your systems
+- ✅ **UI Components**: Drop-in React, Vue, Svelte components
+
+> **AgentGate now works anywhere, with anything, in any language — just like Stripe.**
+
+
 ---
 
 ## ✨ Features
