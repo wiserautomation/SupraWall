@@ -1,0 +1,205 @@
+#!/usr/bin/env node
+import { Command } from 'commander';
+import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
+import axios from 'axios';
+import colorize from 'json-colorizer';
+import dotenv from 'dotenv';
+import express from 'express';
+import cors from 'cors';
+import { Database } from 'sqlite3';
+
+dotenv.config();
+
+const program = new Command();
+const API_URL = process.env.AGENTGATE_API_URL || 'https://api.agentgate.io/v1';
+
+function getApiKey() {
+    const key = process.env.AGENTGATE_API_KEY;
+    if (!key) {
+        console.error(chalk.red("Error: AGENTGATE_API_KEY environment variable is required."));
+        process.exit(1);
+    }
+    return key;
+}
+
+program
+    .name('agentgate')
+    .description('AgentGate CLI - The powerful way to manage AI Agent Security')
+    .version('1.0.0');
+
+// Login Command
+program
+    .command('login')
+    .description('Authenticate the CLI')
+    .action(() => {
+        console.log(chalk.blue('To authenticate, set the AGENTGATE_API_KEY environment variable.'));
+        console.log(chalk.gray('Example: export AGENTGATE_API_KEY="ag_test_your_key_here"'));
+    });
+
+// Agents Subcommands
+const agents = program.command('agents').description('Manage AI agents');
+
+agents
+    .command('create')
+    .description('Create a new agent')
+    .requiredOption('--name <name>', 'Name of the agent')
+    .action(async (options) => {
+        try {
+            const api = getApiKey();
+            const res = await axios.post(`${API_URL}/agents`, { name: options.name }, {
+                headers: { Authorization: `Bearer ${api}` }
+            });
+            console.log(chalk.green('✔ Agent created successfully!'));
+            console.log(colorize(JSON.stringify(res.data, null, 2)));
+        } catch (e: any) {
+            console.error(chalk.red('Failed to create agent:'), e.response?.data || e.message);
+        }
+    });
+
+// Policies Subcommands
+const policies = program.command('policies').description('Manage security policies');
+
+policies
+    .command('create')
+    .description('Create a new policy')
+    .requiredOption('--agent <id>', 'Agent ID')
+    .requiredOption('--tool <name>', 'Tool pattern (exact or regex)')
+    .requiredOption('--action <action>', 'ALLOW | DENY | REQUIRE_APPROVAL')
+    .action(async (options) => {
+        try {
+            const api = getApiKey();
+            const res = await axios.post(`${API_URL}/agents/${options.agent}/policies`, {
+                toolName: options.tool,
+                decision: options.action
+            }, {
+                headers: { Authorization: `Bearer ${api}` }
+            });
+            console.log(chalk.green('✔ Policy published successfully!'));
+            console.log(colorize(JSON.stringify(res.data, null, 2)));
+        } catch (e: any) {
+             console.error(chalk.red('Failed to create policy:'), e.response?.data || e.message);
+        }
+    });
+
+// Logs Stream Command
+program
+    .command('logs')
+    .description('Stream real-time audit logs')
+    .requiredOption('--agent <id>', 'Agent ID')
+    .option('-f, --follow', 'Follow the log stream (tail)')
+    .action(async (options) => {
+        const api = getApiKey();
+        console.log(chalk.blue(`Tracking logs for agent: ${options.agent}...`));
+        
+        async function fetchLogs() {
+            try {
+                const res = await axios.get(`${API_URL}/agents/${options.agent}/logs?limit=10`, {
+                    headers: { Authorization: `Bearer ${api}` }
+                });
+                
+                res.data.logs.forEach((log: any) => {
+                     const color = log.decision === 'ALLOW' ? chalk.green : log.decision === 'DENY' ? chalk.red : chalk.yellow;
+                     console.log(chalk.gray(new Date(log.timestamp).toISOString()), color(`[${log.decision}]`), chalk.white(log.toolName));
+                });
+            } catch (e) {}
+        }
+
+        await fetchLogs();
+        if (options.follow) {
+            setInterval(fetchLogs, 2000);
+        }
+    });
+
+// Local Policy Test Command
+program
+    .command('test')
+    .description('Test a policy file locally without hitting the cloud API')
+    .argument('<file>', 'Policy definitions JSON file (ex. policy.json)')
+    .requiredOption('--tool <name>', 'Tool name attempting to execute')
+    .option('--args <json>', 'Tool arguments context')
+    .action((file, options) => {
+        try {
+            const filePath = path.resolve(process.cwd(), file);
+            if (!fs.existsSync(filePath)) {
+                console.error(chalk.red(`Error: File ${file} not found.`));
+                process.exit(1);
+            }
+            const policies = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+            console.log(chalk.blue(`Evaluating local policies against tool '${options.tool}'...`));
+            
+            let decision = "ALLOW";
+            for (const p of policies) {
+                if (new RegExp(p.condition).test(options.tool)) {
+                    if (p.ruleType === "DENY") {
+                        decision = "DENY";
+                        break;
+                    } else if (p.ruleType === "REQUIRE_APPROVAL") {
+                        decision = "REQUIRE_APPROVAL";
+                        break;
+                    }
+                }
+            }
+            
+            if (decision === "DENY") {
+                console.log(chalk.red(`❌ DENIED by local policy.`));
+            } else if (decision === "ALLOW") {
+                console.log(chalk.green(`✔ ALLOWED by local policy.`));
+            } else {
+                console.log(chalk.yellow(`⚠ REQUIRES APPROVAL by local policy.`));
+            }
+
+        } catch (e: any) {
+            console.error(chalk.red("Execution failed:"), e.message);
+        }
+    });
+
+// Dev Server Command
+program
+    .command('dev')
+    .description('Starts a local, isolated development environment server')
+    .option('-p, --port <port>', 'Port to run on', '4242')
+    .action((options) => {
+        console.log(chalk.cyan("Starting AgentGate Local Dev Server..."));
+        
+        const app = express();
+        app.use(express.json());
+        app.use(cors());
+
+        // In-memory SQLite for testing without dropping tables
+        const db = new Database(':memory:');
+        
+        db.serialize(() => {
+            db.run("CREATE TABLE policies (id TEXT, toolName TEXT, decision TEXT)");
+            db.run("CREATE TABLE logs (id TEXT, decision TEXT, toolName TEXT, timestamp INTEGER)");
+        });
+
+        // Mock test suite evaluate endpoint
+        app.post('/v1/evaluate', (req, res) => {
+            const { toolName, apiKey } = req.body;
+            
+            // Allow bypassing for ag_test keys automatically
+            if (req.headers.authorization?.includes('ag_test_')) {
+                db.run("INSERT INTO logs VALUES (?, ?, ?, ?)", [Date.now().toString(), "ALLOW", toolName, Date.now()]);
+                return res.json({ decision: "ALLOW", reason: "Test Mode By-Pass" });
+            }
+
+            db.get("SELECT decision FROM policies WHERE toolName = ?", [toolName], (err, row: any) => {
+                if (row && row.decision === "DENY") {
+                    db.run("INSERT INTO logs VALUES (?, ?, ?, ?)", [Date.now().toString(), "DENY", toolName, Date.now()]);
+                    res.json({ decision: "DENY", reason: "Blocked by Local Dev Policy" });
+                } else {
+                    res.json({ decision: "ALLOW", reason: "Default Allow" });
+                }
+            });
+        });
+
+        app.listen(options.port, () => {
+            console.log(chalk.green(`✔ Local server listening on http://localhost:${options.port}`));
+            console.log(chalk.gray(`Point AGENTGATE_API_URL=http://localhost:${options.port}/v1 in your code to test offline.`));
+            console.log(chalk.magenta(`Note: Keys starting with ag_test_* automatically bypass evaluation logic.`));
+        });
+    });
+
+program.parse(process.argv);

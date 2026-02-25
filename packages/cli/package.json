@@ -1,0 +1,30 @@
+{
+  "name": "@agentgate/cli",
+  "version": "1.0.0",
+  "description": "Powerful developer CLI for AgentGate",
+  "main": "dist/bin.js",
+  "bin": {
+    "agentgate": "./dist/bin.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "json-colorizer": "^2.2.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}
