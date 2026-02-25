@@ -1,0 +1,16 @@
+{
+    "name": "@agentgate/langchain",
+    "version": "0.1.0",
+    "description": "Official AgentGate security integration for LangChain TS",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@langchain/core": "^0.1.0"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}
