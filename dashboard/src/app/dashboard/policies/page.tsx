@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -78,6 +79,7 @@ export default function PoliciesPage() {
             await addDoc(collection(db, "policies"), newPolicy);
             setToolName("");
             setCondition("");
+            sendGAEvent('event', 'create_policy', { tool_name: toolName, rule_type: ruleType });
             fetchData();
         } catch (e) {
             console.error("Error creating policy", e);

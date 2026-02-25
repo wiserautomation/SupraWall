@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
@@ -21,8 +22,10 @@ export default function LoginPage() {
         try {
             if (isRegistering) {
                 await createUserWithEmailAndPassword(auth, email, password);
+                sendGAEvent('event', 'sign_up', { method: 'email' });
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
+                sendGAEvent('event', 'login', { method: 'email' });
             }
             router.push("/dashboard");
         } catch (err: unknown) {

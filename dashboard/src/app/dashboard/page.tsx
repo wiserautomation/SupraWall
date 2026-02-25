@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
 import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -70,6 +71,7 @@ export default function AgentsPage() {
             await addDoc(collection(db, "agents"), newAgent);
             setNewAgentName("");
             setIsCreateModalOpen(false);
+            sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
             // No need to fetchAgents() manually because onSnapshot handles it instantly!
         } catch (e) {
             console.error("Error creating agent", e);

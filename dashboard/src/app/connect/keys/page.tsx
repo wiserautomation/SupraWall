@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Key, Plus, Trash2, Copy, Check, AlertTriangle } from "lucide-react";
 import type { ConnectKey } from "@/types/connect";
+import { sendGAEvent } from "@next/third-parties/google";
 
 function CopyButton({ text }: { text: string }) {
     const [copied, setCopied] = useState(false);
@@ -68,6 +69,7 @@ function IssueKeyDialog({
                 customerLabel: customerLabel.trim() || customerId.trim(),
             });
             setNewKey(subKeyId);
+            sendGAEvent('event', 'issue_connect_key', { platform_id: platformId });
         } catch (e: any) {
             setError(e?.message ?? "Failed to issue key.");
         } finally {
