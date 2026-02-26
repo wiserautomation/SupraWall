@@ -1,12 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Database, Save, CheckCircle2, Webhook, RefreshCcw } from "lucide-react";
+import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap } from "lucide-react";
 import { useState } from "react";
 
 export default function SettingsPage() {
     const [savedDb, setSavedDb] = useState(false);
     const [savedWebhook, setSavedWebhook] = useState(false);
+    const [testSent, setTestSent] = useState(false);
 
     const [dbType, setDbType] = useState("firebase");
     const [dbString, setDbString] = useState("");
@@ -33,6 +34,11 @@ export default function SettingsPage() {
             str += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         setWebhookSecret(str);
+    };
+
+    const handleTestWebhook = () => {
+        setTestSent(true);
+        setTimeout(() => setTestSent(false), 3000);
     };
 
     return (
@@ -166,7 +172,23 @@ export default function SettingsPage() {
                             <p className="text-xs text-neutral-500">Used to verify the AgentGate-Signature HMAC SHA256 header securely.</p>
                         </div>
 
-                        <div className="pt-4 border-t border-white/5 flex justify-end">
+                        <div className="pt-4 border-t border-white/5 flex justify-end gap-3">
+                            <button
+                                type="button"
+                                onClick={handleTestWebhook}
+                                disabled={!webhookUrl}
+                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed`}
+                            >
+                                {testSent ? (
+                                    <>
+                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Event Sent
+                                    </>
+                                ) : (
+                                    <>
+                                        <Zap className="w-4 h-4" /> Send Test Event
+                                    </>
+                                )}
+                            </button>
                             <button
                                 type="submit"
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${savedWebhook
