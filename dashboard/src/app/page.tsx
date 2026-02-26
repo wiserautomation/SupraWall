@@ -25,22 +25,41 @@ function CodeTerminal() {
         "✅ Database protected",
     ];
 
+    const [mounted, setMounted] = useState(false);
+
     useEffect(() => {
-        let currentLine = 0;
-        const interval = setInterval(() => {
-            if (currentLine < terminalLines.length) {
-                setLines(prev => [...prev, terminalLines[currentLine]]);
-                currentLine++;
+        setMounted(true);
+        let index = 0;
+        let isRunning = true;
+
+        const tick = () => {
+            if (!isRunning) return;
+
+            if (index < terminalLines.length) {
+                const line = terminalLines[index];
+                setLines(prev => [...prev, line]);
+                index++;
+                setTimeout(tick, 800);
             } else {
-                setTimeout(() => setLines([]), 2000);
-                currentLine = 0;
+                setTimeout(() => {
+                    if (!isRunning) return;
+                    setLines([]);
+                    index = 0;
+                    tick();
+                }, 2000);
             }
-        }, 800);
-        return () => clearInterval(interval);
+        };
+
+        tick();
+        return () => { isRunning = false; };
     }, []);
 
+    if (!mounted) {
+         return <div className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative" />;
+    }
+
     return (
-        <div className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative">
+        <div suppressHydrationWarning className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative">
             <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
                 <div className="w-3 h-3 rounded-full bg-red-500/50" />
                 <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
@@ -49,19 +68,20 @@ function CodeTerminal() {
             </div>
             <div className="p-6 space-y-2">
                 {lines.map((line, i) => {
-                    const isWarning = line.includes("⚠️");
-                    const isDenied = line.includes("❌");
-                    const isSuccess = line.includes("✅");
-                    const isCheck = line.includes("🛡️");
+                    const safeLine = line || "";
+                    const isWarning = safeLine.includes("⚠️");
+                    const isDenied = safeLine.includes("❌");
+                    const isSuccess = safeLine.includes("✅");
+                    const isCheck = safeLine.includes("🛡️");
 
                     return (
                         <motion.div
-                            key={i + line}
+                            key={`terminal-line-${i}`}
                             initial={{ opacity: 0, x: -5 }}
                             animate={{ opacity: 1, x: 0 }}
                             className={`${isWarning ? 'text-amber-400 font-bold' : i >= 3 && !isSuccess ? 'text-rose-400 font-bold' : isSuccess ? 'text-emerald-400 font-bold' : isCheck ? 'text-indigo-400' : 'text-neutral-400'}`}
                         >
-                            {line}
+                            {safeLine}
                         </motion.div>
                     );
                 })}
