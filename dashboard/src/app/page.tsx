@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import {
     ArrowRight, Box, Lock, Activity, ChevronRight, CheckCircle2,
     Shield, Database, Terminal, Globe, Code2, AlertTriangle,
-    Play, Users, Star, HelpCircle, Mail, DollarSign, ExternalLink
+    Play, Users, Star, HelpCircle, Mail, DollarSign, ExternalLink,
+    Zap, Server
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
