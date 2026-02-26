@@ -55,7 +55,7 @@ function CodeTerminal() {
     }, []);
 
     if (!mounted) {
-         return <div className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative" />;
+        return <div className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative" />;
     }
 
     return (
@@ -88,6 +88,113 @@ function CodeTerminal() {
             </div>
             <div className="absolute bottom-4 right-4 text-[10px] text-neutral-600 animate-pulse">
                 💾 3,847 dangerous actions blocked today
+            </div>
+        </div>
+    );
+}
+
+function ClawbotDemo() {
+    const [lines, setLines] = useState<string[]>([]);
+    const sequence = [
+        "> clawbot.click(\"Settings\")",
+        "✅ Navigated to /settings",
+        "> clawbot.click(\"Delete Account\")",
+        "⚠️  DETECTION: destructive_pattern",
+        "❌ BLOCKED: Policy \"SafeMode-V1\"",
+        "🛡️  Prevented data loss"
+    ];
+
+    useEffect(() => {
+        let i = 0;
+        let isRunning = true;
+        const tick = () => {
+            if (!isRunning) return;
+            if (i < sequence.length) {
+                setLines(prev => [...prev, sequence[i]]);
+                i++;
+                setTimeout(tick, 1000);
+            } else {
+                setTimeout(() => {
+                    if (!isRunning) return;
+                    setLines([]);
+                    i = 0;
+                    tick();
+                }, 3000);
+            }
+        };
+        tick();
+        return () => { isRunning = false; };
+    }, []);
+
+    return (
+        <div className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden">
+            <div className="flex items-center gap-1.5 mb-4 opacity-50 border-b border-white/5 pb-2">
+                <div className="w-2 h-2 rounded-full bg-red-500/40" />
+                <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
+                <div className="w-2 h-2 rounded-full bg-green-500/40" />
+                <span className="ml-2 uppercase tracking-widest text-[8px] text-neutral-400">Browser Security Monitor</span>
+            </div>
+            {lines.map((l, i) => (
+                <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className={l.includes('❌') ? 'text-rose-500 font-black' : l.includes('⚠️') ? 'text-amber-500 font-bold' : l.includes('🛡️') ? 'text-emerald-400' : ''}
+                >
+                    {l}
+                </motion.div>
+            ))}
+        </div>
+    );
+}
+
+function LangChainDemo() {
+    return (
+        <div className="w-full h-full bg-neutral-900 grid grid-rows-2 gap-1 p-4 font-mono text-[10px] md:text-xs">
+            <div className="bg-black/40 p-4 rounded-xl border border-rose-500/20 relative group overflow-hidden flex flex-col justify-center">
+                <div className="absolute top-2 right-4 text-[8px] font-black text-rose-500 uppercase">Unsecured</div>
+                <code className="text-rose-200/40">
+                    agent.run("Email users")<br />
+                    <span className="text-rose-500 animate-pulse font-bold"># 💀 Internal debug data leaked</span>
+                </code>
+            </div>
+            <div className="bg-[#0A0A0A] p-4 rounded-xl border border-indigo-500/30 relative overflow-hidden flex flex-col justify-center">
+                <div className="absolute top-2 right-4 text-[8px] font-black text-emerald-500 uppercase">Secured</div>
+                <code className="text-indigo-100">
+                    <span className="text-indigo-400 font-bold">secure(</span>agent<span className="text-indigo-400 font-bold">)</span>.run("Email users")<br />
+                    <span className="text-emerald-400 font-bold"># ✅ Data Sanitized & Blocked</span>
+                </code>
+            </div>
+        </div>
+    );
+}
+
+function AutoGenDemo() {
+    return (
+        <div className="w-full h-full bg-[#050505] p-6 flex flex-col justify-center space-y-6">
+            <div className="space-y-3">
+                <div className="flex justify-between text-[10px] font-black text-neutral-500 uppercase tracking-widest">
+                    <span>Threats Prevented</span>
+                    <span className="text-rose-500 font-black">127 blocked</span>
+                </div>
+                <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden border border-white/10">
+                    <motion.div
+                        initial={{ width: 0 }}
+                        whileInView={{ width: '74%' }}
+                        transition={{ duration: 1.5, ease: "easeOut" }}
+                        className="h-full bg-gradient-to-r from-rose-600 to-indigo-600"
+                    />
+                </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Loss Prevented</p>
+                    <p className="text-2xl font-black text-white tracking-tighter">$847K</p>
+                </div>
+                <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5">
+                    <p className="text-[8px] font-black text-neutral-500 uppercase tracking-widest mb-1">Integrity Score</p>
+                    <p className="text-2xl font-black text-emerald-500 tracking-tighter">100%</p>
+                </div>
             </div>
         </div>
     );
@@ -360,26 +467,26 @@ export default function LandingPage() {
                                     title: "Clawbot 🔥",
                                     desc: "\"Our Clawbot scrapers were accidentally clicking 'Delete Account' on customer portals. AgentGate caught 127 attempts before we even knew.\"",
                                     author: "Alex Chen, Automation Startup",
-                                    imageAlt: "Browser automation deleting"
+                                    visual: <ClawbotDemo />
                                 },
                                 {
                                     tag: "Customer Service",
                                     title: "LangChain in Prod",
                                     desc: "\"AI chatbot was about to email our entire customer list with internal debugging info. AgentGate flagged it for approval. Saved us from GDPR nightmare.\"",
                                     author: "Maria Santos, Head of Security",
-                                    imageAlt: "AI chatbot email leak"
+                                    visual: <LangChainDemo />
                                 },
                                 {
                                     tag: "DevOps / SRE",
                                     title: "AutoGen Control",
                                     desc: "\"Coding agent tried to push to main branch with AWS credentials in the code. Policy blocked it, saved our Series A.\"",
                                     author: "David Kim, Engineering Lead",
-                                    imageAlt: "Malicious push blocked"
+                                    visual: <AutoGenDemo />
                                 }
                             ].map((card, i) => (
                                 <div key={i} className="min-w-[320px] md:min-w-[450px] snap-center p-8 border-2 border-black rounded-[2.5rem] space-y-8 hover:bg-neutral-50 transition-colors group">
-                                    <div className="aspect-video w-full bg-neutral-100 rounded-2xl border-2 border-black overflow-hidden flex items-center justify-center font-mono text-xs text-neutral-400 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
-                                        [Video Demo: {card.title}]
+                                    <div className="aspect-video w-full bg-neutral-100 rounded-2xl border-2 border-black overflow-hidden flex items-center justify-center font-mono text-xs text-neutral-400 group-hover:border-indigo-500 transition-all duration-500">
+                                        {card.visual}
                                     </div>
                                     <div className="space-y-4">
                                         <span className="text-[10px] font-black uppercase tracking-widest py-1 px-3 border border-black rounded-full">{card.tag}</span>
@@ -388,7 +495,7 @@ export default function LandingPage() {
                                             <div className="w-10 h-10 rounded-full bg-black shrink-0" />
                                             <div>
                                                 <p className="font-black text-sm">{card.author}</p>
-                                                <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Case Study →</p>
+                                                <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest leading-none">Case Study →</p>
                                             </div>
                                         </div>
                                     </div>
