@@ -98,15 +98,15 @@ export default function AgentsPage() {
     };
 
     const getNodeCode = (apiKey: string) => `import { Agent } from 'your-ai-framework';
-import { withAgentGuard } from 'agentguard-sdk';
+import { withAgentGate } from 'agentgate';
 
 // 1. Initialize your AI Agent
 const myAgent = new Agent();
 
 // 2. Secure it with your GateAPI Key
-const securedAgent = withAgentGuard(myAgent, {
+const securedAgent = withAgentGate(myAgent, {
   apiKey: "${apiKey}",
-  // endpoint: "https://agentguard.com/evaluateAction" // optional fallback
+  // endpoint: "https://agent-gate-rho.vercel.app/evaluateAction" // optional fallback
 });
 
 // 3. Run your agent safely

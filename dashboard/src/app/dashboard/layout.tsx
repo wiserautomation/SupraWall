@@ -43,7 +43,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { label: "Keys", href: "/connect/keys", icon: Key },
         { label: "Analytics", href: "/connect/analytics", icon: Activity },
         { label: "Events", href: "/connect/events", icon: FileText },
-        { label: "Quickstart", href: "/quickstart", icon: Zap },
+    ];
+
+    const resourcesNavItems = [
+        { label: "Documentation", href: "/docs", icon: FileText },
+        { label: "Self-Host", href: "/docs/self-host", icon: Zap },
+        { label: "CLI Tool", href: "/docs/cli", icon: Zap },
+        { label: "Spec", href: "/spec", icon: Shield },
     ];
 
     return (
@@ -82,6 +88,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         </p>
                         <div className="space-y-1">
                             {connectNavItems.map((item) => {
+                                const Icon = item.icon;
+                                const isActive = pathname === item.href;
+                                return (
+                                    <Link
+                                        key={item.href}
+                                        href={item.href}
+                                        className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
+                                            }`}
+                                    >
+                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                        <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.label}</span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    </div>
+
+                    <div className="mt-6">
+                        <p className="px-6 mb-2 text-xs font-semibold text-neutral-500 uppercase tracking-wider">
+                            Resources
+                        </p>
+                        <div className="space-y-1">
+                            {resourcesNavItems.map((item) => {
                                 const Icon = item.icon;
                                 const isActive = pathname === item.href;
                                 return (

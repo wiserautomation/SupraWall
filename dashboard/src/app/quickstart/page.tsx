@@ -1,34 +1,32 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Terminal, Zap, Shield, Key } from "lucide-react";
+import { Check, Copy, Terminal, Zap, Shield, Key, ChevronRight, AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
 
 function CodeBlock({ code, language = "bash" }: { code: string; language?: string }) {
     const [copied, setCopied] = useState(false);
 
     return (
         <div className="relative group">
-            <div className="bg-gray-900 rounded-xl overflow-hidden">
-                <div className="flex items-center justify-between px-4 py-2 bg-gray-800 border-b
-          border-gray-700">
-                    <span className="text-xs text-gray-400 font-mono">{language}</span>
+            <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
+                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.02] border-b border-white/5">
+                    <span className="text-xs text-neutral-500 font-mono tracking-wider">{language.toUpperCase()}</span>
                     <button
                         onClick={() => {
                             navigator.clipboard.writeText(code);
                             setCopied(true);
                             setTimeout(() => setCopied(false), 2000);
                         }}
-                        className="flex items-center gap-1.5 text-xs text-gray-400
-              hover:text-white transition-colors"
+                        className="flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition-colors"
                     >
                         {copied
-                            ? <><Check className="w-3 h-3 text-green-400" /><span className="text-green-400">Copied</span></>
+                            ? <><Check className="w-3 h-3 text-emerald-400" /><span className="text-emerald-400">Copied</span></>
                             : <><Copy className="w-3 h-3" />Copy</>
                         }
                     </button>
                 </div>
-                <pre className="px-4 py-4 text-sm text-green-400 font-mono overflow-x-auto
-          leading-relaxed whitespace-pre">
+                <pre className="px-6 py-5 text-sm md:text-base text-indigo-300 font-mono overflow-x-auto leading-relaxed whitespace-pre selection:bg-indigo-500/30">
                     {code}
                 </pre>
             </div>
@@ -48,58 +46,60 @@ function Step({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex gap-6">
-            <div className="flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-indigo-600 text-white text-sm font-bold
-          flex items-center justify-center">
+        <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            className="flex gap-8 group"
+        >
+            <div className="flex flex-col items-center shrink-0">
+                <div className="w-10 h-10 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-sm font-bold flex items-center justify-center group-hover:bg-indigo-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     {number}
                 </div>
-                {/* Connector line */}
-                <div className="w-px h-full bg-gray-200 mx-auto mt-2" />
+                <div className="w-[1px] h-full bg-gradient-to-b from-indigo-500/30 to-transparent mt-3 mb-3" />
             </div>
-            <div className="flex-1 pb-10">
-                <h3 className="text-base font-semibold text-gray-900 mb-1">{title}</h3>
+            <div className="flex-1 pb-16">
+                <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{title}</h3>
                 {description && (
-                    <p className="text-sm text-gray-500 mb-4">{description}</p>
+                    <p className="text-neutral-400 text-base mb-6 leading-relaxed">{description}</p>
                 )}
                 {children}
             </div>
-        </div>
+        </motion.div>
     );
 }
 
-const TABS = ["JavaScript / TypeScript", "Python", "MCP Server"] as const;
+const TABS = ["TypeScript", "Python", "MCP Server"] as const;
 type Tab = typeof TABS[number];
 
 export default function QuickstartPage() {
-    const [activeTab, setActiveTab] = useState<Tab>("JavaScript / TypeScript");
+    const [activeTab, setActiveTab] = useState<Tab>("TypeScript");
 
     return (
-        <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
+        <div className="max-w-4xl mx-auto px-6 py-12 space-y-16">
 
             {/* Header */}
-            <div className="text-center space-y-3">
-                <div className="inline-flex p-3 bg-indigo-50 rounded-full">
-                    <Zap className="w-7 h-7 text-indigo-600" />
+            <div className="space-y-6">
+                <div className="inline-flex p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl shadow-inner">
+                    <Zap className="w-8 h-8 text-indigo-400" />
                 </div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
                     5-Minute Quickstart
                 </h1>
-                <p className="text-gray-500 max-w-lg mx-auto">
-                    Secure your AI agent with one install command and fewer than
-                    5 lines of code. No infrastructure, no YAML, no DevOps.
+                <p className="text-neutral-400 text-xl max-w-2xl leading-relaxed">
+                    Secure your AI agent with one install command and fewer than 5 lines of code. No complex infrastructure or proprietary YAML required.
                 </p>
             </div>
 
-            {/* Language tabs */}
-            <div className="flex gap-1 bg-gray-100 rounded-xl p-1">
+            {/* Language Selection */}
+            <div className="sticky top-24 z-30 flex gap-2 bg-neutral-900/80 backdrop-blur-md border border-white/5 rounded-2xl p-1.5 shadow-xl">
                 {TABS.map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${activeTab === tab
-                                ? "bg-white shadow text-gray-900"
-                                : "text-gray-500 hover:text-gray-700"
+                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300 ${activeTab === tab
+                            ? "bg-white text-black shadow-[0_8px_16px_-4px_rgba(255,255,255,0.2)]"
+                            : "text-neutral-500 hover:text-white"
                             }`}
                     >
                         {tab}
@@ -107,335 +107,238 @@ export default function QuickstartPage() {
                 ))}
             </div>
 
-            {/* Step 1 — Get API key */}
-            <Step
-                number={1}
-                title="Get your free API key"
-                description="Create an account and copy your API key from the dashboard."
-            >
-                <div className="flex items-center gap-3 bg-indigo-50 border border-indigo-200
-          rounded-xl px-4 py-3">
-                    <Key className="w-5 h-5 text-indigo-500 flex-shrink-0" />
-                    <div>
-                        <p className="text-sm font-medium text-indigo-800">
-                            Your API key is on the home page
-                        </p>
-                        <p className="text-xs text-indigo-600 mt-0.5">
-                            Format: <code className="bg-indigo-100 px-1 rounded">ag_xxxxxxxxxxxxxxxx</code>
-                        </p>
+            <div className="space-y-4">
+                {/* Step 1 — Get API key */}
+                <Step
+                    number={1}
+                    title="Get your API key"
+                    description="Create an account and copy your API key from the core dashboard."
+                >
+                    <div className="flex items-center gap-4 bg-indigo-500/5 border border-indigo-500/20
+              rounded-2xl px-6 py-5 group/box hover:bg-indigo-500/10 transition-colors">
+                        <Key className="w-6 h-6 text-indigo-400 flex-shrink-0" />
+                        <div>
+                            <p className="text-sm font-bold text-white uppercase tracking-wider">
+                                Your API key is ready
+                            </p>
+                            <p className="text-xs text-neutral-500 mt-1 font-mono">
+                                Prefix: <code className="text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded">ag_live_...</code>
+                            </p>
+                        </div>
+                        <a
+                            href="/"
+                            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors group-hover/box:translate-x-1 duration-300"
+                        >
+                            Go to dashboard <ChevronRight className="w-4 h-4" />
+                        </a>
                     </div>
-                    <a
-                        href="/"
-                        className="ml-auto text-xs font-medium text-indigo-600 hover:text-indigo-800
-              underline whitespace-nowrap"
-                    >
-                        Go to dashboard →
+                </Step>
+
+                {/* Step 2 — Install */}
+                <Step
+                    number={2}
+                    title="Install the SDK"
+                    description="Native packages available for all major environments."
+                >
+                    {activeTab === "TypeScript" && (
+                        <CodeBlock code="npm install agentgate" language="bash" />
+                    )}
+                    {activeTab === "Python" && (
+                        <div className="space-y-4">
+                            <CodeBlock code="pip install agentgate" language="bash" />
+                            <div className="p-4 border-l-2 border-indigo-500/30 bg-indigo-500/5 rounded-r-xl">
+                                <p className="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wide">Framework Extras</p>
+                                <CodeBlock
+                                    code={`pip install "agentgate[langchain]"   # LangChain\npip install "agentgate[openai]"      # OpenAI Agents\npip install "agentgate[all]"         # Full SDK`}
+                                    language="bash"
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {activeTab === "MCP Server" && (
+                        <CodeBlock code="npm install agentgate" language="bash" />
+                    )}
+                </Step>
+
+                {/* Step 3 — Wrap your agent */}
+                <Step
+                    number={3}
+                    title="Wrap your agent"
+                    description="One line of code. Your agent works exactly the same — every tool call is now intercepted and policy-checked."
+                >
+                    {activeTab === "TypeScript" && (
+                        <CodeBlock
+                            language="typescript"
+                            code={`import { withAgentGate } from "agentgate";
+    
+    // 1. Your existing agent
+    const myAgent = createMyAgent();
+    
+    // 2. Wrap it with AgentGate
+    const secured = withAgentGate(myAgent, {
+      apiKey: "ag_your_key_here",
+    });
+    
+    // 3. Tool calls are now checked against policies
+    await secured.executeTool("send_email", { to: "user@example.com" });`}
+                        />
+                    )}
+                    {activeTab === "Python" && (
+                        <div className="space-y-6">
+                            <CodeBlock
+                                language="python"
+                                code={`from agentgate import with_agent_gate, AgentGateOptions
+    
+    secured = with_agent_gate(my_agent, AgentGateOptions(
+        api_key="ag_your_key_here"
+    ))
+    
+    # Tool call: 'rm -rf' -> DENIED (if policy exists)
+    result = secured.run("bash", {"cmd": "rm -rf /"})`}
+                            />
+                            <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+                                <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Example</p>
+                                <CodeBlock
+                                    language="python"
+                                    code={`from agentgate.callbacks import AgentGateCallback
+    
+    agent_executor = AgentExecutor(
+        agent=agent,
+        tools=tools,
+        callbacks=[AgentGateCallback(api_key="ag_your_key_here")],
+    )`}
+                                />
+                            </div>
+                        </div>
+                    )}
+                    {activeTab === "MCP Server" && (
+                        <CodeBlock
+                            language="typescript"
+                            code={`import { createAgentGateMiddleware } from "agentgate";
+    
+    const gate = createAgentGateMiddleware({
+      apiKey: "ag_your_key_here",
+    });
+    
+    server.setRequestHandler(CallToolRequestSchema, async (req) => {
+      // Middleware intercepts the request
+      return gate(req.params.name, req.params.arguments, async () => {
+        return myTargetHandler(req); // Your actual tool logic 
+      });
+    });`}
+                        />
+                    )}
+                </Step>
+
+                {/* Step 4 — Set policies */}
+                <Step
+                    number={4}
+                    title="Enforce Policies"
+                    description="Update governance in real-time from the dashboard. No code changes, no redeployment."
+                >
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        {[
+                            {
+                                label: "ALLOW",
+                                color: "bg-emerald-500/5 border-emerald-500/20",
+                                textColor: "text-emerald-400",
+                                desc: "Executes normally",
+                                examples: ["read_file", "search_web"],
+                            },
+                            {
+                                label: "DENY",
+                                color: "bg-rose-500/5 border-rose-500/20",
+                                textColor: "text-rose-400",
+                                desc: "Blocked immediately",
+                                examples: ["delete_*", "drop_db"],
+                            },
+                            {
+                                label: "APPROVE",
+                                color: "bg-amber-500/5 border-amber-500/20",
+                                textColor: "text-amber-400",
+                                desc: "Pause for human",
+                                examples: ["send_email", "pay_user"],
+                            },
+                        ].map((item) => (
+                            <div
+                                key={item.label}
+                                className={`border rounded-2xl p-5 ${item.color} hover:bg-white/[0.02] transition-colors duration-300`}
+                            >
+                                <p className={`text-xs font-extrabold mb-1 tracking-widest ${item.textColor}`}>
+                                    {item.label}
+                                </p>
+                                <p className="text-sm text-neutral-400 mb-4">{item.desc}</p>
+                                <div className="flex flex-wrap gap-1">
+                                    {item.examples.map(ex => (
+                                        <code key={ex} className="text-[10px] font-mono text-neutral-500 bg-black/40 px-1.5 py-0.5 rounded border border-white/5">{ex}</code>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </Step>
+            </div>
+
+            {/* Success Area */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="bg-gradient-to-br from-indigo-500/10 to-violet-500/5 border border-indigo-500/20 rounded-3xl p-10 text-center space-y-6 relative overflow-hidden"
+            >
+                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full" />
+                <div className="inline-flex p-4 bg-white/5 border border-white/10 rounded-full shadow-2xl relative z-10">
+                    <Check className="w-8 h-8 text-emerald-400" />
+                </div>
+                <h2 className="text-3xl font-extrabold text-white tracking-tight relative z-10">
+                    Your agent is now bulletproof.
+                </h2>
+                <p className="text-neutral-400 text-lg max-w-lg mx-auto relative z-10">
+                    Every tool call is now policy-checked, audited, and logged. Deploy with confidence.
+                </p>
+                <div className="flex flex-wrap justify-center gap-4 pt-4 relative z-10">
+                    <a href="/">
+                        <button className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 transition-all shadow-xl active:scale-95">
+                            View Audit Logs
+                        </button>
+                    </a>
+                    <a href="/docs">
+                        <button className="px-6 py-3 bg-neutral-900 text-neutral-300 font-bold rounded-xl border border-white/10 hover:bg-neutral-800 transition-all active:scale-95">
+                            Read Guides
+                        </button>
                     </a>
                 </div>
-            </Step>
+            </motion.div>
 
-            {/* Step 2 — Install */}
-            <Step
-                number={2}
-                title="Install the SDK"
-            >
-                {activeTab === "JavaScript / TypeScript" && (
-                    <CodeBlock code="npm install agentgate" language="bash" />
-                )}
-                {activeTab === "Python" && (
-                    <div className="space-y-3">
-                        <CodeBlock code="pip install agentgate" language="bash" />
-                        <p className="text-xs text-gray-500">
-                            With framework extras:
-                        </p>
-                        <CodeBlock
-                            code={`pip install "agentgate[langchain]"   # LangChain\npip install "agentgate[openai]"      # OpenAI Agents SDK\npip install "agentgate[all]"         # Everything`}
-                            language="bash"
-                        />
-                    </div>
-                )}
-                {activeTab === "MCP Server" && (
-                    <CodeBlock code="npm install agentgate" language="bash" />
-                )}
-            </Step>
-
-            {/* Step 3 — Wrap your agent */}
-            <Step
-                number={3}
-                title="Wrap your agent"
-                description="One line of code. Your agent works exactly the same — every tool call is now policy-checked."
-            >
-                {activeTab === "JavaScript / TypeScript" && (
-                    <CodeBlock
-                        language="typescript"
-                        code={`import { withAgentGate } from "agentgate";
-
-// Your existing agent — unchanged
-const myAgent = createMyAgent();
-
-// Wrap it — that's it
-const secured = withAgentGate(myAgent, {
-  apiKey: "ag_your_key_here",
-});
-
-// Use exactly as before — security is transparent
-await secured.executeTool("send_email", { to: "user@example.com" });
-// ↑ This call is now checked against your policies before executing`}
-                    />
-                )}
-                {activeTab === "Python" && (
-                    <div className="space-y-4">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                            Generic agent
-                        </p>
-                        <CodeBlock
-                            language="python"
-                            code={`from agentgate import with_agent_gate, AgentGateOptions
-
-secured = with_agent_gate(my_agent, AgentGateOptions(
-    api_key="ag_your_key_here"
-))
-
-# Use exactly as before
-result = secured.run("delete_file", {"path": "/etc/passwd"})`}
-                        />
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-4">
-                            LangChain
-                        </p>
-                        <CodeBlock
-                            language="python"
-                            code={`from agentgate import AgentGateLangChainCallback, AgentGateOptions
-from langchain.agents import AgentExecutor
-
-callback = AgentGateLangChainCallback(
-    AgentGateOptions(api_key="ag_your_key_here")
-)
-
-agent_executor = AgentExecutor(
-    agent=agent,
-    tools=tools,
-    callbacks=[callback],   # ← this one line adds full security
-)`}
-                        />
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mt-4">
-                            OpenAI Agents SDK
-                        </p>
-                        <CodeBlock
-                            language="python"
-                            code={`from agentgate import wrap_openai_agent, AgentGateOptions
-from agents import Agent, Runner
-
-secured = wrap_openai_agent(agent, AgentGateOptions(
-    api_key="ag_your_key_here"
-))
-
-result = await Runner.run(secured, "Delete all logs")`}
-                        />
-                    </div>
-                )}
-                {activeTab === "MCP Server" && (
-                    <CodeBlock
-                        language="typescript"
-                        code={`import { createAgentGateMiddleware } from "agentgate";
-import { CallToolRequestSchema } from "@modelcontextprotocol/sdk/types.js";
-
-const gate = createAgentGateMiddleware({
-  apiKey: "ag_your_key_here",
-});
-
-// Add to your MCP server's tool handler
-server.setRequestHandler(CallToolRequestSchema, async (req) => {
-  return gate(
-    req.params.name,
-    req.params.arguments,
-    () => myToolHandler(req)   // your existing handler
-  );
-});`}
-                    />
-                )}
-            </Step>
-
-            {/* Step 4 — Set policies */}
-            <Step
-                number={4}
-                title="Set your policies"
-                description="Define which tools are allowed, denied, or require human approval. No code changes needed — update policies in the dashboard."
-            >
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* FAQ */}
+            <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-white tracking-tight">FAQ</h2>
+                <div className="grid grid-cols-1 gap-4">
                     {[
                         {
-                            label: "ALLOW",
-                            color: "bg-green-50 border-green-200",
-                            textColor: "text-green-800",
-                            desc: "Tool executes normally",
-                            example: "read_file, search_web",
+                            q: "What's the performance impact?",
+                            a: "Policy evaluation is ultra-high performance, typically under 10ms. For agentic workflows which takes seconds to execute LLM calls, the impact is effectively zero.",
                         },
                         {
-                            label: "DENY",
-                            color: "bg-red-50 border-red-200",
-                            textColor: "text-red-800",
-                            desc: "Tool is blocked immediately",
-                            example: "delete_*, drop_database",
+                            q: "Is it really database-agnostic?",
+                            a: "Yes. Use our hosted Firebase cloud or bring your own Postgres, MySQL, or MongoDB via the Adapters architecture.",
                         },
                         {
-                            label: "REQUIRE APPROVAL",
-                            color: "bg-yellow-50 border-yellow-200",
-                            textColor: "text-yellow-800",
-                            desc: "Paused until you approve",
-                            example: "send_email, publish_post",
-                        },
+                            q: "Do I need to change my prompt engineering?",
+                            a: "No. AgentGate lives in the execution layer. Your prompts remain yours — we only govern the tool outputs and inputs.",
+                        }
                     ].map((item) => (
                         <div
-                            key={item.label}
-                            className={`border rounded-xl p-4 ${item.color}`}
+                            key={item.q}
+                            className="bg-neutral-950 border border-white/5 p-6 rounded-2xl group hover:border-white/10 transition-colors"
                         >
-                            <p className={`text-xs font-bold mb-1 ${item.textColor}`}>
-                                {item.label}
-                            </p>
-                            <p className="text-xs text-gray-600 mb-2">{item.desc}</p>
-                            <code className="text-xs text-gray-500 font-mono">{item.example}</code>
+                            <h4 className="text-white font-bold mb-2 flex items-center gap-2 group-hover:text-indigo-400 transition-colors">
+                                <AlertCircle className="w-4 h-4 text-indigo-400" /> {item.q}
+                            </h4>
+                            <p className="text-neutral-400 text-sm leading-relaxed">{item.a}</p>
                         </div>
                     ))}
                 </div>
-            </Step>
-
-            {/* Step 5 — Production */}
-            <Step
-                number={5}
-                title="Go to production"
-                description="One config change makes AgentGate block actions even if it's temporarily unreachable."
-            >
-                {activeTab === "JavaScript / TypeScript" && (
-                    <CodeBlock
-                        language="typescript"
-                        code={`const secured = withAgentGate(myAgent, {
-  apiKey: process.env.AGENTGATE_API_KEY!,
-  onNetworkError: "fail-closed",  // block if AgentGate unreachable
-});`}
-                    />
-                )}
-                {activeTab === "Python" && (
-                    <CodeBlock
-                        language="python"
-                        code={`import os
-
-secured = with_agent_gate(agent, AgentGateOptions(
-    api_key=os.environ["AGENTGATE_API_KEY"],
-    on_network_error="fail-closed",  # block if AgentGate unreachable
-))`}
-                    />
-                )}
-                {activeTab === "MCP Server" && (
-                    <CodeBlock
-                        language="typescript"
-                        code={`const gate = createAgentGateMiddleware({
-  apiKey: process.env.AGENTGATE_API_KEY!,
-  onNetworkError: "fail-closed",  // block if AgentGate unreachable
-});`}
-                    />
-                )}
-
-                <div className="mt-4 flex items-start gap-3 bg-gray-50 border border-gray-200
-          rounded-xl p-4">
-                    <Shield className="w-5 h-5 text-indigo-500 flex-shrink-0 mt-0.5" />
-                    <div className="text-xs text-gray-600 space-y-1">
-                        <p>
-                            <span className="font-semibold text-gray-800">fail-open</span>
-                            {" "}— allows actions when AgentGate is unreachable. Good for development.
-                        </p>
-                        <p>
-                            <span className="font-semibold text-gray-800">fail-closed</span>
-                            {" "}— blocks actions when AgentGate is unreachable. Required for production.
-                        </p>
-                    </div>
-                </div>
-            </Step>
-
-            {/* Done */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border
-        border-indigo-100 rounded-2xl p-8 text-center space-y-4">
-                <div className="inline-flex p-3 bg-white rounded-full shadow-sm">
-                    <Check className="w-6 h-6 text-green-600" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900">
-                    Your agent is secured.
-                </h2>
-                <p className="text-sm text-gray-500 max-w-md mx-auto">
-                    Every tool call is now intercepted, policy-checked, and logged.
-                    Update policies anytime from the dashboard — no code changes, no redeployment.
-                </p>
-                <div className="flex flex-wrap justify-center gap-3 pt-2">
-                    <a href="/">
-                        <button className="px-4 py-2 bg-indigo-600 text-white text-sm font-medium
-              rounded-lg hover:bg-indigo-700 transition-colors">
-                            View Dashboard
-                        </button>
-                    </a>
-                    <a href="/connect">
-                        <button className="px-4 py-2 bg-white text-gray-700 text-sm font-medium
-              rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                            Set Up Connect
-                        </button>
-                    </a>
-                    <a
-                        href="https://github.com/wiserautomation/agentgate"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        <button className="px-4 py-2 bg-white text-gray-700 text-sm font-medium
-              rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors">
-                            View on GitHub
-                        </button>
-                    </a>
-                </div>
-            </div>
-
-            {/* FAQ */}
-            <div className="space-y-4">
-                <h2 className="text-lg font-bold text-gray-900">Common questions</h2>
-                {[
-                    {
-                        q: "Does AgentGate add latency?",
-                        a: "Policy evaluation averages under 10ms. For most agents this is imperceptible. Use fail-open mode in development if latency is a concern.",
-                    },
-                    {
-                        q: "What happens if AgentGate is down?",
-                        a: "With fail-open (default for dev): your agent continues normally. With fail-closed (recommended for production): actions are blocked until AgentGate is reachable. You choose per environment.",
-                    },
-                    {
-                        q: "Does it work with my existing agent framework?",
-                        a: "Yes. AgentGate works with LangChain, OpenAI Agents SDK, CrewAI, AutoGen, raw MCP servers, and any custom agent with a tool execution method.",
-                    },
-                    {
-                        q: "Can I use AgentGate for my customers' agents?",
-                        a: "Yes — that's AgentGate Connect. Issue sub-keys (agc_ prefix) to your customers. Their agents are governed by your platform policies. See the Connect section in the sidebar.",
-                    },
-                    {
-                        q: "Is my agent's data sent to AgentGate?",
-                        a: "Only the tool name and arguments are sent for policy evaluation. Sensitive fields (password, token, secret, apiKey) are automatically redacted in audit logs.",
-                    },
-                    {
-                        q: "How do I update policies without redeploying?",
-                        a: "Set your rules in the dashboard. They take effect on the next agent call — no code changes, no redeployment needed.",
-                    },
-                ].map((item) => (
-                    <details
-                        key={item.q}
-                        className="group bg-white border border-gray-200 rounded-xl overflow-hidden"
-                    >
-                        <summary className="flex items-center justify-between px-5 py-4 cursor-pointer
-              hover:bg-gray-50 transition-colors list-none">
-                            <span className="text-sm font-medium text-gray-800">{item.q}</span>
-                            <span className="text-gray-400 group-open:rotate-180 transition-transform
-                duration-200 flex-shrink-0 ml-4">
-                                ▾
-                            </span>
-                        </summary>
-                        <div className="px-5 pb-4">
-                            <p className="text-sm text-gray-600 leading-relaxed">{item.a}</p>
-                        </div>
-                    </details>
-                ))}
             </div>
 
         </div>
