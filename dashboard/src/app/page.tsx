@@ -95,6 +95,7 @@ function CodeTerminal() {
 
 function ClawbotDemo() {
     const [lines, setLines] = useState<string[]>([]);
+    const [mounted, setMounted] = useState(false);
     const sequence = [
         "> clawbot.click(\"Settings\")",
         "✅ Navigated to /settings",
@@ -105,6 +106,7 @@ function ClawbotDemo() {
     ];
 
     useEffect(() => {
+        setMounted(true);
         let i = 0;
         let isRunning = true;
         const tick = () => {
@@ -126,24 +128,31 @@ function ClawbotDemo() {
         return () => { isRunning = false; };
     }, []);
 
+    if (!mounted) {
+        return <div className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden" />;
+    }
+
     return (
-        <div className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden">
+        <div suppressHydrationWarning className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden">
             <div className="flex items-center gap-1.5 mb-4 opacity-50 border-b border-white/5 pb-2">
                 <div className="w-2 h-2 rounded-full bg-red-500/40" />
                 <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
                 <div className="w-2 h-2 rounded-full bg-green-500/40" />
                 <span className="ml-2 uppercase tracking-widest text-[8px] text-neutral-400">Browser Security Monitor</span>
             </div>
-            {lines.map((l, i) => (
-                <motion.div
-                    key={i}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className={l.includes('❌') ? 'text-rose-500 font-black' : l.includes('⚠️') ? 'text-amber-500 font-bold' : l.includes('🛡️') ? 'text-emerald-400' : ''}
-                >
-                    {l}
-                </motion.div>
-            ))}
+            {lines.map((l, i) => {
+                const safeL = l || "";
+                return (
+                    <motion.div
+                        key={`clawbot-line-${i}`}
+                        initial={{ opacity: 0, x: -5 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        className={safeL.includes('❌') ? 'text-rose-500 font-black' : safeL.includes('⚠️') ? 'text-amber-500 font-bold' : safeL.includes('🛡️') ? 'text-emerald-400' : ''}
+                    >
+                        {safeL}
+                    </motion.div>
+                );
+            })}
         </div>
     );
 }
