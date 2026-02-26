@@ -57,7 +57,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <aside className="w-64 border-r border-white-[0.05] bg-neutral-950/50 backdrop-blur-2xl flex flex-col relative z-20">
                 <div className="h-16 flex items-center px-6 border-b border-white/[0.05]">
                     <Shield className="w-6 h-6 text-indigo-400 mr-3 animate-pulse" />
-                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm">AgentGuard</span>
+                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm">AgentGate</span>
                 </div>
                 <nav className="flex-1 py-4 flex flex-col gap-1">
                     {navItems.map((item) => {
