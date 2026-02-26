@@ -9,7 +9,7 @@ import {
     ArrowUpRight, ArrowDownRight, Smartphone, Monitor, Database
 } from "lucide-react";
 import {
-    LineChart, Line, AreaChart, Area, BarChart, Bar,
+    LineChart, Line, AreaChart, Area, BarChart, Bar, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { subDays, subHours, format } from "date-fns";
@@ -222,7 +222,7 @@ export default function AdminAnalyticsPage() {
                                 <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#000', border: 'none' }} />
                                 <Bar dataKey="value" radius={[0, 4, 4, 0]}>
                                     {languageData.map((entry, index) => (
-                                        <Area key={index} fill={entry.color} />
+                                        <Cell key={index} fill={entry.color} />
                                     ))}
                                 </Bar>
                             </BarChart>

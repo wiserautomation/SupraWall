@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Users, Server, Activity, Shield, TrendingUp, Zap, AlertCircle } from "lucide-react";
 import {
-    LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+    LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
 import { subDays, subHours } from "date-fns";
@@ -326,5 +326,3 @@ export default function AdminOverviewPage() {
     );
 }
 
-// Helper component
-import { AreaChart, Area } from "recharts";
