@@ -49,6 +49,7 @@ export interface ConnectEvent {
     reason: string | null;
     latencyMs: number;
     timestamp: string | null;
+    cost_usd?: number;
 }
 
 export interface ConnectAnalytics {
@@ -63,4 +64,6 @@ export interface ConnectAnalytics {
     avgLatencyMs: number;
     periodDays: number;
     since: string;
+    totalCostUsd?: number;
+    costPreventedUsd?: number;
 }

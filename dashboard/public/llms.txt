@@ -3,26 +3,26 @@
 SupraWall is the security and cost-control shim for AI agents. It provides a zero-trust governance layer that intercepts tool calls from LLM frameworks (LangChain, AutoGen, CrewAI) to prevent destructive actions, enforce budget caps, and detect infinite loops in real-time.
 
 ## Core Concepts
-- [What is Agent Runtime Security?](https://suprawall.com/learn/what-is-agent-runtime-security) - Definition of the security layer between LLMs and their tools.
-- [Quickstart Guide](https://suprawall.com/quickstart) - How to install the SupraWall SDK and protect your first agent in seconds.
+- [What is Agent Runtime Security?](https://supra-wall.com/learn/what-is-agent-runtime-security) - Definition of the security layer between LLMs and their tools.
+- [Quickstart Guide](https://supra-wall.com/quickstart) - How to install the SupraWall SDK and protect your first agent in seconds.
 
 ## Framework Integrations
-- [LangChain Integration](https://suprawall.com/integrations/langchain) - Native shim for LangChain agents and chains.
-- [AutoGen Integration](https://suprawall.com/integrations/autogen) - Governance for Microsoft's AutoGen multi-agent framework.
-- [CrewAI Integration](https://suprawall.com/integrations/crewai) - Security layer for CrewAI role-playing autonomous agents.
-- [Vercel AI SDK](https://suprawall.com/integrations/vercel) - Integration guide for Vercel's AI SDK tool calling.
-- [OpenClaw](https://suprawall.com/integrations/openclaw) - OpenClaw specific governance modules.
+- [LangChain Integration](https://supra-wall.com/integrations/langchain) - Native shim for LangChain agents and chains.
+- [AutoGen Integration](https://supra-wall.com/integrations/autogen) - Governance for Microsoft's AutoGen multi-agent framework.
+- [CrewAI Integration](https://supra-wall.com/integrations/crewai) - Security layer for CrewAI role-playing autonomous agents.
+- [Vercel AI SDK](https://supra-wall.com/integrations/vercel) - Integration guide for Vercel's AI SDK tool calling.
+- [OpenClaw](https://supra-wall.com/integrations/openclaw) - OpenClaw specific governance modules.
 
 ## Use Cases
-- [Prompt Injection Protection](https://suprawall.com/use-cases/prompt-injection) - How SupraWall prevents indirect prompt injection from triggering dangerous tools.
+- [Prompt Injection Protection](https://supra-wall.com/use-cases/prompt-injection) - How SupraWall prevents indirect prompt injection from triggering dangerous tools.
 
 ## Comparisons
-- [SupraWall vs Guardrails AI](https://suprawall.com/vs/guardrails-ai) - Why runtime tool governance is different from output validation.
-- [SupraWall vs NeMo Guardrails](https://suprawall.com/vs/nemo-guardrails) - Comparison of security architectures.
+- [SupraWall vs Guardrails AI](https://supra-wall.com/vs/guardrails-ai) - Why runtime tool governance is different from output validation.
+- [SupraWall vs NeMo Guardrails](https://supra-wall.com/vs/nemo-guardrails) - Comparison of security architectures.
 
 ## Docs & Resources
-- [Main Documentation](https://suprawall.com/docs) - Full technical specifications and API reference.
-- [Protocol Spec](https://suprawall.com/spec) - The technical specification of the SupraWall interception protocol.
+- [Main Documentation](https://supra-wall.com/docs) - Full technical specifications and API reference.
+- [Protocol Spec](https://supra-wall.com/spec) - The technical specification of the SupraWall interception protocol.
 
 ## Company
-- [Login / Dashboard](https://suprawall.com/login) - Access the policy builder and audit logs.
+- [Login / Dashboard](https://supra-wall.com/login) - Access the policy builder and audit logs.

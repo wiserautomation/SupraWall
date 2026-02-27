@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Shield, BrickWall, Key, Users, Activity, Zap, AlertTriangle
+    Shield, BrickWall, Key, Users, Activity, Zap, AlertTriangle, DollarSign
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -141,10 +141,10 @@ export default function ConnectPage() {
                     subtitle="last 7 days"
                 />
                 <StatCard
-                    icon={Zap}
-                    title="Avg Latency"
-                    value={analytics ? `${analytics.avgLatencyMs}ms` : "—"}
-                    subtitle="policy evaluation"
+                    icon={DollarSign}
+                    title="Cost Prevented"
+                    value={analytics?.costPreventedUsd ? `$${analytics.costPreventedUsd.toFixed(2)}` : "$0.00"}
+                    subtitle="from blocked redundant calls"
                 />
                 <StatCard
                     icon={AlertTriangle}

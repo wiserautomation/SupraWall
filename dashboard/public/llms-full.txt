@@ -24,4 +24,4 @@ Policies can be defined using simple YAML or the visual builder. Example:
 - "Block file system access in /etc/ directory."
 
 ## Implementation Details
-The SupraWall protocol uses a lightweight JSON/REST pattern. It is designed for <10ms overhead. You can self-host the policy engine via Docker or use the hosted cloud platform at suprawall.com.
+The SupraWall protocol uses a lightweight JSON/REST pattern. It is designed for <10ms overhead. You can self-host the policy engine via Docker or use the hosted cloud platform at supra-wall.com.

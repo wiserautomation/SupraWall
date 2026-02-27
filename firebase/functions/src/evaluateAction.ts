@@ -22,6 +22,7 @@ interface RateLimitConfig {
 interface EvaluateResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
+    estimated_cost_usd?: number;
 }
 
 export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
@@ -84,12 +85,16 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             // Policy evaluation
             const decision = evaluatePolicies(toolName, args, effectiveRules);
 
-            // Update usage counters and write audit log (non-blocking)
+            // Cost estimation
+            const estimatedCost = estimateActionCost(args, toolName);
             const latencyMs = Date.now() - startTime;
+
+            // Update usage counters and write audit log (non-blocking)
             Promise.all([
                 db.collection("connect_keys").doc(apiKey).update({
                     lastUsedAt: FieldValue.serverTimestamp(),
                     totalCalls: FieldValue.increment(1),
+                    totalSpendUsd: FieldValue.increment(estimatedCost),
                 }),
                 db.collection("connect_events").add({
                     platformId,
@@ -100,11 +105,12 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     decision: decision.decision,
                     reason: decision.reason ?? null,
                     latencyMs,
+                    costUsd: estimatedCost,
                     timestamp: FieldValue.serverTimestamp(),
                 }),
             ]).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
 
-            res.status(200).json(decision);
+            res.status(200).json({ ...decision, estimated_cost_usd: estimatedCost });
             return;
         }
 
@@ -148,10 +154,11 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             }
 
             // 4. Log the audit event
-            await logAudit(agentId, toolName, argsString, finalDecision);
+            const estimatedCost = estimateActionCost(args, toolName);
+            await logAudit(agentId, toolName, argsString, finalDecision, estimatedCost);
 
             // 5. Return the decision
-            res.status(200).json({ decision: finalDecision });
+            res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
             return;
         }
 
@@ -217,6 +224,18 @@ async function checkRateLimit(
     return { allowed: true };
 }
 
+/**
+ * Rough estimation of agentic 'overhead' cost for a tool call.
+ * Based on argument payload size using 1 token ≈ 4 chars.
+ * Price base: $0.15/1M tokens (GPT-4o-mini rates) + small fixed base cost.
+ */
+function estimateActionCost(args: any, toolName: string): number {
+    const payloadLength = JSON.stringify(args || {}).length + toolName.length;
+    const tokens = Math.ceil(payloadLength / 4) + 50; // +50 tokens for tool overhead
+    const costPerToken = 0.00000015; // $0.15 per 1M tokens
+    return parseFloat((tokens * costPerToken).toFixed(8));
+}
+
 function sanitizeArgs(args: any): any {
     if (!args || typeof args !== "object") return args;
     const secretFields = ["password", "token", "secret", "key", "apiKey", "api_key", "authorization"];
@@ -227,13 +246,14 @@ function sanitizeArgs(args: any): any {
     return sanitized;
 }
 
-async function logAudit(agentId: string, toolName: string, args: string, decision: string) {
+async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0) {
     try {
         await db.collection("audit_logs").add({
             agentId,
             toolName,
             arguments: args,
             decision,
+            cost_usd: costUsd,
             timestamp: FieldValue.serverTimestamp()
         });
     } catch (error) {

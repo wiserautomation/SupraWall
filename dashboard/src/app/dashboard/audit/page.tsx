@@ -130,6 +130,7 @@ export default function AuditPage() {
                                         <TableHead className="text-neutral-400 font-medium px-6 py-4">Time</TableHead>
                                         <TableHead className="text-neutral-400 font-medium">Agent</TableHead>
                                         <TableHead className="text-neutral-400 font-medium">Tool Executed</TableHead>
+                                        <TableHead className="text-neutral-400 font-medium">Est. Cost</TableHead>
                                         <TableHead className="text-neutral-400 font-medium">Arguments Payload</TableHead>
                                         <TableHead className="text-neutral-400 font-medium text-right px-6">Decision</TableHead>
                                     </TableRow>
@@ -147,6 +148,9 @@ export default function AuditPage() {
                                             <TableCell className="font-medium text-white">{getAgentName(log.agentId)}</TableCell>
                                             <TableCell className="text-neutral-300 font-mono text-sm group-hover/row:text-white transition-colors">
                                                 {log.toolName}
+                                            </TableCell>
+                                            <TableCell className="text-amber-400 font-mono text-xs font-bold">
+                                                {log.cost_usd ? `$${log.cost_usd.toFixed(6)}` : "—"}
                                             </TableCell>
                                             <TableCell className="font-mono text-xs max-w-sm truncate text-emerald-400/60 group-hover/row:text-emerald-300 transition-colors">
                                                 {log.arguments}

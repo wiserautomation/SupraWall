@@ -113,11 +113,12 @@ export default function ConnectEventsPage() {
             ) : (
                 <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
                     {/* Table header */}
-                    <div className="grid grid-cols-[1fr_1.5fr_1fr_100px_80px_120px] gap-4 px-5 py-3
+                    <div className="grid grid-cols-[1fr_1.5fr_1fr_80px_100px_80px_120px] gap-4 px-5 py-3
             bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-600">
                         <span>Customer</span>
                         <span>Tool</span>
                         <span>Reason</span>
+                        <span>Est. Cost</span>
                         <span>Decision</span>
                         <span>Latency</span>
                         <span>Time</span>
@@ -128,7 +129,7 @@ export default function ConnectEventsPage() {
                         {events.map((event: ConnectEvent) => (
                             <div
                                 key={event.eventId}
-                                className="grid grid-cols-[1fr_1.5fr_1fr_100px_80px_120px] gap-4
+                                className="grid grid-cols-[1fr_1.5fr_1fr_80px_100px_80px_120px] gap-4
                   px-5 py-3.5 hover:bg-gray-50 transition-colors items-center"
                             >
                                 {/* Customer */}
@@ -159,6 +160,13 @@ export default function ConnectEventsPage() {
                                     )}
                                 </div>
 
+                                {/* Cost */}
+                                <div>
+                                    <span className="text-xs font-mono text-orange-600 font-bold">
+                                        {event.cost_usd ? `$${event.cost_usd.toFixed(6)}` : "—"}
+                                    </span>
+                                </div>
+
                                 {/* Decision */}
                                 <div>
                                     <DecisionBadge decision={event.decision} />
@@ -167,8 +175,8 @@ export default function ConnectEventsPage() {
                                 {/* Latency */}
                                 <div>
                                     <span className={`text-xs font-medium ${event.latencyMs > 100
-                                            ? "text-orange-600"
-                                            : "text-gray-600"
+                                        ? "text-orange-600"
+                                        : "text-gray-600"
                                         }`}>
                                         {event.latencyMs}ms
                                     </span>

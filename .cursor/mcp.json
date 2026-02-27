@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "google-search-console": {
+            "command": "node",
+            "args": [
+                "/Users/peghin/Desktop/AgentGate/packages/google-search-console-mcp/build/index.js"
+            ],
+            "env": {
+                "GOOGLE_APPLICATION_CREDENTIALS": "/Users/peghin/Desktop/AgentGate/packages/google-search-console-mcp/service-account.json"
+            }
+        }
+    }
+}

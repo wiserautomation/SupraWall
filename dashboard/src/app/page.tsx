@@ -5,7 +5,7 @@ import {
     ArrowRight, Box, Lock, Activity, ChevronRight, CheckCircle2,
     Shield, BrickWall, Database, Terminal, Globe, Code2, AlertTriangle,
     Play, Users, Star, HelpCircle, Mail, DollarSign, ExternalLink,
-    Zap, Server, Bot, Layers, Triangle
+    Zap, Server, Bot, Layers, Triangle, RefreshCw, Coins
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -17,13 +17,13 @@ function CodeTerminal() {
     const [lines, setLines] = useState<string[]>([]);
     const terminalLines = [
         "> LangChain Agent: Executing...",
-        "> Tool: bash_command",
-        "> Input: \"rm -rf /production/db\"",
-        "⚠️  INTERCEPTED BY SUPRAWALL",
-        "🛡️  Policy Check Running...",
-        "❌ DENIED - Destructive Action",
-        "🚨 Alert sent to admin",
-        "✅ Database protected",
+        "> Tool: send_email (instance #1)",
+        "> Tool: send_email (instance #2)",
+        "> Tool: send_email (instance #3)",
+        "⚠️  LOOP DETECTED: 3x consecutive calls",
+        "🛡️  Circuit Breaker Triggered",
+        "❌ BLOCKED - infinite loop prevented",
+        "✅ Saved $2.40 in API credits",
     ];
 
     const [mounted, setMounted] = useState(false);
@@ -273,9 +273,9 @@ export default function LandingPage() {
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-xl md:text-2xl text-neutral-400 max-w-2xl leading-relaxed font-medium"
+                                className="text-xl md:text-2xl text-neutral-400 max-w-3xl leading-relaxed font-medium"
                             >
-                                The security shim for LangChain, AutoGen, CrewAI, and OpenClaw. Prevent rogue behavior with zero-trust tool governance.
+                                The security & cost-control shim for LangChain, AutoGen, CrewAI, and OpenClaw. Prevent rogue behavior and runaway budgets with zero-trust tool governance.
                             </motion.p>
 
                             <motion.div
@@ -666,9 +666,8 @@ export default function LandingPage() {
                                 { icon: <Terminal className="w-7 h-7" />, title: "Local Dev & CLI", desc: "Work offline on airplanes. Spin up the isolated SQLite local dev server and manage policies from your terminal." },
                                 { icon: <Code2 className="w-7 h-7" />, title: "Framework Native", desc: "Drop-in plugins for LangChain, LlamaIndex, AutoGen, Vercel AI, and CrewAI." },
                                 { icon: <Activity className="w-7 h-7" />, title: "Live Webhooks", desc: "Stripe-grade real-time event streaming with HMAC SHA256 signatures for manual interaction." },
-                                { icon: <Box className="w-7 h-7" />, title: "Drop-in UI", desc: "React, Vue, Svelte + iFrame embed components for instant policy builders and audit logs." },
-                                { icon: <Lock className="w-7 h-7" />, title: "SOC2 Compliance", desc: "Instantly audit every tool execution. Perfect for security questionnaires and compliance audits." },
-                                { icon: <Zap className="w-7 h-7" />, title: "Zero Config", desc: "Starts securing your agent in seconds with sensible defaults for destructive tool detection." },
+                                { icon: <Coins className="w-7 h-7" />, title: "Budget Caps", desc: "Hard-stop your agents before they drain your API credits. Set monthly or session-based USD limits per agent." },
+                                { icon: <RefreshCw className="w-7 h-7" />, title: "Loop Detection", desc: "Circuit breaker catches infinite loops before they drain your budget or spam your users. Intelligent thresholding." },
                                 { icon: <Server className="w-7 h-7" />, title: "Self-Host Ready", desc: "Deploy via Docker in your own VPC. Keep your audit logs and policy data completely isolated." }
                             ].map((feature, i) => (
                                 <div key={i} className="space-y-6 group">
@@ -809,7 +808,7 @@ export default function LandingPage() {
                                     name: "Developer",
                                     price: "$0",
                                     desc: "Free Forever",
-                                    features: ["1,000 tool calls / mo", "1 connected agent", "All database adapters", "Open Source server", "Community support"],
+                                    features: ["1,000 tool calls / mo", "1 connected agent", "Basic cost estimation", "Open Source server", "Community support"],
                                     cta: "Start Free",
                                     buttonStyle: "border border-white/20 text-white hover:bg-white/5"
                                 },
@@ -817,7 +816,7 @@ export default function LandingPage() {
                                     name: "Startup ⭐",
                                     price: "$99",
                                     desc: "Per month",
-                                    features: ["100K tool calls / mo", "Unlimited agents", "Team dashboard", "Webhook endpoints", "Priority support", "Audit log persistence"],
+                                    features: ["100K tool calls / mo", "Unlimited agents", "Budget Caps & Alerts", "Loop Detection (Beta)", "Audit log persistence", "Priority support"],
                                     cta: "Start 14-day Free Trial",
                                     buttonStyle: "bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 hover:scale-[1.02]"
                                 },
@@ -825,7 +824,7 @@ export default function LandingPage() {
                                     name: "Enterprise",
                                     price: "Custom",
                                     desc: "Global Scale",
-                                    features: ["Unlimited tool calls", "Dedicated support instance", "SLA guarantees", "Custom deployment (VPC)", "Team training", "Full RBAC control"],
+                                    features: ["Unlimited tool calls", "Cost aggregation API", "Dedicated support instance", "SLA guarantees", "Custom deployment (VPC)", "Full RBAC control"],
                                     cta: "Contact Sales",
                                     buttonStyle: "bg-white text-black hover:bg-neutral-200"
                                 }
