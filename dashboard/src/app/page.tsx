@@ -317,15 +317,7 @@ export default function LandingPage() {
                                 </div>
                             </motion.div>
 
-                            <div className="pt-12">
-                                <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-6">Trusted by teams shipping AI at:</p>
-                                <div className="flex flex-wrap gap-10 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
-                                    <div className="font-bold text-xl tracking-tighter text-white">YC W24</div>
-                                    <div className="font-bold text-xl tracking-wide text-white">STRIPE</div>
-                                    <div className="font-bold text-xl tracking-tight text-white italic">anthropic</div>
-                                    <div className="font-bold text-xl tracking-wider text-white">scale</div>
-                                </div>
-                            </div>
+
                         </div>
 
                         <div className="lg:col-span-5 relative">
@@ -338,8 +330,18 @@ export default function LandingPage() {
                                 <div className="mt-6 flex items-center gap-2 justify-center lg:justify-start">
                                     <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
                                     <span className="text-xs font-black uppercase tracking-[0.2em] text-neutral-400">
-                                        🔴 LIVE: 3,847 dangerous actions blocked today
+                                        LIVE: 3,847 dangerous actions blocked today
                                     </span>
+                                </div>
+
+                                <div className="mt-12 pt-8 border-t border-white/5">
+                                    <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest mb-6">Trusted by teams shipping AI at:</p>
+                                    <div className="flex flex-wrap gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-500">
+                                        <div className="font-bold text-xl tracking-tighter text-white">YC W24</div>
+                                        <div className="font-bold text-xl tracking-wide text-white">STRIPE</div>
+                                        <div className="font-bold text-xl tracking-tight text-white italic">anthropic</div>
+                                        <div className="font-bold text-xl tracking-wider text-white">scale</div>
+                                    </div>
                                 </div>
                             </motion.div>
 
