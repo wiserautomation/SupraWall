@@ -39,7 +39,7 @@ export default function MonitoringPage() {
         if (!user) return;
         const q = query(collection(db, "agents"), where("userId", "==", user.uid));
         const unsub = onSnapshot(q, (snap) => {
-            const list = snap.docs.map(d = { "@"}({ id: d.id, ...d.data() } as Agent));
+            const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Agent));
             setAgents(list);
         });
         return () => unsub();
@@ -153,8 +153,8 @@ export default function MonitoringPage() {
 
                                     {/* Decision Icon */}
                                     <div className={`absolute left-0 top-0 w-12 h-12 rounded-2xl flex items-center justify-center border-2 shadow-2xl transition-all duration-500 ${log.decision === 'ALLOW'
-                                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 group-hover:shadow-emerald-500/10'
-                                            : 'bg-red-500/10 border-red-500/20 text-red-500 group-hover:shadow-red-500/10'
+                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 group-hover:shadow-emerald-500/10'
+                                        : 'bg-red-500/10 border-red-500/20 text-red-500 group-hover:shadow-red-500/10'
                                         }`}>
                                         {log.decision === 'ALLOW' ? <ShieldCheck className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
                                     </div>
@@ -168,6 +168,11 @@ export default function MonitoringPage() {
                                                     <Badge variant="outline" className="text-[8px] border-white/10 text-neutral-500 font-bold tracking-widest uppercase">
                                                         {log.sessionId ? 'SWARM ACTION' : 'DIRECT CALL'}
                                                     </Badge>
+                                                    {log.agentRole && (
+                                                        <Badge variant="outline" className="text-[8px] border-orange-500/20 text-orange-400 bg-orange-500/5 font-black tracking-widest uppercase italic">
+                                                            {log.agentRole}
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                                 <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-2">
                                                     <Clock className="w-3 h-3" />
