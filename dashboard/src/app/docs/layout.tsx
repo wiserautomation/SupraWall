@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap } from "lucide-react";
+import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap } from "lucide-react";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -39,9 +39,9 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
         <div className="flex h-screen bg-[#050505] text-white overflow-hidden relative font-sans">
             <aside className="w-64 border-r border-white/5 bg-neutral-950 flex flex-col z-20">
                 <div className="h-16 flex items-center px-6 border-b border-white/5 bg-black/40">
-                    <Shield className="w-6 h-6 text-indigo-500 mr-3" />
-                    <Link href="/" className="font-bold text-lg tracking-tight text-white drop-shadow-sm hover:text-indigo-400 transition">
-                        AgentGate <span className="text-indigo-500/80">Docs</span>
+                    <BrickWall className="w-6 h-6 text-emerald-500 mr-3" />
+                    <Link href="/" className="font-bold text-lg tracking-tight text-white drop-shadow-sm hover:text-emerald-400 transition">
+                        SupraWall <span className="text-emerald-500/80">Docs</span>
                     </Link>
                 </div>
 
@@ -62,7 +62,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                                             className={`group flex items-center px-3 py-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                                 }`}
                                         >
-                                            <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "text-indigo-400" : "group-hover:text-neutral-200"}`} />
+                                            <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "text-emerald-400" : "group-hover:text-neutral-200"}`} />
                                             <span className="text-sm font-medium">{item.name}</span>
                                         </Link>
                                     );

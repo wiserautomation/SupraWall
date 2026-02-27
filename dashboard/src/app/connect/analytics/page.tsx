@@ -5,7 +5,7 @@ import { usePlatform, useConnectAnalytics } from "@/hooks/useConnect";
 import { StatCard } from "@/components/connect/StatCard";
 import { EmptyState } from "@/components/connect/EmptyState";
 import { Button } from "@/components/ui/button";
-import { Activity, Zap, Shield, TrendingUp } from "lucide-react";
+import { Activity, Zap, Shield, BrickWall, TrendingUp } from "lucide-react";
 
 const PERIOD_OPTIONS = [
     { label: "24h", days: 1 },
@@ -22,7 +22,7 @@ export default function ConnectAnalyticsPage() {
     if (platformLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
             </div>
         );
     }
@@ -32,7 +32,7 @@ export default function ConnectAnalyticsPage() {
             <EmptyState
                 icon={Activity}
                 title="No platform set up"
-                description="Set up AgentGate Connect first."
+                description="Set up SupraWall Connect first."
                 action={<a href="/connect"><Button>Go to Connect</Button></a>}
             />
         );
@@ -73,7 +73,7 @@ export default function ConnectAnalyticsPage() {
 
             {loading ? (
                 <div className="flex items-center justify-center h-40">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600" />
                 </div>
             ) : (
                 <>
@@ -178,7 +178,7 @@ export default function ConnectAnalyticsPage() {
                                                 </div>
                                                 <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                                                     <div
-                                                        className="h-full bg-indigo-400 rounded-full transition-all duration-500"
+                                                        className="h-full bg-emerald-400 rounded-full transition-all duration-500"
                                                         style={{ width: `${pct}%` }}
                                                     />
                                                 </div>

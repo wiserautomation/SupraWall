@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@agentgate/core"],
+  transpilePackages: ["@suprawall/core"],
   /* config options here */
 };
 

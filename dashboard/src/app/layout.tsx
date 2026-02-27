@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AgentGate",
+  title: "SupraWall",
   description: "Enterprise security for AI agents",
 };
 

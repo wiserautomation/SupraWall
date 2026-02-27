@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
-import { agentgate } from "@/lib/agentgate";
+import { suprawall } from "@/lib/suprawall";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
@@ -70,8 +70,8 @@ export default function AgentsPage() {
                 apiKey: generateApiKey(),
             };
 
-            // Replaced generic Firebase addDoc with our database-agnostic agentgate core SDK
-            await agentgate.agents.create(newAgent);
+            // Replaced generic Firebase addDoc with our database-agnostic suprawall core SDK
+            await suprawall.agents.create(newAgent);
             setNewAgentName("");
             setIsCreateModalOpen(false);
             sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
@@ -98,15 +98,15 @@ export default function AgentsPage() {
     };
 
     const getNodeCode = (apiKey: string) => `import { Agent } from 'your-ai-framework';
-import { withAgentGate } from 'agentgate';
+import { withSupraWall } from 'suprawall';
 
 // 1. Initialize your AI Agent
 const myAgent = new Agent();
 
 // 2. Secure it with your GateAPI Key
-const securedAgent = withAgentGate(myAgent, {
+const securedAgent = withSupraWall(myAgent, {
   apiKey: "${apiKey}",
-  // endpoint: "https://agent-gate-rho.vercel.app/evaluateAction" // optional fallback
+  // endpoint: "https://supra-wall-rho.vercel.app/evaluateAction" // optional fallback
 });
 
 // 3. Run your agent safely
@@ -133,7 +133,7 @@ await securedAgent.executeTool("Start task", {});`;
                     <p className="text-neutral-400 text-sm">Manage your connected AI agents and generate API keys.</p>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                    <Button onClick={() => setIsCreateModalOpen(true)} className="bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-500/20 transition-all font-medium">
+                    <Button onClick={() => setIsCreateModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all font-medium">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Agent
                     </Button>
@@ -182,8 +182,8 @@ await securedAgent.executeTool("Start task", {});`;
                                         <TableCell className="font-medium text-white px-6 py-4">
                                             {agent.name}
                                         </TableCell>
-                                        <TableCell className="font-mono text-sm text-indigo-400 break-all px-6 py-4 group-hover/row:text-indigo-300 transition-colors">
-                                            <span className="bg-indigo-500/10 px-2 py-1 rounded-md border border-indigo-500/20">{agent.apiKey}</span>
+                                        <TableCell className="font-mono text-sm text-emerald-400 break-all px-6 py-4 group-hover/row:text-emerald-300 transition-colors">
+                                            <span className="bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{agent.apiKey}</span>
                                         </TableCell>
                                         <TableCell className="text-neutral-500 text-xs font-mono px-6 py-4">
                                             {agent.id}
@@ -235,7 +235,7 @@ await securedAgent.executeTool("Start task", {});`;
                                     if (nameError) setNameError("");
                                 }}
                                 placeholder="e.g. Browser Assistant"
-                                className={`w-full bg-neutral-800 border ${nameError ? "border-red-500" : "border-neutral-700"} rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
+                                className={`w-full bg-neutral-800 border ${nameError ? "border-red-500" : "border-neutral-700"} rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-emerald-500`}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') createAgent();
                                 }}
@@ -250,7 +250,7 @@ await securedAgent.executeTool("Start task", {});`;
                         <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white">
                             Cancel
                         </Button>
-                        <Button onClick={createAgent} className="bg-indigo-600 hover:bg-indigo-500 text-white border-transparent">
+                        <Button onClick={createAgent} className="bg-emerald-600 hover:bg-emerald-500 text-white border-transparent">
                             Create Agent
                         </Button>
                     </div>
@@ -273,12 +273,12 @@ await securedAgent.executeTool("Start task", {});`;
                         <div className="mt-4">
                             <Tabs defaultValue="node" className="w-full">
                                 <TabsList className="bg-neutral-800 border-neutral-700 w-full justify-start rounded-none border-b -mb-px px-0 h-auto">
-                                    <TabsTrigger value="node" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-indigo-500 rounded-none px-6 py-3 data-[state=active]:text-indigo-400">Node.js SDK</TabsTrigger>
-                                    <TabsTrigger value="curl" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-indigo-500 rounded-none px-6 py-3 data-[state=active]:text-indigo-400">cURL (REST API)</TabsTrigger>
+                                    <TabsTrigger value="node" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 rounded-none px-6 py-3 data-[state=active]:text-emerald-400">Node.js SDK</TabsTrigger>
+                                    <TabsTrigger value="curl" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 rounded-none px-6 py-3 data-[state=active]:text-emerald-400">cURL (REST API)</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="node" className="pt-4 outline-none">
                                     <div className="relative group">
-                                        <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-indigo-200">
+                                        <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-emerald-200">
                                             <code>{getNodeCode(selectedAgent.apiKey)}</code>
                                         </pre>
                                         <Button

@@ -8,7 +8,7 @@ if (!admin.apps.length) {
 // Core evaluation endpoint (existing)
 export { evaluateAction, generatePolicyRegex } from "./evaluateAction";
 
-// AgentGate Connect — multi-tenant management
+// SupraWall Connect — multi-tenant management
 export {
     createPlatform,
     getPlatform,

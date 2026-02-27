@@ -6,7 +6,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Shield, Activity, Users, LogOut, Key, FileText, Zap, Settings } from "lucide-react";
+import { Shield, BrickWall, Activity, Users, LogOut, Key, FileText, Zap, Settings } from "lucide-react";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [user, loading] = useAuthState(auth);
     const router = useRouter();
@@ -56,14 +56,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="flex h-screen bg-black text-neutral-50 overflow-hidden relative font-sans">
             {/* Subtle Animated Background */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden selection:bg-neutral-800">
-                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-600/10 blur-[120px] rounded-full mix-blend-screen animate-pulse duration-[10000ms]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-emerald-600/10 blur-[120px] rounded-full mix-blend-screen animate-pulse duration-[10000ms]" />
                 <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-violet-600/10 blur-[120px] rounded-full mix-blend-screen animate-pulse duration-[15000ms]" />
             </div>
 
             <aside className="w-64 border-r border-white-[0.05] bg-neutral-950/50 backdrop-blur-2xl flex flex-col relative z-20">
                 <div className="h-16 flex items-center px-6 border-b border-white/[0.05]">
-                    <Shield className="w-6 h-6 text-indigo-400 mr-3 animate-pulse" />
-                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm">AgentGate</span>
+                    <BrickWall className="w-6 h-6 text-emerald-400 mr-3 animate-pulse" />
+                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm">SupraWall</span>
                 </div>
                 <nav className="flex-1 py-4 flex flex-col gap-1">
                     {navItems.map((item) => {
@@ -76,7 +76,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                 className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                     }`}
                             >
-                                <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-emerald-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
                                 <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.name}</span>
                             </Link>
                         );
@@ -97,7 +97,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                             }`}
                                     >
-                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-emerald-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
                                         <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.label}</span>
                                     </Link>
                                 );
@@ -120,7 +120,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                         className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                             }`}
                                     >
-                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                        <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-emerald-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
                                         <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.label}</span>
                                     </Link>
                                 );

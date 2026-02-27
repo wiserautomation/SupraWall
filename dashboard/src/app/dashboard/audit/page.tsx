@@ -6,7 +6,7 @@ import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Activity, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
+import { Activity, Shield, ShieldAlert, CheckCircle2, Clock } from "lucide-react";
 import { Agent, AuditLog } from "@/types/database";
 import { motion } from "framer-motion";
 
@@ -105,7 +105,7 @@ export default function AuditPage() {
 
                 <CardHeader className="border-b border-white/[0.05] flex flex-row items-center justify-between pb-4 bg-white/[0.01]">
                     <CardTitle className="text-lg flex items-center gap-2 font-semibold text-white/90 tracking-tight">
-                        <Activity className="w-5 h-5 text-indigo-400" /> Live Feed
+                        <Activity className="w-5 h-5 text-emerald-400" /> Live Feed
                     </CardTitle>
                     <div className="flex items-center text-xs text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-400/20 shadow-sm shadow-green-400/10">
                         <div className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2 animate-pulse" />
@@ -138,7 +138,7 @@ export default function AuditPage() {
                                     {logs.map((log) => (
                                         <TableRow key={log.id} className="border-white/[0.02] hover:bg-white/[0.02] transition-colors group/row">
                                             <TableCell className="text-neutral-500 text-xs px-6 py-4 whitespace-nowrap font-mono">
-                                                <span className="text-indigo-200/50">
+                                                <span className="text-emerald-200/50">
                                                     {log.timestamp?.toDate ? log.timestamp.toDate().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Now'}
                                                 </span>
                                                 <br />
@@ -148,7 +148,7 @@ export default function AuditPage() {
                                             <TableCell className="text-neutral-300 font-mono text-sm group-hover/row:text-white transition-colors">
                                                 {log.toolName}
                                             </TableCell>
-                                            <TableCell className="font-mono text-xs max-w-sm truncate text-indigo-400/60 group-hover/row:text-indigo-300 transition-colors">
+                                            <TableCell className="font-mono text-xs max-w-sm truncate text-emerald-400/60 group-hover/row:text-emerald-300 transition-colors">
                                                 {log.arguments}
                                             </TableCell>
                                             <TableCell className="text-right px-6">

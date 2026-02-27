@@ -6,7 +6,7 @@ import { db } from "@/lib/firebase";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, ShieldCheck, ShieldAlert, Clock, Info } from "lucide-react";
+import { Activity, Shield, ShieldCheck, ShieldAlert, Clock, Info } from "lucide-react";
 
 export default function AdminAuditPage() {
     const [logs, setLogs] = useState<any[]>([]);
@@ -52,7 +52,7 @@ export default function AdminAuditPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        <Activity className="w-8 h-8 text-indigo-500" />
+                        <Activity className="w-8 h-8 text-emerald-500" />
                         Live Audit Stream
                     </h1>
                     <p className="text-neutral-400 text-sm">Real-time global feed of all agent tool executions and policy decisions.</p>
@@ -100,7 +100,7 @@ export default function AdminAuditPage() {
                                                 <div className="text-neutral-300 text-xs truncate max-w-[200px]" title={log.userId}>U: {log.userId}</div>
                                                 <div className="text-neutral-500 text-xs truncate max-w-[200px]" title={log.agentId}>A: {log.agentId}</div>
                                             </td>
-                                            <td className="px-6 py-4 text-indigo-400 font-medium text-xs">
+                                            <td className="px-6 py-4 text-emerald-400 font-medium text-xs">
                                                 {log.toolName}
                                             </td>
                                             <td className="px-6 py-4">

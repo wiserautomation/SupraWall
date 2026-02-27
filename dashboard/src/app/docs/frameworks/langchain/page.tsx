@@ -4,12 +4,12 @@ import Link from "next/link";
 import { ArrowRight, Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LangchainGuide() {
-    const starterCode = `import { AgentGateLangChainCallback, AgentGateOptions } from "agentgate";
+    const starterCode = `import { SupraWallLangChainCallback, SupraWallOptions } from "suprawall";
 import { AgentExecutor } from "langchain/agents";
 
 // 1. Setup your secure callback
-const callback = new AgentGateLangChainCallback({
-    apiKey: process.env.AGENTGATE_API_KEY
+const callback = new SupraWallLangChainCallback({
+    apiKey: process.env.SUPRAWALL_API_KEY
 });
 
 // 2. Attach to your executor
@@ -25,18 +25,18 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-semibold uppercase tracking-wider">Framework Guide</span>
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-semibold uppercase tracking-wider">Framework Guide</span>
                     <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-xs font-semibold uppercase tracking-wider">TypeScript</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
                     LangChain Integration
                 </h1>
                 <p className="text-xl text-neutral-400 max-w-2xl leading-relaxed">
-                    Secure your LangChain runnables and agents effortlessly by attaching the AgentGate callback handler.
+                    Secure your LangChain runnables and agents effortlessly by attaching the SupraWall callback handler.
                 </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl items-center sm:justify-between">
                 <div className="space-y-1">
                     <h3 className="text-white font-bold flex items-center gap-2"><Zap className="w-5 h-5 text-yellow-400" /> Start coding instantly</h3>
                     <p className="text-neutral-400 text-sm">Clone the pre-configured TypeScript Starter repository.</p>
@@ -49,12 +49,12 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="npm install agentgate langchain @langchain/core" language="bash" />
+                <CodeBlock code="npm install suprawall langchain @langchain/core" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                <p className="text-neutral-400 text-sm">See how AgentGate dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
+                <p className="text-neutral-400 text-sm">See how SupraWall dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
                 <CodePlayground
                     framework="LangChain"
                     initialCode={starterCode}
@@ -64,13 +64,13 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Python Implementation</h2>
-                <p className="text-neutral-400 text-sm">AgentGate provides a native callback handler for Python LangChain agents as well.</p>
-                <CodeBlock language="python" code={`from agentgate import AgentGateLangChainCallback, AgentGateOptions
+                <p className="text-neutral-400 text-sm">SupraWall provides a native callback handler for Python LangChain agents as well.</p>
+                <CodeBlock language="python" code={`from suprawall import SupraWallLangChainCallback, SupraWallOptions
                 from langchain.agents import AgentExecutor
 
                 # 1. Setup callback
-                callback = AgentGateLangChainCallback(
-                AgentGateOptions(api_key="ag_your_api_key_here")
+                callback = SupraWallLangChainCallback(
+                SupraWallOptions(api_key="ag_your_api_key_here")
                 )
 
                 # 2. Attach to executor
@@ -83,7 +83,7 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
                 <Link href="/docs/quickstart" className="text-neutral-400 hover:text-white transition-colors text-sm">← Quickstart</Link>
-                <Link href="/docs/frameworks/llamaindex" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors flex items-center">LlamaIndex →</Link>
+                <Link href="/docs/frameworks/llamaindex" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">LlamaIndex →</Link>
             </div>
         </div>
     );

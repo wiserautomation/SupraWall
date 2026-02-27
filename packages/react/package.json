@@ -1,7 +1,7 @@
 {
-    "name": "@agentgate/react",
+    "name": "@suprawall/react",
     "version": "0.1.0",
-    "description": "Drop-in React components for AgentGate. Bring secure agent observability directly into your dashboard.",
+    "description": "Drop-in React components for SupraWall. Bring secure agent observability directly into your dashboard.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "peerDependencies": {

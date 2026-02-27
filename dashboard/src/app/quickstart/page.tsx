@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, Copy, Terminal, Zap, Shield, Key, ChevronRight, AlertCircle } from "lucide-react";
+import { Check, Copy, Terminal, Zap, Shield, BrickWall, Key, ChevronRight, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 function CodeBlock({ code, language = "bash" }: { code: string; language?: string }) {
@@ -26,7 +26,7 @@ function CodeBlock({ code, language = "bash" }: { code: string; language?: strin
                         }
                     </button>
                 </div>
-                <pre className="px-6 py-5 text-sm md:text-base text-indigo-300 font-mono overflow-x-auto leading-relaxed whitespace-pre selection:bg-indigo-500/30">
+                <pre className="px-6 py-5 text-sm md:text-base text-emerald-300 font-mono overflow-x-auto leading-relaxed whitespace-pre selection:bg-emerald-500/30">
                     {code}
                 </pre>
             </div>
@@ -53,10 +53,10 @@ function Step({
             className="flex gap-8 group"
         >
             <div className="flex flex-col items-center shrink-0">
-                <div className="w-10 h-10 rounded-full bg-indigo-500/10 border border-indigo-500/30 text-indigo-400 text-sm font-bold flex items-center justify-center group-hover:bg-indigo-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                <div className="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm font-bold flex items-center justify-center group-hover:bg-emerald-500/20 transition-all duration-300 shadow-[0_0_15px_rgba(99,102,241,0.1)]">
                     {number}
                 </div>
-                <div className="w-[1px] h-full bg-gradient-to-b from-indigo-500/30 to-transparent mt-3 mb-3" />
+                <div className="w-[1px] h-full bg-gradient-to-b from-emerald-500/30 to-transparent mt-3 mb-3" />
             </div>
             <div className="flex-1 pb-16">
                 <h3 className="text-xl font-bold text-white mb-2 tracking-tight">{title}</h3>
@@ -80,8 +80,8 @@ export default function QuickstartPage() {
 
             {/* Header */}
             <div className="space-y-6">
-                <div className="inline-flex p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl shadow-inner">
-                    <Zap className="w-8 h-8 text-indigo-400" />
+                <div className="inline-flex p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl shadow-inner">
+                    <Zap className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
                     5-Minute Quickstart
@@ -114,20 +114,20 @@ export default function QuickstartPage() {
                     title="Get your API key"
                     description="Create an account and copy your API key from the core dashboard."
                 >
-                    <div className="flex items-center gap-4 bg-indigo-500/5 border border-indigo-500/20
-              rounded-2xl px-6 py-5 group/box hover:bg-indigo-500/10 transition-colors">
-                        <Key className="w-6 h-6 text-indigo-400 flex-shrink-0" />
+                    <div className="flex items-center gap-4 bg-emerald-500/5 border border-emerald-500/20
+              rounded-2xl px-6 py-5 group/box hover:bg-emerald-500/10 transition-colors">
+                        <Key className="w-6 h-6 text-emerald-400 flex-shrink-0" />
                         <div>
                             <p className="text-sm font-bold text-white uppercase tracking-wider">
                                 Your API key is ready
                             </p>
                             <p className="text-xs text-neutral-500 mt-1 font-mono">
-                                Prefix: <code className="text-indigo-400 bg-indigo-400/10 px-1.5 py-0.5 rounded">ag_live_...</code>
+                                Prefix: <code className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">ag_live_...</code>
                             </p>
                         </div>
                         <a
                             href="/"
-                            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors group-hover/box:translate-x-1 duration-300"
+                            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors group-hover/box:translate-x-1 duration-300"
                         >
                             Go to dashboard <ChevronRight className="w-4 h-4" />
                         </a>
@@ -141,22 +141,22 @@ export default function QuickstartPage() {
                     description="Native packages available for all major environments."
                 >
                     {activeTab === "TypeScript" && (
-                        <CodeBlock code="npm install agentgate" language="bash" />
+                        <CodeBlock code="npm install suprawall" language="bash" />
                     )}
                     {activeTab === "Python" && (
                         <div className="space-y-4">
-                            <CodeBlock code="pip install agentgate" language="bash" />
-                            <div className="p-4 border-l-2 border-indigo-500/30 bg-indigo-500/5 rounded-r-xl">
-                                <p className="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wide">Framework Extras</p>
+                            <CodeBlock code="pip install suprawall" language="bash" />
+                            <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
+                                <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
                                 <CodeBlock
-                                    code={`pip install "agentgate[langchain]"   # LangChain\npip install "agentgate[openai]"      # OpenAI Agents\npip install "agentgate[all]"         # Full SDK`}
+                                    code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[openai]"      # OpenAI Agents\npip install "suprawall[all]"         # Full SDK`}
                                     language="bash"
                                 />
                             </div>
                         </div>
                     )}
                     {activeTab === "MCP Server" && (
-                        <CodeBlock code="npm install agentgate" language="bash" />
+                        <CodeBlock code="npm install suprawall" language="bash" />
                     )}
                 </Step>
 
@@ -169,13 +169,13 @@ export default function QuickstartPage() {
                     {activeTab === "TypeScript" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { withAgentGate } from "agentgate";
+                            code={`import { withSupraWall } from "suprawall";
     
     // 1. Your existing agent
     const myAgent = createMyAgent();
     
-    // 2. Wrap it with AgentGate
-    const secured = withAgentGate(myAgent, {
+    // 2. Wrap it with SupraWall
+    const secured = withSupraWall(myAgent, {
       apiKey: "ag_your_key_here",
     });
     
@@ -187,9 +187,9 @@ export default function QuickstartPage() {
                         <div className="space-y-6">
                             <CodeBlock
                                 language="python"
-                                code={`from agentgate import with_agent_gate, AgentGateOptions
+                                code={`from suprawall import with_agent_gate, SupraWallOptions
     
-    secured = with_agent_gate(my_agent, AgentGateOptions(
+    secured = with_agent_gate(my_agent, SupraWallOptions(
         api_key="ag_your_key_here"
     ))
     
@@ -200,12 +200,12 @@ export default function QuickstartPage() {
                                 <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Example</p>
                                 <CodeBlock
                                     language="python"
-                                    code={`from agentgate.callbacks import AgentGateCallback
+                                    code={`from suprawall.callbacks import SupraWallCallback
     
     agent_executor = AgentExecutor(
         agent=agent,
         tools=tools,
-        callbacks=[AgentGateCallback(api_key="ag_your_key_here")],
+        callbacks=[SupraWallCallback(api_key="ag_your_key_here")],
     )`}
                                 />
                             </div>
@@ -214,9 +214,9 @@ export default function QuickstartPage() {
                     {activeTab === "MCP Server" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { createAgentGateMiddleware } from "agentgate";
+                            code={`import { createSupraWallMiddleware } from "suprawall";
     
-    const gate = createAgentGateMiddleware({
+    const gate = createSupraWallMiddleware({
       apiKey: "ag_your_key_here",
     });
     
@@ -284,9 +284,9 @@ export default function QuickstartPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="bg-gradient-to-br from-indigo-500/10 to-violet-500/5 border border-indigo-500/20 rounded-3xl p-10 text-center space-y-6 relative overflow-hidden"
+                className="bg-gradient-to-br from-emerald-500/10 to-violet-500/5 border border-emerald-500/20 rounded-3xl p-10 text-center space-y-6 relative overflow-hidden"
             >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 blur-[100px] rounded-full" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full" />
                 <div className="inline-flex p-4 bg-white/5 border border-white/10 rounded-full shadow-2xl relative z-10">
                     <Check className="w-8 h-8 text-emerald-400" />
                 </div>
@@ -325,15 +325,15 @@ export default function QuickstartPage() {
                         },
                         {
                             q: "Do I need to change my prompt engineering?",
-                            a: "No. AgentGate lives in the execution layer. Your prompts remain yours — we only govern the tool outputs and inputs.",
+                            a: "No. SupraWall lives in the execution layer. Your prompts remain yours — we only govern the tool outputs and inputs.",
                         }
                     ].map((item) => (
                         <div
                             key={item.q}
                             className="bg-neutral-950 border border-white/5 p-6 rounded-2xl group hover:border-white/10 transition-colors"
                         >
-                            <h4 className="text-white font-bold mb-2 flex items-center gap-2 group-hover:text-indigo-400 transition-colors">
-                                <AlertCircle className="w-4 h-4 text-indigo-400" /> {item.q}
+                            <h4 className="text-white font-bold mb-2 flex items-center gap-2 group-hover:text-emerald-400 transition-colors">
+                                <AlertCircle className="w-4 h-4 text-emerald-400" /> {item.q}
                             </h4>
                             <p className="text-neutral-400 text-sm leading-relaxed">{item.a}</p>
                         </div>

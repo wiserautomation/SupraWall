@@ -65,7 +65,7 @@ export default function AdminAgentsPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        <Server className="w-8 h-8 text-indigo-500" />
+                        <Server className="w-8 h-8 text-emerald-500" />
                         Agent Directory
                     </h1>
                     <p className="text-neutral-400 text-sm">Monitor and manage all AI agents connected to the platform.</p>
@@ -81,7 +81,7 @@ export default function AdminAgentsPage() {
                             placeholder="Search agents..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="bg-black border-white/10 pl-9 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-white placeholder:text-neutral-600"
+                            className="bg-black border-white/10 pl-9 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-white placeholder:text-neutral-600"
                         />
                     </div>
                 </CardHeader>

@@ -1,4 +1,4 @@
-# AgentGate
+# SupraWall
 
 <div align="center">
 
@@ -6,11 +6,11 @@
 
 *Enterprise security for AI agents in one line of code*
 
-[![npm](https://img.shields.io/npm/v/agentgate)](https://www.npmjs.com/package/agentgate)
-[![PyPI](https://img.shields.io/pypi/v/agentgate)](https://pypi.org/project/agentgate/)
+[![npm](https://img.shields.io/npm/v/suprawall)](https://www.npmjs.com/package/suprawall)
+[![PyPI](https://img.shields.io/pypi/v/suprawall)](https://pypi.org/project/suprawall/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[Quick Start](#quick-start) • [Documentation](https://agent-gate-rho.vercel.app/docs) • [Examples](#examples) • [Spec](https://agent-gate-rho.vercel.app/spec)
+[Quick Start](#quick-start) • [Documentation](https://supra-wall-rho.vercel.app/docs) • [Examples](#examples) • [Spec](https://supra-wall-rho.vercel.app/spec)
 
 </div>
 
@@ -18,13 +18,13 @@
 
 - ✅ **8 Languages**: Python, TypeScript, Go, Ruby, PHP, Java, Rust, C#
 - ✅ **5 Databases**: Postgres, MySQL, MongoDB, Supabase, Firebase
-- ✅ **Self-Host**: `docker run agentgate/server`
-- ✅ **CLI Tool**: `npm install -g @agentgate/cli`
+- ✅ **Self-Host**: `docker run suprawall/server`
+- ✅ **CLI Tool**: `npm install -g @suprawall/cli`
 - ✅ **Framework Plugins**: LangChain, LlamaIndex, AutoGen, Vercel AI, CrewAI
 - ✅ **Webhooks**: Real-time event streaming to your systems
 - ✅ **UI Components**: Drop-in React, Vue, Svelte components
 
-> **AgentGate now works anywhere, with anything, in any language — just like Stripe.**
+> **SupraWall now works anywhere, with anything, in any language — just like Stripe.**
 
 
 ---
@@ -50,16 +50,16 @@
 
 \`\`\`bash
 # Node.js/TypeScript
-npm install agentgate
+npm install suprawall
 
 # Python
-pip install agentgate
+pip install suprawall
 
 # Go
-go get github.com/agentgate/agentgate-go
+go get github.com/suprawall/suprawall-go
 
 # Ruby
-gem install agentgate
+gem install suprawall
 \`\`\`
 
 ### Secure Your Agent (One Line)
@@ -67,7 +67,7 @@ gem install agentgate
 **Python + LangChain:**
 \`\`\`python
 from langchain.agents import create_react_agent
-from agentgate import secure_agent
+from suprawall import secure_agent
 
 agent = create_react_agent(llm, tools, prompt)
 secured_agent = secure_agent(agent, api_key="ag_your_key")
@@ -77,10 +77,10 @@ secured_agent = secure_agent(agent, api_key="ag_your_key")
 
 **TypeScript + Vercel AI:**
 \`\`\`typescript
-import { withAgentGate } from "agentgate";
+import { withSupraWall } from "suprawall";
 
 const agent = createMyAgent();
-const securedAgent = withAgentGate(agent, {
+const securedAgent = withSupraWall(agent, {
   apiKey: "ag_your_key"
 });
 \`\`\`
@@ -92,20 +92,20 @@ const securedAgent = withAgentGate(agent, {
 ### Cloud (Managed)
 \`\`\`bash
 # Use our hosted service
-export AGENTGATE_API_KEY=ag_your_key
+export SUPRAWALL_API_KEY=ag_your_key
 \`\`\`
 
 ### Self-Hosted (Docker)
 \`\`\`bash
 docker run -p 3000:3000 \\
   -e DATABASE_URL=postgres://... \\
-  agentgate/server:latest
+  suprawall/server:latest
 \`\`\`
 
 ### Local Development
 \`\`\`bash
 # Works offline with SQLite
-agentgate dev
+suprawall dev
 \`\`\`
 
 ---
@@ -114,11 +114,11 @@ agentgate dev
 
 ### Official Framework Plugins
 
-- **LangChain** — \`pip install langchain-agentgate\`
-- **LlamaIndex** — \`pip install llama-index-agentgate\`
-- **AutoGen** — \`pip install autogen-agentgate\`
-- **Vercel AI SDK** — \`npm install @agentgate/vercel-ai\`
-- **CrewAI** — \`pip install crewai-agentgate\`
+- **LangChain** — \`pip install langchain-suprawall\`
+- **LlamaIndex** — \`pip install llama-index-suprawall\`
+- **AutoGen** — \`pip install autogen-suprawall\`
+- **Vercel AI SDK** — \`npm install @suprawall/vercel-ai\`
+- **CrewAI** — \`pip install crewai-suprawall\`
 
 ### Databases
 
@@ -132,9 +132,9 @@ agentgate dev
 ### UI Frameworks
 
 \`\`\`bash
-npm install @agentgate/react
-npm install @agentgate/vue
-npm install @agentgate/svelte
+npm install @suprawall/react
+npm install @suprawall/vue
+npm install @suprawall/svelte
 \`\`\`
 
 ---
@@ -173,29 +173,29 @@ policy = {
 
 \`\`\`bash
 # Install
-npm install -g @agentgate/cli
+npm install -g @suprawall/cli
 
 # Create agent
-agentgate agents create --name "My Agent"
+suprawall agents create --name "My Agent"
 
 # Add policy
-agentgate policies create \\
+suprawall policies create \\
   --agent agent_123 \\
   --tool bash \\
   --action DENY
 
 # Stream logs in real-time
-agentgate logs --follow
+suprawall logs --follow
 \`\`\`
 
 ---
 
 ## 📖 Documentation
 
-- [Full Documentation](https://agent-gate-rho.vercel.app/docs)
-- [API Reference](https://agent-gate-rho.vercel.app/docs/api)
-- [Framework Guides](https://agent-gate-rho.vercel.app/docs/frameworks/langchain)
-- [AGPS Specification](https://agent-gate-rho.vercel.app/spec)
+- [Full Documentation](https://supra-wall-rho.vercel.app/docs)
+- [API Reference](https://supra-wall-rho.vercel.app/docs/api)
+- [Framework Guides](https://supra-wall-rho.vercel.app/docs/frameworks/langchain)
+- [AGPS Specification](https://supra-wall-rho.vercel.app/spec)
 
 ---
 
@@ -205,10 +205,10 @@ agentgate logs --follow
 ┌─────────────────┐
 │   Your Agent    │
 └────────┬────────┘
-         │ withAgentGate()
+         │ withSupraWall()
          ▼
 ┌─────────────────┐
-│  AgentGate SDK  │ ◄── Intercepts tool calls
+│  SupraWall SDK  │ ◄── Intercepts tool calls
 └────────┬────────┘
          │
          ▼
@@ -231,10 +231,10 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## 📄 License
 
-MIT © [AgentGate](https://agent-gate-rho.vercel.app)
+MIT © [SupraWall](https://supra-wall-rho.vercel.app)
 
 ---
 
 ## 🌟 Star Us!
 
-If AgentGate helps secure your AI agents, give us a ⭐ on GitHub!
+If SupraWall helps secure your AI agents, give us a ⭐ on GitHub!

@@ -81,7 +81,7 @@ export default function AdminAnalyticsPage() {
                 }));
 
             } catch (error) {
-                console.error("AgentGate Analytics Error", error);
+                console.error("SupraWall Analytics Error", error);
             }
             setLoading(false);
         }
@@ -92,7 +92,7 @@ export default function AdminAnalyticsPage() {
     if (loading) {
         return (
             <div className="flex h-[80vh] items-center justify-center">
-                <Zap className="w-10 h-10 text-indigo-500 animate-pulse" />
+                <Zap className="w-10 h-10 text-emerald-500 animate-pulse" />
             </div>
         );
     }
@@ -102,7 +102,7 @@ export default function AdminAnalyticsPage() {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-2 italic uppercase">
-                        <Activity className="w-8 h-8 text-indigo-500 not-italic" /> Traffic & Network
+                        <Activity className="w-8 h-8 text-emerald-500 not-italic" /> Traffic & Network
                     </h1>
                     <p className="text-neutral-500 text-sm font-medium">Global system throughput and network health metrics.</p>
                 </div>
@@ -143,7 +143,7 @@ export default function AdminAnalyticsPage() {
                         <Activity className="w-4 h-4" /> Global Throughput (RPS)
                     </CardTitle>
                     <div className="flex gap-4 text-[10px] font-bold text-neutral-600">
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-indigo-500" /> Success</span>
+                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Success</span>
                         <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-500" /> Errors</span>
                     </div>
                 </CardHeader>
@@ -265,17 +265,17 @@ export default function AdminAnalyticsPage() {
             </div>
 
             {/* Bottom Section - Performance Alerts */}
-            <div className="bg-indigo-600/10 border border-indigo-500/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="bg-emerald-600/10 border border-emerald-500/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="p-3 bg-indigo-500/20 rounded-xl">
-                        <Zap className="w-6 h-6 text-indigo-400" />
+                    <div className="p-3 bg-emerald-500/20 rounded-xl">
+                        <Zap className="w-6 h-6 text-emerald-400" />
                     </div>
                     <div>
                         <p className="text-white font-bold tracking-tight">Real-time Policy Evaluation Active</p>
                         <p className="text-neutral-500 text-sm">System is operating at peak efficiency. All 5 edge regions reported healthy.</p>
                     </div>
                 </div>
-                <button className="px-6 py-2.5 bg-indigo-600 text-white font-black text-sm rounded-xl hover:bg-indigo-700 transition-colors uppercase tracking-widest italic">
+                <button className="px-6 py-2.5 bg-emerald-600 text-white font-black text-sm rounded-xl hover:bg-emerald-700 transition-colors uppercase tracking-widest italic">
                     View System Logs
                 </button>
             </div>

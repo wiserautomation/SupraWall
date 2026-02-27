@@ -12,10 +12,10 @@ export const AuditLogStream: React.FC<AuditLogStreamProps> = ({ agentId, apiKey,
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Poll AgentGate API (simulated for component scaffolding)
+        // Poll SupraWall API (simulated for component scaffolding)
         const fetchLogs = async () => {
             try {
-                const res = await fetch(\`https://api.agentgate.io/v1/agents/\${agentId}/logs?limit=\${limit}\`, {
+                const res = await fetch(\`https://api.suprawall.io/v1/agents/\${agentId}/logs?limit=\${limit}\`, {
                     headers: { "Authorization": \`Bearer \${apiKey}\` }
                 });
                 if (res.ok) {

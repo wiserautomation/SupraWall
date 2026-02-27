@@ -117,7 +117,7 @@ function IssueKeyDialog({
                         </div>
                         <p className="text-xs text-gray-500">
                             Give this key to your customer. They use it exactly like a regular
-                            AgentGate API key — just with your platform policies enforced.
+                            SupraWall API key — just with your platform policies enforced.
                         </p>
                         <Button className="w-full" onClick={handleClose}>Done</Button>
                     </div>
@@ -239,7 +239,7 @@ export default function ConnectKeysPage() {
     if (platformLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
             </div>
         );
     }
@@ -249,7 +249,7 @@ export default function ConnectKeysPage() {
             <EmptyState
                 icon={Key}
                 title="No platform set up"
-                description="Set up AgentGate Connect first before issuing sub-keys."
+                description="Set up SupraWall Connect first before issuing sub-keys."
                 action={
                     <a href="/connect">
                         <Button>Go to Connect Setup</Button>
@@ -279,7 +279,7 @@ export default function ConnectKeysPage() {
             {/* Keys table */}
             {keysLoading ? (
                 <div className="flex items-center justify-center h-40">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600" />
                 </div>
             ) : keys.length === 0 ? (
                 <EmptyState
@@ -391,28 +391,28 @@ export default function ConnectKeysPage() {
             )}
 
             {/* Info box */}
-            <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mt-6">
-                <h3 className="text-sm font-semibold text-indigo-800 mb-2">
+            <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-5 mt-6">
+                <h3 className="text-sm font-semibold text-emerald-800 mb-2">
                     How sub-keys work
                 </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-indigo-700">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-emerald-700">
                     <div>
                         <p className="font-medium mb-1">1. Issue a sub-key</p>
-                        <p className="text-indigo-600">
-                            Each customer gets a unique <code className="bg-indigo-100 px-1 rounded">
+                        <p className="text-emerald-600">
+                            Each customer gets a unique <code className="bg-emerald-100 px-1 rounded">
                                 agc_</code> key tied to your platform.
                         </p>
                     </div>
                     <div>
                         <p className="font-medium mb-1">2. Customer installs SDK</p>
-                        <p className="text-indigo-600">
-                            They use the key with <code className="bg-indigo-100 px-1 rounded">
-                                agentgate</code> exactly like a regular API key.
+                        <p className="text-emerald-600">
+                            They use the key with <code className="bg-emerald-100 px-1 rounded">
+                                suprawall</code> exactly like a regular API key.
                         </p>
                     </div>
                     <div>
                         <p className="font-medium mb-1">3. You govern everything</p>
-                        <p className="text-indigo-600">
+                        <p className="text-emerald-600">
                             Your platform policies apply to every agent call they make.
                             You see all activity here.
                         </p>

@@ -1,19 +1,19 @@
-const BASE_URL = "https://app.agentgate.io";
+const BASE_URL = "https://app.suprawall.io";
 
 function initEmbeds() {
-    const widgets = document.querySelectorAll<HTMLElement>("[data-agentgate-widget]");
+    const widgets = document.querySelectorAll<HTMLElement>("[data-suprawall-widget]");
 
     widgets.forEach((container) => {
         // Prevent double mounting
         if (container.dataset.mounted === "true") return;
 
-        const type = container.dataset.agentgateWidget;
+        const type = container.dataset.suprawallWidget;
         const agentId = container.dataset.agentId;
         const apiKey = container.dataset.apiKey;
         const theme = container.dataset.theme || "dark";
 
         if (!agentId || !apiKey) {
-            console.error("AgentGate Embed: Missing data-agent-id or data-api-key");
+            console.error("SupraWall Embed: Missing data-agent-id or data-api-key");
             return;
         }
 
@@ -41,6 +41,6 @@ if (document.readyState === "loading") {
 }
 
 // Expose to window for single page applications to re-trigger manually
-(window as any).AgentGateEmbeds = {
+(window as any).SupraWallEmbeds = {
     init: initEmbeds
 };

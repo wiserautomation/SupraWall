@@ -67,10 +67,10 @@ export default function AdminUsersPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
                 <div className="space-y-1">
                     <h1 className="text-3xl font-extrabold tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        <Users className="w-8 h-8 text-indigo-500" />
+                        <Users className="w-8 h-8 text-emerald-500" />
                         User Management
                     </h1>
-                    <p className="text-neutral-400 text-sm">View, search, and manage all users on the AgentGate platform.</p>
+                    <p className="text-neutral-400 text-sm">View, search, and manage all users on the SupraWall platform.</p>
                 </div>
             </div>
 
@@ -83,7 +83,7 @@ export default function AdminUsersPage() {
                             placeholder="Search by email or ID..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="bg-black border-white/10 pl-9 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-white placeholder:text-neutral-600"
+                            className="bg-black border-white/10 pl-9 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-white placeholder:text-neutral-600"
                         />
                     </div>
                 </CardHeader>
@@ -104,7 +104,7 @@ export default function AdminUsersPage() {
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center">
                                             <div className="flex flex-col items-center justify-center space-y-3">
-                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                                                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500"></div>
                                                 <span className="text-neutral-500">Loading users...</span>
                                             </div>
                                         </td>
@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    className="border border-white/10 hover:bg-indigo-500/20 hover:text-indigo-400 hover:border-indigo-500/50 transition-all text-neutral-300"
+                                                    className="border border-white/10 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/50 transition-all text-neutral-300"
                                                     onClick={() => setSelectedUser(user)}
                                                 >
                                                     View Details
@@ -177,7 +177,7 @@ export default function AdminUsersPage() {
                     <div className="grid grid-cols-2 gap-4 mt-4">
                         <Card className="bg-black/50 border-white/5 col-span-1">
                             <CardContent className="p-4 flex items-center gap-3">
-                                <div className="p-3 bg-indigo-500/10 rounded-lg"><Calendar className="w-5 h-5 text-indigo-400" /></div>
+                                <div className="p-3 bg-emerald-500/10 rounded-lg"><Calendar className="w-5 h-5 text-emerald-400" /></div>
                                 <div>
                                     <p className="text-xs text-neutral-500 font-medium tracking-wider uppercase">Member Since</p>
                                     <p className="font-semibold">{selectedUser?.createdAt ? format(new Date(selectedUser.createdAt), "MMMM d, yyyy") : "N/A"}</p>

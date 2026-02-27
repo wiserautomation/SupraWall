@@ -42,7 +42,7 @@ export default function LoginPage() {
             <Card className="w-[400px] border-neutral-800 bg-neutral-900">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold tracking-tight">
-                        AgentGate {isRegistering ? "Registration" : "Login"}
+                        SupraWall {isRegistering ? "Registration" : "Login"}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -71,7 +71,7 @@ export default function LoginPage() {
                             />
                         </div>
                         {error && <p className="text-red-500 text-sm">{error}</p>}
-                        <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                        <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
                             {isRegistering ? "Create Account" : "Sign In"}
                         </Button>
                     </form>

@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LlamaIndexGuide() {
-    const starterCode = `from agentgate import AgentGateLlamaIndex, AgentGateOptions
+    const starterCode = `from suprawall import SupraWallLlamaIndex, SupraWallOptions
 from llama_index.core.agent import ReActAgent
 
 # 1. Wrap your tools for LlamaIndex
-secured_tools = AgentGateLlamaIndex.wrap_tools(
+secured_tools = SupraWallLlamaIndex.wrap_tools(
     tools=my_tools,
-    options=AgentGateOptions(api_key="ag_your_api_key_here")
+    options=SupraWallOptions(api_key="ag_your_api_key_here")
 )
 
 # 2. Initialize ReAct agent with secured tools
@@ -22,7 +22,7 @@ agent.chat("Please drop the users database table")`;
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
             <div className="space-y-4">
                 <div className="flex items-center gap-3">
-                    <span className="px-3 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs font-semibold uppercase tracking-wider">Framework Guide</span>
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-full text-xs font-semibold uppercase tracking-wider">Framework Guide</span>
                     <span className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-xs font-semibold uppercase tracking-wider">Python</span>
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
@@ -33,7 +33,7 @@ agent.chat("Please drop the users database table")`;
                 </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-4 p-6 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl items-center sm:justify-between">
+            <div className="flex flex-col sm:flex-row gap-4 p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl items-center sm:justify-between">
                 <div className="space-y-1">
                     <h3 className="text-white font-bold flex items-center gap-2"><Zap className="w-5 h-5 text-yellow-400" /> Start coding instantly</h3>
                     <p className="text-neutral-400 text-sm">Clone the pre-configured Python LlamaIndex Starter.</p>
@@ -46,12 +46,12 @@ agent.chat("Please drop the users database table")`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="pip install agentgate llama-index" language="bash" />
+                <CodeBlock code="pip install suprawall llama-index" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                <p className="text-neutral-400 text-sm">See AgentGate protect a LlamaIndex query engine.</p>
+                <p className="text-neutral-400 text-sm">See SupraWall protect a LlamaIndex query engine.</p>
                 <CodePlayground
                     framework="LlamaIndex"
                     initialCode={starterCode}
@@ -61,7 +61,7 @@ agent.chat("Please drop the users database table")`;
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
                 <Link href="/docs/frameworks/langchain" className="text-neutral-400 hover:text-white transition-colors text-sm">← LangChain</Link>
-                <Link href="/docs/frameworks/vercel-ai" className="text-indigo-400 hover:text-indigo-300 font-semibold transition-colors flex items-center">Vercel AI SDK →</Link>
+                <Link href="/docs/frameworks/vercel-ai" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">Vercel AI SDK →</Link>
             </div>
         </div>
     );

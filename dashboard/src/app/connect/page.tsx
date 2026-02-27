@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Shield, Key, Users, Activity, Zap, AlertTriangle
+    Shield, BrickWall, Key, Users, Activity, Zap, AlertTriangle
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -23,7 +23,7 @@ export default function ConnectPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
             </div>
         );
     }
@@ -33,10 +33,10 @@ export default function ConnectPage() {
         return (
             <div className="max-w-lg mx-auto mt-20 px-4">
                 <div className="text-center mb-8">
-                    <div className="inline-flex p-3 bg-indigo-50 rounded-full mb-4">
-                        <Shield className="w-8 h-8 text-indigo-600" />
+                    <div className="inline-flex p-3 bg-emerald-50 rounded-full mb-4">
+                        <BrickWall className="w-8 h-8 text-emerald-600" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Set up AgentGate Connect</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Set up SupraWall Connect</h1>
                     <p className="text-gray-500 mt-2">
                         Issue security keys to your customers. Govern all their agents
                         from one place.
@@ -76,15 +76,15 @@ export default function ConnectPage() {
 
                 <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs text-gray-500">
                     <div className="p-3 bg-gray-50 rounded-lg">
-                        <Key className="w-4 h-4 mx-auto mb-1 text-indigo-500" />
+                        <Key className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
                         Issue sub-keys per customer
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                        <Shield className="w-4 h-4 mx-auto mb-1 text-indigo-500" />
+                        <BrickWall className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
                         Enforce policies across all agents
                     </div>
                     <div className="p-3 bg-gray-50 rounded-lg">
-                        <Activity className="w-4 h-4 mx-auto mb-1 text-indigo-500" />
+                        <Activity className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
                         Full audit log per customer
                     </div>
                 </div>
@@ -108,12 +108,12 @@ export default function ConnectPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        AgentGate Connect
+                        SupraWall Connect
                     </h1>
                     <p className="text-gray-500 text-sm mt-1">
                         Platform: <span className="font-medium text-gray-700">{platform.name}</span>
                         <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full
-              text-xs font-medium bg-indigo-100 text-indigo-700 border border-indigo-200">
+              text-xs font-medium bg-emerald-100 text-emerald-700 border border-emerald-200">
                             {platform.plan}
                         </span>
                     </p>
@@ -208,25 +208,25 @@ export default function ConnectPage() {
             {/* Quick nav */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <Link href="/connect/keys">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-300
+                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
             hover:shadow-sm transition-all cursor-pointer group">
-                        <Key className="w-5 h-5 text-indigo-500 mb-2 group-hover:text-indigo-700" />
+                        <Key className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
                         <p className="text-sm font-semibold text-gray-800">Manage Sub-Keys</p>
                         <p className="text-xs text-gray-400 mt-0.5">Issue, revoke, configure</p>
                     </div>
                 </Link>
                 <Link href="/connect/analytics">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-300
+                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
             hover:shadow-sm transition-all cursor-pointer group">
-                        <Activity className="w-5 h-5 text-indigo-500 mb-2 group-hover:text-indigo-700" />
+                        <Activity className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
                         <p className="text-sm font-semibold text-gray-800">Analytics</p>
                         <p className="text-xs text-gray-400 mt-0.5">Decisions, latency, trends</p>
                     </div>
                 </Link>
                 <Link href="/connect/events">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-indigo-300
+                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
             hover:shadow-sm transition-all cursor-pointer group">
-                        <Shield className="w-5 h-5 text-indigo-500 mb-2 group-hover:text-indigo-700" />
+                        <BrickWall className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
                         <p className="text-sm font-semibold text-gray-800">Audit Log</p>
                         <p className="text-xs text-gray-400 mt-0.5">Every agent action, searchable</p>
                     </div>

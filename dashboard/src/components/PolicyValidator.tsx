@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ShieldAlert, Zap, FileJson } from "lucide-react";
+import { Check, Shield, ShieldAlert, Zap, FileJson } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export function PolicyValidator() {
@@ -45,12 +45,12 @@ export function PolicyValidator() {
     return (
         <div className="border border-white/10 rounded-xl overflow-hidden bg-[#0A0A0A] shadow-2xl">
             <div className="flex items-center justify-between px-4 py-3 bg-black/40 border-b border-white/5">
-                <div className="flex items-center gap-2 text-indigo-400 font-semibold text-sm">
+                <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
                     <FileJson className="w-4 h-4" /> AGPS JSON Validator
                 </div>
                 <button
                     onClick={validate}
-                    className="px-3 py-1 bg-indigo-600 hover:bg-indigo-500 text-white rounded-md text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1"
+                    className="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-xs font-semibold uppercase tracking-wider transition-colors flex items-center gap-1"
                 >
                     <Zap className="w-3 h-3" /> Validate Syntax
                 </button>
@@ -58,7 +58,7 @@ export function PolicyValidator() {
 
             <div className="flex flex-col md:flex-row">
                 <textarea
-                    className="flex-1 min-h-[250px] bg-transparent text-indigo-300 font-mono text-sm p-4 focus:outline-none resize-none border-b md:border-b-0 md:border-r border-white/10"
+                    className="flex-1 min-h-[250px] bg-transparent text-emerald-300 font-mono text-sm p-4 focus:outline-none resize-none border-b md:border-b-0 md:border-r border-white/10"
                     value={json}
                     onChange={(e) => {
                         setJson(e.target.value);
@@ -72,7 +72,7 @@ export function PolicyValidator() {
                     ) : isValid ? (
                         <div className="text-emerald-400 flex flex-col gap-2">
                             <Badge className="bg-emerald-500/20 text-emerald-500 border-none w-min"><Check className="w-3 h-3 mr-1" /> VALID</Badge>
-                            <span>Schema is fully compliant with AgentGate Policy Spec!</span>
+                            <span>Schema is fully compliant with SupraWall Policy Spec!</span>
                         </div>
                     ) : (
                         <div className="text-rose-400 flex flex-col gap-2">

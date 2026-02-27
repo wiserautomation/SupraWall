@@ -13,7 +13,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import { Shield, Search } from "lucide-react";
+import { Shield, BrickWall, Search } from "lucide-react";
 import type { ConnectEvent } from "@/types/connect";
 
 export default function ConnectEventsPage() {
@@ -31,7 +31,7 @@ export default function ConnectEventsPage() {
     if (platformLoading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
             </div>
         );
     }
@@ -41,7 +41,7 @@ export default function ConnectEventsPage() {
             <EmptyState
                 icon={Shield}
                 title="No platform set up"
-                description="Set up AgentGate Connect first."
+                description="Set up SupraWall Connect first."
                 action={<a href="/connect"><Button>Go to Connect</Button></a>}
             />
         );
@@ -102,7 +102,7 @@ export default function ConnectEventsPage() {
             {/* Events list */}
             {loading ? (
                 <div className="flex items-center justify-center h-40">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600" />
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600" />
                 </div>
             ) : events.length === 0 ? (
                 <EmptyState

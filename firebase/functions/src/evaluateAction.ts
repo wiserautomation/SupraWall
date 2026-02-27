@@ -102,7 +102,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     latencyMs,
                     timestamp: FieldValue.serverTimestamp(),
                 }),
-            ]).catch((e) => console.error("AgentGate: Non-critical write failed:", e));
+            ]).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
 
             res.status(200).json(decision);
             return;
@@ -156,8 +156,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
         }
 
     } catch (e) {
-        console.error("AgentGate evaluateAction error:", e);
-        res.status(500).json({ error: "Internal AgentGate error.", decision: "DENY" });
+        console.error("SupraWall evaluateAction error:", e);
+        res.status(500).json({ error: "Internal SupraWall error.", decision: "DENY" });
     }
 });
 

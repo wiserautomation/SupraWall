@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import {
     ArrowRight, Box, Lock, Activity, ChevronRight, CheckCircle2,
-    Shield, Database, Terminal, Globe, Code2, AlertTriangle,
+    Shield, BrickWall, Database, Terminal, Globe, Code2, AlertTriangle,
     Play, Users, Star, HelpCircle, Mail, DollarSign, ExternalLink,
     Zap, Server
 } from "lucide-react";
@@ -18,7 +18,7 @@ function CodeTerminal() {
         "> LangChain Agent: Executing...",
         "> Tool: bash_command",
         "> Input: \"rm -rf /production/db\"",
-        "⚠️  INTERCEPTED BY AGENTGATE",
+        "⚠️  INTERCEPTED BY SUPRAWALL",
         "🛡️  Policy Check Running...",
         "❌ DENIED - Destructive Action",
         "🚨 Alert sent to admin",
@@ -79,7 +79,7 @@ function CodeTerminal() {
                             key={`terminal-line-${i}`}
                             initial={{ opacity: 0, x: -5 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className={`${isWarning ? 'text-amber-400 font-bold' : i >= 3 && !isSuccess ? 'text-rose-400 font-bold' : isSuccess ? 'text-emerald-400 font-bold' : isCheck ? 'text-indigo-400' : 'text-neutral-400'}`}
+                            className={`${isWarning ? 'text-amber-400 font-bold' : i >= 3 && !isSuccess ? 'text-rose-400 font-bold' : isSuccess ? 'text-emerald-400 font-bold' : isCheck ? 'text-emerald-400' : 'text-neutral-400'}`}
                         >
                             {safeLine}
                         </motion.div>
@@ -129,11 +129,11 @@ function ClawbotDemo() {
     }, []);
 
     if (!mounted) {
-        return <div className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden" />;
+        return <div className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-emerald-400/80 space-y-2 overflow-hidden" />;
     }
 
     return (
-        <div suppressHydrationWarning className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-indigo-400/80 space-y-2 overflow-hidden">
+        <div suppressHydrationWarning className="w-full h-full bg-[#020202] p-6 font-mono text-[10px] md:text-xs text-emerald-400/80 space-y-2 overflow-hidden">
             <div className="flex items-center gap-1.5 mb-4 opacity-50 border-b border-white/5 pb-2">
                 <div className="w-2 h-2 rounded-full bg-red-500/40" />
                 <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
@@ -167,10 +167,10 @@ function LangChainDemo() {
                     <span className="text-rose-500 animate-pulse font-bold"># 💀 Internal debug data leaked</span>
                 </code>
             </div>
-            <div className="bg-[#0A0A0A] p-4 rounded-xl border border-indigo-500/30 relative overflow-hidden flex flex-col justify-center">
+            <div className="bg-[#0A0A0A] p-4 rounded-xl border border-emerald-500/30 relative overflow-hidden flex flex-col justify-center">
                 <div className="absolute top-2 right-4 text-[8px] font-black text-emerald-500 uppercase">Secured</div>
-                <code className="text-indigo-100">
-                    <span className="text-indigo-400 font-bold">secure(</span>agent<span className="text-indigo-400 font-bold">)</span>.run("Email users")<br />
+                <code className="text-emerald-100">
+                    <span className="text-emerald-400 font-bold">secure(</span>agent<span className="text-emerald-400 font-bold">)</span>.run("Email users")<br />
                     <span className="text-emerald-400 font-bold"># ✅ Data Sanitized & Blocked</span>
                 </code>
             </div>
@@ -191,7 +191,7 @@ function AutoGenDemo() {
                         initial={{ width: 0 }}
                         whileInView={{ width: '74%' }}
                         transition={{ duration: 1.5, ease: "easeOut" }}
-                        className="h-full bg-gradient-to-r from-rose-600 to-indigo-600"
+                        className="h-full bg-gradient-to-r from-rose-600 to-emerald-600"
                     />
                 </div>
             </div>
@@ -217,29 +217,29 @@ export default function LandingPage() {
     const techExamples: Record<string, any> = {
         "LangChain": {
             before: `from langchain import Agent\nfrom tools import bash_tool\n\nagent = Agent(tools=[bash_tool])\n# ⚠️ No security layer!\n\nagent.run("Clean temp files")\n# Executed: rm -rf / 💀`,
-            after: `from langchain import Agent\nfrom tools import bash_tool\nfrom agentgate import secure\n\nagent = Agent(tools=[bash])\nsecured = secure(agent,\n  api_key="ag_live_xxx")\n\n# ✅ Blocked automatically`
+            after: `from langchain import Agent\nfrom tools import bash_tool\nfrom suprawall import secure\n\nagent = Agent(tools=[bash])\nsecured = secure(agent,\n  api_key="ag_live_xxx")\n\n# ✅ Blocked automatically`
         },
         "Clawbot 🔥": {
             before: `const browser = await launch();\nconst agent = new Clawbot(browser);\n\n// ⚠️ Unrestricted access\nawait agent.execute("Delete user data");\n// Account deleted 💀`,
-            after: `const browser = await launch();\nconst agent = new Clawbot(browser);\nimport { withAgentGate } from "agentgate";\n\nconst secured = withAgentGate(agent);\n// Intercepted: pattern match "Delete"\n// ❌ Access Denied`
+            after: `const browser = await launch();\nconst agent = new Clawbot(browser);\nimport { withSupraWall } from "suprawall";\n\nconst secured = withSupraWall(agent);\n// Intercepted: pattern match "Delete"\n// ❌ Access Denied`
         },
         "AutoGen": {
             before: `worker = AssistantAgent("worker")\n# ⚠️ Auto-approval active\nworker.receive("rm -rf logs")\n# System logs wiped 💀`,
-            after: `worker = AssistantAgent("worker")\nfrom agentgate import wrap\n\nwrap(worker, mode="fail-closed")\nworker.receive("rm -rf logs")\n# 🤔 Pending Approval...`
+            after: `worker = AssistantAgent("worker")\nfrom suprawall import wrap\n\nwrap(worker, mode="fail-closed")\nworker.receive("rm -rf logs")\n# 🤔 Pending Approval...`
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-indigo-500/30 selection:text-white">
+        <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-emerald-500/30 selection:text-white">
 
             {/* Header / Nav */}
             <nav className="fixed top-0 w-full z-50 border-b border-white/[0.05] bg-black/60 backdrop-blur-xl">
                 <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="p-1.5 bg-indigo-600 rounded-lg shadow-[0_0_15px_rgba(79,70,229,0.4)]">
-                            <Shield className="w-5 h-5 text-white" />
+                        <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_15px_rgba(5,150,105,0.4)]">
+                            <BrickWall className="w-5 h-5 text-white" />
                         </div>
-                        <span className="text-white font-bold text-xl tracking-tight uppercase italic">AgentGate</span>
+                        <span className="text-white font-bold text-xl tracking-tight uppercase italic">SupraWall</span>
                     </div>
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium">
                         <Link href="/docs" className="text-neutral-400 hover:text-white transition-colors">Documentation</Link>
@@ -258,7 +258,7 @@ export default function LandingPage() {
                 <section className="relative pt-40 pb-32 px-6">
                     {/* Background Gradients */}
                     <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[800px] opacity-30 pointer-events-none">
-                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-indigo-600/20 blur-[150px] rounded-full" />
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-emerald-600/20 blur-[150px] rounded-full" />
                     </div>
 
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -266,10 +266,10 @@ export default function LandingPage() {
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="inline-flex items-center px-4 py-1.5 rounded-full border border-indigo-500/20 bg-indigo-500/5 text-xs font-bold text-indigo-400 tracking-wider uppercase"
+                                className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-xs font-bold text-emerald-400 tracking-wider uppercase"
                             >
-                                <span className="flex h-2 w-2 rounded-full bg-indigo-500 mr-3 animate-pulse"></span>
-                                AgentGate API & OS Architecture 1.0 is live
+                                <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
+                                SupraWall API & OS Architecture 1.0 is live
                             </motion.div>
 
                             <motion.h1
@@ -279,7 +279,7 @@ export default function LandingPage() {
                                 className="text-6xl md:text-8xl font-black tracking-tight text-white leading-[0.95]"
                             >
                                 The Moment Your <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-white to-neutral-400">AI Agent Becomes Dangerous.</span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-neutral-400">AI Agent Becomes Dangerous.</span>
                             </motion.h1>
 
                             <motion.p
@@ -297,7 +297,7 @@ export default function LandingPage() {
                                 transition={{ delay: 0.3 }}
                                 className="flex flex-wrap items-center gap-4 pt-4"
                             >
-                                <Link href="/login" className="px-8 py-4 bg-indigo-600 text-white font-black text-lg rounded-2xl hover:bg-indigo-50 shadow-[0_8px_32px_-8px_rgba(99,102,241,0.5)] transition-all active:scale-95 flex items-center gap-3">
+                                <Link href="/login" className="px-8 py-4 bg-emerald-600 text-white font-black text-lg rounded-2xl hover:bg-emerald-50 shadow-[0_8px_32px_-8px_rgba(99,102,241,0.5)] transition-all active:scale-95 flex items-center gap-3">
                                     Start Securing Agents <ArrowRight className="w-5 h-5" />
                                 </Link>
                                 <Link href="#" className="px-8 py-4 bg-transparent border border-white/10 text-white font-bold text-lg rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3">
@@ -326,7 +326,7 @@ export default function LandingPage() {
                             </motion.div>
 
                             {/* Glow effect behind terminal */}
-                            <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] -z-10 rounded-full scale-125" />
+                            <div className="absolute inset-0 bg-emerald-500/20 blur-[100px] -z-10 rounded-full scale-125" />
                         </div>
                     </div>
                 </section>
@@ -340,7 +340,7 @@ export default function LandingPage() {
                                 whileInView={{ opacity: 1 }}
                                 className="text-xs font-black text-rose-500 uppercase tracking-[0.3em]"
                             >
-                                Without AgentGate, this is your reality:
+                                Without SupraWall, this is your reality:
                             </motion.h2>
                             <h3 className="text-4xl md:text-5xl font-bold text-white tracking-tight">Real incidents. Real consequences.</h3>
                         </div>
@@ -403,12 +403,12 @@ export default function LandingPage() {
                 <section className="py-32 px-6 bg-black relative">
                     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="space-y-8">
-                            <h2 className="text-xs font-black text-indigo-500 uppercase tracking-widest">How it works</h2>
+                            <h2 className="text-xs font-black text-emerald-500 uppercase tracking-widest">How it works</h2>
                             <h3 className="text-4xl md:text-6xl font-extrabold text-white tracking-tighter leading-tight italic">
                                 Secure Any Agent<br /> In Under 30 Seconds.
                             </h3>
                             <p className="text-xl text-neutral-400 leading-relaxed">
-                                AgentGate lives in the execution layer. We intercept tool calls, validate them against your global policy engine, and require human approval for high-risk actions.
+                                SupraWall lives in the execution layer. We intercept tool calls, validate them against your global policy engine, and require human approval for high-risk actions.
                             </p>
 
                             <div className="space-y-4 pt-6">
@@ -450,9 +450,9 @@ export default function LandingPage() {
                                 </div>
                                 <div className="space-y-3">
                                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-2 px-4">
-                                        <Shield className="w-3 h-3" /> AgentGate Secured
+                                        <BrickWall className="w-3 h-3" /> SupraWall Secured
                                     </p>
-                                    <div className="bg-[#0A0A0A] border border-indigo-500/40 rounded-2xl p-6 font-mono text-sm overflow-x-auto text-indigo-100 shadow-[0_0_25px_rgba(99,102,241,0.1)]">
+                                    <div className="bg-[#0A0A0A] border border-emerald-500/40 rounded-2xl p-6 font-mono text-sm overflow-x-auto text-emerald-100 shadow-[0_0_25px_rgba(99,102,241,0.1)]">
                                         <pre>{techExamples[activeTechTab].after}</pre>
                                     </div>
                                 </div>
@@ -465,7 +465,7 @@ export default function LandingPage() {
                 <section className="py-32 bg-white text-black px-6">
                     <div className="max-w-7xl mx-auto space-y-16">
                         <div className="space-y-4">
-                            <h2 className="text-xs font-black text-indigo-600 uppercase tracking-[0.3em]">Real-world safety</h2>
+                            <h2 className="text-xs font-black text-emerald-600 uppercase tracking-[0.3em]">Real-world safety</h2>
                             <h3 className="text-4xl md:text-5xl font-black tracking-tight leading-tight">Trusted to protect <br />autonomous behavior.</h3>
                         </div>
 
@@ -474,14 +474,14 @@ export default function LandingPage() {
                                 {
                                     tag: "Browser Automation",
                                     title: "Clawbot 🔥",
-                                    desc: "\"Our Clawbot scrapers were accidentally clicking 'Delete Account' on customer portals. AgentGate caught 127 attempts before we even knew.\"",
+                                    desc: "\"Our Clawbot scrapers were accidentally clicking 'Delete Account' on customer portals. SupraWall caught 127 attempts before we even knew.\"",
                                     author: "Alex Chen, Automation Startup",
                                     visual: <ClawbotDemo />
                                 },
                                 {
                                     tag: "Customer Service",
                                     title: "LangChain in Prod",
-                                    desc: "\"AI chatbot was about to email our entire customer list with internal debugging info. AgentGate flagged it for approval. Saved us from GDPR nightmare.\"",
+                                    desc: "\"AI chatbot was about to email our entire customer list with internal debugging info. SupraWall flagged it for approval. Saved us from GDPR nightmare.\"",
                                     author: "Maria Santos, Head of Security",
                                     visual: <LangChainDemo />
                                 },
@@ -494,7 +494,7 @@ export default function LandingPage() {
                                 }
                             ].map((card, i) => (
                                 <div key={i} className="min-w-[320px] md:min-w-[450px] snap-center p-8 border-2 border-black rounded-[2.5rem] space-y-8 hover:bg-neutral-50 transition-colors group">
-                                    <div className="aspect-video w-full bg-neutral-100 rounded-2xl border-2 border-black overflow-hidden flex items-center justify-center font-mono text-xs text-neutral-400 group-hover:border-indigo-500 transition-all duration-500">
+                                    <div className="aspect-video w-full bg-neutral-100 rounded-2xl border-2 border-black overflow-hidden flex items-center justify-center font-mono text-xs text-neutral-400 group-hover:border-emerald-500 transition-all duration-500">
                                         {card.visual}
                                     </div>
                                     <div className="space-y-4">
@@ -539,7 +539,7 @@ export default function LandingPage() {
                                 { icon: <Server className="w-7 h-7" />, title: "Self-Host Ready", desc: "Deploy via Docker in your own VPC. Keep your audit logs and policy data completely isolated." }
                             ].map((feature, i) => (
                                 <div key={i} className="space-y-6 group">
-                                    <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white group-hover:bg-indigo-600 group-hover:border-indigo-500 transition-all duration-500 group-hover:rotate-6 shadow-xl">
+                                    <div className="w-14 h-14 rounded-2xl bg-white/[0.03] border border-white/10 flex items-center justify-center text-white group-hover:bg-emerald-600 group-hover:border-emerald-500 transition-all duration-500 group-hover:rotate-6 shadow-xl">
                                         {feature.icon}
                                     </div>
                                     <div className="space-y-3">
@@ -551,14 +551,14 @@ export default function LandingPage() {
                         </div>
 
                         <div className="text-center pt-20 border-t border-white/5">
-                            <p className="text-neutral-400 font-bold tracking-[0.2em] uppercase">AgentGate works anywhere, with anything, in any language—just like Stripe.</p>
+                            <p className="text-neutral-400 font-bold tracking-[0.2em] uppercase">SupraWall works anywhere, with anything, in any language—just like Stripe.</p>
                         </div>
                     </div>
                 </section>
 
                 {/* 📐 SECTION 6: LIVE DEMO (SIMULATED) */}
-                <section className="py-32 px-6 bg-indigo-600 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-br from-indigo-700 to-purple-800 opacity-50" />
+                <section className="py-32 px-6 bg-emerald-600 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-emerald-700 to-purple-800 opacity-50" />
                     <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                         <div className="space-y-8 text-white">
                             <h2 className="text-6xl font-black italic tracking-tighter">SEE IT IN<br />ACTION.</h2>
@@ -598,12 +598,12 @@ export default function LandingPage() {
                                 <div className="space-y-4">
                                     <p className="text-neutral-500"># Try these commands in our engine:</p>
                                     <div className="space-y-1">
-                                        <p className="text-indigo-400">secured.run(<span className="text-emerald-400">"read customer.csv"</span>)</p>
-                                        <p className="text-indigo-400">secured.run(<span className="text-emerald-400">"rm -rf /data"</span>) <span className="text-neutral-600 ml-4">← Try!</span></p>
-                                        <p className="text-indigo-400">secured.run(<span className="text-emerald-400">"email @all"</span>)</p>
+                                        <p className="text-emerald-400">secured.run(<span className="text-emerald-400">"read customer.csv"</span>)</p>
+                                        <p className="text-emerald-400">secured.run(<span className="text-emerald-400">"rm -rf /data"</span>) <span className="text-neutral-600 ml-4">← Try!</span></p>
+                                        <p className="text-emerald-400">secured.run(<span className="text-emerald-400">"email @all"</span>)</p>
                                     </div>
                                     <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-                                        <div className="w-full h-12 bg-indigo-600/20 border border-indigo-500/30 rounded-xl px-4 flex items-center text-white text-sm">
+                                        <div className="w-full h-12 bg-emerald-600/20 border border-emerald-500/30 rounded-xl px-4 flex items-center text-white text-sm">
                                             secured.run("rm -rf /data")
                                         </div>
                                         <motion.button
@@ -625,14 +625,14 @@ export default function LandingPage() {
                 <section className="py-32 px-6 bg-white overflow-hidden">
                     <div className="max-w-7xl mx-auto space-y-16">
                         <div className="text-center space-y-4">
-                            <h2 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.4em]">Builders & Security teams</h2>
+                            <h2 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.4em]">Builders & Security teams</h2>
                             <h3 className="text-5xl md:text-7xl font-black text-black tracking-tight italic uppercase italic">Loved by AI builders.</h3>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {[
-                                { author: "Sarah Miller", role: "AI Lead, F500", text: "AgentGate caught 47 dangerous tool calls in our first week. We had NO IDEA we were that exposed.", rating: 5 },
-                                { author: "CTO, Series B SaaS", role: "Scaling autonomous agents", text: "We went from 'terrified' to confident in 2 hours. Before AgentGate, we wouldn't dare run AI in production.", rating: 5 },
+                                { author: "Sarah Miller", role: "AI Lead, F500", text: "SupraWall caught 47 dangerous tool calls in our first week. We had NO IDEA we were that exposed.", rating: 5 },
+                                { author: "CTO, Series B SaaS", role: "Scaling autonomous agents", text: "We went from 'terrified' to confident in 2 hours. Before SupraWall, we wouldn't dare run AI in production.", rating: 5 },
                                 { author: "Dev, YC W24", role: "Early Adopter", text: "The Stripe of AI security—that's not marketing, it's true. Integration took 30 minutes. Scales to 50 agents.", rating: 5 },
                                 { author: "Maria Rodriguez", role: "SecOps at FinTech", text: "Finally, a way to audit what LLMs are actually doing. Essential for any SOC2 regulated environment.", rating: 5 },
                                 { author: "Engineering Lead", role: "Fortune 100", text: "Native SDKs for 8 languages was the sealer. We could unify our entire Python and Rust agent stack.", rating: 5 },
@@ -646,11 +646,11 @@ export default function LandingPage() {
                                     className="p-10 border-2 border-black rounded-[3rem] space-y-6 hover:bg-neutral-50 transition-colors"
                                 >
                                     <div className="flex gap-1">
-                                        {[...Array(t.rating)].map((_, j) => <Star key={j} className="w-5 h-5 fill-indigo-600 text-indigo-600" />)}
+                                        {[...Array(t.rating)].map((_, j) => <Star key={j} className="w-5 h-5 fill-emerald-600 text-emerald-600" />)}
                                     </div>
                                     <p className="text-xl font-bold italic leading-relaxed">"{t.text}"</p>
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-indigo-100 border border-black" />
+                                        <div className="w-12 h-12 rounded-full bg-emerald-100 border border-black" />
                                         <div>
                                             <p className="font-black text-sm uppercase">{t.author}</p>
                                             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">{t.role}</p>
@@ -686,7 +686,7 @@ export default function LandingPage() {
                                     desc: "Per month",
                                     features: ["100K tool calls / mo", "Unlimited agents", "Team dashboard", "Webhook endpoints", "Priority support", "Audit log persistence"],
                                     cta: "Start 14-day Free Trial",
-                                    buttonStyle: "bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 hover:scale-[1.02]"
+                                    buttonStyle: "bg-emerald-600 text-white shadow-xl shadow-emerald-600/20 hover:scale-[1.02]"
                                 },
                                 {
                                     name: "Enterprise",
@@ -702,7 +702,7 @@ export default function LandingPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.1 }}
-                                    className={`p-10 rounded-[3rem] border ${plan.name.includes('Startup') ? 'border-indigo-500/50 bg-indigo-500/5 ring-4 ring-indigo-500/10' : 'border-white/5 bg-neutral-900/50'} flex flex-col`}
+                                    className={`p-10 rounded-[3rem] border ${plan.name.includes('Startup') ? 'border-emerald-500/50 bg-emerald-500/5 ring-4 ring-emerald-500/10' : 'border-white/5 bg-neutral-900/50'} flex flex-col`}
                                 >
                                     <h4 className="text-xl font-bold uppercase tracking-widest text-neutral-400 mb-2">{plan.name}</h4>
                                     <div className="flex items-baseline gap-2 mb-2">
@@ -712,7 +712,7 @@ export default function LandingPage() {
                                     <div className="flex-1 space-y-4 my-10">
                                         {plan.features.map((f, j) => (
                                             <div key={j} className="flex gap-3 text-sm font-bold text-neutral-400">
-                                                <CheckCircle2 className="w-5 h-5 text-indigo-500 shrink-0" /> {f}
+                                                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" /> {f}
                                             </div>
                                         ))}
                                     </div>
@@ -738,17 +738,17 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
                             {[
-                                { q: "Does AgentGate slow down my agents?", a: "No. Policy evaluation averages under 10ms. For agents taking seconds for LLM calls, this is unnoticeable." },
+                                { q: "Does SupraWall slow down my agents?", a: "No. Policy evaluation averages under 10ms. For agents taking seconds for LLM calls, this is unnoticeable." },
                                 { q: "Can I use it with custom agents?", a: "Yes. Our SDK supports any agent framework—native decorators make integration easy in any language." },
-                                { q: "What happens if AgentGate is down?", a: "Fail-safe mode: You choose Fail-Open (Dev) or Fail-Closed (Prod) to ensure security even during network outages." },
+                                { q: "What happens if SupraWall is down?", a: "Fail-safe mode: You choose Fail-Open (Dev) or Fail-Closed (Prod) to ensure security even during network outages." },
                                 { q: "Where is my data stored?", a: "You can use our managed cloud or self-host your own audit log database for total isolation." },
                                 { q: "Is it really database-agnostic?", a: "Yes. We support 5+ major databases with native ORM adapters built-in." },
-                                { q: "Do I need to change my prompt?", a: "No. AgentGate lives in the tool layer, so your prompts remain exactly as you designed them." }
+                                { q: "Do I need to change my prompt?", a: "No. SupraWall lives in the tool layer, so your prompts remain exactly as you designed them." }
                             ].map((faq, i) => (
                                 <div key={i} className="space-y-4 border-t-2 border-black pt-8 group">
                                     <h4 className="text-2xl font-black flex items-center justify-between pointer-events-none tracking-tight">
                                         {faq.q}
-                                        <HelpCircle className="w-6 h-6 text-indigo-600" />
+                                        <HelpCircle className="w-6 h-6 text-emerald-600" />
                                     </h4>
                                     <p className="text-neutral-500 font-bold leading-relaxed">{faq.a}</p>
                                 </div>
@@ -762,13 +762,13 @@ export default function LandingPage() {
                     <div className="max-w-4xl mx-auto text-center space-y-10 relative z-10">
                         <h2 className="text-6xl md:text-[7rem] font-black text-white italic tracking-tighter leading-[0.85] italic">STOP GUESSING. START SECURING.</h2>
                         <p className="text-2xl text-neutral-400 font-medium max-w-2xl mx-auto">
-                            Join 1,000+ teams who sleep better knowing their AI agents are governed by AgentGate.
+                            Join 1,000+ teams who sleep better knowing their AI agents are governed by SupraWall.
                         </p>
                         <div className="flex flex-col md:flex-row items-center justify-center gap-6 pt-10">
                             <Link href="/login" className="px-12 py-6 bg-white text-black font-black text-2xl rounded-3xl hover:bg-neutral-200 transition-all shadow-[0_0_50px_rgba(255,255,255,0.2)] active:scale-95">
                                 Start Securing Free →
                             </Link>
-                            <Link href="/docs" className="text-white font-black text-xl hover:text-indigo-400 transition-colors flex items-center gap-3">
+                            <Link href="/docs" className="text-white font-black text-xl hover:text-emerald-400 transition-colors flex items-center gap-3">
                                 Read the full spec <ExternalLink className="w-5 h-5" />
                             </Link>
                         </div>
@@ -776,7 +776,7 @@ export default function LandingPage() {
 
                     {/* Decorative background visual */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-7xl h-[600px] opacity-10 pointer-events-none">
-                        <div className="w-full h-full bg-indigo-500 blur-[200px] rounded-full" />
+                        <div className="w-full h-full bg-emerald-500 blur-[200px] rounded-full" />
                     </div>
                 </section>
 
@@ -786,8 +786,8 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-12">
                     <div className="col-span-2 space-y-6">
                         <div className="flex items-center gap-3">
-                            <Shield className="w-6 h-6 text-indigo-500" />
-                            <span className="text-white font-black text-2xl uppercase italic">AgentGate</span>
+                            <BrickWall className="w-6 h-6 text-emerald-500" />
+                            <span className="text-white font-black text-2xl uppercase italic">SupraWall</span>
                         </div>
                         <p className="max-w-sm text-sm font-medium leading-relaxed">
                             The security standard for autonomous AI agents. Built for scale, security, and developer speed.
@@ -829,7 +829,7 @@ export default function LandingPage() {
                     </div>
                 </div>
                 <div className="max-w-7xl mx-auto pt-24 text-[10px] font-black uppercase tracking-[0.5em] text-center opacity-30">
-                    © 2026 AGENTGATE ARCHITECTURE 1.0 — SECURING THE AUTONOMOUS FUTURE.
+                    © 2026 SUPRAWALL ARCHITECTURE 1.0 — SECURING THE AUTONOMOUS FUTURE.
                 </div>
             </footer>
         </div>

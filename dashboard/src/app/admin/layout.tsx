@@ -6,7 +6,7 @@ import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Shield, Users, Activity, Settings, Database, Server, BarChart2 } from "lucide-react";
+import { Shield, BrickWall, Users, Activity, Settings, Database, Server, BarChart2 } from "lucide-react";
 
 // Add admin emails here
 const ADMIN_EMAILS = ["peghin@gmail.com"];
@@ -39,7 +39,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         return (
             <div className="min-h-screen flex items-center justify-center bg-black text-white">
                 <div className="flex flex-col items-center gap-4">
-                    <Shield className="w-12 h-12 text-indigo-500 animate-pulse" />
+                    <BrickWall className="w-12 h-12 text-emerald-500 animate-pulse" />
                     <p className="text-xl font-semibold">Verifying Admin Access...</p>
                 </div>
             </div>
@@ -60,9 +60,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* Admin Header / Sidebar */}
             <aside className="w-64 border-r border-white/5 bg-neutral-950 flex flex-col z-20">
                 <div className="h-16 flex items-center px-6 border-b border-white/5 bg-black/40">
-                    <Shield className="w-6 h-6 text-red-500 mr-3" />
+                    <BrickWall className="w-6 h-6 text-red-500 mr-3" />
                     <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        AgentGate <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">Admin</span>
+                        SupraWall <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">Admin</span>
                     </span>
                 </div>
 
@@ -77,7 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                                 className={`group flex items-center px-6 py-3 mx-2 rounded-lg transition-all duration-300 ${isActive ? "bg-white/[0.08] text-white shadow-sm ring-1 ring-white/10" : "text-neutral-400 hover:text-white hover:bg-white/[0.04]"
                                     }`}
                             >
-                                <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-indigo-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
+                                <Icon className={`w-4 h-4 mr-3 transition-transform duration-300 ${isActive ? "scale-110 text-emerald-400" : "group-hover:scale-110 group-hover:text-neutral-200"}`} />
                                 <span className={`text-sm font-medium transition-colors ${isActive ? "text-white" : "group-hover:text-white"}`}>{item.name}</span>
                             </Link>
                         );

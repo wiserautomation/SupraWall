@@ -10,7 +10,7 @@ if (!admin.apps.length) {
 var evaluateAction_1 = require("./evaluateAction");
 Object.defineProperty(exports, "evaluateAction", { enumerable: true, get: function () { return evaluateAction_1.evaluateAction; } });
 Object.defineProperty(exports, "generatePolicyRegex", { enumerable: true, get: function () { return evaluateAction_1.generatePolicyRegex; } });
-// AgentGate Connect — multi-tenant management
+// SupraWall Connect — multi-tenant management
 var connect_1 = require("./connect");
 Object.defineProperty(exports, "createPlatform", { enumerable: true, get: function () { return connect_1.createPlatform; } });
 Object.defineProperty(exports, "getPlatform", { enumerable: true, get: function () { return connect_1.getPlatform; } });

@@ -53,12 +53,12 @@ export default function SettingsPage() {
             {/* DATABASE CONFIG */}
             <section>
                 <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-indigo-500/10 rounded-lg">
-                        <Database className="w-5 h-5 text-indigo-400" />
+                    <div className="p-2 bg-emerald-500/10 rounded-lg">
+                        <Database className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
                         <h2 className="text-xl font-semibold text-white">Database Architecture</h2>
-                        <p className="text-sm text-neutral-400">AgentGate is database agnostic. Choose your persistence layer.</p>
+                        <p className="text-sm text-neutral-400">SupraWall is database agnostic. Choose your persistence layer.</p>
                     </div>
                 </div>
 
@@ -73,7 +73,7 @@ export default function SettingsPage() {
                             <select
                                 value={dbType}
                                 onChange={(e) => setDbType(e.target.value)}
-                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                             >
                                 <option value="firebase">Firebase (Cloud Firestore) - Default</option>
                                 <option value="postgres">PostgreSQL</option>
@@ -92,10 +92,10 @@ export default function SettingsPage() {
                                 <label className="text-sm font-medium text-neutral-300">Connection String (URL)</label>
                                 <input
                                     type="text"
-                                    placeholder={`e.g. ${dbType}://user:pass@localhost:5432/agentgate`}
+                                    placeholder={`e.g. ${dbType}://user:pass@localhost:5432/suprawall`}
                                     value={dbString}
                                     onChange={(e) => setDbString(e.target.value)}
-                                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                                 />
                                 <p className="text-xs text-neutral-500">Ensure your cloud instance allows external connections from our IP ranges.</p>
                             </motion.div>
@@ -106,7 +106,7 @@ export default function SettingsPage() {
                                 type="submit"
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${savedDb
                                     ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
                                     }`}
                             >
                                 {savedDb ? (
@@ -146,10 +146,10 @@ export default function SettingsPage() {
                             <label className="text-sm font-medium text-neutral-300">Endpoint URL</label>
                             <input
                                 type="url"
-                                placeholder="https://your-api.com/webhooks/agentgate"
+                                placeholder="https://your-api.com/webhooks/suprawall"
                                 value={webhookUrl}
                                 onChange={(e) => setWebhookUrl(e.target.value)}
-                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
                             />
                             <p className="text-xs text-neutral-500">We send POST requests with application/json payloads. Automatic exponential backoff applies to failed deliveries.</p>
                         </div>
@@ -157,7 +157,7 @@ export default function SettingsPage() {
                         <div className="space-y-3">
                             <div className="flex justify-between items-end">
                                 <label className="text-sm font-medium text-neutral-300">Signing Secret</label>
-                                <button type="button" onClick={handleGenerateSecret} className="text-xs flex items-center gap-1 text-indigo-400 hover:text-indigo-300 transition-colors">
+                                <button type="button" onClick={handleGenerateSecret} className="text-xs flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors">
                                     <RefreshCcw className="w-3 h-3" /> Roll Secret
                                 </button>
                             </div>
@@ -169,7 +169,7 @@ export default function SettingsPage() {
                                     className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-neutral-400 text-sm font-mono cursor-not-allowed"
                                 />
                             </div>
-                            <p className="text-xs text-neutral-500">Used to verify the AgentGate-Signature HMAC SHA256 header securely.</p>
+                            <p className="text-xs text-neutral-500">Used to verify the SupraWall-Signature HMAC SHA256 header securely.</p>
                         </div>
 
                         <div className="pt-4 border-t border-white/5 flex justify-end gap-3">
@@ -193,7 +193,7 @@ export default function SettingsPage() {
                                 type="submit"
                                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${savedWebhook
                                     ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                    : "bg-indigo-600 text-white hover:bg-indigo-700"
+                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
                                     }`}
                             >
                                 {savedWebhook ? (

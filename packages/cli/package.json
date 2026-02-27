@@ -1,10 +1,10 @@
 {
-  "name": "@agentgate/cli",
+  "name": "@suprawall/cli",
   "version": "1.0.0",
-  "description": "Powerful developer CLI for AgentGate",
+  "description": "Powerful developer CLI for SupraWall",
   "main": "dist/bin.js",
   "bin": {
-    "agentgate": "./dist/bin.js"
+    "suprawall": "./dist/bin.js"
   },
   "scripts": {
     "build": "tsc",
