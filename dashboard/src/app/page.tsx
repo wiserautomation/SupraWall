@@ -69,10 +69,10 @@ function CodeTerminal() {
             <div className="p-6 space-y-2">
                 {lines.map((line, i) => {
                     const safeLine = line || "";
-                    const isWarning = safeLine.includes("⚠️");
-                    const isDenied = safeLine.includes("❌");
-                    const isSuccess = safeLine.includes("✅");
-                    const isCheck = safeLine.includes("🛡️");
+                    const isWarning = safeLine?.includes("⚠️");
+                    const isDenied = safeLine?.includes("❌");
+                    const isSuccess = safeLine?.includes("✅");
+                    const isCheck = safeLine?.includes("🛡️");
 
                     return (
                         <motion.div
@@ -147,7 +147,7 @@ function ClawbotDemo() {
                         key={`clawbot-line-${i}`}
                         initial={{ opacity: 0, x: -5 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className={safeL.includes('❌') ? 'text-rose-500 font-black' : safeL.includes('⚠️') ? 'text-amber-500 font-bold' : safeL.includes('🛡️') ? 'text-emerald-400' : ''}
+                        className={safeL?.includes('❌') ? 'text-rose-500 font-black' : safeL?.includes('⚠️') ? 'text-amber-500 font-bold' : safeL?.includes('🛡️') ? 'text-emerald-400' : ''}
                     >
                         {safeL}
                     </motion.div>
@@ -702,7 +702,7 @@ export default function LandingPage() {
                                     initial={{ opacity: 0, y: 20 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.1 }}
-                                    className={`p-10 rounded-[3rem] border ${plan.name.includes('Startup') ? 'border-emerald-500/50 bg-emerald-500/5 ring-4 ring-emerald-500/10' : 'border-white/5 bg-neutral-900/50'} flex flex-col`}
+                                    className={`p-10 rounded-[3rem] border ${plan.name?.includes('Startup') ? 'border-emerald-500/50 bg-emerald-500/5 ring-4 ring-emerald-500/10' : 'border-white/5 bg-neutral-900/50'} flex flex-col`}
                                 >
                                     <h4 className="text-xl font-bold uppercase tracking-widest text-neutral-400 mb-2">{plan.name}</h4>
                                     <div className="flex items-baseline gap-2 mb-2">
