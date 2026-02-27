@@ -141,6 +141,7 @@ class SupraWallOptions:
     max_cost_usd: Optional[float] = None        # Hard cap per session in USD.
     budget_alert_usd: Optional[float] = None    # Soft alert threshold in USD.
     session_id: Optional[str] = None            # Groups calls for cost tracking
+    agent_role: Optional[str] = None            # e.g. "researcher", "writer"
     max_iterations: Optional[int] = None       # Hard stop after N tool calls
     loop_detection: bool = False               # Detect repeated identical calls
     loop_threshold: int = 3                    # Block if same tool called N times consec.
@@ -240,6 +241,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
                 "toolName": tool_name,
                 "args": args or {},
                 "sessionId": options.session_id,
+                "agentRole": options.agent_role,
             },
             headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )
@@ -275,6 +277,7 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
                 "toolName": tool_name,
                 "args": args or {},
                 "sessionId": options.session_id,
+                "agentRole": options.agent_role,
             },
             headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )

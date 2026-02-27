@@ -33,6 +33,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
     const apiKey = body.apiKey;
     const toolName = body.toolName;
     const args = body.args;
+    const sessionId = body.sessionId || null;
+    const agentRole = body.agentRole || null;
 
     const startTime = Date.now();
 
@@ -122,7 +124,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const agentsSnapshot = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
 
             if (agentsSnapshot.empty) {
-                await logAudit("unknown", toolName, argsString, "DENY");
+                await logAudit("unknown", toolName, argsString, "DENY", 0, "Invalid API Key", sessionId, agentRole);
                 res.status(403).json({ decision: "DENY", reason: "Invalid API Key" });
                 return;
             }
@@ -155,7 +157,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             // 4. Log the audit event
             const estimatedCost = estimateActionCost(args, toolName);
-            await logAudit(agentId, toolName, argsString, finalDecision, estimatedCost);
+            await logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole);
 
             // 5. Return the decision
             res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
@@ -246,13 +248,16 @@ function sanitizeArgs(args: any): any {
     return sanitized;
 }
 
-async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0) {
+async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null) {
     try {
         await db.collection("audit_logs").add({
             agentId,
             toolName,
             arguments: args,
             decision,
+            reason,
+            sessionId,
+            agentRole,
             cost_usd: costUsd,
             timestamp: FieldValue.serverTimestamp()
         });

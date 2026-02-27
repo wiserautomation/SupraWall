@@ -33,6 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const navItems = [
         { name: "Agents", href: "/dashboard", icon: Users },
+        { name: "Monitoring", href: "/dashboard/monitoring", icon: Activity },
         { name: "Integrations", href: "/dashboard/integrations", icon: Zap },
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },

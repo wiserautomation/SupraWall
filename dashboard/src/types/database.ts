@@ -23,6 +23,7 @@ export interface AuditLog {
   decision: string;
   reason?: string;
   sessionId?: string;
+  agentRole?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timestamp: any; // Firestore timestamp
   cost_usd?: number;

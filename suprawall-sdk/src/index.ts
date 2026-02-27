@@ -143,11 +143,14 @@ export interface SupraWallOptions {
     /**
      * Soft alert threshold in USD. Logs a warning when spend reaches this amount.
      * Must be lower than maxCostUsd to be useful.
-    /**
      * Optional session ID to group calls for cost/loop tracking.
      * If not provided, the API Key is used as the session bucket (global).
      */
     sessionId?: string;
+    /**
+     * Optional agent role descriptor (e.g. "researcher", "executor").
+     */
+    agentRole?: string;
     /**
      * Hard stop after N tool calls in this session.
      * Prevents runaway agents regardless of loop patterns.
@@ -216,7 +219,7 @@ export function withSupraWall<T extends AgentInstance>(
                     "Content-Type": "application/json",
                     "X-SupraWall-SDK": `js-${SDK_VERSION}`,
                 },
-                body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId }),
+                body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole }),
             });
 
             if (!response.ok) {
@@ -444,7 +447,7 @@ function wrapOpenClaw(agent: any, options: SupraWallOptions) {
                 "Content-Type": "application/json",
                 "X-SupraWall-SDK": `js-claw-${SDK_VERSION}`,
             },
-            body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId }),
+            body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole }),
         });
 
         if (response.ok) {
@@ -496,7 +499,7 @@ function wrapVercelTools(tools: Record<string, any>, options: SupraWallOptions) 
                         "Content-Type": "application/json",
                         "X-SupraWall-SDK": `js-vercel-${SDK_VERSION}`,
                     },
-                    body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId })
+                    body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole })
                 });
 
                 if (response.ok) {
@@ -533,7 +536,8 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
                     apiKey: options.apiKey,
                     toolName,
                     args: input,
-                    sessionId: options.sessionId
+                    sessionId: options.sessionId,
+                    agentRole: options.agentRole
                 })
             });
 
