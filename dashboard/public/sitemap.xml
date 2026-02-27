@@ -1,47 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://supra-wall.com/</loc>
+    <loc>https://www.supra-wall.com/</loc>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/learn/what-is-agent-runtime-security</loc>
+    <loc>https://www.supra-wall.com/learn/what-is-agent-runtime-security</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/quickstart</loc>
+    <loc>https://www.supra-wall.com/quickstart</loc>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/docs</loc>
+    <loc>https://www.supra-wall.com/docs</loc>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/integrations/langchain</loc>
+    <loc>https://www.supra-wall.com/integrations/langchain</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/integrations/autogen</loc>
+    <loc>https://www.supra-wall.com/integrations/autogen</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/integrations/crewai</loc>
+    <loc>https://www.supra-wall.com/integrations/crewai</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/integrations/vercel</loc>
+    <loc>https://www.supra-wall.com/integrations/vercel</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/use-cases/prompt-injection</loc>
+    <loc>https://www.supra-wall.com/use-cases/prompt-injection</loc>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/vs/guardrails-ai</loc>
+    <loc>https://www.supra-wall.com/vs/guardrails-ai</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://supra-wall.com/vs/nemo-guardrails</loc>
+    <loc>https://www.supra-wall.com/vs/nemo-guardrails</loc>
     <priority>0.6</priority>
   </url>
 </urlset>
