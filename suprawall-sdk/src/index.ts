@@ -2,6 +2,100 @@ const DEFAULT_CLOUD_FUNCTION_URL =
     "https://us-central1-suprawall-prod.cloudfunctions.net/evaluateAction";
 const SDK_VERSION = "0.1.0";
 
+// ---------------------------------------------------------------------------
+// Cost estimation — model token costs (USD per 1k tokens)
+// ---------------------------------------------------------------------------
+
+const MODEL_COSTS_PER_1K: Record<string, { input: number; output: number }> = {
+    "gpt-4o": { input: 0.005, output: 0.015 },
+    "gpt-4o-mini": { input: 0.00015, output: 0.0006 },
+    "gpt-4-turbo": { input: 0.01, output: 0.03 },
+    "claude-3-5-sonnet": { input: 0.003, output: 0.015 },
+    "claude-3-5-haiku": { input: 0.0008, output: 0.004 },
+    "gemini-1.5-pro": { input: 0.00125, output: 0.005 },
+    "gemini-1.5-flash": { input: 0.000075, output: 0.0003 },
+};
+
+function estimateCost(model: string, inputTokens: number, outputTokens: number): number {
+    const key = Object.keys(MODEL_COSTS_PER_1K).find(k => model.toLowerCase().startsWith(k));
+    const rates = key ? MODEL_COSTS_PER_1K[key] : { input: 0.001, output: 0.002 };
+    return (inputTokens / 1000 * rates.input) + (outputTokens / 1000 * rates.output);
+}
+
+function formatCost(usd: number): string {
+    if (usd < 0.0001) return `$${usd.toFixed(6)}`;
+    if (usd < 0.01) return `$${usd.toFixed(4)}`;
+    return `$${usd.toFixed(2)}`;
+}
+
+// ---------------------------------------------------------------------------
+// Budget control
+// ---------------------------------------------------------------------------
+
+export class BudgetExceededError extends Error {
+    public readonly limitUsd: number;
+    public readonly actualUsd: number;
+
+    constructor(limitUsd: number, actualUsd: number) {
+        super(
+            `[SupraWall] Budget cap of ${formatCost(limitUsd)} exceeded ` +
+            `(session spend: ${formatCost(actualUsd)}). Agent halted.`
+        );
+        this.name = "BudgetExceededError";
+        this.limitUsd = limitUsd;
+        this.actualUsd = actualUsd;
+    }
+}
+
+export class BudgetTracker {
+    private sessionCost = 0;
+    private alertFired = false;
+
+    constructor(
+        private readonly maxCostUsd?: number,
+        private readonly alertUsd?: number,
+        private readonly logger: Pick<Console, "warn"> = console,
+    ) { }
+
+    /**
+     * Record a call and enforce the budget cap.
+     * Pass costUsd directly, or model+tokens for auto-estimation.
+     * Throws BudgetExceededError if the hard cap is breached.
+     */
+    record(opts: { model?: string; inputTokens?: number; outputTokens?: number; costUsd?: number } = {}): number {
+        const cost = opts.costUsd ?? estimateCost(
+            opts.model ?? "gpt-4o-mini",
+            opts.inputTokens ?? 0,
+            opts.outputTokens ?? 0,
+        );
+        this.sessionCost += cost;
+
+        if (this.alertUsd && !this.alertFired && this.sessionCost >= this.alertUsd) {
+            this.alertFired = true;
+            this.logger.warn(
+                `[SupraWall] Budget alert: session spend ${formatCost(this.sessionCost)} ` +
+                `>= alert threshold ${formatCost(this.alertUsd)}.`
+            );
+        }
+
+        if (this.maxCostUsd !== undefined && this.sessionCost >= this.maxCostUsd) {
+            throw new BudgetExceededError(this.maxCostUsd, this.sessionCost);
+        }
+
+        return cost;
+    }
+
+    reset(): void {
+        this.sessionCost = 0;
+        this.alertFired = false;
+    }
+
+    get summary(): string {
+        const limit = this.maxCostUsd !== undefined ? formatCost(this.maxCostUsd) : "unlimited";
+        return `Session spend: ${formatCost(this.sessionCost)} / ${limit}`;
+    }
+}
+
 export interface SupraWallResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
@@ -31,6 +125,18 @@ export interface SupraWallOptions {
      * Pass `{ warn: () => {}, error: () => {}, log: () => {} }` to silence.
      */
     logger?: Pick<Console, "warn" | "error" | "log">;
+    /**
+     * Hard cost cap per agent session in USD.
+     * When the accumulated LLM spend reaches this limit, BudgetExceededError is thrown.
+     * Example: maxCostUsd: 5.00  →  agent auto-stops at $5
+     */
+    maxCostUsd?: number;
+    /**
+     * Soft alert threshold in USD. Logs a warning when spend reaches this amount.
+     * Must be lower than maxCostUsd to be useful.
+     * Example: budgetAlertUsd: 4.00
+     */
+    budgetAlertUsd?: number;
 }
 
 export interface AgentInstance {
@@ -162,13 +268,20 @@ export function createSupraWallMiddleware(options: SupraWallOptions) {
         cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL,
         onNetworkError = "fail-open",
         logger = console,
+        maxCostUsd,
+        budgetAlertUsd,
     } = options;
+
+    const budget = new BudgetTracker(maxCostUsd, budgetAlertUsd, logger);
 
     return async function agentGateMiddleware(
         toolName: string,
         args: any,
         next: () => Promise<any>
     ): Promise<any> {
+        // Budget check — throws BudgetExceededError if over cap
+        budget.record();
+
         try {
             const response = await fetch(cloudFunctionUrl, {
                 method: "POST",
@@ -200,6 +313,7 @@ export function createSupraWallMiddleware(options: SupraWallOptions) {
                 return { error: "Human approval required. Check https://supra-wall-rho.vercel.app/" };
             }
         } catch (e) {
+            if (e instanceof BudgetExceededError) throw e; // re-throw — don't swallow budget errors
             logger.error("[SupraWall] Middleware error.", e);
             if (onNetworkError === "fail-closed") {
                 return { error: "SupraWall unreachable. Action blocked." };

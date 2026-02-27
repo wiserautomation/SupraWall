@@ -1,12 +1,115 @@
 import functools
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Literal, Optional
 import httpx
+
+from .cost import estimate_cost, format_cost
 
 DEFAULT_URL = "https://us-central1-suprawall-prod.cloudfunctions.net/evaluateAction"
 SDK_VERSION = "0.1.0"
 log = logging.getLogger("suprawall")
+
+
+# ---------------------------------------------------------------------------
+# Budget control exceptions
+# ---------------------------------------------------------------------------
+
+class BudgetExceededError(Exception):
+    """
+    Raised when an agent session exceeds its configured cost budget.
+
+    Attributes:
+        limit_usd:  The configured hard cap in USD.
+        actual_usd: The accumulated cost that triggered the cap.
+
+    Example:
+        try:
+            result = gate.check("call_api", args, next_fn)
+        except BudgetExceededError as e:
+            print(f"Agent stopped: spent {e.actual_usd:.4f} / limit {e.limit_usd:.2f}")
+    """
+    def __init__(self, limit_usd: float, actual_usd: float):
+        self.limit_usd = limit_usd
+        self.actual_usd = actual_usd
+        super().__init__(
+            f"[SupraWall] Budget cap of {format_cost(limit_usd)} exceeded "
+            f"(session spend: {format_cost(actual_usd)}). Agent halted."
+        )
+
+
+class BudgetTracker:
+    """
+    Tracks accumulated cost for a single agent session and enforces limits.
+
+    Usage:
+        tracker = BudgetTracker(max_cost_usd=5.0, alert_usd=4.0)
+        tracker.record(model="gpt-4o-mini", input_tokens=150, output_tokens=90)
+        # Raises BudgetExceededError if over limit.
+    """
+
+    def __init__(
+        self,
+        max_cost_usd: Optional[float] = None,
+        alert_usd: Optional[float] = None,
+    ):
+        self.max_cost_usd = max_cost_usd
+        self.alert_usd = alert_usd
+        self.session_cost: float = 0.0
+        self._alert_fired: bool = False
+
+    def record(
+        self,
+        model: str = "gpt-4o-mini",
+        input_tokens: int = 0,
+        output_tokens: int = 0,
+        cost_usd: Optional[float] = None,
+    ) -> float:
+        """
+        Record a single LLM call and enforce limits.
+
+        Pass either `cost_usd` directly, or `model + input_tokens + output_tokens`
+        for automatic estimation.
+
+        Returns the incremental cost added (in USD).
+        Raises BudgetExceededError if the hard cap is breached.
+        """
+        if cost_usd is None:
+            cost_usd = estimate_cost(model, input_tokens, output_tokens)
+
+        self.session_cost += cost_usd
+
+        # Fire soft alert (once per session)
+        if (
+            self.alert_usd is not None
+            and not self._alert_fired
+            and self.session_cost >= self.alert_usd
+        ):
+            self._alert_fired = True
+            log.warning(
+                f"[SupraWall] Budget alert: session spend {format_cost(self.session_cost)} "
+                f">= alert threshold {format_cost(self.alert_usd)}."
+            )
+
+        # Enforce hard cap
+        if self.max_cost_usd is not None and self.session_cost >= self.max_cost_usd:
+            raise BudgetExceededError(
+                limit_usd=self.max_cost_usd,
+                actual_usd=self.session_cost,
+            )
+
+        return cost_usd
+
+    def reset(self) -> None:
+        """Reset session cost (e.g. start a new agent run)."""
+        self.session_cost = 0.0
+        self._alert_fired = False
+
+    @property
+    def summary(self) -> str:
+        """Human-readable cost summary for logs."""
+        limit = format_cost(self.max_cost_usd) if self.max_cost_usd else "unlimited"
+        return f"Session spend: {format_cost(self.session_cost)} / {limit}"
 
 
 @dataclass
@@ -17,12 +120,19 @@ class SupraWallOptions:
     Only api_key is required. All other fields have sensible defaults.
 
     Example:
-        options = SupraWallOptions(api_key="ag_your_key_here")
+        options = SupraWallOptions(
+            api_key="ag_your_key_here",
+            max_cost_usd=5.00,      # Hard stop at $5 per session
+            budget_alert_usd=4.00,  # Warn at $4
+        )
     """
     api_key: str
     cloud_function_url: str = DEFAULT_URL
     on_network_error: Literal["fail-open", "fail-closed"] = "fail-open"
     timeout: float = 5.0
+    # --- Budget Control (Phase 1: Cost Control AgentGuard) ---
+    max_cost_usd: Optional[float] = None        # Hard cap per session in USD. None = no limit.
+    budget_alert_usd: Optional[float] = None    # Soft alert threshold in USD. None = disabled.
 
 
 def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
@@ -285,15 +395,23 @@ class SupraWallMiddleware:
 
     def __init__(self, options: SupraWallOptions):
         self.options = options
+        self.budget = BudgetTracker(
+            max_cost_usd=options.max_cost_usd,
+            alert_usd=options.budget_alert_usd,
+        )
 
     def check(self, tool_name: str, args: Any, next_fn: callable) -> Any:
         """Synchronous policy check. Calls next_fn() if allowed."""
+        # Budget enforcement — raises BudgetExceededError if over cap
+        self.budget.record()
         try:
             data = _evaluate(tool_name, args, self.options)
             blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
             if blocked is not None:
                 return blocked
-            return next_fn()
+            result = next_fn()
+            log.debug(f"[SupraWall] {self.budget.summary}")
+            return result
         except httpx.RequestError as e:
             log.error(f"[SupraWall] Network error: {e}")
             if self.options.on_network_error == "fail-closed":
@@ -303,6 +421,8 @@ class SupraWallMiddleware:
     async def check_async(self, tool_name: str, args: Any, next_fn: callable) -> Any:
         """Async policy check. Awaits next_fn() if allowed."""
         import inspect
+        # Budget enforcement — raises BudgetExceededError if over cap
+        self.budget.record()
         try:
             data = await _evaluate_async(tool_name, args, self.options)
             blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
@@ -310,7 +430,8 @@ class SupraWallMiddleware:
                 return blocked
             result = next_fn()
             if inspect.isawaitable(result):
-                return await result
+                result = await result
+            log.debug(f"[SupraWall] {self.budget.summary}")
             return result
         except httpx.RequestError as e:
             log.error(f"[SupraWall] Network error: {e}")
