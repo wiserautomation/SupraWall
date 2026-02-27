@@ -239,6 +239,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
                 "apiKey": options.api_key,
                 "toolName": tool_name,
                 "args": args or {},
+                "sessionId": options.session_id,
             },
             headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )
@@ -273,6 +274,7 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
                 "apiKey": options.api_key,
                 "toolName": tool_name,
                 "args": args or {},
+                "sessionId": options.session_id,
             },
             headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )

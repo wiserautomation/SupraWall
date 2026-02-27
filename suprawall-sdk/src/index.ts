@@ -216,7 +216,7 @@ export function withSupraWall<T extends AgentInstance>(
                     "Content-Type": "application/json",
                     "X-SupraWall-SDK": `js-${SDK_VERSION}`,
                 },
-                body: JSON.stringify({ apiKey, toolName, args }),
+                body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId }),
             });
 
             if (!response.ok) {
@@ -444,7 +444,7 @@ function wrapOpenClaw(agent: any, options: SupraWallOptions) {
                 "Content-Type": "application/json",
                 "X-SupraWall-SDK": `js-claw-${SDK_VERSION}`,
             },
-            body: JSON.stringify({ apiKey, toolName, args }),
+            body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId }),
         });
 
         if (response.ok) {
@@ -496,7 +496,7 @@ function wrapVercelTools(tools: Record<string, any>, options: SupraWallOptions) 
                         "Content-Type": "application/json",
                         "X-SupraWall-SDK": `js-vercel-${SDK_VERSION}`,
                     },
-                    body: JSON.stringify({ apiKey, toolName, args })
+                    body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId })
                 });
 
                 if (response.ok) {
@@ -532,7 +532,8 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
                 body: JSON.stringify({
                     apiKey: options.apiKey,
                     toolName,
-                    args: input
+                    args: input,
+                    sessionId: options.sessionId
                 })
             });
 
