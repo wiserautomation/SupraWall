@@ -5,10 +5,11 @@ import {
     ArrowRight, Box, Lock, Activity, ChevronRight, CheckCircle2,
     Shield, BrickWall, Database, Terminal, Globe, Code2, AlertTriangle,
     Play, Users, Star, HelpCircle, Mail, DollarSign, ExternalLink,
-    Zap, Server
+    Zap, Server, Bot, Layers, Triangle
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Navbar } from "@/components/Navbar";
 
 // --- Components ---
 
@@ -86,8 +87,8 @@ function CodeTerminal() {
                     );
                 })}
             </div>
-            <div className="absolute bottom-4 right-4 text-[10px] text-neutral-600 animate-pulse">
-                💾 3,847 dangerous actions blocked today
+            <div className="absolute bottom-4 right-4 text-[10px] text-neutral-600">
+                💾 Local Security Policy v2.4
             </div>
         </div>
     );
@@ -212,45 +213,31 @@ function AutoGenDemo() {
 // --- Main Page ---
 
 export default function LandingPage() {
-    const [activeTechTab, setActiveTechTab] = useState("Clawbot 🔥");
+    const [activeTechTab, setActiveTechTab] = useState("TypeScript");
 
     const techExamples: Record<string, any> = {
-        "LangChain": {
-            before: `from langchain import Agent\nfrom tools import bash_tool\n\nagent = Agent(tools=[bash_tool])\n# ⚠️ No security layer!\n\nagent.run("Clean temp files")\n# Executed: rm -rf / 💀`,
-            after: `from langchain import Agent\nfrom tools import bash_tool\nfrom suprawall import secure\n\nagent = Agent(tools=[bash])\nsecured = secure(agent,\n  api_key="ag_live_xxx")\n\n# ✅ Blocked automatically`
+        "TypeScript": {
+            before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
+            after: `import { protect } from "@suprawall/sdk";\n\n// 🛡️ Zero-Config Protection\nconst secured = protect(myAgent);\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
         },
-        "Clawbot 🔥": {
-            before: `const browser = await launch();\nconst agent = new Clawbot(browser);\n\n// ⚠️ Unrestricted access\nawait agent.execute("Delete user data");\n// Account deleted 💀`,
-            after: `const browser = await launch();\nconst agent = new Clawbot(browser);\nimport { withSupraWall } from "suprawall";\n\nconst secured = withSupraWall(agent);\n// Intercepted: pattern match "Delete"\n// ❌ Access Denied`
+        "Python": {
+            before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
+            after: `from suprawall import secure\n\n# 🛡️ Native Framework evolution\n@secure(api_key="ag_...")\ndef run_swarm():\n    # Agent is automatically protected\n    return Agent(...)\n\n# ✅ Destructive acts blocked`
         },
-        "AutoGen": {
-            before: `worker = AssistantAgent("worker")\n# ⚠️ Auto-approval active\nworker.receive("rm -rf logs")\n# System logs wiped 💀`,
-            after: `worker = AssistantAgent("worker")\nfrom suprawall import wrap\n\nwrap(worker, mode="fail-closed")\nworker.receive("rm -rf logs")\n# 🤔 Pending Approval...`
+        "MCP": {
+            before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
+            after: `import { secureMCP } from "suprawall";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secureMCP(server);\n\n// ✅ Tool calls governed via cloud\nawait secured.start();`
+        },
+        "Browser": {
+            before: `const agent = new Clawbot(browser);\n// ⚠️ Unlimited navigation/clicks\nawait agent.execute("Delete AWS Account");\n# System wiped 💀`,
+            after: `import { secureClaw } from "@suprawall/claw";\n\n// 🛡️ Native Browser Guard\nconst secured = secureClaw(agent);\n\n// ✅ High-risk actions intercepted\nawait secured.execute("Delete AWS Account");\n# ❌ Access Denied: Dangerous Command`
         }
     };
 
     return (
         <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-emerald-500/30 selection:text-white">
 
-            {/* Header / Nav */}
-            <nav className="fixed top-0 w-full z-50 border-b border-white/[0.05] bg-black/60 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-6 h-18 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_15px_rgba(5,150,105,0.4)]">
-                            <BrickWall className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-white font-bold text-xl tracking-tight uppercase italic">SupraWall</span>
-                    </div>
-                    <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-                        <Link href="/docs" className="text-neutral-400 hover:text-white transition-colors">Documentation</Link>
-                        <Link href="/spec" className="text-neutral-400 hover:text-white transition-colors">Spec</Link>
-                        <Link href="/login" className="text-neutral-400 hover:text-white transition-colors">Sign In</Link>
-                        <Link href="/login" className="px-5 py-2.5 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_12px_rgba(255,255,255,0.1)] active:scale-95">
-                            Get Started
-                        </Link>
-                    </div>
-                </div>
-            </nav>
+            <Navbar />
 
             <main className="overflow-hidden">
 
@@ -269,26 +256,26 @@ export default function LandingPage() {
                                 className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-xs font-bold text-emerald-400 tracking-wider uppercase"
                             >
                                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                                SupraWall API & OS Architecture 1.0 is live
+                                Security Infrastructure for AI Agents.
                             </motion.div>
 
                             <motion.h1
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.1 }}
-                                className="text-6xl md:text-8xl font-black tracking-tight text-white leading-[0.95]"
+                                className="text-6xl md:text-[90px] font-extrabold tracking-tight text-white leading-[0.9] uppercase italic"
                             >
-                                The Moment Your <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-white to-neutral-400">AI Agent Becomes Dangerous.</span>
+                                We Block Your Agent <br />
+                                <span className="text-emerald-500">from going Rogue.</span>
                             </motion.h1>
 
                             <motion.p
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="text-xl md:text-2xl text-neutral-400 max-w-xl leading-relaxed font-medium"
+                                className="text-xl md:text-2xl text-neutral-400 max-w-2xl leading-relaxed font-medium"
                             >
-                                We stop it before it happens. Zero-trust security for autonomous agents. One line of code.
+                                The security shim for LangChain, AutoGen, CrewAI, and OpenClaw. Prevent rogue behavior with zero-trust tool governance.
                             </motion.p>
 
                             <motion.div
@@ -297,12 +284,37 @@ export default function LandingPage() {
                                 transition={{ delay: 0.3 }}
                                 className="flex flex-wrap items-center gap-4 pt-4"
                             >
-                                <Link href="/login" className="px-8 py-4 bg-emerald-600 text-white font-black text-lg rounded-2xl hover:bg-emerald-50 shadow-[0_8px_32px_-8px_rgba(99,102,241,0.5)] transition-all active:scale-95 flex items-center gap-3">
-                                    Start Securing Agents <ArrowRight className="w-5 h-5" />
+                                <Link href="/login" className="px-8 py-4 bg-emerald-600 text-white font-black text-lg rounded-2xl hover:bg-emerald-50 shadow-[0_8px_32px_-8px_rgba(99,102,241,0.5)] transition-all active:scale-95 flex flex-col items-center justify-center">
+                                    <div className="flex items-center gap-3">
+                                        Start Securing Agents <ArrowRight className="w-5 h-5" />
+                                    </div>
+                                    <span className="text-[10px] opacity-60 font-medium">No credit card required</span>
                                 </Link>
-                                <Link href="#" className="px-8 py-4 bg-transparent border border-white/10 text-white font-bold text-lg rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3">
-                                    Watch 2-Min Demo <Play className="w-4 h-4" />
-                                </Link>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.4 }}
+                                className="pt-8 flex flex-col gap-6"
+                            >
+                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5 backdrop-blur-sm max-w-md relative group">
+                                    <div className="flex gap-1 mb-4">
+                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-4 h-4 fill-emerald-500 text-emerald-500" />)}
+                                    </div>
+                                    <p className="text-lg font-medium text-neutral-300 italic mb-6 leading-relaxed">
+                                        "Essential for anyone running Claw agents in production. Caught 30 dangerous clicks before they happened."
+                                    </p>
+                                    <div className="flex items-center gap-3 pt-4 border-t border-white/5">
+                                        <div className="w-10 h-10 rounded-full border border-emerald-500/30 overflow-hidden bg-neutral-800">
+                                            <img src="/reviewer.png" alt="Max Haining" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <p className="text-sm font-black text-white uppercase tracking-tight">— @maxhaining</p>
+                                            <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest leading-none">Creator of OpenClaw</p>
+                                        </div>
+                                    </div>
+                                </div>
                             </motion.div>
 
                             <div className="pt-12">
@@ -323,6 +335,12 @@ export default function LandingPage() {
                                 transition={{ delay: 0.4, duration: 0.8 }}
                             >
                                 <CodeTerminal />
+                                <div className="mt-6 flex items-center gap-2 justify-center lg:justify-start">
+                                    <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_rgba(244,63,94,0.6)]" />
+                                    <span className="text-xs font-black uppercase tracking-[0.2em] text-neutral-400">
+                                        🔴 LIVE: 3,847 dangerous actions blocked today
+                                    </span>
+                                </div>
                             </motion.div>
 
                             {/* Glow effect behind terminal */}
@@ -331,7 +349,19 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 2: THE PROBLEM */}
+                {/* 📐 SECTION 1.5: FRAMEWORK CLOUD */}
+                <section className="pb-24 px-6 border-b border-white/5 bg-black">
+                    <div className="max-w-7xl mx-auto">
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-12 text-center">Powering Safety for the Agent Ecosystem</p>
+                        <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20 opacity-40 grayscale group hover:grayscale-0 transition-all duration-700">
+                            <span className="text-3xl font-black tracking-tighter text-white">LangChain</span>
+                            <span className="text-3xl font-black uppercase italic text-white">AutoGen</span>
+                            <span className="text-3xl font-black tracking-tight text-white italic">CrewAI</span>
+                            <span className="text-3xl font-black text-white">LlamaIndex</span>
+                            <span className="text-3xl font-black tracking-widest text-white">OpenClaw</span>
+                        </div>
+                    </div>
+                </section>
                 <section className="bg-neutral-950/50 py-32 px-6 border-y border-white/5">
                     <div className="max-w-7xl mx-auto space-y-16">
                         <div className="text-center space-y-4">
@@ -399,40 +429,49 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 3: THE SOLUTION */}
-                <section className="py-32 px-6 bg-black relative">
+                {/* 📐 SECTION 3: THE SOLUTION - SHIFTED UP */}
+                <section className="py-32 px-6 bg-black relative border-b border-white/5">
                     <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="space-y-8">
-                            <h2 className="text-xs font-black text-emerald-500 uppercase tracking-widest">How it works</h2>
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                className="text-xs font-black text-emerald-500 uppercase tracking-widest"
+                            >
+                                Security Infrastructure
+                            </motion.div>
                             <h3 className="text-4xl md:text-6xl font-extrabold text-white tracking-tighter leading-tight italic">
-                                Secure Any Agent<br /> In Under 30 Seconds.
+                                Safe Mode for <br />Your Agent Runtime.
                             </h3>
-                            <p className="text-xl text-neutral-400 leading-relaxed">
-                                SupraWall lives in the execution layer. We intercept tool calls, validate them against your global policy engine, and require human approval for high-risk actions.
+                            <p className="text-xl text-neutral-400 leading-relaxed max-w-lg font-medium">
+                                SupraWall acts as a <span className="text-white">secure proxy</span> between your LLM and your tools. It intercepts every action, applies your policies, and enforces human-in-the-loop governance.
                             </p>
 
-                            <div className="space-y-4 pt-6">
+                            <div className="grid grid-cols-2 gap-6 pt-4">
                                 {[
-                                    "Zero latency policy evaluation (<10ms)",
-                                    "Native decorators for all frameworks",
-                                    "Full RBAC for AI tool permissions",
-                                    "Real-time event streaming via Webhooks"
+                                    { title: "One-Line Integration", desc: "Just wrap your agent." },
+                                    { title: "Universal Support", desc: "Any framework, any LLM." },
+                                    { title: "Zero Latency", desc: "< 10ms policy checks." },
+                                    { title: "Full Audit Trail", desc: "Signed logs for SOC2." }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-3 text-white font-medium">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        {item}
+                                    <div key={i} className="space-y-2">
+                                        <div className="flex items-center gap-2 text-white font-black text-xs uppercase tracking-tight">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                            {item.title}
+                                        </div>
+                                        <p className="text-xs text-neutral-500 font-medium">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         <div className="space-y-6">
-                            <div className="flex gap-2 p-1 bg-neutral-900 border border-white/5 rounded-2xl">
+                            <div className="flex gap-2 p-1 bg-neutral-900/50 border border-white/5 rounded-2xl backdrop-blur-sm">
                                 {Object.keys(techExamples).map((tech) => (
                                     <button
                                         key={tech}
                                         onClick={() => setActiveTechTab(tech)}
-                                        className={`flex-1 py-3 px-4 rounded-xl text-sm font-black transition-all duration-300 ${activeTechTab === tech ? 'bg-white text-black shadow-lg' : 'text-neutral-500 hover:text-white'}`}
+                                        className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTechTab === tech ? 'bg-emerald-600 text-white shadow-xl' : 'text-neutral-500 hover:text-white'}`}
                                     >
                                         {tech}
                                     </button>
@@ -441,19 +480,11 @@ export default function LandingPage() {
 
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest flex items-center gap-2 px-4">
-                                        <AlertTriangle className="w-3 h-3" /> Unsecured Architecture
-                                    </p>
-                                    <div className="bg-neutral-950 border border-rose-500/20 rounded-2xl p-6 font-mono text-sm overflow-x-auto text-rose-200/50 grayscale-[0.5]">
-                                        <pre>{techExamples[activeTechTab].before}</pre>
-                                    </div>
-                                </div>
-                                <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest flex items-center gap-2 px-4">
-                                        <BrickWall className="w-3 h-3" /> SupraWall Secured
-                                    </p>
-                                    <div className="bg-[#0A0A0A] border border-emerald-500/40 rounded-2xl p-6 font-mono text-sm overflow-x-auto text-emerald-100 shadow-[0_0_25px_rgba(99,102,241,0.1)]">
-                                        <pre>{techExamples[activeTechTab].after}</pre>
+                                    <div className="bg-[#0A0A0A] border border-emerald-500/40 rounded-[2.5rem] p-10 font-mono text-xs md:text-sm overflow-x-auto text-emerald-100 shadow-[0_0_50px_rgba(16,185,129,0.1)] relative group">
+                                        <div className="absolute top-6 right-8 p-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
+                                            SECURED
+                                        </div>
+                                        <pre className="leading-relaxed opacity-90">{techExamples[activeTechTab].after}</pre>
                                     </div>
                                 </div>
                             </div>
@@ -461,7 +492,107 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 4: USE CASES */}
+                {/* 📐 SECTION 4: INTEGRATIONS */}
+                <section id="integrations" className="py-32 bg-black border-y border-white/5 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-600/10 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
+
+                    <div className="max-w-7xl mx-auto px-6 relative z-10">
+                        <div className="text-center mb-20 space-y-6">
+                            <motion.div
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
+                                className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-black text-emerald-400 tracking-[0.3em] uppercase"
+                            >
+                                Framework Native
+                            </motion.div>
+                            <h3 className="text-5xl md:text-7xl font-black text-white italic tracking-tighter">Integration Hub.</h3>
+                            <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-medium leading-relaxed">
+                                We integrate with the tools you already use. Zero configuration required to start securing your agents.
+                            </p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {[
+                                {
+                                    name: "LangChain",
+                                    href: "/integrations/langchain",
+                                    desc: "Official callback handler for AgentExecutor and LCEL chains.",
+                                    icon: Layers,
+                                    color: "hover:border-emerald-500/50 hover:shadow-[0_0_30px_rgba(16,185,129,0.15)]",
+                                    iconColor: "text-emerald-500",
+                                    badge: "Popular"
+                                },
+                                {
+                                    name: "OpenClaw",
+                                    href: "/integrations/openclaw",
+                                    desc: "Native browser interception for autonomous page actions.",
+                                    icon: Globe,
+                                    color: "hover:border-blue-500/50 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]",
+                                    iconColor: "text-blue-500",
+                                    badge: "Verified"
+                                },
+                                {
+                                    name: "AutoGen",
+                                    href: "/integrations/autogen",
+                                    desc: "Govern multi-agent conversations and Docker code execution.",
+                                    icon: Bot,
+                                    color: "hover:border-purple-600/50 hover:shadow-[0_0_30px_rgba(147,51,234,0.15)]",
+                                    iconColor: "text-purple-500",
+                                    badge: "Enterprise"
+                                },
+                                {
+                                    name: "Vercel AI SDK",
+                                    href: "/integrations/vercel",
+                                    desc: "Bridge tool calls to edge-secured policies with no latency.",
+                                    icon: Triangle,
+                                    color: "hover:border-slate-300/50 hover:shadow-[0_0_30px_rgba(255,255,255,0.1)]",
+                                    iconColor: "text-white",
+                                    badge: "Native"
+                                },
+                                {
+                                    name: "MCP Servers",
+                                    href: "/docs/mcp",
+                                    desc: "Middleware for Model Context Protocol tools and resources.",
+                                    icon: Zap,
+                                    color: "hover:border-amber-500/50 hover:shadow-[0_0_30px_rgba(245,158,11,0.15)]",
+                                    iconColor: "text-amber-500",
+                                    badge: "Standard"
+                                },
+                                {
+                                    name: "CrewAI",
+                                    href: "/integrations/crewai",
+                                    desc: "Role-based tool permissions for autonomous agent swarms.",
+                                    icon: Users,
+                                    color: "hover:border-orange-500/50 hover:shadow-[0_0_30px_rgba(249,115,22,0.15)]",
+                                    iconColor: "text-orange-500",
+                                    badge: "New"
+                                }
+                            ].map((item, i) => (
+                                <Link
+                                    key={i}
+                                    href={item.href}
+                                    className={`group p-10 rounded-[3rem] border border-white/5 bg-white/[0.01] flex flex-col gap-8 transition-all duration-700 ${item.color} hover:bg-white/[0.03] active:scale-95`}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className={`p-4 rounded-2xl bg-white/[0.03] group-hover:scale-110 transition-transform duration-500 border border-white/5`}>
+                                            <item.icon className={`w-8 h-8 ${item.iconColor}`} />
+                                        </div>
+                                        <span className="px-3 py-1 rounded-full bg-white/5 text-[10px] font-black uppercase tracking-widest text-neutral-500 group-hover:text-white transition-colors">{item.badge}</span>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <h4 className="text-3xl font-black text-white italic tracking-tighter">{item.name}</h4>
+                                        <p className="text-neutral-500 font-medium leading-relaxed group-hover:text-neutral-300 transition-colors uppercase text-[10px] tracking-widest">{item.desc}</p>
+                                    </div>
+                                    <div className="pt-4 flex items-center gap-2 text-xs font-black uppercase text-emerald-500 tracking-widest opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-500">
+                                        Read Adapter Specs <ArrowRight className="w-4 h-4" />
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* 📐 SECTION 5: USE CASES */}
                 <section className="py-32 bg-white text-black px-6">
                     <div className="max-w-7xl mx-auto space-y-16">
                         <div className="space-y-4">
@@ -514,7 +645,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 5: "THE STRIPE MOMENT" */}
+                {/* 📐 SECTION 6: "THE STRIPE MOMENT" */}
                 <section className="py-40 px-6 bg-[#050505] relative overflow-hidden">
                     <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
 
@@ -556,7 +687,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 6: LIVE DEMO (SIMULATED) */}
+                {/* 📐 SECTION 7: LIVE DEMO (SIMULATED) */}
                 <section className="py-32 px-6 bg-emerald-600 relative overflow-hidden">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-700 to-purple-800 opacity-50" />
                     <div className="max-w-7xl mx-auto relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
@@ -621,7 +752,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 7: SOCIAL PROOF */}
+                {/* 📐 SECTION 8: SOCIAL PROOF */}
                 <section className="py-32 px-6 bg-white overflow-hidden">
                     <div className="max-w-7xl mx-auto space-y-16">
                         <div className="text-center space-y-4">
@@ -662,7 +793,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 8: PRICING */}
+                {/* 📐 SECTION 9: PRICING */}
                 <section className="py-40 px-6 bg-[#030303] text-white">
                     <div className="max-w-7xl mx-auto space-y-24">
                         <div className="text-center space-y-6">
@@ -731,7 +862,7 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 SECTION 9: FAQ */}
+                {/* 📐 SECTION 10: FAQ */}
                 <section className="py-32 px-6 bg-white text-black">
                     <div className="max-w-5xl mx-auto space-y-16">
                         <h2 className="text-4xl md:text-6xl font-black tracking-tighter uppercase italic">Frequently Asked questions.</h2>

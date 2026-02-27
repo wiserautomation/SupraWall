@@ -211,4 +211,175 @@ export function createSupraWallMiddleware(options: SupraWallOptions) {
 
 // Backwards compatibility alias for anyone using the old name
 export { withSupraWall as withSupraWall };
+
+/**
+ * Automatically detects and protects any AI agent framework.
+ * 
+ * Supports:
+ * - LangChain (via Callbacks)
+ * - Vercel AI SDK (via Tool wrapping)
+ * - Generic agents with executeTool
+ * 
+ * @example
+ * import { protect } from "suprawall";
+ * const secured = protect(myAgent, { apiKey: "ag_..." });
+ */
+export function protect(agentOrTools: any, options: SupraWallOptions): any {
+    if (!agentOrTools) return agentOrTools;
+
+    // 1. Detect Vercel AI SDK Tools (Object where values have 'execute' or 'parameters')
+    if (typeof agentOrTools === 'object' && !Array.isArray(agentOrTools)) {
+        const values = Object.values(agentOrTools);
+        const looksLikeVercel = values.length > 0 && values.every(v =>
+            v && typeof v === 'object' && ('execute' in v || 'parameters' in v)
+        );
+
+        if (looksLikeVercel) {
+            return wrapVercelTools(agentOrTools, options);
+        }
+    }
+
+    // 2. Detect LangChain (has withConfig, invoke, or metadata/callbacks)
+    if (typeof agentOrTools.withConfig === 'function' || 'callbacks' in agentOrTools) {
+        return wrapLangChain(agentOrTools, options);
+    }
+
+    // 3. Detect OpenClaw / Browser Agents (has browser property and execute method)
+    if (agentOrTools.browser && typeof agentOrTools.execute === 'function') {
+        return wrapOpenClaw(agentOrTools, options);
+    }
+
+    // 4. Fallback: Generic executeTool wrapper
+    if (typeof agentOrTools.executeTool === 'function') {
+        return withSupraWall(agentOrTools, options);
+    }
+
+    return agentOrTools;
+}
+
+function wrapOpenClaw(agent: any, options: SupraWallOptions) {
+    const { apiKey, cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL } = options;
+
+    const interceptAction = async (toolName: string, args: any, originalFn: Function) => {
+        const response = await fetch(cloudFunctionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-SupraWall-SDK": `js-claw-${SDK_VERSION}`,
+            },
+            body: JSON.stringify({ apiKey, toolName, args }),
+        });
+
+        if (response.ok) {
+            const data = (await response.json()) as SupraWallResponse;
+            if (data.decision === "DENY") {
+                throw new Error(`[SupraWall] Policy Denied: ${toolName}. ${data.reason ?? ""}`);
+            }
+            if (data.decision === "REQUIRE_APPROVAL") {
+                throw new Error(`[SupraWall] Action '${toolName}' requires human approval.`);
+            }
+        } else if (options.onNetworkError === "fail-closed") {
+            throw new Error("[SupraWall] Security check failed: network error (fail-closed).");
+        }
+
+        return await originalFn();
+    };
+
+    // 1. Wrap the high-level execute method
+    if (typeof agent.execute === 'function') {
+        const originalExecute = agent.execute.bind(agent);
+        agent.execute = async (command: string, ...args: any[]) =>
+            interceptAction("browser_execute", { command, args }, () => originalExecute(command, ...args));
+    }
+
+    // 2. Wrap granular browser methods if exposed
+    const methodsToWrap = ['click', 'type', 'navigate', 'press', 'screenshot'];
+    methodsToWrap.forEach(method => {
+        if (typeof agent[method] === 'function') {
+            const original = agent[method].bind(agent);
+            agent[method] = async (...args: any[]) =>
+                interceptAction(`browser_${method}`, { args }, () => original(...args));
+        }
+    });
+
+    return agent;
+}
+
+function wrapVercelTools(tools: Record<string, any>, options: SupraWallOptions) {
+    const { apiKey, cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL } = options;
+    const securedTools: Record<string, any> = {};
+
+    for (const [toolName, tool] of Object.entries(tools)) {
+        securedTools[toolName] = {
+            ...tool,
+            execute: async (args: any, ...rest: any[]) => {
+                const response = await fetch(cloudFunctionUrl, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-SupraWall-SDK": `js-vercel-${SDK_VERSION}`,
+                    },
+                    body: JSON.stringify({ apiKey, toolName, args })
+                });
+
+                if (response.ok) {
+                    const data = await response.json() as SupraWallResponse;
+                    if (data.decision === "DENY") {
+                        throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' is denied. ${data.reason ?? ""}`);
+                    }
+                    if (data.decision === "REQUIRE_APPROVAL") {
+                        throw new Error(`[SupraWall] Tool '${toolName}' requires human approval.`);
+                    }
+                } else if (options.onNetworkError === "fail-closed") {
+                    throw new Error("[SupraWall] Network error, failing closed.");
+                }
+
+                return tool.execute ? tool.execute(args, ...rest) : undefined;
+            }
+        };
+    }
+    return securedTools;
+}
+
+function wrapLangChain(runnable: any, options: SupraWallOptions) {
+    const handler = {
+        name: "SupraWallCallbackHandler",
+        handleToolStart: async (tool: any, input: string) => {
+            const toolName = tool.name || "unknown";
+            const res = await fetch(options.cloudFunctionUrl || DEFAULT_CLOUD_FUNCTION_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-SupraWall-SDK": `js-lc-${SDK_VERSION}`,
+                },
+                body: JSON.stringify({
+                    apiKey: options.apiKey,
+                    toolName,
+                    args: input
+                })
+            });
+
+            if (res.ok) {
+                const data = await res.json() as SupraWallResponse;
+                if (data.decision === "DENY") throw new Error(`[SupraWall] Denied: ${data.reason ?? ""}`);
+                if (data.decision === "REQUIRE_APPROVAL") throw new Error(`[SupraWall] Approval Required.`);
+            } else if (options.onNetworkError === "fail-closed") {
+                throw new Error("[SupraWall] Unreachable, failing closed.");
+            }
+        }
+    };
+
+    if (typeof runnable.withConfig === 'function') {
+        return runnable.withConfig({ callbacks: [handler] });
+    }
+
+    if (Array.isArray(runnable.callbacks)) {
+        runnable.callbacks.push(handler);
+    } else {
+        runnable.callbacks = [handler];
+    }
+
+    return runnable;
+}
+
 export type { SupraWallOptions as SupraWallOptions };

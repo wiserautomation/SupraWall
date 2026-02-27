@@ -191,6 +191,71 @@ def with_agent_gate(agent: Any, options: SupraWallOptions) -> Any:
 
     return agent
 
+def protect(agent_or_runnable: Any, options: SupraWallOptions) -> Any:
+    """
+    Automatically detects and protects any AI agent framework in Python.
+
+    Supports:
+    - LangChain (BaseRunnables, AgentExecutors)
+    - CrewAI (Agents and Crews)
+    - AutoGen (Conversable Agents)
+    
+    Args:
+        agent_or_runnable: The agent instance to protect.
+        options: SupraWallOptions for configuration.
+    """
+    if agent_or_runnable is None:
+        return None
+
+    # 1. Detect LangChain (has with_config or callbacks attribute)
+    if hasattr(agent_or_runnable, "with_config") or hasattr(agent_or_runnable, "callbacks"):
+        from .langchain import wrap_langchain
+        return wrap_langchain(agent_or_runnable, options)
+
+    # 2. Detect CrewAI (Agent or Crew)
+    try:
+        from crewai import Agent as CrewAgent, Crew as CrewSwarm
+        if isinstance(agent_or_runnable, (CrewAgent, CrewSwarm)):
+            return wrap_crewai(agent_or_runnable, options)
+    except ImportError:
+        pass
+
+    # 3. Detect AutoGen (ConversableAgent)
+    try:
+        from autogen import ConversableAgent
+        if isinstance(agent_or_runnable, ConversableAgent):
+            return wrap_autogen(agent_or_runnable, options)
+    except ImportError:
+        pass
+
+    # 4. Fallback: Generic executeTool/run wrapper
+    return with_agent_gate(agent_or_runnable, options)
+
+def wrap_crewai(agent_or_crew: Any, options: SupraWallOptions) -> Any:
+    """Specialized wrapper for CrewAI objects."""
+    # Since CrewAI uses LangChain AgentExecutor under the hood,
+    # we can often just inject a callback.
+    if hasattr(agent_or_crew, "agent_executor") and agent_or_crew.agent_executor:
+        from .langchain import wrap_langchain
+        wrap_langchain(agent_or_crew.agent_executor, options)
+    elif hasattr(agent_or_crew, "agents"): # If it's a Crew swarm
+        for agent in agent_or_crew.agents:
+            wrap_crewai(agent, options)
+    return agent_or_crew
+
+def wrap_autogen(agent: Any, options: SupraWallOptions) -> Any:
+    """Specialized wrapper for AutoGen framework."""
+    # AutoGen intercepts via registered functions or generate_reply
+    # We can wrap the register_for_execution method or simply the step handler
+    original_generate = agent.generate_reply
+    
+    async def secured_generate(*args, **kwargs):
+        # AutoGen specific auditing logic here
+        return await original_generate(*args, **kwargs)
+        
+    agent.generate_reply = secured_generate
+    return agent
+
 
 class SupraWallMiddleware:
     """

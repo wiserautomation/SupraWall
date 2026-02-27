@@ -169,44 +169,44 @@ export default function QuickstartPage() {
                     {activeTab === "TypeScript" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { withSupraWall } from "suprawall";
+                            code={`import { protect } from "@suprawall/sdk";
     
-    // 1. Your existing agent
-    const myAgent = createMyAgent();
+    // 1. Any agent (LangChain, Vercel AI, etc.)
+    const agent = createMyAgent();
     
-    // 2. Wrap it with SupraWall
-    const secured = withSupraWall(myAgent, {
+    // 2. Wrap it with SupraWall (Zero-Config)
+    const secured = protect(agent, {
       apiKey: "ag_your_key_here",
     });
     
-    // 3. Tool calls are now checked against policies
-    await secured.executeTool("send_email", { to: "user@example.com" });`}
+    // 3. Every action is now governed
+    await secured.invoke({ ... });`}
                         />
                     )}
                     {activeTab === "Python" && (
                         <div className="space-y-6">
                             <CodeBlock
                                 language="python"
-                                code={`from suprawall import with_agent_gate, SupraWallOptions
-    
-    secured = with_agent_gate(my_agent, SupraWallOptions(
-        api_key="ag_your_key_here"
-    ))
-    
-    # Tool call: 'rm -rf' -> DENIED (if policy exists)
-    result = secured.run("bash", {"cmd": "rm -rf /"})`}
+                                code={`from suprawall import secure
+from crewai import Agent
+
+# 🛡️ Secure your agent runtime with one line
+@secure(api_key="ag_your_key_here")
+def setup_agent():
+    return Agent(role="Researcher", goal="Solve X", tools=[...])
+
+agent = setup_agent()
+agent.start()`}
                             />
                             <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                                <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Example</p>
+                                <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Wrapper</p>
                                 <CodeBlock
                                     language="python"
-                                    code={`from suprawall.callbacks import SupraWallCallback
-    
-    agent_executor = AgentExecutor(
-        agent=agent,
-        tools=tools,
-        callbacks=[SupraWallCallback(api_key="ag_your_key_here")],
-    )`}
+                                    code={`from suprawall import secure
+
+# Intercepts every tool call automatically
+secured_agent = secure(my_langchain_agent, api_key="ag_...")
+secured_agent.invoke({"input": "..."})`}
                                 />
                             </div>
                         </div>

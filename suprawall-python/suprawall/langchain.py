@@ -39,6 +39,47 @@ except ImportError:
         pass
 
 from .gate import SupraWallOptions, _evaluate, _evaluate_async, _handle_decision
+import functools
+
+def secure(api_key: Optional[str] = None, **options):
+    """
+    A "Zero Config" universal decorator to protect any AI agent.
+    
+    Usage:
+        @secure(api_key="ag_...")
+        def my_crew():
+            return Crew(agents=[...], tasks=[...])
+    """
+    from .gate import protect as universal_protect
+    
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            # 1. Execute the factory function
+            agent = func(*args, **kwargs)
+            
+            # 2. Universal protection detection
+            sw_options = SupraWallOptions(api_key=api_key, **options)
+            return universal_protect(agent, sw_options)
+        return wrapper
+    return decorator
+
+def wrap_langchain(agent: Any, options: SupraWallOptions) -> Any:
+    """Native LangChain callback injection."""
+    callback = SupraWallLangChainCallback(options)
+    
+    # Handles AgentExecutor and most LangChain Runnables
+    if hasattr(agent, "callbacks"):
+        if agent.callbacks is None:
+            agent.callbacks = [callback]
+        elif isinstance(agent, list): # Handle case where callbacks is being modified
+             agent.callbacks.append(callback)
+    
+    # Fallback for newer LCEL Runnables that might store callbacks in config
+    if hasattr(agent, "with_config"):
+        return agent.with_config({"callbacks": [callback]})
+        
+    return agent
 
 
 class SupraWallLangChainCallback(BaseCallbackHandler):

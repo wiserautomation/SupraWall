@@ -97,26 +97,36 @@ export default function AgentsPage() {
         }
     };
 
-    const getNodeCode = (apiKey: string) => `import { Agent } from 'your-ai-framework';
-import { withSupraWall } from 'suprawall';
+    const getNodeCode = (apiKey: string) => `import { protect } from '@suprawall/sdk';
+import { createReactAgent } from '@langchain/langgraph/prebuilt';
 
-// 1. Initialize your AI Agent
-const myAgent = new Agent();
+// 1. Initialize your Agent (LangChain, Vercel AI, etc.)
+const agent = createReactAgent({ llm, tools });
 
-// 2. Secure it with your GateAPI Key
-const securedAgent = withSupraWall(myAgent, {
-  apiKey: "${apiKey}",
-  // endpoint: "https://supra-wall-rho.vercel.app/evaluateAction" // optional fallback
+// 2. Protect it with SupraWall (Zero-Config)
+const secured = protect(agent, {
+  apiKey: "${apiKey}"
 });
 
-// 3. Run your agent safely
-await securedAgent.executeTool("Start task", {});`;
+// 3. Run safely
+await secured.invoke({ messages: [...] });`;
 
-    const getCurlCode = (apiKey: string) => `curl -X POST https://[YOUR_FIREBASE_PROJECT_URL]/evaluateAction \\
+    const getPythonCode = (apiKey: string) => `from suprawall import secure
+from langchain_openai import ChatOpenAI
+
+# 🛡️ Secure any LangChain agent with one decorator
+@secure(api_key="${apiKey}")
+def create_my_agent():
+    return create_react_agent(llm, tools)
+
+agent = create_my_agent()
+agent.invoke({"messages": [...]})`;
+
+    const getCurlCode = (apiKey: string) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
+  -H "Authorization: Bearer ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '{
-    "apiKey": "${apiKey}",
-    "toolName": "bash",
+    "toolName": "bash_tool",
     "args": { "command": "rm -rf /" }
   }'`;
 
@@ -274,6 +284,7 @@ await securedAgent.executeTool("Start task", {});`;
                             <Tabs defaultValue="node" className="w-full">
                                 <TabsList className="bg-neutral-800 border-neutral-700 w-full justify-start rounded-none border-b -mb-px px-0 h-auto">
                                     <TabsTrigger value="node" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 rounded-none px-6 py-3 data-[state=active]:text-emerald-400">Node.js SDK</TabsTrigger>
+                                    <TabsTrigger value="python" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 rounded-none px-6 py-3 data-[state=active]:text-emerald-400">Python (LangChain)</TabsTrigger>
                                     <TabsTrigger value="curl" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-emerald-500 rounded-none px-6 py-3 data-[state=active]:text-emerald-400">cURL (REST API)</TabsTrigger>
                                 </TabsList>
                                 <TabsContent value="node" className="pt-4 outline-none">
@@ -285,6 +296,21 @@ await securedAgent.executeTool("Start task", {});`;
                                             size="icon"
                                             variant="ghost"
                                             onClick={() => copyToClipboard(getNodeCode(selectedAgent.apiKey), 'node')}
+                                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800/80 hover:bg-neutral-700 text-white"
+                                        >
+                                            {copiedNode ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+                                        </Button>
+                                    </div>
+                                </TabsContent>
+                                <TabsContent value="python" className="pt-4 outline-none">
+                                    <div className="relative group">
+                                        <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-emerald-200">
+                                            <code>{getPythonCode(selectedAgent.apiKey)}</code>
+                                        </pre>
+                                        <Button
+                                            size="icon"
+                                            variant="ghost"
+                                            onClick={() => copyToClipboard(getPythonCode(selectedAgent.apiKey), 'node')}
                                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800/80 hover:bg-neutral-700 text-white"
                                         >
                                             {copiedNode ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
