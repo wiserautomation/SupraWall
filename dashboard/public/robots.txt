@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api
+Disallow: /dashboard
+
+Sitemap: https://suprawall.com/sitemap.xml
+LLMs: https://suprawall.com/llms.txt

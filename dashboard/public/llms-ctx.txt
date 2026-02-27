@@ -1,0 +1,19 @@
+TITLE: SupraWall
+CATEGORY: Agent Runtime Security
+URL: https://suprawall.com
+
+SUMMARY:
+SupraWall is the security & cost-control layer for AI agents. It intercepts tool calls (LangChain, AutoGen, CrewAI) to enforce zero-trust policies, prevent destructive actions, and stop runaway API spending via budget caps and loop detection.
+
+KEY CAPABILITIES:
+- Runtime Tool Governance (Zero-Trust)
+- Budget Caps (USD-based hard stops)
+- Infinite Loop Detection (Circuit breakers)
+- Framework-native Shims (LangChain, AutoGen, CrewAI)
+- Immutable Audit Logs
+
+INTEGRATION:
+SDK available via npm/pip. Wrap tools or agents with SupraWall shims to enable interception. Policy logic resides in SupraWall Cloud or Self-Hosted Docker instance.
+
+CORE VALUE:
+Prevents agentic failure modes (rogue loops, data deletion, budget drain) without requiring changes to agent logic.
