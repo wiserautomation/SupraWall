@@ -1,7 +1,8 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { db } from '@/lib/firebase-admin';
-import admin from 'firebase-admin';
+import { db, admin } from '@/lib/firebase-admin';
 
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET!;
 
@@ -28,13 +29,18 @@ export async function POST(req: Request) {
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
             const subscriptionItemId = subscription.items.data[0].id;
 
+            // In Stripe SDK v18+, current_period_end is on each subscription item
+            const periodEnd = (subscription as any).current_period_end
+                ?? subscription.items.data[0]?.current_period_end
+                ?? Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
+
             await db.collection('organizations').doc(userId).set({
                 stripeCustomerId: session.customer,
                 stripeSubscriptionId: subscriptionId,
                 stripeSubscriptionItemId: subscriptionItemId,
                 status: 'active',
                 hasPaymentMethod: true,
-                currentPeriodEnd: admin.firestore.Timestamp.fromMillis(subscription.current_period_end * 1000),
+                currentPeriodEnd: admin.firestore.Timestamp.fromMillis(periodEnd * 1000),
             }, { merge: true });
             break;
         }

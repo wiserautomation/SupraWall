@@ -1,19 +1,34 @@
 import admin from 'firebase-admin';
 
-if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }),
-    });
+function getFirebaseAdmin() {
+    if (!admin.apps.length) {
+        admin.initializeApp({
+            credential: admin.credential.cert({
+                projectId: process.env.FIREBASE_PROJECT_ID!,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
+                privateKey: process.env.FIREBASE_PRIVATE_KEY!.replace(/\\n/g, '\n'),
+            }),
+        });
+    }
+    return admin;
 }
 
-const db = admin.firestore();
-const auth = admin.auth();
+export function getAdminDb() {
+    return getFirebaseAdmin().firestore();
+}
 
-export { db, auth };
+export function getAdminAuth() {
+    return getFirebaseAdmin().auth();
+}
+
+// Convenience aliases — safe to use inside route handlers (force-dynamic routes)
+export const db = {
+    collection: (...args: Parameters<ReturnType<typeof admin.firestore>['collection']>) =>
+        getAdminDb().collection(...args),
+};
+
+export { admin };
+
 
 export interface OrganizationData {
     stripeCustomerId: string;

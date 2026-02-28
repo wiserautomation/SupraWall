@@ -1,9 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Check, Zap, Shield, Users, ArrowRight, DollarSign } from 'lucide-react';
+import { Check, Zap, Shield, Users, ArrowRight, DollarSign, Loader2 } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { auth } from '@/lib/firebase';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { useRouter } from 'next/navigation';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -11,6 +14,9 @@ function cn(...inputs: ClassValue[]) {
 
 export default function PricingPage() {
     const [operations, setOperations] = useState(100000);
+    const [user] = useAuthState(auth);
+    const router = useRouter();
+    const [loadingCheckout, setLoadingCheckout] = useState(false);
 
     const calculateCost = (ops: number) => {
         if (ops <= 100000) return 0;
@@ -18,6 +24,39 @@ export default function PricingPage() {
     };
 
     const cost = calculateCost(operations);
+
+    const handleStartFree = () => {
+        if (user) {
+            router.push('/dashboard');
+        } else {
+            router.push('/login'); // Assuming /login exists
+        }
+    };
+
+    const handleCheckout = async () => {
+        if (!user) {
+            router.push('/login');
+            return;
+        }
+        setLoadingCheckout(true);
+        try {
+            const response = await fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.uid, email: user.email }),
+            });
+            const data = await response.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                console.error(data.error);
+                setLoadingCheckout(false);
+            }
+        } catch (e) {
+            console.error(e);
+            setLoadingCheckout(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
@@ -74,7 +113,7 @@ export default function PricingPage() {
                             </li>
                         </ul>
 
-                        <button className="w-full py-4 rounded-xl font-semibold bg-white text-black hover:bg-gray-200 transition-colors">
+                        <button onClick={handleStartFree} className="w-full py-4 rounded-xl font-semibold bg-white text-black hover:bg-gray-200 transition-colors">
                             Start Building Free
                         </button>
                     </div>
@@ -120,11 +159,11 @@ export default function PricingPage() {
                             </li>
                         </ul>
 
-                        <button className="relative w-full py-4 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors overflow-hidden group/btn">
+                        <button onClick={handleCheckout} disabled={loadingCheckout} className="relative w-full py-4 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors overflow-hidden group/btn disabled:opacity-50">
                             <span className="relative z-10 flex items-center justify-center gap-2">
-                                Add Payment Method <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
+                                {loadingCheckout ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Add Payment Method <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" /></>}
                             </span>
-                            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-0 group-hover/btn:opacity-100 transition-opacity" />
+                            {!loadingCheckout && <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-0 group-hover/btn:opacity-100 transition-opacity" />}
                         </button>
                     </div>
                 </div>

@@ -1,6 +1,7 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { auth } from '@/lib/firebase-admin'; // Assuming we have a way to get the session
 
 export async function POST(req: Request) {
     try {

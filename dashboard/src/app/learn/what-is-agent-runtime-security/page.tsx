@@ -114,6 +114,7 @@ export default function AgentRuntimeSecurityPage() {
                                 Implementing Agent Runtime Security in production follows a "Zero Trust" model. Never assume that the agent's
                                 planned tool call is safe. Every execution must be validated against a <span className="text-white">Stateful Policy Engine</span>.
                             </p>
+                        </section>
                     </div>
                 </div>
 
@@ -136,15 +137,14 @@ export default function AgentRuntimeSecurityPage() {
                 </div>
 
                 <LearnClient />
-        </div>
-            </main >
+            </main>
 
-        <footer className="py-20 border-t border-white/5 text-center">
-            <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.5em]">
-                SupraWall © 2026 • Real-time Agent Governance
-            </p>
-        </footer>
-        </div >
+            <footer className="py-20 border-t border-white/5 text-center">
+                <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.5em]">
+                    SupraWall © 2026 • Real-time Agent Governance
+                </p>
+            </footer>
+        </div>
     );
 }
 

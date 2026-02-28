@@ -65,16 +65,18 @@ export default function AgentsPage() {
                     logs.forEach(log => {
                         if (log.decision === "DENY") {
                             blocked++;
-                            saved += log.cost_usd || 0.05; // Mock saved cost if not present
+                            saved += 5.00; // Calculated by taking blocked actions * $5.00 estimated incident cost
                         } else if (log.decision === "ALLOW") {
-                            spend += log.cost_usd || 0;
-
                             if (log.timestamp) {
                                 const dateStr = format(log.timestamp.toDate(), 'MM/dd');
-                                dailyBuckets[dateStr] = (dailyBuckets[dateStr] || 0) + (log.cost_usd || 0);
+                                // Track operations instead of random cost_usd for the chart
+                                dailyBuckets[dateStr] = (dailyBuckets[dateStr] || 0) + 1;
                             }
                         }
                     });
+
+                    // Calculated dynamically based on operations above 100k * $0.0001
+                    spend = Math.max(0, total - 100000) * 0.0001;
 
                     setStats({
                         totalCalls: total,
