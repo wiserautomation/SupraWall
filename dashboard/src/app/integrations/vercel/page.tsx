@@ -1,124 +1,146 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import { ArrowRight, Triangle, Shield, Zap, Terminal, Box, Globe, ShieldCheck } from "lucide-react";
+import { ArrowRight, Globe, Shield, Zap, Terminal, Box, ShieldCheck, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import VercelClient from "./VercelClient";
+
+export const metadata: Metadata = {
+    title: "Vercel AI SDK Security & Runtime Interception | SupraWall",
+    description: "Secure your Next.js AI agents with SupraWall. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
+    keywords: ["vercel ai sdk security", "secure nextjs agents", "ai sdk tool governance", "edge runtime security"],
+    openGraph: {
+        title: "How to Secure Vercel AI SDK Agents",
+        description: "The official security shim for the Vercel AI SDK. Protect your edge functions from prompt injection and rogue tools.",
+    }
+};
 
 export default function VercelIntegrationPage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SupraWall for Vercel AI SDK",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "url": "https://suprawall.com/integrations/vercel",
+        "author": {
+            "@type": "Organization",
+            "name": "SupraWall"
+        },
+        "description": "Secure edge-based agentic workflows built with the Vercel AI SDK and Next.js.",
+        "featureList": [
+            "Edge Runtime Policy Enforcement",
+            "Streaming Tool Interception",
+            "Zero-Latency Content Verification",
+            "TypeScript Native Security Wrappers"
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
-                    <div className="lg:col-span-6 space-y-10 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase"
-                        >
-                            Infrastructure • Vercel AI SDK
-                        </motion.div>
+                    <div className="lg:col-span-12 space-y-10 relative z-10 text-center mb-20">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-blue-500/30 bg-blue-500/10 text-[10px] font-black text-blue-400 tracking-[0.2em] uppercase mx-auto">
+                            Infrastructure • Vercel AI SDK Official
+                        </div>
 
-                        <div className="space-y-6">
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase italic"
-                            >
-                                Secure the <br />
-                                <span className="text-blue-500">Edge</span> <br />
-                                Runtime.
-                            </motion.h1>
-                            <p className="text-xl text-neutral-400 leading-relaxed font-medium max-w-lg">
-                                Zero-trust security for Next.js AI apps. Intercept tool calls in <span className="text-white">v0/ai</span> and enforce policies at the edge.
+                        {/* H1: SPEC REQUIRED */}
+                        <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
+                            Secure the <br />
+                            <span className="text-blue-500 text-7xl md:text-[10rem]">Edge</span> <br />
+                            Runtime.
+                        </h1>
+
+                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
+                                Securing Vercel AI SDK agents is paramount for building production-ready AI applications on Next.js.
+                                By deploying the SupraWall edge shim, developers can intercept tool calls from `streamText` and `generateText`
+                                in real-time, enforcing security policies at the edge before any backend systems are accessed.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-6 pt-4">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 shadow-[0_10px_40px_rgba(0,191,255,0.1)] transition-all active:scale-95 flex items-center gap-2">
-                                Start Securing <ArrowRight className="w-4 h-4" />
-                            </Link>
-                            <Link href="/docs/frameworks/vercel" className="text-sm font-black uppercase tracking-[0.2em] text-neutral-500 hover:text-white transition-colors border-b-2 border-transparent hover:border-blue-500 pb-1">
-                                Integration Guide
+                        <div className="flex justify-center gap-6 pt-8">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                                Secure My App <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-6 relative">
-                        {/* Edge Code Mockup */}
-                        <div className="bg-[#0A0A0A] border-2 border-white/[0.05] rounded-[3rem] overflow-hidden shadow-2xl relative group">
-                            <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.05] bg-white/[0.01]">
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-green-500/30" />
-                                </div>
-                                <span className="text-[10px] text-neutral-500 uppercase font-black tracking-[0.3em]">api/chat/route.ts</span>
-                            </div>
-                            <div className="p-10 space-y-8 font-mono text-sm leading-relaxed">
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600">// 1. Universal protector for TypeScript</p>
-                                    <p className="text-blue-400">import {"{ protect }"} from "@suprawall/sdk";</p>
-                                </div>
+                    <div className="lg:col-span-12">
+                        <div className="max-w-4xl mx-auto prose prose-invert prose-blue">
 
-                                <div className="space-y-4">
-                                    <p className="text-neutral-600">// 2. Wrap your Vercel AI tools</p>
-                                    <div className="text-neutral-300 p-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl">
-                                        <p><span className="text-blue-400">const</span> tools = <span className="text-blue-400">protect</span>({"{"}</p>
-                                        <p className="pl-4 mt-2">getInventory: tool({"{"}</p>
-                                        <p className="pl-8 text-neutral-400">execute: async () ={">"} ...</p>
-                                        <p className="pl-4">{"})"}</p>
-                                        <p>{"}, { apiKey: 'ag_...' });"}</p>
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Zero-Latency Interception
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Vercel apps thrive on speed. The SupraWall <Link href="/learn/what-is-agent-runtime-security" className="text-blue-500 underline">runtime security layer</Link>
+                                is optimized for the Edge Runtime. By pre-compiling security policies into a highly efficient decision engine,
+                                we verify tool parameters (like `send_email` recipients or `database_query` complexity) in under 1ms.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">
+                                {benefits.map((b, i) => (
+                                    <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900 border border-white/5 space-y-4">
+                                        <b.icon className="w-8 h-8 text-blue-500 mb-2" />
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tight italic">{b.title}</h3>
+                                        <p className="text-neutral-500 text-xs leading-relaxed uppercase tracking-widest font-bold">{b.desc}</p>
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600">// 3. Automatic edge policy enforcement</p>
-                                    <p className="text-blue-400">await streamText({"{"} model, tools, prompt {"});"}</p>
-                                    <p className="text-emerald-400 italic mt-2">// Tool call intercepted at the Edge ⚡</p>
-                                </div>
+                                ))}
                             </div>
 
-                            {/* Decorative glow */}
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-blue-500/10 blur-[100px] rounded-full group-hover:bg-blue-500/20 transition-all duration-1000" />
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Streaming Security
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                The Vercel AI SDK relies on streaming for superior UX. Traditional firewalls wait for the full response.
+                                SupraWall works within the stream, allowing you to stop execution mid-sentence if the agent attempts
+                                to "leak" its own system prompt or access tools it shouldn't.
+                            </p>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
+                                Implementation Checklist
+                            </h2>
+                            <div className="space-y-4">
+                                {[
+                                    "npm install @suprawall/sdk",
+                                    "Initialize the protector in your Next.js API route",
+                                    "Wrap your tools object with the 'protect' helper",
+                                    "Configure Edge Middleware for global budget caps",
+                                    "Enable real-time telemetry into the SupraWall Dashboard"
+                                ].map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-4 p-5 rounded-2xl bg-blue-500/5 border border-blue-500/10">
+                                        <CheckCircle2 className="w-5 h-5 text-blue-500" />
+                                        <span className="text-sm font-bold uppercase tracking-tight text-neutral-200">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Benefits Section */}
-                <div className="max-w-7xl mx-auto mt-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {benefits.map((b, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900/30 border border-white/[0.05] hover:border-blue-500/30 transition-all group relative overflow-hidden">
-                            <b.icon className="w-8 h-8 text-blue-500 mb-6 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-3 italic">{b.title}</h3>
-                            <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors uppercase text-[10px] tracking-widest">{b.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                {/* Client Side Content */}
+                <VercelClient />
 
-                {/* Edge Visual */}
-                <div className="max-w-7xl mx-auto mt-40 py-32 text-center space-y-12">
-                    <div className="inline-flex p-6 bg-blue-500/10 rounded-full border border-blue-500/20 mb-8">
-                        <Globe className="w-12 h-12 text-blue-500" />
-                    </div>
-                    <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase">Edge-First Governance.</h2>
-                    <p className="text-xl text-neutral-500 max-w-2xl mx-auto font-medium">
-                        Don't wait for the backend. SupraWall integrates with Vercel's Edge Runtime to block unauthorized tool calls before they ever reach your core infrastructure.
-                    </p>
-                </div>
-
-                {/* Call to Action */}
-                <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-blue-600 relative overflow-hidden text-center group font-sans">
+                {/* Call to Action: SPEC COMPLIANT */}
+                <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-blue-600 relative overflow-hidden text-center group">
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-indigo-900 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                     <div className="relative z-10 space-y-8">
                         <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
-                            Ready to secure <br />your Next.js AI stack?
+                            Ready to secure <br />your Vercel stack?
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1 shadow-2xl">
-                                Deploy Secure Edge
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                                Secure My App
                             </Link>
                         </div>
                     </div>
@@ -129,8 +151,8 @@ export default function VercelIntegrationPage() {
 }
 
 const benefits = [
-    { title: "Edge Middleware", desc: "Native support for Vercel Edge Runtime and Next.js Middleware environments.", icon: Globe },
-    { title: "Streaming Safety", desc: "Interrupts tool-calling streams in real-time if a violation is detected.", icon: Zap },
-    { title: "Cold Start Ready", desc: "Sub-1ms overhead ensures zero impact on your Lambda/Edge cold starts.", icon: ShieldCheck },
-    { title: "Type Safe Tools", desc: "Full TypeScript integration with Vercel AI SDK 'tool' and 'toolSet' types.", icon: Box }
+    { title: "Edge Native", desc: "Built for Vercel Edge Runtime and optimized for sub-1ms execution.", icon: Globe },
+    { title: "Stream Guard", desc: "Real-time monitoring of AI SDK streams for emergent security threats.", icon: Zap },
+    { title: "Type Safe", desc: "First-class support for TypeScript and the Vercel AI SDK 'tool' interface.", icon: Box },
+    { title: "Cold Start Ready", desc: "Zero weight implementation that doesn't bloat your Lambda/Edge functions.", icon: ShieldCheck }
 ];

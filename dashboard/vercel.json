@@ -1,0 +1,8 @@
+{
+    "crons": [
+        {
+            "path": "/api/stripe/report-usage",
+            "schedule": "0 * * * *"
+        }
+    ]
+}

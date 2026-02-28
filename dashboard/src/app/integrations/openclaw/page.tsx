@@ -1,120 +1,148 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import { ArrowRight, Monitor, Shield, Zap, Search, Eye } from "lucide-react";
+import { ArrowRight, Monitor, Shield, Zap, Search, Eye, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import OpenClawClient from "./OpenClawClient";
+
+export const metadata: Metadata = {
+    title: "OpenClaw Security Firewall | Autonomous Browser Protection",
+    description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage, session hijacking, and unauthorized web actions with SupraWall's runtime firewall.",
+    keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails"],
+    openGraph: {
+        title: "How to Secure Autonomous Browsers with OpenClaw",
+        description: "Zero-trust browser governance for AI agents. Block destructive DOM actions before they hit the wire.",
+    }
+};
 
 export default function OpenClawIntegrationPage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SupraWall for OpenClaw",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "url": "https://suprawall.com/integrations/openclaw",
+        "author": {
+            "@type": "Organization",
+            "name": "SupraWall"
+        },
+        "description": "The first security firewall for autonomous browsing agents and OpenClaw swarms.",
+        "featureList": [
+            "CDP-Level Action Interception",
+            "Financial Transaction Kill-Switch",
+            "Session Data Protection",
+            "DOM Pattern Recognition"
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
-                    <div className="lg:col-span-6 space-y-10 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase"
-                        >
-                            Infrastructure • Autonomous Browsing
-                        </motion.div>
+                    <div className="lg:col-span-12 space-y-10 relative z-10 text-center mb-20">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase mx-auto">
+                            Web Automation • OpenClaw Security
+                        </div>
 
-                        <div className="space-y-6">
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase italic"
-                            >
-                                Secure the <span className="text-emerald-500">Autonomous</span> <br />
-                                Browser.
-                            </motion.h1>
-                            <p className="text-xl text-neutral-400 leading-relaxed font-medium max-w-lg">
-                                Stop autonomous agents from leaking session cookies, buying unauthorized items, or deleting user data via the browser. SupraWall for <span className="text-white">OpenClaw</span>.
+                        {/* H1: SPEC REQUIRED */}
+                        <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
+                            Secure the <br />
+                            <span className="text-emerald-500 text-7xl md:text-[10rem]">OpenClaw</span> <br />
+                            Browser.
+                        </h1>
+
+                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
+                                OpenClaw security firewall integration is mandatory for agents operating in authenticated web environments.
+                                By sitting between the agent and the browser instance, developers can prevent agents from leaking
+                                session cookies, accessing sensitive local storage data, or performing unauthorized financial
+                                transactions on production websites.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-6 pt-4">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 shadow-[0_10px_40px_rgba(255,255,255,0.1)] transition-all active:scale-95 flex items-center gap-2">
-                                Get API Key <ArrowRight className="w-4 h-4" />
-                            </Link>
-                            <Link href="/docs/frameworks/openclaw" className="text-sm font-black uppercase tracking-[0.2em] text-neutral-500 hover:text-white transition-colors border-b-2 border-transparent hover:border-emerald-500 pb-1">
-                                View Plugin Source
+                        <div className="flex justify-center gap-6 pt-8">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                                Start Secure Browsing <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-6 relative">
-                        {/* Interactive Console Mockup */}
-                        <div className="bg-[#0A0A0A] border-2 border-white/[0.05] rounded-[3rem] overflow-hidden shadow-2xl relative group">
-                            <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.05] bg-white/[0.01]">
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-green-500/30" />
-                                </div>
-                                <span className="text-[10px] text-neutral-500 uppercase font-black tracking-[0.3em]">claw-security.ts</span>
-                            </div>
-                            <div className="p-10 space-y-8 font-mono text-sm leading-relaxed">
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600">// 1. Initialize Clawbot with SupraWall</p>
-                                    <p className="text-emerald-400">import {"{ secureClaw }"} from "@suprawall/claw";</p>
-                                </div>
+                    <div className="lg:col-span-12">
+                        <div className="max-w-4xl mx-auto prose prose-invert prose-emerald">
 
-                                <div className="space-y-4">
-                                    <p className="text-neutral-600">// 2. Secure the agent instance</p>
-                                    <div className="text-neutral-300 p-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl">
-                                        <p><span className="text-emerald-400">const</span> agent = new Clawbot(browser);</p>
-                                        <p className="mt-2"><span className="text-emerald-400">const</span> secured = secureClaw(agent, {"{"} apiKey: "..." {"}"});</p>
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Beyond Simple XPath blocking
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Traditional web security relies on URL filters. Autonomous agents require something deeper.
+                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">runtime security</Link>
+                                for OpenClaw analyzes the *context* of a click. If an agent tries to click "Transfer Funds" but the
+                                prompt intent was only to "Check Balance", the action is blocked instantly at the browser layer.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">
+                                {benefits.map((b, i) => (
+                                    <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900 border border-white/5 space-y-4">
+                                        <b.icon className="w-8 h-8 text-emerald-500 mb-2" />
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tight italic">{b.title}</h3>
+                                        <p className="text-neutral-500 text-xs leading-relaxed uppercase tracking-widest font-bold">{b.desc}</p>
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600">// 3. Dangerous acts are blocked</p>
-                                    <p className="text-red-400/80">await secured.execute("Delete AWS Account");</p>
-                                    <p className="text-red-400 italic">!! SupraWall: Action Blocked (Policy: No-Destruction)</p>
-                                </div>
+                                ))}
                             </div>
 
-                            {/* Decorative glow */}
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full group-hover:bg-emerald-500/20 transition-all duration-1000" />
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Session Data Protection
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Browsers are playgrounds for data leakage. An agent instructed to "Extract data" could
+                                maliciously or accidentally scrape its own `localStorage` which might contain API keys or auth tokens.
+                                SupraWall's sandbox ensures the agent only "sees" the part of the DOM it needs to perform its job.
+                            </p>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
+                                Integration Guide
+                            </h2>
+                            <div className="space-y-4">
+                                {[
+                                    "Initialize the @suprawall/claw package",
+                                    "Wrapp your Playwright/Puppeteer browser instance",
+                                    "Define 'No-Write' or 'Read-Only' zones for specific domains",
+                                    "Enable Step-by-Step navigation verification",
+                                    "Configure session-based audit logs for every DOM interaction"
+                                ].map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-4 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                        <span className="text-sm font-bold uppercase tracking-tight text-neutral-200">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Benefits Section */}
-                <div className="max-w-7xl mx-auto mt-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {benefits.map((b, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900/30 border border-white/[0.05] hover:border-emerald-500/30 transition-all group relative overflow-hidden">
-                            <b.icon className="w-8 h-8 text-emerald-500 mb-6 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-3 italic">{b.title}</h3>
-                            <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors uppercase text-[10px] tracking-widest">{b.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                {/* Client Side Content */}
+                <OpenClawClient />
 
-                {/* Visual Section: Browser Shield */}
-                <div className="max-w-7xl mx-auto mt-40 py-32 text-center space-y-12">
-                    <div className="inline-flex p-6 bg-emerald-500/10 rounded-full border border-emerald-500/20 mb-8">
-                        <Monitor className="w-12 h-12 text-emerald-500" />
-                    </div>
-                    <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase">Transparent Interception.</h2>
-                    <p className="text-xl text-neutral-500 max-w-2xl mx-auto font-medium">
-                        SupraWall injects security directly into the CDP (Chrome DevTools Protocol) stream, allowing us to block actions before they hit the page.
-                    </p>
-                </div>
-
-                {/* Call to Action */}
+                {/* Call to Action: SPEC COMPLIANT */}
                 <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-emerald-600 relative overflow-hidden text-center group">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-800 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                     <div className="relative z-10 space-y-8">
                         <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
-                            Ready to secure <br />autonomous browsing?
+                            Ready to secure <br />your browser agents?
                         </h2>
                         <div className="flex justify-center gap-6">
                             <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
-                                Secure your Browser
+                                Secure My Browser
                             </Link>
                         </div>
                     </div>
@@ -125,8 +153,8 @@ export default function OpenClawIntegrationPage() {
 }
 
 const benefits = [
-    { title: "DOM Interception", desc: "Monitors clicks and input events for sensitive fields and dangerous patterns.", icon: Search },
-    { title: "Session Guard", desc: "Prevents agents from reading cookies or local storage directly from the browser context.", icon: Shield },
-    { title: "Financial Kill-Switch", desc: "Blocks payment submissions or 'Buy Now' actions without human approval.", icon: Zap },
-    { title: "Step-by-Step Audit", desc: "Records every navigation and click as a verified security event in the cloud.", icon: Eye }
+    { title: "DOM Shield", desc: "Monitors and blocks dangerous DOM actions based on context.", icon: Search },
+    { title: "Session Guard", desc: "Prevents exfiltration of cookies and local storage data.", icon: Shield },
+    { title: "Action Kill-Switch", desc: "Immediate blocking of sensitive clicks (e.g., Delete, Buy).", icon: Zap },
+    { title: "Visual Audit", desc: "Interactive logs showing exactly where the agent clicked and why.", icon: Eye }
 ];

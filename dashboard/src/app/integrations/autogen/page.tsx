@@ -1,125 +1,147 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import { ArrowRight, Bot, Shield, Zap, Terminal, Code2, Layers, Cpu } from "lucide-react";
+import { ArrowRight, Bot, Shield, Zap, Terminal, Code2, Layers, Cpu, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import AutoGenClient from "./AutoGenClient";
+
+export const metadata: Metadata = {
+    title: "Secure Microsoft AutoGen Agents | SupraWall Governance",
+    description: "Enterprise security and runtime guardrails for Microsoft AutoGen. Block infinite loops, monitor inter-agent communication, and prevent dangerous code execution.",
+    keywords: ["autogen agent policy", "secure autogen agents", "microsoft autogen security", "agent conversation audit"],
+    openGraph: {
+        title: "How to Secure Microsoft AutoGen Agents",
+        description: "Zero-trust loop governance for autonomous agents. Prevent emergent behavior from compromising your systems.",
+    }
+};
 
 export default function AutoGenIntegrationPage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SupraWall for AutoGen",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "url": "https://suprawall.com/integrations/autogen",
+        "author": {
+            "@type": "Organization",
+            "name": "SupraWall"
+        },
+        "description": "Runtime security and conversation auditing for Microsoft AutoGen multiple agent systems.",
+        "featureList": [
+            "Autonomous Code Interception",
+            "Infinite Loop Detection",
+            "Inter-Agent Message Auditing",
+            "Token Usage Cap Enforcement"
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
-                    <div className="lg:col-span-6 space-y-10 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-[10px] font-black text-purple-400 tracking-[0.2em] uppercase"
-                        >
-                            Orchestration • Microsoft AutoGen
-                        </motion.div>
+                    <div className="lg:col-span-12 space-y-10 relative z-10 text-center mb-20">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-purple-500/30 bg-purple-500/10 text-[10px] font-black text-purple-400 tracking-[0.2em] uppercase mx-auto">
+                            Agentic Orchestration • Microsoft AutoGen Official
+                        </div>
 
-                        <div className="space-y-6">
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase italic"
-                            >
-                                Govern the <br />
-                                <span className="text-purple-500">Autonomous</span> <br />
-                                Loop.
-                            </motion.h1>
-                            <p className="text-xl text-neutral-400 leading-relaxed font-medium max-w-lg">
-                                Stop agents from falling into infinite loops or approving dangerous file writes. SupraWall for <span className="text-white">Microsoft AutoGen</span>.
+                        {/* H1: SPEC REQUIRED */}
+                        <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
+                            Govern the <br />
+                            <span className="text-purple-500 text-7xl md:text-[10rem]">AutoGen</span> <br />
+                            Loop.
+                        </h1>
+
+                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
+                                Microsoft AutoGen agent policy is a critical requirement for production multi-agent systems.
+                                By adding a specialized security shim, developers can audit the high-frequency conversation loops between agents,
+                                preventing emergent behavior like infinite "self-correction" loops and unauthorized code execution in the UserProxy.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-6 pt-4">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 shadow-[0_10px_40px_rgba(147,51,234,0.1)] transition-all active:scale-95 flex items-center gap-2">
-                                Secure your Agents <ArrowRight className="w-4 h-4" />
-                            </Link>
-                            <Link href="/docs/frameworks/autogen" className="text-sm font-black uppercase tracking-[0.2em] text-neutral-500 hover:text-white transition-colors border-b-2 border-transparent hover:border-purple-500 pb-1">
-                                Integration Guide
+                        <div className="flex justify-center gap-6 pt-8">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                                Secure My Agents <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-6 relative">
-                        {/* Interactive Console Mockup */}
-                        <div className="bg-[#0A0A0A] border-2 border-white/[0.05] rounded-[3rem] overflow-hidden shadow-2xl relative group">
-                            <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.05] bg-white/[0.01]">
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-green-500/30" />
-                                </div>
-                                <span className="text-[10px] text-neutral-500 uppercase font-black tracking-[0.3em]">autogen_safety.py</span>
-                            </div>
-                            <div className="p-10 space-y-8 font-mono text-sm leading-relaxed">
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600"># 1. Import the universal decorator</p>
-                                    <p className="text-purple-400">from suprawall import secure</p>
-                                </div>
+                    <div className="lg:col-span-12">
+                        <div className="max-w-4xl mx-auto prose prose-invert prose-purple">
 
-                                <div className="space-y-4">
-                                    <p className="text-neutral-600"># 2. Protect individual agents or swarms</p>
-                                    <div className="text-neutral-300 p-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl">
-                                        <p className="text-purple-400">@secure(api_key="ag_...")</p>
-                                        <p><span className="text-purple-400">def</span> create_assistant():</p>
-                                        <p className="pl-4 mt-2">return AssistantAgent(</p>
-                                        <p className="pl-8 text-neutral-400">name="coder",</p>
-                                        <p className="pl-8 text-neutral-400">llm_config=config</p>
-                                        <p className="pl-4">)</p>
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Transparent Code Guard
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                AutoGen's greatest strength—its ability to write and run code—is also its greatest security risk.
+                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-purple-500 underline">runtime security protocol</Link>
+                                intercepts the code output before the UserProxy can execute it, analyzing it for destructive patterns and potential
+                                data exfiltration commands.
+                            </p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-16">
+                                {benefits.map((b, i) => (
+                                    <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900 border border-white/5 space-y-4">
+                                        <b.icon className="w-8 h-8 text-purple-500 mb-2" />
+                                        <h3 className="text-xl font-black text-white uppercase tracking-tight italic">{b.title}</h3>
+                                        <p className="text-neutral-500 text-xs leading-relaxed uppercase tracking-widest font-bold">{b.desc}</p>
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600"># 3. Malicious code is blocked at runtime</p>
-                                    <p className="text-red-400/80"># Agent tried: subprocess.run(["rm", "-rf", "/"])</p>
-                                    <p className="text-red-400 italic">!! SupraWall: File Access Violation (Action Blocked)</p>
-                                </div>
+                                ))}
                             </div>
 
-                            {/* Decorative glow */}
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full group-hover:bg-purple-500/20 transition-all duration-1000" />
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                Breaking the Infinite Loop
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Multi-agent systems can often get stuck in loops where agents continually pass errors back and forth,
+                                exhausting credit limits without making progress. SupraWall's governance engine monitors conversation
+                                topological complexity and breaks these loops automatically when no utility gain is detected.
+                            </p>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
+                                Integration Guide
+                            </h2>
+                            <div className="space-y-4">
+                                {[
+                                    "Initialize SupraWall SDK with AutoGen context",
+                                    "Wrap the AssistantAgent and UserProxy executors",
+                                    "Define script execution constraints (e.g., no internet for scripts)",
+                                    "Configure maximum conversation turns before auto-termination",
+                                    "Enable real-time Slack/Discord alerts for policy violations"
+                                ].map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-4 p-5 rounded-2xl bg-purple-500/5 border border-purple-500/10">
+                                        <CheckCircle2 className="w-5 h-5 text-purple-500" />
+                                        <span className="text-sm font-bold uppercase tracking-tight text-neutral-200">{item}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Benefits Section */}
-                <div className="max-w-7xl mx-auto mt-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {benefits.map((b, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900/30 border border-white/[0.05] hover:border-purple-500/30 transition-all group relative overflow-hidden">
-                            <b.icon className="w-8 h-8 text-purple-500 mb-6 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-3 italic">{b.title}</h3>
-                            <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors uppercase text-[10px] tracking-widest">{b.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                {/* Client Side Content */}
+                <AutoGenClient />
 
-                {/* Technical Section */}
-                <div className="max-w-7xl mx-auto mt-40 py-32 text-center space-y-12">
-                    <div className="inline-flex p-6 bg-purple-500/10 rounded-full border border-purple-500/20 mb-8">
-                        <Code2 className="w-12 h-12 text-purple-500" />
-                    </div>
-                    <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase">Transparent Code Interception.</h2>
-                    <p className="text-xl text-neutral-500 max-w-2xl mx-auto font-medium">
-                        AutoGen agents love to write and execute code. SupraWall sits between the agent and the execution environment, auditing every script before it runs.
-                    </p>
-                </div>
-
-                {/* Call to Action */}
-                <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-purple-600 relative overflow-hidden text-center group font-sans">
+                {/* Call to Action: SPEC COMPLIANT */}
+                <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-purple-600 relative overflow-hidden text-center group">
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-800 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                     <div className="relative z-10 space-y-8">
                         <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-none">
-                            Ready to secure <br />your multi-agent loops?
+                            Ready to secure <br />your agents?
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1 shadow-2xl">
-                                Start Secure Loop
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                                Secure My Loop
                             </Link>
                         </div>
                     </div>
@@ -130,8 +152,8 @@ export default function AutoGenIntegrationPage() {
 }
 
 const benefits = [
-    { title: "Code Guard", desc: "Monitors and blocks dangerous bash/python execution within AutoGen agents.", icon: Code2 },
-    { title: "Conversation Audit", desc: "Logs every message exchanged between agents to prevent emergent prompt attacks.", icon: Bot },
-    { title: "Zero Loops", desc: "Detects and breaks infinite 'code-fail' loops that drain your LLM credits.", icon: Zap },
-    { title: "Unified Governance", desc: "One policy engine to rule all agents, regardless of their individual configurations.", icon: Layers }
+    { title: "Code Guard", desc: "Hardened interception for autonomous script execution in the UserProxy.", icon: Code2 },
+    { title: "Loop Detection", desc: "Heuristic monitoring to prevent costly infinite conversation loops.", icon: Zap },
+    { title: "Audit Trail", desc: "Comprehensive logging of inter-agent messages for later forensic review.", icon: Bot },
+    { title: "Role Policy", desc: "Assign different security contexts to agents based on their functional role.", icon: Layers }
 ];

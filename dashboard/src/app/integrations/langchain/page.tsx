@@ -1,99 +1,200 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import { ArrowRight, Code2, Globe, Shield, Zap, Terminal } from "lucide-react";
+import { ArrowRight, Code2, Shield, Zap, Terminal, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import LangChainClient from "./LangChainClient";
+
+export const metadata: Metadata = {
+    title: "Security for LangChain Agents | SupraWall Guide",
+    description: "Learn how to secure LangChain agents with runtime guardrails, policy enforcement, and audit logging using SupraWall. Prevent prompt injection and rogue tool execution.",
+    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection"],
+    openGraph: {
+        title: "Security for LangChain Agents | SupraWall",
+        description: "The official security layer for the LangChain ecosystem. Prevent destructive tool usage with zero performance impact.",
+    }
+};
 
 export default function LangChainIntegrationPage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "SupraWall for LangChain",
+        "applicationCategory": "SecurityApplication",
+        "operatingSystem": "Any",
+        "url": "https://suprawall.com/integrations/langchain",
+        "author": {
+            "@type": "Organization",
+            "name": "SupraWall"
+        },
+        "description": "Enterprise security and runtime guardrails for LangChain agents and chains.",
+        "sameAs": [
+            "https://github.com/suprawall",
+            "https://pypi.org/project/suprawall"
+        ],
+        "featureList": [
+            "Tool Execution Policy",
+            "Prompt Injection Prevention",
+            "Real-time Audit Logs",
+            "Human-in-the-loop Approvals"
+        ]
+    };
+
+    const faqJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How do I secure a LangChain agent?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "You can secure a LangChain agent by using a runtime security layer like SupraWall. It intercepts tool calls via callbacks to verify them against your security policies before execution."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does SupraWall slow down LangChain performance?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "No, SupraWall is designed for low-latency interception. Policies are evaluated locally or via an optimized edge firewall, ensuring near-zero impact on agent response times."
+                }
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+            />
+
             <Navbar />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">
-                    <div className="lg:col-span-6 space-y-10 relative z-10">
-                        <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase"
-                        >
-                            Infrastructure • Framework native
-                        </motion.div>
+                    <div className="lg:col-span-12 space-y-10 relative z-10 text-center mb-20">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-[10px] font-black text-emerald-400 tracking-[0.2em] uppercase mx-auto">
+                            Infrastructure • LangChain Official
+                        </div>
 
-                        <div className="space-y-6">
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase italic"
-                            >
-                                Secure <span className="text-emerald-500">LangGraph</span> <br />
-                                and Chains.
-                            </motion.h1>
-                            <p className="text-xl text-neutral-400 leading-relaxed font-medium max-w-lg">
-                                The official security layer for the LangChain ecosystem. Prevent destructive tool usage and prompt injection with <span className="text-white">zero performance impact.</span>
+                        {/* H1: SPEC REQUIRED */}
+                        <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
+                            Security for <br />
+                            <span className="text-emerald-500 text-7xl md:text-[10rem]">LangChain</span> <br />
+                            Agents
+                        </h1>
+
+                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
+                                LangChain agent security is critical for production AI systems to prevent prompt injection and unauthorized shell access.
+                                SupraWall provides a zero-trust runtime security layer that intercepts and validates every tool call against enterprise-grade policies,
+                                ensuring your agents operate within safe boundaries.
                             </p>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-6 pt-4">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 shadow-[0_10px_40px_rgba(255,255,255,0.1)] transition-all active:scale-95 flex items-center gap-2">
-                                Get API Key <ArrowRight className="w-4 h-4" />
-                            </Link>
-                            <Link href="/docs/frameworks/langchain" className="text-sm font-black uppercase tracking-[0.2em] text-neutral-500 hover:text-white transition-colors border-b-2 border-transparent hover:border-emerald-500 pb-1">
-                                Read the adapter spec
+                        <div className="flex justify-center gap-6 pt-8">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                                Secure My Agent <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-6 relative">
-                        {/* Interactive Console Mockup */}
-                        <div className="bg-[#0A0A0A] border-2 border-white/[0.05] rounded-[3rem] overflow-hidden shadow-2xl relative group">
-                            <div className="flex items-center justify-between px-8 py-6 border-b border-white/[0.05] bg-white/[0.01]">
-                                <div className="flex gap-2">
-                                    <div className="w-3 h-3 rounded-full bg-red-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-yellow-500/30" />
-                                    <div className="w-3 h-3 rounded-full bg-green-500/30" />
-                                </div>
-                                <span className="text-[10px] text-neutral-500 uppercase font-black tracking-[0.3em]">agent-governance.py</span>
-                            </div>
-                            <div className="p-10 space-y-8 font-mono text-sm leading-relaxed">
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600"># 1. Initialize the firewall</p>
-                                    <p className="text-emerald-400">from suprawall.langchain import protect</p>
-                                </div>
+                    <div className="lg:col-span-12">
+                        <div className="max-w-4xl mx-auto prose prose-invert prose-emerald">
 
-                                <div className="space-y-4">
-                                    <p className="text-neutral-600"># 2. Wrap your AgentExecutor or Graph</p>
-                                    <div className="text-neutral-300 p-6 bg-white/[0.02] border border-white/[0.05] rounded-2xl">
-                                        <p><span className="text-emerald-400">agent</span> = create_react_agent(llm, tools)</p>
-                                        <p className="mt-2"><span className="text-emerald-400">secured_agent</span> = protect(agent)</p>
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
+                                Install in 30 seconds
+                            </h2>
+                            <p className="text-neutral-400 uppercase text-xs font-bold tracking-widest mb-6">
+                                Standard integration across Python or Node.js
+                            </p>
+                            <div className="bg-neutral-900 rounded-3xl p-8 border border-white/5 font-mono text-emerald-400">
+                                <p># Python</p>
+                                <p className="mb-4">pip install <span className="text-white font-bold">suprawall</span></p>
+                                <p className="text-neutral-500"># and wrap your executor</p>
+                                <p>from <span className="text-white">suprawall.langchain</span> import <span className="text-white">protect</span></p>
+                                <p>secured_agent = protect(agent_executor)</p>
+                            </div>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-8">
+                                What SupraWall Intercepts
+                            </h2>
+                            <p className="text-lg text-neutral-400">
+                                SupraWall sits between the LLM and the environment. When an autonomous agent decides to use a tool,
+                                our callback handler triggers.
+                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-20">
+                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                    <Terminal className="w-8 h-8 text-emerald-500 mb-4" />
+                                    <h4 className="font-bold uppercase text-white tracking-widest text-sm mb-2">Bash/REPL</h4>
+                                    <p className="text-xs text-neutral-500">Detects and blocks destructive `rm`, `chmod`, and data exfiltration commands.</p>
+                                </div>
+                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                    <Shield className="w-8 h-8 text-emerald-500 mb-4" />
+                                    <h4 className="font-bold uppercase text-white tracking-widest text-sm mb-2">Database Access</h4>
+                                    <p className="text-xs text-neutral-500">Enforces read-only policies or blocks DROP/TRUNCATE operations instantly.</p>
+                                </div>
+                            </div>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
+                                LangChain-Specific Threats
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Autonomous agents are vulnerable to indirect prompt injection through search results or file reading.
+                                SupraWall specifically monitors the <span className="text-white font-mono">AgentAction</span> payload
+                                to verify the intent matches the assigned policy for the current user session.
+                            </p>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-20">
+                                Policy Configuration
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6">
+                                Define your constraints in our visual dashboard or via code. Example policy for a LangChain financial agent:
+                            </p>
+                            <div className="bg-neutral-900 rounded-3xl p-8 border border-white/5 font-mono text-sm text-neutral-300 mt-8">
+                                <pre>{`{
+  "tool": "plaid_transfer",
+  "rule": "REQUIRE_APPROVAL",
+  "condition": { "amount": "> 500" }
+}`}</pre>
+                            </div>
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
+                                Production Checklist
+                            </h2>
+                            <div className="space-y-4">
+                                {[
+                                    "Enable Callback Handlers in AgentExecutor",
+                                    "Configure Fail-Closed policy for network errors",
+                                    "Set session-based budget limits",
+                                    "Audit all 'shell' and 'google_search' tools",
+                                    "Enable Telegram approvals for write-actions"
+                                ].map((item, idx) => (
+                                    <div key={idx} className="flex items-center gap-4 p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                        <span className="text-sm font-bold uppercase tracking-tight text-neutral-200">{item}</span>
                                     </div>
-                                </div>
-
-                                <div className="space-y-2">
-                                    <p className="text-neutral-600"># 3. Every tool call is now audited</p>
-                                    <p className="text-emerald-400">secured_agent.invoke({"{"}"input": "..."{"}"})</p>
-                                </div>
+                                ))}
                             </div>
-
-                            {/* Decorative glow */}
-                            <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 blur-[100px] rounded-full group-hover:bg-emerald-500/20 transition-all duration-1000" />
                         </div>
                     </div>
                 </div>
 
-                {/* Benefits Section */}
-                <div className="max-w-7xl mx-auto mt-40 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {benefits.map((b, i) => (
-                        <div key={i} className="p-10 rounded-[2.5rem] bg-neutral-900/30 border border-white/[0.05] hover:border-emerald-500/30 transition-all group relative overflow-hidden">
-                            <b.icon className="w-8 h-8 text-emerald-500 mb-6 group-hover:scale-110 transition-transform duration-500" />
-                            <h3 className="text-xl font-black text-white uppercase tracking-tight mb-3 italic">{b.title}</h3>
-                            <p className="text-neutral-500 text-sm leading-relaxed group-hover:text-neutral-400 transition-colors uppercase text-[10px] tracking-widest">{b.desc}</p>
-                        </div>
-                    ))}
-                </div>
+                {/* VISUAL WRAPPER: Client side animations */}
+                <LangChainClient />
 
-                {/* Call to Action */}
+                {/* Call to Action: SPEC COMPLIANT */}
                 <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-emerald-600 relative overflow-hidden text-center group">
                     <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-emerald-800 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                     <div className="relative z-10 space-y-8">
@@ -106,17 +207,9 @@ export default function LangChainIntegrationPage() {
                             </Link>
                         </div>
                     </div>
-                    {/* Decorative background element */}
-                    <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 blur-[120px] rounded-full" />
                 </div>
             </main>
         </div>
     );
 }
 
-const benefits = [
-    { title: "Callback Enforcement", desc: "Plugs into LangChain's native callback system for real-time interception.", icon: Zap },
-    { title: "Tool Sandboxing", desc: "Specifically protects bash, python_repl, and search tools from misuse.", icon: Shield },
-    { title: "Human Approval", desc: "Pause agents before they execute high-risk tools like email or db_delete.", icon: Globe },
-    { title: "Deep Audit", desc: "Full trace of tool inputs and outputs mapped to specific user sessions.", icon: Code2 }
-];

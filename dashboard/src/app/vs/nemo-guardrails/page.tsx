@@ -1,122 +1,104 @@
-"use client";
-
-import { motion } from "framer-motion";
 import { Navbar } from "@/components/Navbar";
-import { Check, X, Shield, Zap, AlertTriangle, ArrowRight, BarChart3 } from "lucide-react";
+import { Check, X, Shield, Zap, AlertTriangle, ArrowRight, BarChart3, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { Metadata } from "next";
+import NemoVsClient from "./NemoVsClient";
 
-export default function vsNemoGuardrails() {
+export const metadata: Metadata = {
+    title: "SupraWall vs NeMo Guardrails | Best Agent Security Platform",
+    description: "Compare SupraWall and NVIDIA NeMo Guardrails. Learn why native runtime security is superior to static policy proxies for autonomous LangChain and AutoGen agents.",
+    keywords: ["nemo guardrails alternative", "suprawall vs nemo guardrails", "agent security comparison", "llm guardrail framework"],
+    openGraph: {
+        title: "SupraWall vs NeMo Guardrails Comparison Guide",
+        description: "Why developers are switching from NeMo's Colang to SupraWall's zero-trust runtime security SDK.",
+    }
+};
+
+export default function vsNemoGuardrailsPage() {
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "SupraWall Agent Security",
+        "description": "Enterprise-grade runtime security layer for autonomous AI agents, compared to NeMo Guardrails.",
+        "brand": {
+            "@type": "Brand",
+            "name": "SupraWall"
+        },
+        "offers": {
+            "@type": "Offer",
+            "url": "https://suprawall.com/login",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    };
+
     const comparisonData = [
-        { feature: "Runtime Interception", supra: true, nemo: false, note: "NeMo is post-facto or proxy-based; SupraWall is native runtime." },
-        { title: "Agent Framework Support", feature: "LangChain, CrewAI, AutoGen", supra: true, nemo: false, note: "NeMo lacks native agentic flow state tracking." },
-        { feature: "One-Line Integration", supra: true, nemo: false, note: "NeMo requires YAML/Colang logic files; SupraWall is code-first." },
-        { feature: "Managed Policy Engine", supra: true, nemo: "Self-hosted only", note: "SupraWall provides a cloud-native dashboard for policies." },
-        { feature: "Tool Call Sandboxing", supra: true, nemo: false, note: "SupraWall inspects bash/python arguments before execution." }
+        { feature: "Runtime Interception", supra: true, nemo: false, note: "NeMo is post-facto; SupraWall is native runtime." },
+        { feature: "Multi-Agent Swarm Support", supra: true, nemo: false, note: "Native hooks for CrewAI and AutoGen delegation." },
+        { feature: "One-Line Integration", supra: true, nemo: false, note: "NeMo requires YAML/Colang; SupraWall is a Python decorator." },
+        { feature: "Managed Policy Dashboard", supra: true, nemo: "Self-hosted", note: "Real-time audit logs and live policy updates." },
+        { feature: "Low Latency Overheads", supra: "< 1ms", nemo: "20ms+", note: "SupraWall runs inside the local app process." }
     ];
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+        <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
-            <main className="pt-32 pb-20 px-6">
-                <div className="max-w-5xl mx-auto space-y-20">
+            <main className="pt-40 pb-32 px-6 overflow-hidden">
+                <div className="max-w-7xl mx-auto space-y-20">
 
                     {/* Hero Section */}
-                    <div className="text-center space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            className="inline-flex items-center px-4 py-1.5 rounded-full border border-rose-500/20 bg-rose-500/5 text-[10px] font-black text-rose-400 tracking-[0.2em] uppercase"
-                        >
-                            Competitor Analysis
-                        </motion.div>
-                        <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none uppercase italic">
+                    <div className="text-center space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-1000">
+                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-rose-500/20 bg-rose-500/5 text-[10px] font-black text-rose-400 tracking-[0.2em] uppercase mx-auto">
+                            Head-to-Head Comparison
+                        </div>
+
+                        {/* H1: SPEC REQUIRED */}
+                        <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
                             SupraWall vs <br />
                             <span className="text-neutral-500">NeMo Guardrails</span>
                         </h1>
-                        <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-medium">
-                            Why developers are switching from static policy proxies to dynamic Agent Runtime Security.
-                        </p>
-                    </div>
 
-                    {/* Comparison Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-                        {/* Comparison Card: NeMo */}
-                        <div className="p-10 rounded-3xl bg-white/[0.02] border border-white/5 space-y-8 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
-                                <AlertTriangle className="w-32 h-32" />
-                            </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-black uppercase italic text-neutral-500">NeMo Guardrails</h3>
-                                <p className="text-sm text-neutral-500 leading-relaxed">
-                                    A powerful, open-source framework by NVIDIA for adding programmable guardrails to LLM-based applications. Best for chat interfaces and content moderation.
-                                </p>
-                            </div>
-                            <ul className="space-y-4">
-                                <li className="flex items-center gap-3 text-sm text-neutral-500">
-                                    <X className="w-4 h-4 text-rose-900" /> Complex Colang syntax
-                                </li>
-                                <li className="flex items-center gap-3 text-sm text-neutral-500">
-                                    <X className="w-4 h-4 text-rose-900" /> High latency (proxy mode)
-                                </li>
-                                <li className="flex items-center gap-3 text-sm text-neutral-500">
-                                    <X className="w-4 h-4 text-rose-900" /> No native agent state tracking
-                                </li>
-                            </ul>
-                        </div>
-
-                        {/* Comparison Card: SupraWall */}
-                        <div className="p-10 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 space-y-8 relative overflow-hidden shadow-[0_0_50px_rgba(16,185,129,0.05)]">
-                            <div className="absolute top-0 right-0 p-8 opacity-10">
-                                <Shield className="w-32 h-32 text-emerald-500" />
-                            </div>
-                            <div className="space-y-4">
-                                <h3 className="text-2xl font-black uppercase italic text-white flex items-center gap-3">
-                                    SupraWall <Zap className="w-5 h-5 text-emerald-500 fill-emerald-500" />
-                                </h3>
-                                <p className="text-sm text-neutral-300 leading-relaxed">
-                                    The Agent Runtime Firewall. Built specifically for autonomous agents that take actions. Installs as a native SDK wrapper with zero-latency policy enforcement.
-                                </p>
-                            </div>
-                            <ul className="space-y-4">
-                                <li className="flex items-center gap-3 text-sm text-emerald-400 font-bold">
-                                    <Check className="w-4 h-4" /> Native agent SDK support
-                                </li>
-                                <li className="flex items-center gap-3 text-sm text-emerald-400 font-bold">
-                                    <Check className="w-4 h-4" /> One-line decorator setup
-                                </li>
-                                <li className="flex items-center gap-3 text-sm text-emerald-400 font-bold">
-                                    <Check className="w-4 h-4" /> Managed policy dashboard
-                                </li>
-                            </ul>
+                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
+                        <div className="max-w-3xl mx-auto">
+                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
+                                Choosing a nemo guardrails alternative is critical when building production agents that take real-world actions.
+                                While NVIDIA's framework is powerful for content moderation, SupraWall's native runtime security protocol
+                                provides the deep tool-level interception and multi-agent governance that autonomous frameworks like
+                                LangChain and AutoGen require for enterprise safety.
+                            </p>
                         </div>
                     </div>
 
-                    {/* Technical Table */}
-                    <div className="space-y-8">
+                    {/* Comparison Table: SPEC REQUIRED */}
+                    <div className="space-y-8 mt-24">
                         <div className="flex items-center gap-3">
-                            <BarChart3 className="w-6 h-6 text-emerald-500" />
-                            <h2 className="text-2xl font-black uppercase tracking-tight">Technical Breakdown</h2>
+                            <BarChart3 className="w-8 h-8 text-emerald-500" />
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight">Technical Breakdown</h2>
                         </div>
-                        <div className="overflow-x-auto rounded-3xl border border-white/5 bg-white/[0.01]">
+                        <div className="overflow-x-auto rounded-[2.5rem] border border-white/5 bg-white/[0.01] p-1">
                             <table className="w-full text-left text-sm border-collapse">
                                 <thead>
                                     <tr className="border-b border-white/5 bg-white/[0.02]">
-                                        <th className="p-6 font-black uppercase tracking-widest text-neutral-500">Feature</th>
-                                        <th className="p-6 font-black uppercase tracking-widest text-neutral-500">NeMo Guardrails</th>
-                                        <th className="p-6 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
+                                        <th className="p-8 font-black uppercase tracking-widest text-neutral-500">Feature</th>
+                                        <th className="p-8 font-black uppercase tracking-widest text-neutral-500">NeMo Guardrails</th>
+                                        <th className="p-8 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {comparisonData.map((row, i) => (
-                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
-                                            <td className="p-6 font-bold text-neutral-300">{row.feature}</td>
-                                            <td className="p-6">
-                                                {row.nemo === true ? <Check className="w-5 h-5 text-emerald-500" /> : row.nemo === false ? <X className="w-5 h-5 text-rose-900" /> : <span className="text-neutral-500">{row.nemo}</span>}
+                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                                            <td className="p-8 font-bold text-neutral-300 text-lg uppercase italic tracking-tighter">{row.feature}</td>
+                                            <td className="p-8">
+                                                {row.nemo === true ? <Check className="w-6 h-6 text-emerald-500" /> : row.nemo === false ? <X className="w-6 h-6 text-rose-900" /> : <span className="text-neutral-500 font-bold">{row.nemo}</span>}
                                             </td>
-                                            <td className="p-6">
-                                                {row.supra ? <Check className="w-5 h-5 text-emerald-500" /> : <X className="w-5 h-5 text-rose-500" />}
-                                                <p className="text-[10px] text-neutral-500 mt-2 font-medium">{row.note}</p>
+                                            <td className="p-8 bg-emerald-500/[0.02]">
+                                                {row.supra === true ? <Check className="w-6 h-6 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]" /> : <span className="text-emerald-500 font-black text-lg">{row.supra}</span>}
+                                                <p className="text-[10px] text-neutral-500 mt-2 font-bold uppercase tracking-widest leading-relaxed">{row.note}</p>
                                             </td>
                                         </tr>
                                     ))}
@@ -125,27 +107,40 @@ export default function vsNemoGuardrails() {
                         </div>
                     </div>
 
-                    {/* Summary / Verdict */}
-                    <div className="p-10 rounded-3xl bg-neutral-900 border border-white/5 space-y-6">
-                        <h3 className="text-2xl font-black uppercase italic">The Verdict</h3>
-                        <p className="text-neutral-400 leading-relaxed font-medium">
-                            NeMo Guardrails is excellent for research-driven content filtering on basic LLM chains. However, if you are building <strong className="text-white">autonomous agents</strong> (using LangChain, CrewAI, or AutoGen) that interact with production infrastructure, you need the visibility and enforcement provided only by <strong className="text-emerald-500">SupraWall</strong>.
-                        </p>
-                        <div className="pt-4 flex items-center gap-4">
-                            <Link href="/login" className="px-6 py-3 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all flex items-center gap-2">
-                                Swap to SupraWall <ArrowRight className="w-4 h-4" />
-                            </Link>
+                    <div className="lg:col-span-12">
+                        <div className="max-w-4xl mx-auto prose prose-invert prose-emerald">
+
+                            {/* H2: SPEC REQUIRED */}
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-12">
+                                Why developers are switching
+                            </h2>
+                            <p className="text-lg text-neutral-400 mt-6 leading-relaxed">
+                                NeMo Guardrails was designed as a middleware proxy for chat. When an agent decides to
+                                run a bash command, NeMo struggles to see the *functional intent* inside the execution environment.
+                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">Agent Runtime Security (ARS)</Link>
+                                framework hooks directly into the framework callbacks, allowing for pre-flight verification
+                                of tool arguments with zero latency impact.
+                            </p>
+
+                            <div className="bg-neutral-900 rounded-[2.5rem] p-12 border border-white/5 mt-16 space-y-6">
+                                <h3 className="text-2xl font-black uppercase italic tracking-tight text-white uppercase italic">The Verdict</h3>
+                                <p className="text-neutral-400 leading-relaxed font-medium">
+                                    Use <strong className="text-white">NeMo Guardrails</strong> if you are building a pure chat interface with light content filtering needs. Choose <strong className="text-emerald-500 uppercase italic">SupraWall</strong> if you are building autonomous agents that interact with production APIs, databases, or file systems and require absolute runtime reliability.
+                                </p>
+                                <div className="pt-6">
+                                    <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit">
+                                        Secure My Swarm <ArrowRight className="w-4 h-4" />
+                                    </Link>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    {/* Architectural Comparison Visualization */}
+                    <NemoVsClient />
+
                 </div>
             </main>
-
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-700 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Enterprise-Grade Agent Security • 2026
-                </p>
-            </footer>
         </div>
     );
 }

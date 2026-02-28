@@ -17,6 +17,7 @@ export function Navbar() {
 
                 <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-widest">
                     <Link href="/docs" className="text-neutral-500 hover:text-white transition-colors">Documentation</Link>
+                    <Link href="/learn/what-is-agent-runtime-security" className="text-neutral-500 hover:text-white transition-colors">Security Hub</Link>
                     <Link href="/#integrations" className="text-neutral-500 hover:text-white transition-colors">Integrations</Link>
                     <Link href="/spec" className="text-neutral-500 hover:text-white transition-colors">AGPS Spec</Link>
                     <div className="h-4 w-px bg-white/10" />
