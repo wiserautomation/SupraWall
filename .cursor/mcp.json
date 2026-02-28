@@ -6,7 +6,7 @@
                 "/Users/peghin/Desktop/AgentGate/packages/google-search-console-mcp/build/index.js"
             ],
             "env": {
-                "GOOGLE_APPLICATION_CREDENTIALS": "/Users/peghin/Desktop/AgentGate/packages/google-search-console-mcp/service-account.json"
+                "GOOGLE_SERVICE_ACCOUNT_PATH": "/Users/peghin/Desktop/AgentGate/packages/google-search-console-mcp/service-account.json"
             }
         }
     }

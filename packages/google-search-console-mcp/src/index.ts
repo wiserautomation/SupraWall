@@ -15,7 +15,12 @@ dotenv.config();
 // Try to load credentials from file or env
 let authData: any = null;
 
-const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH || path.join(process.cwd(), 'service-account.json');
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_PATH || path.resolve(__dirname, '../../service-account.json');
 if (fs.existsSync(serviceAccountPath)) {
     authData = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf-8'));
 } else if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.GOOGLE_REFRESH_TOKEN) {
@@ -87,6 +92,18 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     required: ['siteUrl', 'inspectionUrl'],
                 },
             },
+            {
+                name: 'submit_sitemap',
+                description: 'Submits a sitemap url via Google Search Console',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        siteUrl: { type: 'string', description: 'The site URL as it appears in Search Console' },
+                        feedpath: { type: 'string', description: 'The URL of the sitemap to submit' },
+                    },
+                    required: ['siteUrl', 'feedpath'],
+                },
+            },
         ],
     };
 });
@@ -108,6 +125,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             case 'url_inspection': {
                 const { siteUrl, inspectionUrl } = args as any;
                 const result = await gsc.inspectUrl(siteUrl, inspectionUrl);
+                return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
+            }
+
+            case 'submit_sitemap': {
+                const { siteUrl, feedpath } = args as any;
+                const result = await gsc.submitSitemap(siteUrl, feedpath);
                 return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
             }
 

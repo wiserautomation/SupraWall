@@ -12,7 +12,7 @@ export class GSCClient {
                 authData.client_email,
                 undefined,
                 authData.private_key,
-                ['https://www.googleapis.com/auth/webmasters.readonly']
+                ['https://www.googleapis.com/auth/webmasters']
             );
         } else if (authData.client_id && authData.client_secret && authData.refresh_token) {
             // OAuth2
@@ -57,5 +57,14 @@ export class GSCClient {
             }
         });
         return res.data.inspectionResult;
+    }
+
+    async submitSitemap(siteUrl: string, feedpath: string) {
+        await this.searchconsole.sitemaps.submit({
+            siteUrl,
+            feedpath,
+            auth: this.auth
+        });
+        return { success: true, message: `Sitemap submitted: ${feedpath} for site ${siteUrl}` };
     }
 }
