@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://suprawall.com",
+    url: "https://www.supra-wall.com",
     siteName: "SupraWall",
     images: ["/og-image.png"],
   },

@@ -28,7 +28,7 @@ export default function CostControlPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://suprawall.com/use-cases/cost-control"
+        "mainEntityOfPage": "https://www.supra-wall.com/use-cases/cost-control"
     };
 
     const howToJsonLd = {

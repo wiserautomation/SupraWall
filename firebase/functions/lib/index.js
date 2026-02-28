@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.notifyPlatformWebhook = exports.getConnectEvents = exports.getConnectAnalytics = exports.updateConnectKey = exports.listConnectKeys = exports.revokeConnectKey = exports.issueConnectKey = exports.updateBasePolicies = exports.getPlatform = exports.createPlatform = exports.generatePolicyRegex = exports.evaluateAction = void 0;
+exports.cleanupOldLogs = exports.resetMonthlyUsage = exports.notifyPlatformWebhook = exports.getConnectEvents = exports.getConnectAnalytics = exports.updateConnectKey = exports.listConnectKeys = exports.revokeConnectKey = exports.issueConnectKey = exports.updateBasePolicies = exports.getPlatform = exports.createPlatform = exports.generatePolicyRegex = exports.evaluateAction = void 0;
 const admin = require("firebase-admin");
 // Initialize Firebase Admin once at the top level
 if (!admin.apps.length) {
@@ -22,4 +22,8 @@ Object.defineProperty(exports, "updateConnectKey", { enumerable: true, get: func
 Object.defineProperty(exports, "getConnectAnalytics", { enumerable: true, get: function () { return connect_1.getConnectAnalytics; } });
 Object.defineProperty(exports, "getConnectEvents", { enumerable: true, get: function () { return connect_1.getConnectEvents; } });
 Object.defineProperty(exports, "notifyPlatformWebhook", { enumerable: true, get: function () { return connect_1.notifyPlatformWebhook; } });
+// Monthly usage reset and log cleanup (billing)
+var billing_1 = require("./billing");
+Object.defineProperty(exports, "resetMonthlyUsage", { enumerable: true, get: function () { return billing_1.resetMonthlyUsage; } });
+Object.defineProperty(exports, "cleanupOldLogs", { enumerable: true, get: function () { return billing_1.cleanupOldLogs; } });
 //# sourceMappingURL=index.js.map

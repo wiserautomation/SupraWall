@@ -21,7 +21,7 @@ export default function AutoGenIntegrationPage() {
         "name": "SupraWall for AutoGen",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://suprawall.com/integrations/autogen",
+        "url": "https://www.supra-wall.com/integrations/autogen",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

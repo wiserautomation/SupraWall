@@ -26,7 +26,7 @@ export default function vsNemoGuardrailsPage() {
         },
         "offers": {
             "@type": "Offer",
-            "url": "https://suprawall.com/login",
+            "url": "https://www.supra-wall.com/login",
             "price": "0",
             "priceCurrency": "USD"
         }

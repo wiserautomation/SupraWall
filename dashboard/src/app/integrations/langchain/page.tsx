@@ -21,7 +21,7 @@ export default function LangChainIntegrationPage() {
         "name": "SupraWall for LangChain",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://suprawall.com/integrations/langchain",
+        "url": "https://www.supra-wall.com/integrations/langchain",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

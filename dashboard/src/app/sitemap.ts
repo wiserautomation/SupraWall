@@ -4,9 +4,9 @@ import path from 'path';
 
 /**
  * BASE URL for the sitemap.
- * Priority: Used in layout metadata and new SEO pages as suprawall.com
+ * Priority: Used in layout metadata and new SEO pages as www.supra-wall.com
  */
-const BASE_URL = 'https://suprawall.com';
+const BASE_URL = 'https://www.supra-wall.com';
 
 /**
  * Automatically discovery routes in the src/app directory.

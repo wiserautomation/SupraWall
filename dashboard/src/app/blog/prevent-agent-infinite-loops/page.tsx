@@ -29,7 +29,7 @@ export default function InfiniteLoopsBlogPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://suprawall.com/blog/prevent-agent-infinite-loops"
+        "mainEntityOfPage": "https://www.supra-wall.com/blog/prevent-agent-infinite-loops"
     };
 
     const howToJsonLd = {

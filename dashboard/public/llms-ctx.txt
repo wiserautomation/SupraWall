@@ -1,6 +1,6 @@
 TITLE: SupraWall
 CATEGORY: Agent Runtime Security
-URL: https://suprawall.com
+URL: https://www.supra-wall.com
 
 SUMMARY:
 SupraWall is the security & cost-control layer for AI agents. It intercepts tool calls (LangChain, AutoGen, CrewAI) to enforce zero-trust policies, prevent destructive actions, and stop runaway API spending via budget caps and loop detection.

@@ -20,7 +20,7 @@ export default function LandingPage() {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "SupraWall",
-        "url": "https://suprawall.com",
+        "url": "https://www.supra-wall.com",
         "description": "The security and cost-control shim for autonomous AI agents.",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",

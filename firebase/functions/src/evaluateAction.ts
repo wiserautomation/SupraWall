@@ -56,6 +56,11 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const subKey = subKeySnap.data()!;
             const { platformId, customerId, policyOverrides, rateLimitOverride } = subKey;
 
+            // Get platform owner to track billing
+            const platformSnap = await db.collection("platforms").doc(platformId).get();
+            const platformData = platformSnap.data();
+            const ownerId = platformData?.ownerId;
+
             // Load platform base policies
             const basePolicySnap = await db
                 .collection("platforms")
@@ -92,7 +97,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const latencyMs = Date.now() - startTime;
 
             // Update usage counters and write audit log (non-blocking)
-            Promise.all([
+            const updates: Promise<any>[] = [
                 db.collection("connect_keys").doc(apiKey).update({
                     lastUsedAt: FieldValue.serverTimestamp(),
                     totalCalls: FieldValue.increment(1),
@@ -109,8 +114,24 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     latencyMs,
                     costUsd: estimatedCost,
                     timestamp: FieldValue.serverTimestamp(),
-                }),
-            ]).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
+                })
+            ];
+
+            // If we found an owner, increment their monthly billing counter
+            if (ownerId) {
+                updates.push(
+                    db.collection("organizations").doc(ownerId).update({
+                        operationsThisMonth: FieldValue.increment(1),
+                        lastUsedAt: FieldValue.serverTimestamp(),
+                    }).catch(err => {
+                        // If document doesn't exist yet, we might need to set it, 
+                        // but usually it's created on first login/stripe sync.
+                        console.warn(`Failed to update organization ${ownerId}:`, err.message);
+                    })
+                );
+            }
+
+            Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
 
             res.status(200).json({ ...decision, estimated_cost_usd: estimatedCost });
             return;
@@ -131,6 +152,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
+            const userId = agentDoc.data().userId;
 
             // 2. Query policies for this agent and toolName
             const policiesSnapshot = await db.collection("policies")
@@ -157,12 +179,28 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             // 4. Log the audit event
             const estimatedCost = estimateActionCost(args, toolName);
-            await logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole);
 
-            // 5. Return the decision
+            // 5. Update usage counters (non-blocking)
+            const updates: Promise<any>[] = [
+                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole)
+            ];
+
+            if (userId) {
+                updates.push(
+                    db.collection("organizations").doc(userId).update({
+                        operationsThisMonth: FieldValue.increment(1),
+                        lastUsedAt: FieldValue.serverTimestamp(),
+                    }).catch(err => console.warn(`Failed to update organization ${userId}:`, err.message))
+                );
+            }
+
+            Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
+
+            // 6. Return the decision
             res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
             return;
         }
+
 
     } catch (e) {
         console.error("SupraWall evaluateAction error:", e);

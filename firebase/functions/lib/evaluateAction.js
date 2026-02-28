@@ -23,6 +23,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
     const apiKey = body.apiKey;
     const toolName = body.toolName;
     const args = body.args;
+    const sessionId = body.sessionId || null;
+    const agentRole = body.agentRole || null;
     const startTime = Date.now();
     if (!apiKey || !toolName || args === undefined) {
         res.status(400).json({ error: "apiKey and toolName are required." });
@@ -38,6 +40,10 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             }
             const subKey = subKeySnap.data();
             const { platformId, customerId, policyOverrides, rateLimitOverride } = subKey;
+            // Get platform owner to track billing
+            const platformSnap = await db.collection("platforms").doc(platformId).get();
+            const platformData = platformSnap.data();
+            const ownerId = platformData === null || platformData === void 0 ? void 0 : platformData.ownerId;
             // Load platform base policies
             const basePolicySnap = await db
                 .collection("platforms")
@@ -64,12 +70,15 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             }
             // Policy evaluation
             const decision = evaluatePolicies(toolName, args, effectiveRules);
-            // Update usage counters and write audit log (non-blocking)
+            // Cost estimation
+            const estimatedCost = estimateActionCost(args, toolName);
             const latencyMs = Date.now() - startTime;
-            Promise.all([
+            // Update usage counters and write audit log (non-blocking)
+            const updates = [
                 db.collection("connect_keys").doc(apiKey).update({
                     lastUsedAt: firestore_1.FieldValue.serverTimestamp(),
                     totalCalls: firestore_1.FieldValue.increment(1),
+                    totalSpendUsd: firestore_1.FieldValue.increment(estimatedCost),
                 }),
                 db.collection("connect_events").add({
                     platformId,
@@ -80,10 +89,23 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     decision: decision.decision,
                     reason: (_f = decision.reason) !== null && _f !== void 0 ? _f : null,
                     latencyMs,
+                    costUsd: estimatedCost,
                     timestamp: firestore_1.FieldValue.serverTimestamp(),
-                }),
-            ]).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
-            res.status(200).json(decision);
+                })
+            ];
+            // If we found an owner, increment their monthly billing counter
+            if (ownerId) {
+                updates.push(db.collection("organizations").doc(ownerId).update({
+                    operationsThisMonth: firestore_1.FieldValue.increment(1),
+                    lastUsedAt: firestore_1.FieldValue.serverTimestamp(),
+                }).catch(err => {
+                    // If document doesn't exist yet, we might need to set it, 
+                    // but usually it's created on first login/stripe sync.
+                    console.warn(`Failed to update organization ${ownerId}:`, err.message);
+                }));
+            }
+            Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
+            res.status(200).json(Object.assign(Object.assign({}, decision), { estimated_cost_usd: estimatedCost }));
             return;
         }
         // ── Route: Regular single-tenant key (ag_) ─────────────────────────────
@@ -92,12 +114,13 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             // 1. Find the agent by apiKey
             const agentsSnapshot = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
             if (agentsSnapshot.empty) {
-                await logAudit("unknown", toolName, argsString, "DENY");
+                await logAudit("unknown", toolName, argsString, "DENY", 0, "Invalid API Key", sessionId, agentRole);
                 res.status(403).json({ decision: "DENY", reason: "Invalid API Key" });
                 return;
             }
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
+            const userId = agentDoc.data().userId;
             // 2. Query policies for this agent and toolName
             const policiesSnapshot = await db.collection("policies")
                 .where("agentId", "==", agentId)
@@ -117,9 +140,20 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                 }
             }
             // 4. Log the audit event
-            await logAudit(agentId, toolName, argsString, finalDecision);
-            // 5. Return the decision
-            res.status(200).json({ decision: finalDecision });
+            const estimatedCost = estimateActionCost(args, toolName);
+            // 5. Update usage counters (non-blocking)
+            const updates = [
+                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole)
+            ];
+            if (userId) {
+                updates.push(db.collection("organizations").doc(userId).update({
+                    operationsThisMonth: firestore_1.FieldValue.increment(1),
+                    lastUsedAt: firestore_1.FieldValue.serverTimestamp(),
+                }).catch(err => console.warn(`Failed to update organization ${userId}:`, err.message)));
+            }
+            Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
+            // 6. Return the decision
+            res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
             return;
         }
     }
@@ -169,6 +203,17 @@ async function checkRateLimit(key, config) {
     await batch.commit();
     return { allowed: true };
 }
+/**
+ * Rough estimation of agentic 'overhead' cost for a tool call.
+ * Based on argument payload size using 1 token ≈ 4 chars.
+ * Price base: $0.15/1M tokens (GPT-4o-mini rates) + small fixed base cost.
+ */
+function estimateActionCost(args, toolName) {
+    const payloadLength = JSON.stringify(args || {}).length + toolName.length;
+    const tokens = Math.ceil(payloadLength / 4) + 50; // +50 tokens for tool overhead
+    const costPerToken = 0.00000015; // $0.15 per 1M tokens
+    return parseFloat((tokens * costPerToken).toFixed(8));
+}
 function sanitizeArgs(args) {
     if (!args || typeof args !== "object")
         return args;
@@ -180,13 +225,17 @@ function sanitizeArgs(args) {
     }
     return sanitized;
 }
-async function logAudit(agentId, toolName, args, decision) {
+async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason = null, sessionId = null, agentRole = null) {
     try {
         await db.collection("audit_logs").add({
             agentId,
             toolName,
             arguments: args,
             decision,
+            reason,
+            sessionId,
+            agentRole,
+            cost_usd: costUsd,
             timestamp: firestore_1.FieldValue.serverTimestamp()
         });
     }

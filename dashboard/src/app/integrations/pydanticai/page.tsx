@@ -20,7 +20,7 @@ export default function PydanticAIIntegrationPage() {
         "name": "SupraWall for PydanticAI",
         "description": "Enterprise-grade runtime security shim for PydanticAI autonomous agents.",
         "applicationCategory": "SecurityApplication",
-        "url": "https://suprawall.com/integrations/pydanticai",
+        "url": "https://www.supra-wall.com/integrations/pydanticai",
         "author": { "@type": "Organization", "name": "SupraWall" },
         "featureList": [
             "Typed Tool Interception",

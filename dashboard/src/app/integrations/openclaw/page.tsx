@@ -21,7 +21,7 @@ export default function OpenClawIntegrationPage() {
         "name": "SupraWall for OpenClaw",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://suprawall.com/integrations/openclaw",
+        "url": "https://www.supra-wall.com/integrations/openclaw",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

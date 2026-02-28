@@ -21,7 +21,7 @@ export default function CrewAIIntegrationPage() {
         "name": "SupraWall for CrewAI",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://suprawall.com/integrations/crewai",
+        "url": "https://www.supra-wall.com/integrations/crewai",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

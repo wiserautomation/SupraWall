@@ -21,7 +21,7 @@ export default function VercelIntegrationPage() {
         "name": "SupraWall for Vercel AI SDK",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://suprawall.com/integrations/vercel",
+        "url": "https://www.supra-wall.com/integrations/vercel",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

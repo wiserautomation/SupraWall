@@ -22,7 +22,7 @@ export default function SpecPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://suprawall.com/spec"
+        "mainEntityOfPage": "https://www.supra-wall.com/spec"
     };
 
     return (

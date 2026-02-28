@@ -217,7 +217,7 @@ export default function PricingPage() {
                                 </div>
                                 <div className="text-left">
                                     <h2 className="text-3xl font-bold">Global Payouts</h2>
-                                    <p className="text-gray-500">How European founders scale supra-wall.com globally.</p>
+                                    <p className="text-gray-500">How European founders scale www.supra-wall.com globally.</p>
                                 </div>
                             </div>
 
