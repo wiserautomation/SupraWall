@@ -21,7 +21,7 @@ import {
     ListOrdered
 } from "lucide-react";
 
-// Add admin emails here
+// Add official admin emails here
 const ADMIN_EMAILS = ["peghin@gmail.com"];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
