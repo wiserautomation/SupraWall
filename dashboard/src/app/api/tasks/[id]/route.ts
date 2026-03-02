@@ -5,11 +5,11 @@ import { admin } from '@/lib/firebase-admin';
 // PATCH /api/tasks/[id] - Update task status and review notes
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         const body = await request.json();
-        const { id } = params;
+        const { id } = await params;
         const db = getAdminDb();
 
         const updateData: any = {

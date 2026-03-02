@@ -5,10 +5,10 @@ import { admin } from '@/lib/firebase-admin';
 // PATCH /api/tasks/[id]/published - Mark task as published
 export async function PATCH(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const { id } = params;
+        const { id } = await params;
         const db = getAdminDb();
 
         const updateData = {
