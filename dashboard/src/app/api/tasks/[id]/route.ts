@@ -1,77 +1,35 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getAdminDb } from '@/lib/firebase-admin';
+import { admin } from '@/lib/firebase-admin';
 
-/**
- * PATCH /api/tasks/[id]
- * Body: { status, human_action, human_note }
- * Action: update task in Supabase
- * Returns: updated task
- * Auth: admin session (In real world, verify session here)
- */
+// PATCH /api/tasks/[id] - Update task status and review notes
 export async function PATCH(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    if (!supabaseAdmin) {
-        return NextResponse.json({ error: 'Supabase admin client not initialized' }, { status: 500 });
-    }
-
     try {
-        const { id } = await params;
         const body = await request.json();
+        const { id } = params;
+        const db = getAdminDb();
 
-        const { status, human_action, human_note } = body;
-
-        const updates: any = {
-            status,
-            human_action,
-            human_note,
-            updated_at: new Date().toISOString()
+        const updateData: any = {
+            status: body.status,
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
         };
 
-        if (status === 'approved' || status === 'rejected' || status === 'revision') {
-            updates.reviewed_at = new Date().toISOString();
+        if (body.humanAction) updateData.humanAction = body.humanAction;
+        if (body.humanNote) updateData.humanNote = body.humanNote;
+        if (body.reviewedAt === 'now') {
+            updateData.reviewedAt = admin.firestore.FieldValue.serverTimestamp();
         }
 
-        const { data, error } = await supabaseAdmin
-            .from('tasks')
-            .update(updates)
-            .eq('id', id)
-            .select()
-            .single();
+        await db.collection('tasks').doc(id).update(updateData);
 
-        if (error) throw error;
+        const updatedDoc = await db.collection('tasks').doc(id).get();
 
-        return NextResponse.json(data);
+        return NextResponse.json({ id, ...updatedDoc.data() });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
-    }
-}
-
-/**
- * GET /api/tasks/[id]
- * Optional: useful for the UI
- */
-export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
-) {
-    if (!supabaseAdmin) {
-        return NextResponse.json({ error: 'Supabase admin client not initialized' }, { status: 500 });
-    }
-
-    try {
-        const { id } = await params;
-        const { data, error } = await supabaseAdmin
-            .from('tasks')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-        if (error) throw error;
-
-        return NextResponse.json(data);
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error('Error updating task:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

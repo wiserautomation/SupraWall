@@ -5,7 +5,7 @@ This document defines the operational workflow for the SupraWall AI Content & SE
 ## 🧠 System Memory
 The agents operate using a dual-state system:
 1. **Markdown Files** (`/governance/memory/`): Structural source of truth for keywords, site maps, and brand voice.
-2. **Supabase Database**: Execution state for task review, human approval, and performance intelligence.
+2. **Firestore (Firebase)**: Execution state for task review, human approval, and performance intelligence.
 
 ## 🔄 The Automation Loop
 1. **Instruction**: User triggers a batch (e.g., "Run B1").
@@ -14,7 +14,7 @@ The agents operate using a dual-state system:
    - **Content Writer**: Drafts page based on `brand_voice.md` and `keyword_map.md`.
    - **Schema Agent**: Generates JSON-LD.
    - **Internal Linker**: Consults links map.
-4. **Draft Submission (NEW)**:
+4. **Draft Submission**:
    - Orchestrator calls `POST /api/tasks` with the full task object.
    - **DO NOT** write to `ORCHESTRATOR_TASKBOARD.md` (DEPRECATED).
    - **DO NOT** wait for human response in chat.
@@ -24,7 +24,7 @@ The agents operate using a dual-state system:
 6. **Execution / Polling**:
    - Orchestrator polls `GET /api/tasks/pending` every 5 minutes.
    - If `status === "approved"`: Publish page, call `PATCH /api/tasks/[id]/published`.
-   - If `status === "revision"`: Read `human_note`, send back to Writer, submit new task when ready.
+   - If `status === "revision"`: Read `humanNote`, send back to Writer, submit new task when ready.
 
 ## 🛡️ Governance Rules
 - No page may be published without explicitly passing through the **Task Review Admin Panel**.
@@ -36,4 +36,5 @@ The agents operate using a dual-state system:
 - `POST /api/tasks`: Submit new draft for review.
 - `GET /api/tasks/pending`: Check for approved/revision tasks.
 - `PATCH /api/tasks/[id]/published`: Mark as live with URL.
+- `PATCH /api/tasks/[id]`: Update status (Approve/Revision/Reject).
 - `POST /api/intelligence`: Submit weekly performance brief (Every Monday).

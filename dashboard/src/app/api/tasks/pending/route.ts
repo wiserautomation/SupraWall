@@ -1,27 +1,23 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getAdminDb } from '@/lib/firebase-admin';
 
-/**
- * GET /api/tasks/pending
- * Returns: all tasks where status = "approved" OR status = "revision"
- * Auth: service role key
- */
+// GET /api/tasks/pending - Fetch approved or revision tasks for orchestrator
 export async function GET() {
-    if (!supabaseAdmin) {
-        return NextResponse.json({ error: 'Supabase admin client not initialized' }, { status: 500 });
-    }
-
     try {
-        const { data, error } = await supabaseAdmin
-            .from('tasks')
-            .select('*')
-            .or('status.eq.approved,status.eq.revision')
-            .order('created_at', { ascending: true });
+        const db = getAdminDb();
 
-        if (error) throw error;
+        const snapshot = await db.collection('tasks')
+            .where('status', 'in', ['approved', 'revision'])
+            .get();
 
-        return NextResponse.json(data);
+        const tasks = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        return NextResponse.json(tasks);
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error('Error fetching pending tasks:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

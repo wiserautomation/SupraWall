@@ -1,145 +1,226 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import {
-    CheckCircle2,
-    Clock,
-    AlertCircle,
-    XCircle,
-    FileText,
-    ExternalLink,
-    ChevronDown,
-    ChevronUp,
-    Send,
-    Eye
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import ReactMarkdown from "react-markdown";
-
-type TaskStatus = 'pending_review' | 'approved' | 'revision' | 'rejected' | 'publishing' | 'published';
+import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot, query, orderBy, Timestamp } from 'firebase/firestore';
+import ReactMarkdown from 'react-markdown';
 
 interface Task {
     id: string;
-    task_number: string;
+    taskNumber: string;
     type: string;
-    status: TaskStatus;
-    url?: string;
-    primary_keyword?: string;
-    secondary_keywords?: string[];
-    source_file?: string;
-    preview_url?: string;
-    content_draft?: string;
-    checklist?: Record<string, boolean>;
-    human_action?: string;
-    human_note?: string;
-    agent_response?: string;
-    created_at: string;
-    updated_at: string;
-    reviewed_at?: string;
-    published_at?: string;
-    batch?: string;
+    status: string;
+    url: string;
+    primaryKeyword: string;
+    secondaryKeywords: string[];
+    sourceFile: string;
+    previewUrl: string;
+    contentDraft: string;
+    checklist: string[];
+    humanAction: string | null;
+    humanNote: string | null;
+    batch: string;
+    createdAt: Timestamp;
 }
 
 export default function TaskReviewPage() {
     const [tasks, setTasks] = useState<Task[]>([]);
-    const [filter, setFilter] = useState<string>("pending_review");
-    const [counts, setCounts] = useState<Record<string, number>>({});
-    const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState('pending_review');
+    const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+    const [revisionNote, setRevisionNote] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        fetchTasks();
+        const q = query(collection(db, 'tasks'), orderBy('createdAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const taskData = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as Task[];
+            setTasks(taskData);
+        });
 
-        // Subscription
-        const channel = supabase
-            .channel('task-updates')
-            .on('postgres_changes' as any, { event: '*', table: 'tasks' }, (payload: any) => {
-                fetchTasks();
-            })
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
+        return () => unsubscribe();
     }, []);
 
-    async function fetchTasks() {
-        const { data, error } = await supabase
-            .from('tasks')
-            .select('*')
-            .order('created_at', { ascending: false });
+    const filteredTasks = tasks.filter(t => {
+        if (activeTab === 'all') return true;
+        return t.status === activeTab;
+    });
 
-        if (data) {
-            setTasks(data);
-            const c: Record<string, number> = {};
-            data.forEach(t => {
-                c[t.status] = (c[t.status] || 0) + 1;
+    const counts = {
+        pending_review: tasks.filter(t => t.status === 'pending_review').length,
+        revision: tasks.filter(t => t.status === 'revision').length,
+        approved: tasks.filter(t => t.status === 'approved').length,
+        published: tasks.filter(t => t.status === 'published').length,
+        rejected: tasks.filter(t => t.status === 'rejected').length,
+    };
+
+    const handleAction = async (taskId: string, status: string, humanAction: string, note?: string) => {
+        setLoading(true);
+        try {
+            await fetch(`/api/tasks/${taskId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status,
+                    humanAction,
+                    humanNote: note || null,
+                    reviewedAt: 'now'
+                })
             });
-            setCounts(c);
+            if (status !== 'revision') {
+                setExpandedTaskId(null);
+                setRevisionNote('');
+            }
+        } catch (error) {
+            console.error('Action failed:', error);
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
-    }
-
-    const filteredTasks = tasks.filter(t => filter === 'all' || t.status === filter);
-
-    const tabs = [
-        { id: "all", name: "All" },
-        { id: "pending_review", name: "Pending Review" },
-        { id: "revision", name: "Revision" },
-        { id: "approved", name: "Approved" },
-        { id: "published", name: "Published" },
-        { id: "rejected", name: "Rejected" },
-    ];
+    };
 
     return (
-        <div className="space-y-6">
-            <header className="flex flex-col gap-4">
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
-                            Task Review
-                        </h1>
-                        <p className="text-neutral-500 text-sm mt-1">Review and approve agent-generated content.</p>
-                    </div>
-                    <div className="flex gap-2">
-                        <StatusPill status="pending_review" count={counts.pending_review || 0} />
-                        <StatusPill status="published" count={counts.published || 0} />
-                        <StatusPill status="revision" count={counts.revision || 0} />
-                    </div>
+        <div className="p-8 max-w-6xl mx-auto">
+            <header className="mb-8 flex justify-between items-center bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-2xl">
+                <div>
+                    <h1 className="text-2xl font-bold text-white mb-1">SupraWall Admin · Task Review</h1>
+                    <p className="text-zinc-400 text-sm">Human-in-the-loop content governance</p>
                 </div>
-
-                <div className="flex gap-1 bg-neutral-900/50 p-1 rounded-xl border border-white/5 overflow-x-auto no-scrollbar">
-                    {tabs.map((tab) => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setFilter(tab.id)}
-                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${filter === tab.id
-                                ? "bg-white/10 text-white shadow-sm ring-1 ring-white/20"
-                                : "text-neutral-500 hover:text-neutral-300 hover:bg-white/5"
-                                }`}
-                        >
-                            {tab.name}
-                            {counts[tab.id] > 0 && tab.id !== 'all' && (
-                                <span className="ml-2 bg-neutral-800 text-neutral-400 text-[10px] px-1.5 py-0.5 rounded-md">
-                                    {counts[tab.id]}
-                                </span>
-                            )}
-                        </button>
-                    ))}
+                <div className="flex gap-4">
+                    <StatusPill color="red" count={counts.pending_review} label="Pending" />
+                    <StatusPill color="yellow" count={counts.revision} label="Revision" />
+                    <StatusPill color="green" count={counts.approved} label="Approved" />
                 </div>
             </header>
 
-            <div className="grid gap-4">
-                {loading ? (
-                    <div className="h-64 flex items-center justify-center text-neutral-500">Loading tasks...</div>
-                ) : filteredTasks.length === 0 ? (
-                    <div className="h-64 flex flex-col items-center justify-center text-neutral-500 bg-neutral-900/20 border border-dashed border-white/10 rounded-2xl">
-                        <FileText className="w-8 h-8 opacity-20 mb-2" />
-                        <p>No tasks found in this category.</p>
+            <div className="flex bg-zinc-900 p-1 rounded-lg border border-zinc-800 mb-6 gap-1 overflow-x-auto">
+                <Tab active={activeTab === 'pending_review'} onClick={() => setActiveTab('pending_review')}>Pending Review</Tab>
+                <Tab active={activeTab === 'revision'} onClick={() => setActiveTab('revision')}>Revision</Tab>
+                <Tab active={activeTab === 'approved'} onClick={() => setActiveTab('approved')}>Approved</Tab>
+                <Tab active={activeTab === 'published'} onClick={() => setActiveTab('published')}>Published</Tab>
+                <Tab active={activeTab === 'rejected'} onClick={() => setActiveTab('rejected')}>Rejected</Tab>
+                <Tab active={activeTab === 'all'} onClick={() => setActiveTab('all')}>All</Tab>
+            </div>
+
+            <div className="space-y-4">
+                {filteredTasks.length === 0 ? (
+                    <div className="text-center py-20 bg-zinc-900 rounded-xl border border-zinc-800 text-zinc-500">
+                        No tasks in this category
                     </div>
                 ) : (
                     filteredTasks.map(task => (
-                        <TaskCard key={task.id} task={task} onUpdate={fetchTasks} />
+                        <div key={task.id} className="bg-zinc-900 rounded-xl border border-zinc-800 overflow-hidden transition-all duration-200 hover:border-zinc-700">
+                            <div className="p-5 flex justify-between items-center cursor-pointer" onClick={() => setExpandedTaskId(expandedTaskId === task.id ? null : task.id)}>
+                                <div className="flex items-center gap-4">
+                                    <span className={`px-2 py-1 rounded text-xs font-mono font-bold ${task.status === 'pending_review' ? 'bg-red-500/10 text-red-500' :
+                                            task.status === 'revision' ? 'bg-yellow-500/10 text-yellow-500' :
+                                                task.status === 'approved' ? 'bg-green-500/10 text-green-500' :
+                                                    'bg-zinc-500/10 text-zinc-500'
+                                        }`}>
+                                        {task.taskNumber}
+                                    </span>
+                                    <div>
+                                        <div className="text-white font-medium">{task.url}</div>
+                                        <div className="text-zinc-500 text-sm">{task.primaryKeyword} · Batch {task.batch}</div>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-zinc-600 text-xs font-mono">{task.createdAt?.toDate().toLocaleTimeString()}</span>
+                                    <button className="text-zinc-400 hover:text-white transition-colors">
+                                        {expandedTaskId === task.id ? '▲' : '▼'}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {expandedTaskId === task.id && (
+                                <div className="border-t border-zinc-800 p-6 space-y-8 bg-zinc-950/50">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <section>
+                                            <h3 className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-4">Checklist</h3>
+                                            <ul className="space-y-3">
+                                                {task.checklist?.map((item, i) => (
+                                                    <li key={i} className="flex items-start gap-3 group">
+                                                        <div className="mt-1 w-4 h-4 rounded border border-zinc-700 flex items-center justify-center text-[10px] text-green-500 group-hover:border-green-500/50">
+                                                            ✓
+                                                        </div>
+                                                        <span className="text-zinc-300 text-sm">{item}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </section>
+
+                                        <section>
+                                            <h3 className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-4">Metadata</h3>
+                                            <div className="space-y-4">
+                                                <MetaItem label="Source File" value={task.sourceFile} />
+                                                <MetaItem label="Preview URL" value={task.previewUrl} isLink />
+                                                <div className="pt-2">
+                                                    <h4 className="text-zinc-500 text-xs font-medium mb-2">Secondary Keywords</h4>
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {task.secondaryKeywords?.map(kw => (
+                                                            <span key={kw} className="bg-zinc-800 text-zinc-400 px-2 py-0.5 rounded text-[10px]">{kw}</span>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    </div>
+
+                                    <section>
+                                        <h3 className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-4">Content Preview</h3>
+                                        <div className="bg-zinc-900 rounded-lg p-6 border border-zinc-800 max-h-[500px] overflow-y-auto prose prose-invert prose-sm max-w-none prose-pre:bg-zinc-950 prose-pre:border prose-pre:border-zinc-800">
+                                            <ReactMarkdown>{task.contentDraft}</ReactMarkdown>
+                                        </div>
+                                    </section>
+
+                                    <section className="bg-zinc-900/50 p-6 rounded-xl border border-zinc-800/50">
+                                        <h3 className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-6">Your Decision</h3>
+
+                                        <div className="space-y-6">
+                                            <div className="p-4 bg-green-500/5 border border-green-500/10 rounded-lg flex justify-between items-center group hover:bg-green-500/10 transition-all cursor-pointer"
+                                                onClick={() => handleAction(task.id, 'approved', 'approved')}>
+                                                <div>
+                                                    <div className="text-green-500 font-bold mb-0.5">Approve for Publication</div>
+                                                    <div className="text-green-500/60 text-xs">Ready to go live. Antigravity will handle the rest.</div>
+                                                </div>
+                                                <span className="text-xl group-hover:translate-x-1 transition-transform">→</span>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <div className="text-yellow-500 font-bold text-sm">Request Revision</div>
+                                                <textarea
+                                                    className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-sm text-zinc-300 focus:outline-none focus:border-yellow-500/50 transition-colors h-24"
+                                                    placeholder="Specify what needs to be changed..."
+                                                    value={revisionNote}
+                                                    onChange={(e) => setRevisionNote(e.target.value)}
+                                                />
+                                                <button
+                                                    className="bg-yellow-600 hover:bg-yellow-500 text-white font-bold py-2 px-6 rounded-lg text-sm transition-colors disabled:opacity-50"
+                                                    disabled={!revisionNote || loading}
+                                                    onClick={() => handleAction(task.id, 'revision', 'revision', revisionNote)}
+                                                >
+                                                    Send for Revision
+                                                </button>
+                                            </div>
+
+                                            <div className="pt-4 border-t border-zinc-800">
+                                                <button
+                                                    className="text-red-500/50 hover:text-red-500 text-xs font-medium transition-colors"
+                                                    onClick={() => {
+                                                        if (confirm('Are you sure you want to reject this task?')) {
+                                                            handleAction(task.id, 'rejected', 'rejected');
+                                                        }
+                                                    }}
+                                                >
+                                                    ❌ Permanent Reject
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
+                        </div>
                     ))
                 )}
             </div>
@@ -147,222 +228,44 @@ export default function TaskReviewPage() {
     );
 }
 
-function StatusPill({ status, count }: { status: string, count: number }) {
-    const config: Record<string, { label: string, color: string, icon: any }> = {
-        pending_review: { label: 'pending', color: 'text-yellow-500 bg-yellow-500/10', icon: Clock },
-        published: { label: 'published', color: 'text-emerald-500 bg-emerald-500/10', icon: CheckCircle2 },
-        revision: { label: 'revision', color: 'text-blue-500 bg-blue-500/10', icon: AlertCircle },
+function StatusPill({ color, count, label }: { color: string, count: number, label: string }) {
+    const colors = {
+        red: 'bg-red-500 shadow-red-500/20',
+        yellow: 'bg-yellow-500 shadow-yellow-500/20',
+        green: 'bg-green-500 shadow-green-500/20',
     };
-    const c = config[status] || { label: status, color: 'text-gray-500 bg-gray-500/10', icon: Clock };
-    const Icon = c.icon;
-
     return (
-        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/5 ${c.color}`}>
-            <Icon className="w-3.5 h-3.5" />
-            <span className="text-xs font-bold uppercase tracking-wider">{count} {c.label}</span>
+        <div className="flex items-center gap-2 bg-zinc-800/50 px-3 py-1.5 rounded-full border border-zinc-700">
+            <span className={`w-2 h-2 rounded-full ${colors[color as keyof typeof colors]} shadow-lg animate-pulse`}></span>
+            <span className="text-zinc-200 text-sm font-bold">{count}</span>
+            <span className="text-zinc-500 text-xs">{label}</span>
         </div>
     );
 }
 
-function TaskCard({ task, onUpdate }: { task: Task, onUpdate: () => void }) {
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [note, setNote] = useState("");
-    const [isSubmitting, setIsSubmitting] = useState(false);
-
-    const timeAgo = (date: string) => {
-        const seconds = Math.floor((new Date().getTime() - new Date(date).getTime()) / 1000);
-        if (seconds < 60) return `${seconds}s ago`;
-        const minutes = Math.floor(seconds / 60);
-        if (minutes < 60) return `${minutes}m ago`;
-        const hours = Math.floor(minutes / 60);
-        if (hours < 24) return `${hours}h ago`;
-        return `${Math.floor(hours / 24)}d ago`;
-    };
-
-    const handleAction = async (status: TaskStatus, humanNote?: string) => {
-        if (status === 'rejected' && !confirm("Are you sure? This cannot be undone.")) return;
-
-        setIsSubmitting(true);
-        try {
-            const res = await fetch(`/api/tasks/${task.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    status,
-                    human_note: humanNote || null,
-                    human_action: status === 'approved' ? 'approved content' : status === 'revision' ? 'requested revision' : 'rejected'
-                })
-            });
-            if (res.ok) onUpdate();
-        } finally {
-            setIsSubmitting(false);
-        }
-    };
-
-    const statusColors: Record<string, string> = {
-        pending_review: "border-yellow-500/50 bg-yellow-500/5",
-        approved: "border-emerald-500/50 bg-emerald-500/5",
-        revision: "border-blue-500/50 bg-blue-500/5",
-        rejected: "border-red-500/50 bg-red-500/5",
-        published: "border-purple-500/50 bg-purple-500/5",
-    };
-
-    const statusIcons: Record<string, any> = {
-        pending_review: Clock,
-        approved: CheckCircle2,
-        revision: AlertCircle,
-        rejected: XCircle,
-        published: Eye,
-    };
-
-    const Icon = statusIcons[task.status] || Clock;
-
+function Tab({ children, active, onClick }: { children: React.ReactNode, active: boolean, onClick: () => void }) {
     return (
-        <div className={`overflow-hidden transition-all duration-300 rounded-2xl border ${statusColors[task.status] || "border-white/5 bg-neutral-900/30"}`}>
-            {/* Header / Summary */}
-            <div className="p-4 flex items-center justify-between cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-                <div className="flex items-center gap-4">
-                    <div className="p-2 bg-black/40 rounded-xl border border-white/5">
-                        <Icon className="w-5 h-5 text-current" />
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <span className="font-mono font-bold text-sm tracking-tight">{task.task_number}</span>
-                            <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded-full text-neutral-400 font-bold uppercase tracking-widest">{task.batch}</span>
-                        </div>
-                        <h3 className="font-semibold text-white mt-0.5">{task.url || "New Page"}</h3>
-                        <p className="text-xs text-neutral-500">Primary KW: <span className="text-neutral-300">{task.primary_keyword}</span> · {task.type}</p>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <span className="text-xs text-neutral-500 tabular-nums">{timeAgo(task.created_at)}</span>
-                    <button className="p-2 hover:bg-white/5 rounded-full transition-colors">
-                        {isExpanded ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                    </button>
-                </div>
-            </div>
-
-            {/* Expanded Details */}
-            <AnimatePresence>
-                {isExpanded && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="border-t border-white/5 bg-black/40"
-                    >
-                        <div className="divide-y divide-white/5">
-                            {/* Checklist Section */}
-                            <div className="p-6 grid grid-cols-2 gap-8">
-                                <div>
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Checklist</h4>
-                                    <div className="space-y-3">
-                                        {Object.entries(task.checklist || {}).map(([item, checked]) => (
-                                            <div key={item} className="flex items-center gap-3">
-                                                <div className={`w-4 h-4 rounded border flex items-center justify-center ${checked ? "bg-emerald-500/20 border-emerald-500/50" : "border-white/10"}`}>
-                                                    {checked && <CheckCircle2 className="w-3 h-3 text-emerald-400" />}
-                                                </div>
-                                                <span className={`text-sm ${checked ? "text-neutral-300" : "text-neutral-500"}`}>{item}</span>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                <div className="space-y-4">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500">Metadata</h4>
-                                    <div className="space-y-2">
-                                        <MetaItem label="Source" value={task.source_file || 'N/A'} />
-                                        <div className="flex items-center justify-between text-xs py-1 border-b border-white/5">
-                                            <span className="text-neutral-500">Live Preview</span>
-                                            {task.preview_url ? (
-                                                <a href={task.preview_url} target="_blank" className="text-emerald-400 hover:underline flex items-center gap-1">
-                                                    Open <ExternalLink className="w-3 h-3" />
-                                                </a>
-                                            ) : (
-                                                <span className="text-neutral-700 italic">No preview available</span>
-                                            )}
-                                        </div>
-                                        <div className="pt-2">
-                                            <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-600">Secondary Keywords</span>
-                                            <div className="flex flex-wrap gap-2 mt-2">
-                                                {task.secondary_keywords?.map(kw => (
-                                                    <span key={kw} className="px-2 py-0.5 bg-white/5 rounded text-[10px] text-neutral-400">{kw}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Content Draft Section */}
-                            <div className="p-6">
-                                <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500 mb-4">Content Draft</h4>
-                                <div className="bg-neutral-900 border border-white/5 rounded-xl p-6 prose prose-invert prose-sm max-w-none max-h-[600px] overflow-y-auto custom-scrollbar">
-                                    <ReactMarkdown>{task.content_draft || ""}</ReactMarkdown>
-                                </div>
-                            </div>
-
-                            {/* Actions Footer */}
-                            {task.status === 'pending_review' && (
-                                <div className="p-6 bg-black/20 flex flex-col gap-6">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-500">Your Decision</h4>
-
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="space-y-4">
-                                            <button
-                                                disabled={isSubmitting}
-                                                onClick={() => handleAction('approved')}
-                                                className="w-full h-12 flex items-center justify-center gap-2 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-400 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-50"
-                                            >
-                                                <CheckCircle2 className="w-5 h-5" /> Approve Draft
-                                            </button>
-
-                                            <button
-                                                disabled={isSubmitting}
-                                                onClick={() => handleAction('rejected')}
-                                                className="w-full h-12 flex items-center justify-center gap-2 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-all disabled:opacity-50"
-                                            >
-                                                <XCircle className="w-5 h-5" /> Reject Task
-                                            </button>
-                                        </div>
-
-                                        <div className="space-y-3">
-                                            <textarea
-                                                value={note}
-                                                onChange={(e) => setNote(e.target.value)}
-                                                placeholder="Type revision notes here..."
-                                                className="w-full h-24 bg-neutral-950 border border-white/5 rounded-xl p-3 text-sm focus:ring-1 focus:ring-emerald-500 outline-none resize-none placeholder:text-neutral-700"
-                                            />
-                                            <button
-                                                disabled={isSubmitting || !note.trim()}
-                                                onClick={() => handleAction('revision', note)}
-                                                className="w-full h-10 flex items-center justify-center gap-2 bg-blue-500 text-white rounded-xl font-bold hover:bg-blue-400 transition-colors disabled:opacity-50"
-                                            >
-                                                <Send className="w-4 h-4" /> Send for Revision
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {task.status === 'revision' && task.human_note && (
-                                <div className="p-6 bg-blue-500/5 border-l-4 border-blue-500">
-                                    <h4 className="text-xs font-bold uppercase tracking-widest text-blue-400 mb-2">My Last Note</h4>
-                                    <p className="text-sm text-neutral-300 italic">"{task.human_note}"</p>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+        <button
+            onClick={onClick}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all whitespace-nowrap ${active ? 'bg-zinc-800 text-white shadow-xl' : 'text-zinc-500 hover:text-zinc-300'
+                }`}
+        >
+            {children}
+        </button>
     );
 }
 
-function MetaItem({ label, value }: { label: string, value: string }) {
+function MetaItem({ label, value, isLink }: { label: string, value: string, isLink?: boolean }) {
     return (
-        <div className="flex items-center justify-between text-xs py-1 border-b border-white/5">
-            <span className="text-neutral-500">{label}</span>
-            <span className="text-neutral-300 truncate max-w-[200px]" title={value}>{value}</span>
+        <div>
+            <div className="text-zinc-500 text-[10px] uppercase font-bold tracking-wider mb-1">{label}</div>
+            {isLink ? (
+                <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-400 text-xs hover:underline break-all">
+                    {value} ↗
+                </a>
+            ) : (
+                <div className="text-zinc-300 text-xs font-mono break-all">{value}</div>
+            )}
         </div>
     );
 }

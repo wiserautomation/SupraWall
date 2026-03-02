@@ -1,41 +1,68 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getAdminDb } from '@/lib/firebase-admin';
+import { admin } from '@/lib/firebase-admin';
 
-/**
- * POST /api/tasks
- * Body: task object
- * Auth: service role key
- */
+// POST /api/tasks - Create a new task
 export async function POST(request: Request) {
-    if (!supabaseAdmin) {
-        return NextResponse.json({ error: 'Supabase admin client not initialized' }, { status: 500 });
-    }
-
     try {
         const body = await request.json();
+        const db = getAdminDb();
 
-        // Ensure status defaults if not provided
-        if (!body.status) body.status = 'pending_review';
+        const taskData = {
+            ...body,
+            status: body.status || 'pending_review',
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            reviewedAt: null,
+            publishedAt: null,
+            humanAction: null,
+            humanNote: null
+        };
 
-        const { data, error } = await supabaseAdmin
-            .from('tasks')
-            .insert([body])
-            .select('id, task_number')
-            .single();
+        const docRef = await db.collection('tasks').add(taskData);
 
-        if (error) throw error;
-
-        return NextResponse.json(data);
+        return NextResponse.json({
+            id: docRef.id,
+            taskNumber: body.taskNumber
+        }, { status: 201 });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error('Error creating task:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
 
-/**
- * GET /api/tasks
- * Query params can be used to distinguish between different GET requests
- * but the prompt specifically asked for /api/tasks/pending which is a sub-path.
- * I will implement it as a query param or handle the path properly.
- * Actually, let's follow the standard Next.js path structure:
- * /api/tasks/pending -> src/app/api/tasks/pending/route.ts
- */
+// GET /api/tasks - Fetch tasks (can be filtered by status)
+export async function GET(request: Request) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const status = searchParams.get('status');
+        const db = getAdminDb();
+
+        let queryBuilder = db.collection('tasks').orderBy('createdAt', 'desc');
+
+        if (status) {
+            const snapshot = await db.collection('tasks')
+                .where('status', '==', status)
+                .orderBy('createdAt', 'desc')
+                .get();
+
+            const tasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            return NextResponse.json(tasks);
+        }
+
+        const snapshot = await queryBuilder.get();
+        const tasks = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        return NextResponse.json(tasks);
+    } catch (error: any) {
+        console.error('Error fetching tasks:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}

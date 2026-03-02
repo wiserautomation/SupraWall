@@ -1,40 +1,29 @@
 import { NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/lib/supabase';
+import { getAdminDb } from '@/lib/firebase-admin';
+import { admin } from '@/lib/firebase-admin';
 
-/**
- * PATCH /api/tasks/[id]/published
- * Body: { published_url }
- * Action: set status = "published", record published_at
- * Auth: service role key
- */
+// PATCH /api/tasks/[id]/published - Mark task as published
 export async function PATCH(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    if (!supabaseAdmin) {
-        return NextResponse.json({ error: 'Supabase admin client not initialized' }, { status: 500 });
-    }
-
     try {
-        const { id } = await params;
-        const { published_url } = await request.json();
+        const { id } = params;
+        const db = getAdminDb();
 
-        const { data, error } = await supabaseAdmin
-            .from('tasks')
-            .update({
-                status: 'published',
-                url: published_url,
-                published_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-            })
-            .eq('id', id)
-            .select()
-            .single();
+        const updateData = {
+            status: 'published',
+            updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+            publishedAt: admin.firestore.FieldValue.serverTimestamp(),
+        };
 
-        if (error) throw error;
+        await db.collection('tasks').doc(id).update(updateData);
 
-        return NextResponse.json(data);
+        const updatedDoc = await db.collection('tasks').doc(id).get();
+
+        return NextResponse.json({ id, ...updatedDoc.data() });
     } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 400 });
+        console.error('Error marking task as published:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

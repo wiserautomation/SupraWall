@@ -1,218 +1,180 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import {
-    BarChart3,
-    TrendingUp,
-    TrendingDown,
-    CheckCircle,
-    AlertTriangle,
-    Lightbulb,
-    Plus,
-    Calendar,
-    ArrowUpRight
-} from "lucide-react";
+import React, { useState, useEffect } from 'react';
+import { db } from '@/lib/firebase';
+import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 
-interface Brief {
+interface IntelligenceBrief {
     id: string;
-    week_start: string;
-    metrics: {
-        top100: { last: number, now: number };
-        top20: { last: number, now: number };
-        indexed: { last: number, now: number };
-        refDom: { last: number, now: number };
-        llmCit: { last: number, now: number };
-    };
+    weekStart: string;
+    metrics: Record<string, any>;
     wins: string[];
     problems: string[];
     opportunities: string[];
-    actions: Array<{
-        priority: 'P0' | 'P1' | 'P2';
-        title: string;
-        description: string;
-        type: string;
-        url?: string;
-    }>;
-    created_at: string;
+    actions: {
+        p0: string[];
+        p1: string[];
+        p2: string[];
+    };
+    createdAt: any;
 }
 
 export default function IntelligencePage() {
-    const [brief, setBrief] = useState<Brief | null>(null);
+    const [brief, setBrief] = useState<IntelligenceBrief | null>(null);
+    const [activeSection, setActiveSection] = useState<'wins' | 'problems' | 'opportunities' | 'actions'>('wins');
     const [loading, setLoading] = useState(true);
-    const [addedActions, setAddedActions] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
-        fetchLatestBrief();
+        const q = query(collection(db, 'intelligence_briefs'), orderBy('createdAt', 'desc'), limit(1));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            if (!snapshot.empty) {
+                setBrief({
+                    id: snapshot.docs[0].id,
+                    ...snapshot.docs[0].data()
+                } as IntelligenceBrief);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, []);
 
-    async function fetchLatestBrief() {
-        const res = await fetch('/api/intelligence');
-        if (res.ok) {
-            const data = await res.json();
-            if (data.id) setBrief(data);
+    const addToQueue = async (action: string) => {
+        try {
+            await fetch('/api/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    taskNumber: `AUTO-${Math.floor(1000 + Math.random() * 9000)}`,
+                    type: 'queue_addition',
+                    status: 'pending_review',
+                    url: 'TBD',
+                    primaryKeyword: action,
+                    contentDraft: `Auto-generated task from Intelligence Brief: ${action}`,
+                    checklist: ["Verify requirement", "Scope implementation"],
+                    batch: "B_INTEL"
+                })
+            });
+            alert('Added to task queue!');
+        } catch (error) {
+            console.error('Failed to add to queue:', error);
         }
-        setLoading(false);
-    }
-
-    const addToQueue = async (actionId: string, action: any) => {
-        setAddedActions(prev => ({ ...prev, [actionId]: true }));
-
-        // 1. Create task via API
-        await fetch('/api/tasks', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                task_number: `ACTION-${Date.now().toString().slice(-4)}`,
-                type: 'queue_addition',
-                status: 'pending_review',
-                url: action.url || '/',
-                primary_keyword: action.title,
-                human_note: `Recommended Action from Intelligence Brief: ${action.description}`,
-                batch: 'Intelligence'
-            })
-        });
     };
 
-    if (loading) return <div className="h-64 flex items-center justify-center text-neutral-500">Loading intelligence...</div>;
-
-    if (!brief) return (
-        <div className="h-96 flex flex-col items-center justify-center text-neutral-500 bg-neutral-900/20 border border-dashed border-white/10 rounded-2xl">
-            <BarChart3 className="w-12 h-12 opacity-20 mb-4" />
-            <p className="text-xl font-medium">No intelligence briefs found.</p>
-            <p className="text-sm">Antigravity will generate the first brief on Monday.</p>
-        </div>
-    );
+    if (loading) return <div className="p-8 text-zinc-500">Loading intelligence...</div>;
+    if (!brief) return <div className="p-8 text-zinc-500">No intelligence briefs found.</div>;
 
     return (
-        <div className="space-y-8 pb-20">
-            <header className="flex justify-between items-end">
-                <div>
-                    <h1 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-                        Intelligence Brief
-                        <span className="text-xs bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded-full border border-emerald-500/20">LIVE</span>
-                    </h1>
-                    <div className="flex items-center gap-2 text-neutral-500 text-sm mt-1">
-                        <Calendar className="w-3.5 h-3.5" />
-                        Week starting: {new Date(brief.week_start).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                    </div>
-                </div>
-                <div className="text-right">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-700">Last Synced</p>
-                    <p className="text-xs text-neutral-500">{new Date(brief.created_at).toLocaleTimeString()}</p>
-                </div>
+        <div className="p-8 max-w-5xl mx-auto">
+            <header className="mb-10 text-center">
+                <h1 className="text-3xl font-bold text-white mb-2">Weekly Intelligence Brief</h1>
+                <p className="text-zinc-500 font-mono tracking-widest uppercase text-xs">Week of {brief.weekStart} · Data-driven Insights</p>
             </header>
 
-            {/* Metrics Section */}
-            <section className="bg-neutral-900/50 border border-white/5 rounded-2xl overflow-hidden">
-                <div className="px-6 py-4 border-b border-white/5 flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-emerald-400" />
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400">Core Metrics</h2>
-                </div>
-                <div className="grid grid-cols-5 divide-x divide-white/5">
-                    <MetricBox label="Top 100" metrics={brief.metrics.top100} />
-                    <MetricBox label="Top 20" metrics={brief.metrics.top20} />
-                    <MetricBox label="Indexed Pages" metrics={brief.metrics.indexed} />
-                    <MetricBox label="Referring Domains" metrics={brief.metrics.refDom} />
-                    <MetricBox label="LLM Mentions" metrics={brief.metrics.llmCit} />
-                </div>
-            </section>
-
-            {/* Findings Section */}
-            <div className="grid grid-cols-3 gap-6">
-                <FindingsBox title="Wins" icon={CheckCircle} items={brief.wins} color="text-emerald-400" bgColor="bg-emerald-500/5" shadow="shadow-emerald-500/5" />
-                <FindingsBox title="Problems" icon={AlertTriangle} items={brief.problems} color="text-red-400" bgColor="bg-red-500/5" shadow="shadow-red-500/5" />
-                <FindingsBox title="Opportunities" icon={Lightbulb} items={brief.opportunities} color="text-yellow-400" bgColor="bg-yellow-500/5" shadow="shadow-yellow-500/5" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <MetricCard title="Total Impressions" value={brief.metrics?.impressions?.total || 'N/A'} delta={brief.metrics?.impressions?.delta} />
+                <MetricCard title="Click-Through Rate" value={`${brief.metrics?.ctr?.value || 'N/A'}%`} delta={brief.metrics?.ctr?.delta} />
+                <MetricCard title="Avg Position" value={brief.metrics?.position?.value || 'N/A'} delta={brief.metrics?.position?.delta} inverseDelta />
             </div>
 
-            {/* Recommended Actions */}
-            <section className="space-y-4">
-                <h2 className="text-xs font-bold uppercase tracking-widest text-neutral-500">Recommended Actions</h2>
-                <div className="grid gap-4">
-                    {brief.actions.map((action, i) => (
-                        <ActionCard
-                            key={i}
-                            action={action}
-                            isAdded={!!addedActions[`${i}`]}
-                            onAdd={() => addToQueue(`${i}`, action)}
-                        />
-                    ))}
+            <div className="bg-zinc-900 rounded-2xl border border-zinc-800 overflow-hidden min-h-[500px] flex flex-col shadow-2xl">
+                <nav className="flex border-b border-zinc-800 bg-zinc-950/50">
+                    <SectionTab active={activeSection === 'wins'} onClick={() => setActiveSection('wins')}>Wins</SectionTab>
+                    <SectionTab active={activeSection === 'problems'} onClick={() => setActiveSection('problems')}>Problems</SectionTab>
+                    <SectionTab active={activeSection === 'opportunities'} onClick={() => setActiveSection('opportunities')}>Opportunities</SectionTab>
+                    <SectionTab active={activeSection === 'actions'} onClick={() => setActiveSection('actions')}>Recommended Actions</SectionTab>
+                </nav>
+
+                <div className="p-8 flex-grow">
+                    {activeSection === 'wins' && <ListSection items={brief.wins} color="green" />}
+                    {activeSection === 'problems' && <ListSection items={brief.problems} color="red" />}
+                    {activeSection === 'opportunities' && <ListSection items={brief.opportunities} color="blue" />}
+                    {activeSection === 'actions' && (
+                        <div className="space-y-8">
+                            <ActionGroup title="P0 · Immediate" actions={brief.actions?.p0} onAdd={addToQueue} priority="high" />
+                            <ActionGroup title="P1 · High" actions={brief.actions?.p1} onAdd={addToQueue} priority="medium" />
+                            <ActionGroup title="P2 · Backlog" actions={brief.actions?.p2} onAdd={addToQueue} priority="low" />
+                        </div>
+                    )}
                 </div>
-            </section>
+            </div>
         </div>
     );
 }
 
-function MetricBox({ label, metrics }: { label: string, metrics: { last: number, now: number } }) {
-    const diff = metrics.now - metrics.last;
+function MetricCard({ title, value, delta, inverseDelta }: { title: string, value: string | number, delta?: number, inverseDelta?: boolean }) {
+    const isPositive = delta && delta > 0;
+    const isGood = inverseDelta ? !isPositive : isPositive;
     return (
-        <div className="p-6">
-            <p className="text-xs text-neutral-600 font-medium whitespace-nowrap">{label}</p>
-            <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-2xl font-mono font-bold">{metrics.now}</span>
-                {diff !== 0 && (
-                    <span className={`text-[10px] font-bold flex items-center gap-0.5 ${diff > 0 ? 'text-emerald-500' : 'text-red-500'}`}>
-                        {diff > 0 ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                        {Math.abs(diff)}
-                    </span>
+        <div className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 shadow-xl">
+            <div className="text-zinc-500 text-xs font-bold uppercase tracking-wider mb-2">{title}</div>
+            <div className="flex justify-between items-end">
+                <div className="text-3xl font-bold text-white">{value}</div>
+                {delta !== undefined && (
+                    <div className={`text-xs font-bold mb-1 ${isGood ? 'text-green-500' : 'text-red-500'}`}>
+                        {isPositive ? '↑' : '↓'} {Math.abs(delta)}%
+                    </div>
                 )}
             </div>
-            <p className="text-[10px] text-neutral-700 mt-1">prev: {metrics.last}</p>
         </div>
     );
 }
 
-function FindingsBox({ title, icon: Icon, items, color, bgColor, shadow }: any) {
+function SectionTab({ children, active, onClick }: { children: React.ReactNode, active: boolean, onClick: () => void }) {
     return (
-        <div className={`p-6 rounded-2xl border border-white/5 ${bgColor} ${shadow} space-y-4`}>
-            <div className="flex items-center gap-3">
-                <Icon className={`w-5 h-5 ${color}`} />
-                <h3 className="font-bold text-white tracking-tight">{title}</h3>
-            </div>
-            <ul className="space-y-3">
-                {items.map((item: string, i: number) => (
-                    <li key={i} className="flex gap-2 text-sm text-neutral-400 leading-relaxed">
-                        <span className="text-neutral-700 mt-1.5">•</span>
-                        {item}
-                    </li>
-                ))}
-            </ul>
-        </div>
+        <button
+            onClick={onClick}
+            className={`px-8 py-4 text-sm font-bold transition-all border-b-2 ${active ? 'text-white border-white bg-zinc-900/50' : 'text-zinc-500 border-transparent hover:text-zinc-300'
+                }`}
+        >
+            {children}
+        </button>
     );
 }
 
-function ActionCard({ action, isAdded, onAdd }: { action: any, isAdded: boolean, onAdd: () => void }) {
-    const priorityColors = {
-        P0: "bg-red-500/20 text-red-400 border-red-500/30",
-        P1: "bg-orange-500/20 text-orange-400 border-orange-500/30",
-        P2: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+function ListSection({ items, color }: { items: string[], color: 'green' | 'red' | 'blue' }) {
+    const colors = {
+        green: 'text-green-500 border-green-500/20',
+        red: 'text-red-500 border-red-500/20',
+        blue: 'text-blue-400 border-blue-400/20'
     };
-
     return (
-        <div className="bg-neutral-900/40 border border-white/5 p-6 rounded-2xl flex items-center justify-between group hover:bg-neutral-900/60 transition-colors">
-            <div className="flex gap-6 items-center">
-                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center text-xs font-black ${priorityColors[action.priority as keyof typeof priorityColors]}`}>
-                    {action.priority}
-                </div>
-                <div>
-                    <h3 className="font-bold text-white text-lg tracking-tight flex items-center gap-2">
-                        {action.title}
-                        {action.url && <ArrowUpRight className="w-4 h-4 text-neutral-700 group-hover:text-emerald-500 transition-colors" />}
-                    </h3>
-                    <p className="text-sm text-neutral-500 mt-1 max-w-xl">{action.description}</p>
-                </div>
+        <ul className="space-y-4">
+            {items?.map((item, i) => (
+                <li key={i} className={`p-4 rounded-xl border bg-zinc-950/50 text-zinc-300 flex items-start gap-4 ${colors[color]}`}>
+                    <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-current shrink-0" />
+                    {item}
+                </li>
+            ))}
+        </ul>
+    );
+}
+
+function ActionGroup({ title, actions, onAdd, priority }: { title: string, actions: string[], onAdd: (s: string) => void, priority: 'high' | 'medium' | 'low' }) {
+    const priorityColors = {
+        high: 'text-red-500',
+        medium: 'text-yellow-500',
+        low: 'text-blue-400'
+    };
+    return (
+        <div>
+            <h4 className={`text-xs font-bold uppercase tracking-widest mb-4 flex items-center gap-2 ${priorityColors[priority]}`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                {title}
+            </h4>
+            <div className="space-y-3">
+                {actions?.map((action, i) => (
+                    <div key={i} className="flex justify-between items-center p-4 bg-zinc-950/30 rounded-xl border border-zinc-800 group hover:border-zinc-700 transition-colors">
+                        <span className="text-zinc-300 text-sm">{action}</span>
+                        <button
+                            onClick={() => onAdd(action)}
+                            className="opacity-0 group-hover:opacity-100 bg-white text-black text-[10px] font-bold py-1 px-3 rounded uppercase tracking-tighter transition-all hover:bg-zinc-200"
+                        >
+                            Add to Queue
+                        </button>
+                    </div>
+                ))}
             </div>
-            <button
-                onClick={onAdd}
-                disabled={isAdded}
-                className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all duration-300 flex items-center gap-2 ${isAdded
-                        ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/40"
-                        : "bg-white text-black hover:bg-emerald-500 hover:text-white"
-                    }`}
-            >
-                {isAdded ? <CheckCircle className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
-                {isAdded ? "Added" : "Add to Queue"}
-            </button>
         </div>
     );
 }
