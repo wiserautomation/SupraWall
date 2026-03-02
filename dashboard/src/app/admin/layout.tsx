@@ -6,7 +6,20 @@ import { doc, setDoc } from "firebase/firestore";
 import { useRouter, usePathname } from "next/navigation";
 import { useEffect } from "react";
 import Link from "next/link";
-import { Shield, BrickWall, Users, Activity, Settings, Database, Server, BarChart2 } from "lucide-react";
+import {
+    Shield,
+    BrickWall,
+    Users,
+    Activity,
+    Settings,
+    Database,
+    Server,
+    BarChart2,
+    CheckSquare,
+    Brain,
+    Layout,
+    ListOrdered
+} from "lucide-react";
 
 // Add admin emails here
 const ADMIN_EMAILS = ["peghin@gmail.com"];
@@ -48,10 +61,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navItems = [
         { name: "Overview", href: "/admin", icon: BarChart2 },
+        { name: "Task Review", href: "/admin/tasks", icon: CheckSquare },
+        { name: "Intelligence", href: "/admin/intelligence", icon: Brain },
+        { name: "Published", href: "/admin/published", icon: Layout },
+        { name: "Queue", href: "/admin/queue", icon: ListOrdered },
         { name: "Users", href: "/admin/users", icon: Users },
         { name: "Agents", href: "/admin/agents", icon: Server },
         { name: "Audit Logs", href: "/admin/audit", icon: Activity },
-        { name: "Analytics", href: "/admin/analytics", icon: Database },
         { name: "Settings", href: "/admin/settings", icon: Settings },
     ];
 

@@ -63,20 +63,26 @@ export default function AgentsPage() {
                     const dailyBuckets: Record<string, number> = {};
 
                     logs.forEach(log => {
+                        const callCost = log.estimated_cost_usd || log.cost_usd || 0;
+
                         if (log.decision === "DENY") {
                             blocked++;
-                            saved += 5.00; // Calculated by taking blocked actions * $5.00 estimated incident cost
+                            // Savings estimate: 
+                            // 1. If loop detection: assume we saved 10-20 more calls
+                            // 2. Base protection value: $2.50 per block
+                            if (log.isLoop) {
+                                saved += 10.00; // Loops are expensive
+                            } else {
+                                saved += 2.50;
+                            }
                         } else if (log.decision === "ALLOW") {
+                            spend += callCost;
                             if (log.timestamp) {
                                 const dateStr = format(log.timestamp.toDate(), 'MM/dd');
-                                // Track operations instead of random cost_usd for the chart
-                                dailyBuckets[dateStr] = (dailyBuckets[dateStr] || 0) + 1;
+                                dailyBuckets[dateStr] = (dailyBuckets[dateStr] || 0) + callCost;
                             }
                         }
                     });
-
-                    // Calculated dynamically based on operations above 100k * $0.0001
-                    spend = Math.max(0, total - 100000) * 0.0001;
 
                     setStats({
                         totalCalls: total,
@@ -86,7 +92,7 @@ export default function AgentsPage() {
                     });
 
                     const chartItems = Object.entries(dailyBuckets)
-                        .map(([date, amount]) => ({ date, amount }))
+                        .map(([date, amount]) => ({ date, amount: parseFloat(amount.toFixed(4)) }))
                         .sort((a, b) => a.date.localeCompare(b.date))
                         .slice(-7);
 

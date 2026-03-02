@@ -23,6 +23,7 @@ interface EvaluateResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
     estimated_cost_usd?: number;
+    is_loop?: boolean;
 }
 
 export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
@@ -35,6 +36,11 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
     const args = body.args;
     const sessionId = body.sessionId || null;
     const agentRole = body.agentRole || null;
+    const model = body.model || "gpt-4o-mini";
+    const inputTokens = body.inputTokens || 0;
+    const outputTokens = body.outputTokens || 0;
+    const clientReportedCost = body.costUsd || null;
+    const isLoopDetectedByClient = body.isLoop || false;
 
     const startTime = Date.now();
 
@@ -93,7 +99,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const decision = evaluatePolicies(toolName, args, effectiveRules);
 
             // Cost estimation
-            const estimatedCost = estimateActionCost(args, toolName);
+            const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
             const latencyMs = Date.now() - startTime;
 
             // Update usage counters and write audit log (non-blocking)
@@ -113,6 +119,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     reason: decision.reason ?? null,
                     latencyMs,
                     costUsd: estimatedCost,
+                    isLoop: isLoopDetectedByClient,
                     timestamp: FieldValue.serverTimestamp(),
                 })
             ];
@@ -178,11 +185,11 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             }
 
             // 4. Log the audit event
-            const estimatedCost = estimateActionCost(args, toolName);
+            const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
 
             // 5. Update usage counters (non-blocking)
             const updates: Promise<any>[] = [
-                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole)
+                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient)
             ];
 
             if (userId) {
@@ -194,10 +201,23 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 );
             }
 
+            // Also update agent level stats
+            updates.push(
+                db.collection("agents").doc(agentId).update({
+                    totalCalls: FieldValue.increment(1),
+                    totalSpendUsd: FieldValue.increment(estimatedCost),
+                    lastUsedAt: FieldValue.serverTimestamp()
+                }).catch(err => console.warn(`Failed to update agent ${agentId}:`, err.message))
+            );
+
             Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
 
             // 6. Return the decision
-            res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
+            res.status(200).json({ 
+                decision: finalDecision, 
+                estimated_cost_usd: estimatedCost,
+                is_loop: isLoopDetectedByClient 
+            });
             return;
         }
 
@@ -265,11 +285,23 @@ async function checkRateLimit(
 }
 
 /**
- * Rough estimation of agentic 'overhead' cost for a tool call.
- * Based on argument payload size using 1 token ≈ 4 chars.
- * Price base: $0.15/1M tokens (GPT-4o-mini rates) + small fixed base cost.
+ * Enhanced estimation of agentic 'overhead' cost for a tool call.
  */
-function estimateActionCost(args: any, toolName: string): number {
+function estimateActionCost(args: any, toolName: string, model: string = "gpt-4o-mini", inTokens: number = 0, outTokens: number = 0): number {
+    // If tokens provided, use them
+    if (inTokens > 0 || outTokens > 0) {
+        const rates: Record<string, { in: number, out: number }> = {
+            "gpt-4o": { in: 0.005, out: 0.015 },
+            "gpt-4o-mini": { in: 0.00015, out: 0.0006 },
+            "claude-3-5-sonnet": { in: 0.003, out: 0.015 },
+            "gemini-1.5-pro": { in: 0.00125, out: 0.005 },
+        };
+        const key = Object.keys(rates).find(k => model.toLowerCase().includes(k)) || "gpt-4o-mini";
+        const rate = rates[key];
+        return (inTokens / 1000 * rate.in) + (outTokens / 1000 * rate.out);
+    }
+
+    // Heuristic fallback
     const payloadLength = JSON.stringify(args || {}).length + toolName.length;
     const tokens = Math.ceil(payloadLength / 4) + 50; // +50 tokens for tool overhead
     const costPerToken = 0.00000015; // $0.15 per 1M tokens
@@ -286,7 +318,7 @@ function sanitizeArgs(args: any): any {
     return sanitized;
 }
 
-async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null) {
+async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null, isLoop: boolean = false) {
     try {
         await db.collection("audit_logs").add({
             agentId,
@@ -297,6 +329,7 @@ async function logAudit(agentId: string, toolName: string, args: string, decisio
             sessionId,
             agentRole,
             cost_usd: costUsd,
+            is_loop: isLoop,
             timestamp: FieldValue.serverTimestamp()
         });
     } catch (error) {

@@ -10,8 +10,9 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2 } from "lucide-react";
+import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity } from "lucide-react";
 import { Agent, Policy, RuleType } from "@/types/database";
+import { doc, updateDoc } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -27,6 +28,13 @@ export default function PoliciesPage() {
     const [condition, setCondition] = useState("");
     const [ruleType, setRuleType] = useState<RuleType>("DENY");
 
+    // Agent Config State
+    const [maxCostUsd, setMaxCostUsd] = useState<string>("");
+    const [budgetAlertUsd, setBudgetAlertUsd] = useState<string>("");
+    const [maxIterations, setMaxIterations] = useState<string>("");
+    const [loopDetection, setLoopDetection] = useState<boolean>(false);
+    const [isSavingConfig, setIsSavingConfig] = useState(false);
+
     // AI Wizard State
     const [showAiWizard, setShowAiWizard] = useState(false);
     const [aiPrompt, setAiPrompt] = useState("");
@@ -36,17 +44,11 @@ export default function PoliciesPage() {
         if (!user) return;
         setLoading(true);
         try {
-            // Fetch Agents for Dropdown
             const qAgents = query(collection(db, "agents"), where("userId", "==", user.uid));
             const agentsSnap = await getDocs(qAgents);
             const agentsList = agentsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
             setAgents(agentsList);
 
-            // Fetch Policies
-            // In a real app we'd query by agentIds rather than fetching all and filtering, 
-            // but if the rules say user can read only policies they own, we can query policies directly 
-            // if we attach userId to them. To keep it aligned with Phase 1 instructions, we'll
-            // fetch all policies and find those for the user's agents.
             const qPolicies = query(collection(db, "policies"));
             const policiesSnap = await getDocs(qPolicies);
             const allPolicies = policiesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Policy));
@@ -59,6 +61,22 @@ export default function PoliciesPage() {
         }
         setLoading(false);
     };
+
+    const fetchAgentConfig = async (agentId: string) => {
+        const agent = agents.find(a => a.id === agentId);
+        if (agent) {
+            setMaxCostUsd(agent.maxCostUsd?.toString() || "");
+            setBudgetAlertUsd(agent.budgetAlertUsd?.toString() || "");
+            setMaxIterations(agent.maxIterations?.toString() || "");
+            setLoopDetection(agent.loopDetection || false);
+        }
+    };
+
+    useEffect(() => {
+        if (selectedAgentId) {
+            fetchAgentConfig(selectedAgentId);
+        }
+    }, [selectedAgentId, agents]);
 
     useEffect(() => {
         fetchData();
@@ -86,12 +104,30 @@ export default function PoliciesPage() {
         }
     };
 
+    const handleSaveConfig = async () => {
+        if (!selectedAgentId) return;
+        setIsSavingConfig(true);
+        try {
+            const agentRef = doc(db, "agents", selectedAgentId);
+            await updateDoc(agentRef, {
+                maxCostUsd: maxCostUsd ? parseFloat(maxCostUsd) : null,
+                budgetAlertUsd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
+                maxIterations: maxIterations ? parseInt(maxIterations) : null,
+                loopDetection
+            });
+            fetchData();
+            sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
+        } catch (e) {
+            console.error("Error updating agent config", e);
+        }
+        setIsSavingConfig(false);
+    };
+
     const handleGenerateRegex = async () => {
         if (!toolName || !aiPrompt) return;
         setIsGenerating(true);
         try {
-            const url = `/api/generate`;
-            const res = await fetch(url, {
+            const res = await fetch(`/api/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ prompt: aiPrompt, toolName })
@@ -239,7 +275,100 @@ export default function PoliciesPage() {
                     </CardContent>
                 </Card>
 
-                <Card className="col-span-1 lg:col-span-2 bg-black/40 backdrop-blur-xl border-white/[0.05] shadow-2xl overflow-hidden relative group">
+                {/* Agent Global Settings Card */}
+                <Card className="col-span-1 lg:col-span-2 bg-black/40 backdrop-blur-xl border-white/[0.05] shadow-2xl overflow-hidden relative group h-fit">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
+                    <CardHeader className="bg-white/[0.01] border-b border-white/[0.05]">
+                        <CardTitle className="text-lg flex items-center font-semibold text-white/90 tracking-tight">
+                            <Activity className="w-5 h-5 mr-2 text-blue-400" />
+                            Agent Budget & Safety Control — {selectedAgentId ? getAgentName(selectedAgentId) : "Select an Agent"}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="pt-6">
+                        {!selectedAgentId ? (
+                            <div className="py-12 text-center text-neutral-500 italic">
+                                Please select an agent from the dropdown to configure budget limits and loop protection.
+                            </div>
+                        ) : (
+                            <div className="space-y-6">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-neutral-400 flex items-center gap-2">
+                                                <Coins className="w-4 h-4 text-amber-400" /> Budget Cap (USD)
+                                            </label>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                value={maxCostUsd}
+                                                onChange={e => setMaxCostUsd(e.target.value)}
+                                                placeholder="e.g. 5.00 — Hard stop agent spent"
+                                                className="bg-neutral-900 border-white/10 text-white placeholder:text-neutral-500"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-neutral-400 flex items-center gap-2">
+                                                <RefreshCw className="w-4 h-4 text-emerald-400" /> Budget Warning (USD)
+                                            </label>
+                                            <Input
+                                                type="number"
+                                                step="0.01"
+                                                value={budgetAlertUsd}
+                                                onChange={e => setBudgetAlertUsd(e.target.value)}
+                                                placeholder="e.g. 4.00 — Fire alert webhook"
+                                                className="bg-neutral-900 border-white/10 text-white placeholder:text-neutral-500"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <label className="text-sm font-medium text-neutral-400 flex items-center gap-2">
+                                                <Activity className="w-4 h-4 text-blue-400" /> Max Tool Iterations
+                                            </label>
+                                            <Input
+                                                type="number"
+                                                value={maxIterations}
+                                                onChange={e => setMaxIterations(e.target.value)}
+                                                placeholder="e.g. 10 — Circuit breaker"
+                                                className="bg-neutral-900 border-white/10 text-white placeholder:text-neutral-500"
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl hover:bg-white/[0.04] transition-colors">
+                                            <div className="space-y-0.5">
+                                                <p className="text-sm font-medium text-white">Loop Detection</p>
+                                                <p className="text-xs text-neutral-500">Auto-block repeated tool patterns</p>
+                                            </div>
+                                            <div
+                                                onClick={() => setLoopDetection(!loopDetection)}
+                                                className={`w-12 h-6 rounded-full p-1 cursor-pointer transition-colors duration-300 ${loopDetection ? "bg-emerald-600" : "bg-neutral-800"}`}
+                                            >
+                                                <motion.div
+                                                    animate={{ x: loopDetection ? 24 : 0 }}
+                                                    className="w-4 h-4 bg-white rounded-full shadow-lg"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="flex justify-end pt-4 border-t border-white/[0.05]">
+                                    <Button
+                                        onClick={handleSaveConfig}
+                                        disabled={isSavingConfig}
+                                        className="bg-blue-600 hover:bg-blue-500 text-white min-w-[120px]"
+                                    >
+                                        {isSavingConfig ? (
+                                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+                                        ) : (
+                                            <><Save className="mr-2 h-4 w-4" /> Save Configuration</>
+                                        )}
+                                    </Button>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card className="col-span-1 lg:col-span-3 bg-black/40 backdrop-blur-xl border-white/[0.05] shadow-2xl overflow-hidden relative group">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
                     <CardHeader className="bg-white/[0.01] border-b border-white/[0.05]">
                         <CardTitle className="text-lg font-semibold text-white/90 tracking-tight">Active Policies</CardTitle>

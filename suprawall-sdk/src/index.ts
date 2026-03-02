@@ -108,6 +108,8 @@ export class BudgetTracker {
 export interface SupraWallResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
+    estimated_cost_usd?: number;
+    is_loop?: boolean;
 }
 
 export interface SupraWallOptions {
@@ -142,9 +144,10 @@ export interface SupraWallOptions {
     maxCostUsd?: number;
     /**
      * Soft alert threshold in USD. Logs a warning when spend reaches this amount.
-     * Must be lower than maxCostUsd to be useful.
+     */
+    budgetAlertUsd?: number;
+    /**
      * Optional session ID to group calls for cost/loop tracking.
-     * If not provided, the API Key is used as the session bucket (global).
      */
     sessionId?: string;
     /**
@@ -190,16 +193,133 @@ export interface AgentInstance {
  * @param options - SupraWall configuration (only `apiKey` is required)
  * @returns The same agent instance, now protected by SupraWall
  */
-export function withSupraWall<T extends AgentInstance>(
-    agentInstance: T,
-    options: SupraWallOptions
-): T {
+/**
+ * Core internal evaluator that handles budget, loops, and network policy checks.
+ */
+async function internalEvaluate(
+    toolName: string,
+    args: any,
+    options: SupraWallOptions,
+    metadata: { model?: string; inputTokens?: number; outputTokens?: number } = {}
+): Promise<{ decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string; error?: string }> {
     const {
         apiKey,
         cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL,
         onNetworkError = "fail-open",
         logger = console,
+        maxCostUsd,
+        budgetAlertUsd,
+        sessionId: optSessionId,
+        maxIterations,
+        loopDetection = false,
+        loopThreshold = 3,
     } = options;
+
+    const sessionId = optSessionId ?? apiKey;
+
+    // --- 1. Budget Check (Fast-Reject) ---
+    if (maxCostUsd !== undefined) {
+        const current = _sessionCosts.get(sessionId) ?? 0;
+        if (budgetAlertUsd && current >= budgetAlertUsd) {
+            logger.warn(`[SupraWall] 💰 Budget alert: ${formatCost(current)} used for session ${sessionId}`);
+        }
+        if (current >= maxCostUsd) {
+            return {
+                decision: "DENY",
+                reason: `Budget cap reached: ${formatCost(current)} >= ${formatCost(maxCostUsd)}. Agent stopped.`,
+                error: "BudgetExceededError"
+            };
+        }
+    }
+
+    // --- 2. Iteration Limit ---
+    if (maxIterations !== undefined) {
+        const iterations = (_sessionIterations.get(sessionId) ?? 0) + 1;
+        _sessionIterations.set(sessionId, iterations);
+        if (iterations > maxIterations) {
+            return {
+                decision: "DENY",
+                reason: `Circuit breaker: Exceeded maximum tool iterations (${maxIterations}).`,
+                error: "IterationLimitError"
+            };
+        }
+    }
+
+    // --- 3. Loop Detection ---
+    let isLoopDetected = false;
+    if (loopDetection) {
+        const callSig = `${toolName}:${JSON.stringify(args, Object.keys(args || {}).sort())}`;
+        const history = _sessionCallHistory.get(sessionId) ?? [];
+        history.push(callSig);
+        _sessionCallHistory.set(sessionId, history);
+
+        const recent = history.slice(-loopThreshold);
+        if (recent.length === loopThreshold && new Set(recent).size === 1) {
+            isLoopDetected = true;
+            // Don't stop yet, let's report it to the server in the next step
+        }
+    }
+
+    try {
+        const payload = {
+            apiKey,
+            toolName,
+            args,
+            sessionId,
+            agentRole: options.agentRole,
+            model: metadata.model,
+            inputTokens: metadata.inputTokens,
+            outputTokens: metadata.outputTokens,
+            isLoop: isLoopDetected
+        };
+
+        const response = await fetch(cloudFunctionUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-SupraWall-SDK": `js-${SDK_VERSION}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            if (response.status === 403) {
+                return { decision: "DENY", reason: "Action blocked by SupraWall security policy." };
+            }
+            throw new Error(`SupraWall server error: ${response.status}`);
+        }
+
+        const data = (await response.json()) as SupraWallResponse;
+
+        // Record cost tracking
+        const current = _sessionCosts.get(sessionId) ?? 0;
+        const total = current + (data.estimated_cost_usd || 0);
+        _sessionCosts.set(sessionId, total);
+
+        if (isLoopDetected) {
+            return {
+                decision: "DENY",
+                reason: `Loop detected: Tool '${toolName}' called ${loopThreshold}x consecutively with identical args.`
+            };
+        }
+
+        return { decision: data.decision, reason: data.reason };
+    } catch (e: any) {
+        if (e instanceof Error && e.message.includes("[SupraWall]")) throw e;
+
+        logger.error("[SupraWall] Network error reaching control plane.", e);
+        if (onNetworkError === "fail-closed") {
+            return { decision: "DENY", reason: "SupraWall unreachable. Action blocked (fail-closed mode)." };
+        }
+        return { decision: "ALLOW" };
+    }
+}
+
+export function withSupraWall<T extends AgentInstance>(
+    agentInstance: T,
+    options: SupraWallOptions
+): T {
+    const { apiKey, logger = console } = options;
 
     if (!apiKey || !apiKey.startsWith("ag_")) {
         throw new Error(
@@ -212,67 +332,14 @@ export function withSupraWall<T extends AgentInstance>(
     const originalExecuteTool = agentInstance.executeTool.bind(agentInstance);
 
     agentInstance.executeTool = async (toolName: string, args: any) => {
-        try {
-            const response = await fetch(cloudFunctionUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-SupraWall-SDK": `js-${SDK_VERSION}`,
-                },
-                body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole }),
-            });
+        const result = await internalEvaluate(toolName, args, options);
 
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error(
-                        `[SupraWall] Unauthorized. Check your API key at https://supra-wall-rho.vercel.app/`
-                    );
-                }
-                if (response.status === 429) {
-                    logger.warn(`[SupraWall] Rate limit exceeded for tool '${toolName}'.`);
-                    return "ERROR: SupraWall rate limit exceeded. Try again shortly.";
-                }
-                if (response.status === 403) {
-                    logger.warn(`[SupraWall] Tool '${toolName}' blocked by policy (HTTP 403).`);
-                    return "ERROR: Action blocked by SupraWall security policy.";
-                }
-                throw new Error(`[SupraWall] Server error ${response.status}`);
-            }
-
-            const data = (await response.json()) as SupraWallResponse;
-
-            switch (data.decision) {
-                case "ALLOW":
-                    return await originalExecuteTool(toolName, args);
-
-                case "DENY":
-                    logger.warn(
-                        `[SupraWall] DENIED '${toolName}'. ${data.reason ? `Reason: ${data.reason}` : ""}`
-                    );
-                    return `ERROR: Action blocked by SupraWall. ${data.reason ?? ""}`.trim();
-
-                case "REQUIRE_APPROVAL":
-                    logger.warn(
-                        `[SupraWall] PAUSED '${toolName}'. Human approval required.`
-                    );
-                    return "ACTION PAUSED: This action requires human approval. Check your SupraWall dashboard at https://supra-wall-rho.vercel.app/";
-
-                default:
-                    logger.error("[SupraWall] Unknown decision in response:", data);
-                    return "ERROR: Unknown SupraWall decision.";
-            }
-        } catch (e: any) {
-            // Re-throw hard errors (bad API key, etc.) — don't silently swallow them
-            if (e instanceof Error && e.message.startsWith("[SupraWall]")) {
-                throw e;
-            }
-            logger.error("[SupraWall] Network error reaching control plane.", e);
-            if (onNetworkError === "fail-closed") {
-                return "ERROR: SupraWall unreachable. Action blocked (fail-closed mode).";
-            }
-            logger.warn("[SupraWall] Proceeding without policy check (fail-open mode). Set onNetworkError: 'fail-closed' in production.");
+        if (result.decision === "ALLOW") {
             return await originalExecuteTool(toolName, args);
         }
+
+        logger.warn(`[SupraWall] ${result.decision}: ${result.reason ?? ""}`);
+        return `ERROR: ${result.reason ?? "Action blocked by SupraWall."}`;
     };
 
     return agentInstance;
@@ -280,117 +347,27 @@ export function withSupraWall<T extends AgentInstance>(
 
 /**
  * MCP-native middleware for Model Context Protocol servers.
- *
- * @example
- * import { createSupraWallMiddleware } from "suprawall";
- *
- * const gate = createSupraWallMiddleware({ apiKey: "ag_your_key" });
- *
- * // In your MCP tool handler:
- * server.setRequestHandler(CallToolRequestSchema, async (req) => {
- *   return gate(req.params.name, req.params.arguments, () => myToolHandler(req));
- * });
  */
-const {
-    apiKey,
-    cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL,
-    onNetworkError = "fail-open",
-    logger = console,
-    maxCostUsd,
-    budgetAlertUsd,
-    sessionId: optSessionId,
-    maxIterations,
-    loopDetection = false,
-    loopThreshold = 3,
-} = options;
+export function createSupraWallMiddleware(options: SupraWallOptions) {
+    const {
+        apiKey,
+        logger = console,
+    } = options;
 
-const sessionId = optSessionId ?? apiKey;
+    return async function agentGateMiddleware(
+        toolName: string,
+        args: any,
+        next: () => Promise<any>
+    ): Promise<any> {
+        const result = await internalEvaluate(toolName, args, options);
 
-return async function agentGateMiddleware(
-    toolName: string,
-    args: any,
-    next: () => Promise<any>
-): Promise<any> {
-    // --- 1. Budget Check (Fast-Reject) ---
-    if (maxCostUsd !== undefined) {
-        const current = _sessionCosts.get(sessionId) ?? 0;
-        if (budgetAlertUsd && current >= budgetAlertUsd) {
-            logger.warn(`[SupraWall] 💰 Budget alert: ${formatCost(current)} used for session ${sessionId}`);
-        }
-        if (current >= maxCostUsd) {
-            return {
-                error: `Budget cap reached: ${formatCost(current)} >= ${formatCost(maxCostUsd)}. Agent stopped.`
-            };
-        }
-    }
+        if (result.decision === "ALLOW") return await next();
 
-    // --- 2. Iteration Limit ---
-    if (maxIterations !== undefined) {
-        const iterations = (_sessionIterations.get(sessionId) ?? 0) + 1;
-        _sessionIterations.set(sessionId, iterations);
-        if (iterations > maxIterations) {
-            return { error: `Circuit breaker: Exceeded maximum tool iterations (${maxIterations}).` };
-        }
-    }
-
-    // --- 3. Loop Detection ---
-    if (loopDetection) {
-        const callSig = `${toolName}:${JSON.stringify(args, Object.keys(args).sort())}`;
-        const history = _sessionCallHistory.get(sessionId) ?? [];
-        history.push(callSig);
-        _sessionCallHistory.set(sessionId, history);
-
-        const recent = history.slice(-loopThreshold);
-        if (recent.length === loopThreshold && new Set(recent).size === 1) {
-            return { error: `Loop detected: Tool '${toolName}' called ${loopThreshold}x consecutively with identical args.` };
-        }
-    }
-
-    try {
-        const response = await fetch(cloudFunctionUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-SupraWall-SDK": `js-${SDK_VERSION}`,
-            },
-            body: JSON.stringify({ apiKey, toolName, args, sessionId }),
-        });
-
-        if (!response.ok) {
-            if (response.status === 403) {
-                return { error: "Action blocked by SupraWall security policy." };
-            }
-            throw new Error(`SupraWall server error: ${response.status}`);
-        }
-
-        const data = (await response.json()) as SupraWallResponse & { estimated_cost_usd?: number };
-
-        // Record cost if provided by server
-        if (data.estimated_cost_usd !== undefined) {
-            const current = _sessionCosts.get(sessionId) ?? 0;
-            _sessionCosts.set(sessionId, current + data.estimated_cost_usd);
-        }
-
-        if (data.decision === "ALLOW") return await next();
-        if (data.decision === "DENY") {
-            logger.warn(`[SupraWall] MCP tool '${toolName}' denied. ${data.reason ?? ""}`);
-            return { error: `Blocked by SupraWall. ${data.reason ?? ""}`.trim() };
-        }
-        if (data.decision === "REQUIRE_APPROVAL") {
-            return { error: "Human approval required. Check https://supra-wall-rho.vercel.app/" };
-        }
-    } catch (e) {
-        logger.error("[SupraWall] Middleware error.", e);
-        if (onNetworkError === "fail-closed") {
-            return { error: "SupraWall unreachable. Action blocked." };
-        }
-        return await next();
-    }
-};
+        return {
+            error: `Blocked by SupraWall. ${result.reason ?? ""}`.trim()
+        };
+    };
 }
-
-// Backwards compatibility alias for anyone using the old name
-export { withSupraWall as withSupraWall };
 
 /**
  * Automatically detects and protects any AI agent framework.
@@ -441,25 +418,13 @@ function wrapOpenClaw(agent: any, options: SupraWallOptions) {
     const { apiKey, cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL } = options;
 
     const interceptAction = async (toolName: string, args: any, originalFn: Function) => {
-        const response = await fetch(cloudFunctionUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-SupraWall-SDK": `js-claw-${SDK_VERSION}`,
-            },
-            body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole }),
-        });
+        const result = await internalEvaluate(toolName, args, options);
 
-        if (response.ok) {
-            const data = (await response.json()) as SupraWallResponse;
-            if (data.decision === "DENY") {
-                throw new Error(`[SupraWall] Policy Denied: ${toolName}. ${data.reason ?? ""}`);
-            }
-            if (data.decision === "REQUIRE_APPROVAL") {
-                throw new Error(`[SupraWall] Action '${toolName}' requires human approval.`);
-            }
-        } else if (options.onNetworkError === "fail-closed") {
-            throw new Error("[SupraWall] Security check failed: network error (fail-closed).");
+        if (result.decision === "DENY") {
+            throw new Error(`[SupraWall] Policy Denied: ${toolName}. ${result.reason ?? ""}`);
+        }
+        if (result.decision === "REQUIRE_APPROVAL") {
+            throw new Error(`[SupraWall] Action '${toolName}' requires human approval.`);
         }
 
         return await originalFn();
@@ -493,25 +458,13 @@ function wrapVercelTools(tools: Record<string, any>, options: SupraWallOptions) 
         securedTools[toolName] = {
             ...tool,
             execute: async (args: any, ...rest: any[]) => {
-                const response = await fetch(cloudFunctionUrl, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-SupraWall-SDK": `js-vercel-${SDK_VERSION}`,
-                    },
-                    body: JSON.stringify({ apiKey, toolName, args, sessionId: options.sessionId, agentRole: options.agentRole })
-                });
+                const result = await internalEvaluate(toolName, args, options);
 
-                if (response.ok) {
-                    const data = await response.json() as SupraWallResponse;
-                    if (data.decision === "DENY") {
-                        throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' is denied. ${data.reason ?? ""}`);
-                    }
-                    if (data.decision === "REQUIRE_APPROVAL") {
-                        throw new Error(`[SupraWall] Tool '${toolName}' requires human approval.`);
-                    }
-                } else if (options.onNetworkError === "fail-closed") {
-                    throw new Error("[SupraWall] Network error, failing closed.");
+                if (result.decision === "DENY") {
+                    throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' is denied. ${result.reason ?? ""}`);
+                }
+                if (result.decision === "REQUIRE_APPROVAL") {
+                    throw new Error(`[SupraWall] Tool '${toolName}' requires human approval.`);
                 }
 
                 return tool.execute ? tool.execute(args, ...rest) : undefined;
@@ -526,28 +479,10 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
         name: "SupraWallCallbackHandler",
         handleToolStart: async (tool: any, input: string) => {
             const toolName = tool.name || "unknown";
-            const res = await fetch(options.cloudFunctionUrl || DEFAULT_CLOUD_FUNCTION_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-SupraWall-SDK": `js-lc-${SDK_VERSION}`,
-                },
-                body: JSON.stringify({
-                    apiKey: options.apiKey,
-                    toolName,
-                    args: input,
-                    sessionId: options.sessionId,
-                    agentRole: options.agentRole
-                })
-            });
+            const result = await internalEvaluate(toolName, input, options);
 
-            if (res.ok) {
-                const data = await res.json() as SupraWallResponse;
-                if (data.decision === "DENY") throw new Error(`[SupraWall] Denied: ${data.reason ?? ""}`);
-                if (data.decision === "REQUIRE_APPROVAL") throw new Error(`[SupraWall] Approval Required.`);
-            } else if (options.onNetworkError === "fail-closed") {
-                throw new Error("[SupraWall] Unreachable, failing closed.");
-            }
+            if (result.decision === "DENY") throw new Error(`[SupraWall] Denied: ${result.reason ?? ""}`);
+            if (result.decision === "REQUIRE_APPROVAL") throw new Error(`[SupraWall] Approval Required.`);
         }
     };
 
@@ -564,4 +499,3 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
     return runnable;
 }
 
-export type { SupraWallOptions as SupraWallOptions };

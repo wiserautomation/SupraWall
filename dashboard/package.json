@@ -11,6 +11,7 @@
   "dependencies": {
     "@google/genai": "^1.42.0",
     "@next/third-parties": "^16.1.6",
+    "@supabase/supabase-js": "^2.98.0",
     "@suprawall/core": "file:../suprawall-core/suprawall-core-1.0.0.tgz",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -27,6 +28,7 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-firebase-hooks": "^5.1.1",
+    "react-markdown": "^10.1.0",
     "react-remove-scroll": "^2.7.2",
     "recharts": "^3.7.0",
     "stripe": "^20.4.0",

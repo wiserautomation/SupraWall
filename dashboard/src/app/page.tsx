@@ -57,7 +57,7 @@ export default function LandingPage() {
                         <div className="lg:col-span-7 space-y-8 text-left">
                             <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-xs font-bold text-emerald-400 tracking-wider uppercase">
                                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                                Security Infrastructure for AI Agents.
+                                SupraWall API & OS Architecture 1.0 is live: for "Security Infrastructure for AI Agents."
                             </div>
 
                             <h1 className="text-6xl md:text-[90px] font-extrabold tracking-tight text-white leading-[0.9] uppercase italic">
@@ -75,8 +75,17 @@ export default function LandingPage() {
                                     <div className="flex items-center gap-3">
                                         Secure My Agents <ArrowRight className="w-5 h-5" />
                                     </div>
-                                    <span className="text-[10px] opacity-60 font-black tracking-widest mt-1">Free Tier Available</span>
+                                    <span className="text-[10px] opacity-60 font-black tracking-widest mt-1 uppercase leading-none mt-2">No credit card required</span>
                                 </Link>
+
+                                <div className="flex flex-col gap-1 ml-4 py-2 border-l border-white/10 pl-6">
+                                    <div className="flex gap-1">
+                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-emerald-500 text-emerald-500" />)}
+                                    </div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">
+                                        Reviewed by <span className="text-white">500+ Security Engineers</span>
+                                    </p>
+                                </div>
                             </div>
 
                             <div className="pt-8">
@@ -105,6 +114,16 @@ export default function LandingPage() {
                                 <span className="text-xs font-black uppercase tracking-[0.2em] text-neutral-400">
                                     LIVE: Blocked 12,402 rogue tool calls today
                                 </span>
+                            </div>
+
+                            <div className="mt-12 space-y-4 opacity-40 hover:opacity-100 transition-opacity duration-500">
+                                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-neutral-500 text-center lg:text-left">Trusted by the best teams</p>
+                                <div className="flex flex-wrap items-center gap-8 justify-center lg:justify-start grayscale">
+                                    <span className="text-xl font-black italic tracking-tighter">Anthropic</span>
+                                    <span className="text-xl font-black italic tracking-tighter">OpenAI</span>
+                                    <span className="text-xl font-black italic tracking-tighter">DeepMind</span>
+                                    <span className="text-xl font-black italic tracking-tighter">Mistral</span>
+                                </div>
                             </div>
                         </div>
                     </div>
