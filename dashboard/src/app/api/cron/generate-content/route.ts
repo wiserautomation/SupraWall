@@ -239,7 +239,7 @@ Target keyword: "${queueItem.primaryKeyword}"
 Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', ')}`;
 
         const aiResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.0-flash',
             contents: queueItem.prompt,
             config: {
                 systemInstruction: systemPrompt,
