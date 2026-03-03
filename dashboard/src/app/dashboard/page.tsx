@@ -10,8 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign } from "lucide-react";
+import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import Link from "next/link";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { motion } from "framer-motion";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
@@ -27,6 +29,8 @@ export default function AgentsPage() {
     const [copiedCurl, setCopiedCurl] = useState(false);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [newAgentName, setNewAgentName] = useState("");
+    const [selectedScopes, setSelectedScopes] = useState<string[]>([]);
+    const [customScope, setCustomScope] = useState("");
     const [nameError, setNameError] = useState("");
     const [stats, setStats] = useState({
         totalCalls: 0,
@@ -35,6 +39,8 @@ export default function AgentsPage() {
         costSaved: 0
     });
     const [chartData, setChartData] = useState<any[]>([]);
+    const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
+
 
     useEffect(() => {
         if (!user) {
@@ -104,7 +110,20 @@ export default function AgentsPage() {
             setLoading(false);
         });
 
-        return () => unsubscribe();
+        // Fetch pending approvals count
+        const qApprovals = query(
+            collection(db, "approvalRequests"),
+            where("userId", "==", user.uid),
+            where("status", "==", "pending")
+        );
+        const unsubscribeApprovals = onSnapshot(qApprovals, (snap) => {
+            setPendingApprovalsCount(snap.size);
+        });
+
+        return () => {
+            unsubscribe();
+            unsubscribeApprovals();
+        }
     }, [user]);
 
     const generateApiKey = () => {
@@ -130,11 +149,14 @@ export default function AgentsPage() {
                 userId: user.uid,
                 name: trimmedName,
                 apiKey: generateApiKey(),
+                scopes: selectedScopes.length > 0 ? selectedScopes : undefined,
+                status: 'active',
             };
 
             // Replaced generic Firebase addDoc with our database-agnostic suprawall core SDK
             await suprawall.agents.create(newAgent);
             setNewAgentName("");
+            setSelectedScopes([]);
             setIsCreateModalOpen(false);
             sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
             // No need to fetchAgents() manually because onSnapshot handles it instantly!
@@ -218,7 +240,7 @@ agent.invoke({"messages": [...]})`;
                     { label: "Actual Spend", value: `$${stats.actualSpend.toFixed(2)}`, icon: <Coins className="w-5 h-5 text-amber-400" />, sub: "current month" },
                     { label: "Cost Saved", value: `$${stats.costSaved.toFixed(2)}`, icon: <DollarSign className="w-5 h-5 text-emerald-400" />, sub: "by policy blocks" },
                     { label: "Blocked Actions", value: stats.blockedActions, icon: <ShieldAlert className="w-5 h-5 text-red-500" />, sub: "dangerous/unwanted" },
-                    { label: "Total Resilience", value: "99.9%", icon: <Activity className="w-5 h-5 text-blue-400" />, sub: "policy uptime" }
+                    { label: "Human Approvals", value: pendingApprovalsCount, icon: <UserCheck className="w-5 h-5 text-blue-400" />, sub: "needs intervention", href: "/approvals" }
                 ].map((item, i) => (
                     <motion.div
                         key={i}
@@ -227,17 +249,40 @@ agent.invoke({"messages": [...]})`;
                         transition={{ delay: i * 0.1 }}
                         className="bg-black/40 backdrop-blur-xl border border-white/[0.05] p-6 rounded-2xl relative group overflow-hidden"
                     >
-                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-30" />
-                        <div className="flex items-center gap-4">
-                            <div className="p-3 bg-white/[0.03] rounded-xl border border-white/[0.05]">
-                                {item.icon}
-                            </div>
-                            <div>
-                                <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">{item.label}</p>
-                                <p className="text-2xl font-bold text-white mt-1">{item.value}</p>
-                                <p className="text-xs text-neutral-600 mt-1">{item.sub}</p>
-                            </div>
-                        </div>
+                        {item.href ? (
+                            <Link href={item.href}>
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-white/[0.03] rounded-xl border border-white/[0.05] group-hover:border-blue-500/50 transition-colors">
+                                        {item.icon}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">{item.label}</p>
+                                        <p className="text-2xl font-bold text-white mt-1 flex items-center gap-2">
+                                            {item.value}
+                                            {typeof item.value === 'number' && item.value > 0 && (
+                                                <span className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                                            )}
+                                        </p>
+                                        <p className="text-xs text-neutral-600 mt-1">{item.sub}</p>
+                                    </div>
+                                </div>
+                            </Link>
+                        ) : (
+                            <>
+                                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-30" />
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 bg-white/[0.03] rounded-xl border border-white/[0.05]">
+                                        {item.icon}
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider">{item.label}</p>
+                                        <p className="text-2xl font-bold text-white mt-1">{item.value}</p>
+                                        <p className="text-xs text-neutral-600 mt-1">{item.sub}</p>
+                                    </div>
+                                </div>
+                            </>
+                        )}
                     </motion.div>
                 ))}
             </div>
@@ -371,7 +416,8 @@ agent.invoke({"messages": [...]})`;
                                 <TableRow className="border-white/[0.05] hover:bg-transparent">
                                     <TableHead className="text-neutral-400 font-medium py-4 px-6">Name</TableHead>
                                     <TableHead className="text-neutral-400 font-medium py-4 px-6">API Key</TableHead>
-                                    <TableHead className="text-neutral-400 font-medium py-4 px-6">ID</TableHead>
+                                    <TableHead className="text-neutral-400 font-medium py-4 px-6">Scopes</TableHead>
+                                    <TableHead className="text-neutral-400 font-medium py-4 px-6">Status</TableHead>
                                     <TableHead className="text-neutral-400 font-medium py-4 px-6 text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
@@ -387,8 +433,30 @@ agent.invoke({"messages": [...]})`;
                                         <TableCell className="font-mono text-sm text-emerald-400 break-all px-6 py-4 group-hover/row:text-emerald-300 transition-colors">
                                             <span className="bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{agent.apiKey}</span>
                                         </TableCell>
-                                        <TableCell className="text-neutral-500 text-xs font-mono px-6 py-4">
-                                            {agent.id}
+                                        <TableCell className="px-6 py-4">
+                                            <div className="flex flex-wrap gap-1">
+                                                {agent.scopes && agent.scopes.length > 0 ? (
+                                                    agent.scopes.slice(0, 3).map((scope, i) => (
+                                                        <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                                            <Lock className="w-2.5 h-2.5" />{scope}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-xs text-neutral-600 italic">No scopes (full access)</span>
+                                                )}
+                                                {agent.scopes && agent.scopes.length > 3 && (
+                                                    <span className="text-[10px] text-neutral-500">+{agent.scopes.length - 3} more</span>
+                                                )}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell className="px-6 py-4">
+                                            <span className={`px-2 py-1 rounded text-xs font-semibold border ${agent.status === 'active' ? 'bg-green-500/10 text-green-400 border-green-500/20' :
+                                                agent.status === 'suspended' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' :
+                                                    agent.status === 'revoked' ? 'bg-red-500/10 text-red-400 border-red-500/20' :
+                                                        'bg-green-500/10 text-green-400 border-green-500/20'
+                                                }`}>
+                                                {agent.status || 'active'}
+                                            </span>
                                         </TableCell>
                                         <TableCell className="px-6 py-4 text-right">
                                             <Button
@@ -415,6 +483,8 @@ agent.invoke({"messages": [...]})`;
                 if (!open) {
                     setNewAgentName("");
                     setNameError("");
+                    setSelectedScopes([]);
+                    setCustomScope("");
                 }
             }}>
                 <DialogContent className="sm:max-w-md bg-neutral-900 border-neutral-800 text-white">
@@ -424,7 +494,7 @@ agent.invoke({"messages": [...]})`;
                             Give your AI agent a name to generate a unique API key.
                         </DialogDescription>
                     </DialogHeader>
-                    <div className="space-y-4 py-4">
+                    <div className="space-y-5 py-4">
                         <div className="space-y-2">
                             <label htmlFor="name" className="text-sm font-medium text-neutral-300">
                                 Agent Name
@@ -445,6 +515,110 @@ agent.invoke({"messages": [...]})`;
                             />
                             {nameError && (
                                 <p className="text-red-400 text-xs mt-1.5 font-medium">{nameError}</p>
+                            )}
+                        </div>
+
+                        {/* Scope Selection */}
+                        <div className="space-y-3">
+                            <div className="flex items-center gap-2">
+                                <Shield className="w-4 h-4 text-blue-400" />
+                                <label className="text-sm font-medium text-neutral-300">Agent Scopes</label>
+                                <span className="text-[10px] text-neutral-500 bg-neutral-800 px-2 py-0.5 rounded-full">optional</span>
+                            </div>
+                            <p className="text-xs text-neutral-500">Restrict what this agent can access. Leave empty for full access.</p>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { scope: 'crm:read', label: 'CRM Read' },
+                                    { scope: 'crm:write', label: 'CRM Write' },
+                                    { scope: 'email:send', label: 'Email Send' },
+                                    { scope: 'email:read', label: 'Email Read' },
+                                    { scope: 'database:read', label: 'Database Read' },
+                                    { scope: 'database:write', label: 'Database Write' },
+                                    { scope: 'files:read', label: 'Files Read' },
+                                    { scope: 'files:write', label: 'Files Write' },
+                                    { scope: 'browser:navigate', label: 'Browser Navigate' },
+                                    { scope: 'api:call', label: 'API Call' },
+                                ].map(({ scope, label }) => (
+                                    <label
+                                        key={scope}
+                                        className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-xs ${selectedScopes.includes(scope)
+                                            ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
+                                            : 'bg-neutral-800/50 border-neutral-700/50 text-neutral-400 hover:border-neutral-600'
+                                            }`}
+                                    >
+                                        <input
+                                            type="checkbox"
+                                            checked={selectedScopes.includes(scope)}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedScopes([...selectedScopes, scope]);
+                                                } else {
+                                                    setSelectedScopes(selectedScopes.filter(s => s !== scope));
+                                                }
+                                            }}
+                                            className="sr-only"
+                                        />
+                                        <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${selectedScopes.includes(scope)
+                                            ? 'bg-blue-500 border-blue-400'
+                                            : 'border-neutral-600'
+                                            }`}>
+                                            {selectedScopes.includes(scope) && <Check className="w-2.5 h-2.5 text-white" />}
+                                        </div>
+                                        <span className="font-mono">{label}</span>
+                                    </label>
+                                ))}
+                            </div>
+
+                            {/* Custom scope input */}
+                            <div className="flex gap-2">
+                                <input
+                                    value={customScope}
+                                    onChange={(e) => setCustomScope(e.target.value)}
+                                    placeholder="custom:scope"
+                                    className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-1.5 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && customScope.includes(':')) {
+                                            e.preventDefault();
+                                            if (!selectedScopes.includes(customScope)) {
+                                                setSelectedScopes([...selectedScopes, customScope]);
+                                            }
+                                            setCustomScope('');
+                                        }
+                                    }}
+                                />
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    disabled={!customScope.includes(':')}
+                                    onClick={() => {
+                                        if (customScope.includes(':') && !selectedScopes.includes(customScope)) {
+                                            setSelectedScopes([...selectedScopes, customScope]);
+                                            setCustomScope('');
+                                        }
+                                    }}
+                                    className="bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700 text-xs"
+                                >
+                                    Add
+                                </Button>
+                            </div>
+
+                            {/* Selected scopes pills */}
+                            {selectedScopes.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 pt-1">
+                                    {selectedScopes.map(scope => (
+                                        <span key={scope} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                            <Lock className="w-2.5 h-2.5" />
+                                            {scope}
+                                            <button
+                                                onClick={() => setSelectedScopes(selectedScopes.filter(s => s !== scope))}
+                                                className="ml-0.5 hover:text-red-400 transition-colors"
+                                            >
+                                                <X className="w-2.5 h-2.5" />
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </div>

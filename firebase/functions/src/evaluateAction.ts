@@ -2,6 +2,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { GoogleGenAI } from "@google/genai";
+import * as crypto from "crypto";
 
 if (!admin.apps.length) {
     admin.initializeApp();
@@ -160,6 +161,83 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
             const userId = agentDoc.data().userId;
+            const agentData = agentDoc.data();
+
+            // ── 1.5 Agent Status Check ──
+            if (agentData.status && agentData.status !== 'active') {
+                await logAudit(agentId, toolName, argsString, "DENY", 0, `Agent is ${agentData.status}`, sessionId, agentRole);
+                res.status(403).json({ decision: "DENY", reason: `Agent is ${agentData.status}. Contact your administrator.` });
+                return;
+            }
+
+            // ── 1.6 Scope Enforcement (Principle of Least Privilege) ──
+            const agentScopes: string[] | undefined = agentData.scopes;
+            if (agentScopes && agentScopes.length > 0) {
+                const hasScope = agentScopes.some(scope => {
+                    if (scope === '*:*') return true; // wildcard: all access
+                    const [ns, action] = scope.split(':');
+                    if (action === '*') {
+                        // namespace wildcard: e.g. "crm:*" matches "crm:read", "crm:write"
+                        return toolName.startsWith(ns + ':') || toolName.startsWith(ns + '_');
+                    }
+                    // exact match or prefix match (e.g., scope "email:send" matches tool "email:send" or "email_send")
+                    return toolName === scope || toolName === `${ns}_${action}`;
+                });
+
+                if (!hasScope) {
+                    const reason = `Agent lacks scope for tool '${toolName}'. Granted scopes: [${agentScopes.join(', ')}]`;
+                    await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                    res.status(403).json({ decision: "DENY", reason });
+                    return;
+                }
+            }
+
+            // ── 1.7 Scope Limits Enforcement (Per-Scope Rate Limiting) ──
+            const scopeLimits: Record<string, any> | undefined = agentData.scopeLimits;
+            if (scopeLimits) {
+                // Find the matching scope limit for this tool
+                const matchingLimit = Object.entries(scopeLimits).find(([scopeKey]) => {
+                    if (scopeKey === '*:*') return true;
+                    const [ns, action] = scopeKey.split(':');
+                    if (action === '*') {
+                        return toolName.startsWith(ns + ':') || toolName.startsWith(ns + '_');
+                    }
+                    return toolName === scopeKey || toolName === `${ns}_${action}`;
+                });
+
+                if (matchingLimit) {
+                    const [scopeKey, limits] = matchingLimit;
+
+                    // Check each time-window limit
+                    const timeWindows: Array<{ key: string; label: string; ms: number }> = [
+                        { key: 'max_per_minute', label: 'minute', ms: 60 * 1000 },
+                        { key: 'max_per_hour', label: 'hour', ms: 60 * 60 * 1000 },
+                        { key: 'max_per_day', label: 'day', ms: 24 * 60 * 60 * 1000 },
+                    ];
+
+                    for (const tw of timeWindows) {
+                        const maxCalls = limits[tw.key];
+                        if (maxCalls !== undefined && maxCalls !== null) {
+                            const since = new Date(Date.now() - tw.ms);
+                            const recentCalls = await db.collection("auditLogs")
+                                .where("agentId", "==", agentId)
+                                .where("toolName", "==", toolName)
+                                .where("decision", "==", "ALLOW")
+                                .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since))
+                                .count()
+                                .get();
+
+                            const count = recentCalls.data().count;
+                            if (count >= maxCalls) {
+                                const reason = `Scope limit exceeded for '${scopeKey}': ${count}/${maxCalls} calls per ${tw.label}. Try again later.`;
+                                await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                                res.status(429).json({ decision: "DENY", reason });
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
 
             // 2. Query policies for this agent and toolName
             const policiesSnapshot = await db.collection("policies")
@@ -184,10 +262,46 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 }
             }
 
-            // 4. Log the audit event
+            // 4. Cost estimation (moved up)
             const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
 
-            // 5. Update usage counters (non-blocking)
+            // ── 5. Handle Approval Flow ──
+            if (finalDecision === "REQUIRE_APPROVAL") {
+                // Check if an identical pending request already exists for this agent
+                const existingReq = await db.collection("approvalRequests")
+                    .where("agentId", "==", agentId)
+                    .where("toolName", "==", toolName)
+                    .where("arguments", "==", argsString)
+                    .where("status", "==", "pending")
+                    .limit(1)
+                    .get();
+
+                let requestId: string;
+                if (!existingReq.empty) {
+                    requestId = existingReq.docs[0].id;
+                } else {
+                    const newReq = await db.collection("approvalRequests").add({
+                        userId, // shared with the organization owner
+                        agentId,
+                        agentName: agentData.name || "Unknown Agent",
+                        toolName,
+                        arguments: argsString,
+                        sessionId,
+                        agentRole,
+                        status: "pending",
+                        createdAt: FieldValue.serverTimestamp(),
+                        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 24 * 60 * 60 * 1000)), // 24h
+                        estimatedCostUsd: estimatedCost
+                    });
+                    requestId = newReq.id;
+                }
+
+                await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole);
+                res.json({ decision: "REQUIRE_APPROVAL", reason: "This action requires human approval.", requestId });
+                return;
+            }
+
+            // 6. Update usage counters (non-blocking)
             const updates: Promise<any>[] = [
                 logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient)
             ];
@@ -213,10 +327,10 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
 
             // 6. Return the decision
-            res.status(200).json({ 
-                decision: finalDecision, 
+            res.status(200).json({
+                decision: finalDecision,
                 estimated_cost_usd: estimatedCost,
-                is_loop: isLoopDetectedByClient 
+                is_loop: isLoopDetectedByClient
             });
             return;
         }
@@ -318,9 +432,98 @@ function sanitizeArgs(args: any): any {
     return sanitized;
 }
 
+// ── Forensic Risk Scoring ───────────────────────────────────────────────
+const HIGH_RISK_TOOLS = ['delete', 'drop', 'remove', 'destroy', 'execute', 'eval', 'exec', 'sudo', 'admin', 'transfer', 'payment', 'withdraw'];
+const SENSITIVE_ARG_PATTERNS = [/password/i, /secret/i, /token/i, /api.?key/i, /authorization/i, /credit.?card/i, /ssn/i, /\broot\b/i, /\/etc\//i];
+
+function computeRiskScore(toolName: string, args: string, decision: string, costUsd: number, isLoop: boolean): { score: number; factors: string[] } {
+    let score = 0;
+    const factors: string[] = [];
+
+    // Tool name sensitivity
+    const toolLower = toolName.toLowerCase();
+    if (HIGH_RISK_TOOLS.some(t => toolLower.includes(t))) {
+        score += 35;
+        factors.push(`High-risk tool pattern: '${toolName}'`);
+    }
+
+    // Decision-based risk
+    if (decision === 'DENY') {
+        score += 25;
+        factors.push('Action was denied by policy');
+    } else if (decision === 'PAUSED' || decision === 'REQUIRE_APPROVAL') {
+        score += 15;
+        factors.push('Action required human approval');
+    }
+
+    // Cost-based risk
+    if (costUsd > 0.10) {
+        score += 15;
+        factors.push(`High estimated cost: $${costUsd.toFixed(4)}`);
+    } else if (costUsd > 0.01) {
+        score += 5;
+        factors.push(`Moderate cost: $${costUsd.toFixed(4)}`);
+    }
+
+    // Argument sensitivity scan
+    for (const pattern of SENSITIVE_ARG_PATTERNS) {
+        if (pattern.test(args)) {
+            score += 10;
+            factors.push(`Sensitive data pattern detected in arguments`);
+            break; // only count once
+        }
+    }
+
+    // Loop detection
+    if (isLoop) {
+        score += 20;
+        factors.push('Detected as part of a loop pattern');
+    }
+
+    // Payload size risk
+    if (args.length > 5000) {
+        score += 5;
+        factors.push(`Large payload: ${args.length} chars`);
+    }
+
+    return { score: Math.min(score, 100), factors };
+}
+
+// ── Forensic Audit Logger (Tamper-Proof Hash Chain) ─────────────────────
+let _lastHash: string = 'GENESIS'; // In-memory cache of last hash for chain linking
+let _sequenceCounter: number = 0;
+
 async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null, isLoop: boolean = false) {
     try {
-        await db.collection("audit_logs").add({
+        // 1. Compute risk score
+        const { score: riskScore, factors: riskFactors } = computeRiskScore(toolName, args, decision, costUsd, isLoop);
+
+        // 2. Get previous hash for chain integrity
+        // Fetch the latest log to get its hash (or use in-memory cache for perf)
+        if (_lastHash === 'GENESIS') {
+            const lastLogSnap = await db.collection("auditLogs")
+                .orderBy("sequenceNumber", "desc")
+                .limit(1)
+                .get();
+            if (!lastLogSnap.empty) {
+                _lastHash = lastLogSnap.docs[0].data().integrityHash || 'GENESIS';
+                _sequenceCounter = (lastLogSnap.docs[0].data().sequenceNumber || 0);
+            }
+        }
+        _sequenceCounter++;
+
+        // 3. Build the canonical payload for hashing
+        const canonicalPayload = JSON.stringify({
+            seq: _sequenceCounter,
+            prev: _lastHash,
+            agentId, toolName, args, decision, reason, sessionId, agentRole, costUsd, isLoop, riskScore
+        });
+
+        // 4. Compute SHA-256 integrity hash
+        const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
+
+        // 5. Write the forensic log entry
+        await db.collection("auditLogs").add({
             agentId,
             toolName,
             arguments: args,
@@ -330,10 +533,20 @@ async function logAudit(agentId: string, toolName: string, args: string, decisio
             agentRole,
             cost_usd: costUsd,
             is_loop: isLoop,
+            // Forensic fields
+            integrityHash,
+            previousHash: _lastHash,
+            sequenceNumber: _sequenceCounter,
+            riskScore,
+            riskFactors,
             timestamp: FieldValue.serverTimestamp()
         });
+
+        // 6. Update chain state
+        _lastHash = integrityHash;
+
     } catch (error) {
-        console.error("Failed to log audit event:", error);
+        console.error("Failed to log forensic audit event:", error);
     }
 }
 

@@ -145,6 +145,10 @@ class SupraWallOptions:
     max_iterations: Optional[int] = None       # Hard stop after N tool calls
     loop_detection: bool = False               # Detect repeated identical calls
     loop_threshold: int = 3                    # Block if same tool called N times consec.
+    # --- Human-in-the-Loop (Phase 3) ---
+    dashboard_api_url: str = "https://supra-wall-rho.vercel.app"
+    approval_timeout: int = 300                 # Max seconds to wait for human
+    approval_poll_interval: int = 2            # Seconds between polls
 
 
 def _check_budget(options: SupraWallOptions) -> Optional[dict]:
@@ -224,6 +228,62 @@ def _record_cost(options: SupraWallOptions, response: dict) -> None:
         )
 
 
+def _poll_approval(request_id: str, options: SupraWallOptions) -> dict:
+    """Blocks and polls the dashboard until a human approves or denies."""
+    import time
+    start_time = time.time()
+    poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
+    log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
+    log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
+
+    while time.time() - start_time < options.approval_timeout:
+        try:
+            with httpx.Client(timeout=5.0) as client:
+                resp = client.get(poll_url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    status = data.get("status")
+                    if status == "approved":
+                        log.info("[SupraWall] ✅ Action APPROVED by human. Resuming...")
+                        return {"decision": "ALLOW"}
+                    if status == "denied":
+                        log.error("[SupraWall] ❌ Action DENIED by human.")
+                        return {"decision": "DENY", "reason": "Explicitly denied by human administrator."}
+        except Exception as e:
+            log.debug(f"[SupraWall] Polling error: {e}")
+        time.sleep(options.approval_poll_interval)
+
+    return {"decision": "DENY", "reason": f"Approval timed out after {options.approval_timeout}s."}
+
+
+async def _poll_approval_async(request_id: str, options: SupraWallOptions) -> dict:
+    """Non-blocking poll of the dashboard until a human approves or denies."""
+    import asyncio, time
+    start_time = time.time()
+    poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
+    log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
+    log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
+
+    while time.time() - start_time < options.approval_timeout:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(poll_url)
+                if resp.status_code == 200:
+                    data = resp.json()
+                    status = data.get("status")
+                    if status == "approved":
+                        log.info("[SupraWall] ✅ Action APPROVED by human. Resuming...")
+                        return {"decision": "ALLOW"}
+                    if status == "denied":
+                        log.error("[SupraWall] ❌ Action DENIED by human.")
+                        return {"decision": "DENY", "reason": "Explicitly denied by human administrator."}
+        except Exception as e:
+            log.debug(f"[SupraWall] Polling error: {e}")
+        await asyncio.sleep(options.approval_poll_interval)
+
+    return {"decision": "DENY", "reason": f"Approval timed out after {options.approval_timeout}s."}
+
+
 def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     """Makes a synchronous policy check call to SupraWall."""
     # ── Safety Checks: Client-side fast-reject ──
@@ -256,7 +316,12 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
     data = resp.json()
-    _record_cost(options, data)  # Accumulate cost for budget tracking
+    _record_cost(options, data)
+
+    # ── Handle Human-in-the-Loop Polling ──
+    if data.get("decision") == "REQUIRE_APPROVAL" and data.get("requestId"):
+        return _poll_approval(data["requestId"], options)
+
     return data
 
 
@@ -292,7 +357,12 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
     data = resp.json()
-    _record_cost(options, data)  # Accumulate cost for budget tracking
+    _record_cost(options, data)
+
+    # ── Handle Human-in-the-Loop Polling ──
+    if data.get("decision") == "REQUIRE_APPROVAL" and data.get("requestId"):
+        return await _poll_approval_async(data["requestId"], options)
+
     return data
 
 

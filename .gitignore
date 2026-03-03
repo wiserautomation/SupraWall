@@ -8,3 +8,5 @@ build/
 .next/
 *~
 .DS_Store
+.vercel
+.env*.local

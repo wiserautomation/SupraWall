@@ -337,7 +337,7 @@ Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', '
 
         return NextResponse.json({
             error: error.message || 'Unknown error',
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            stack: error.stack
         }, { status: 500 });
     }
 }

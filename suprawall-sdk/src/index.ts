@@ -499,3 +499,155 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
     return runnable;
 }
 
+// ---------------------------------------------------------------------------
+// Agent Identity — Scoped credentials for registered agents
+// ---------------------------------------------------------------------------
+
+export interface AgentIdentityConfig {
+    /**
+     * Human-readable agent name. Must be unique per user.
+     * Example: "customer-support-agent"
+     */
+    name: string;
+    /**
+     * The SupraWall API key for the owning organization.
+     * Used to authenticate the registration request.
+     */
+    apiKey: string;
+    /**
+     * Scoped permissions granted to this agent.
+     * Format: "namespace:action"
+     * Examples: "crm:read", "email:send", "database:delete"
+     * Use "namespace:*" for full namespace access or "*:*" for unrestricted.
+     */
+    scopes: string[];
+    /**
+     * Optional per-scope limits (e.g., rate limits, row limits).
+     * Example: { "email:send": { maxPerDay: 100 } }
+     */
+    scopeLimits?: Record<string, any>;
+    /**
+     * Override the registration endpoint URL.
+     * Defaults to the hosted SupraWall API.
+     */
+    registrationUrl?: string;
+}
+
+export interface AgentCredentials {
+    id: string;
+    name: string;
+    apiKey: string;
+    uri: string;
+    scopes: string[];
+    scopeLimits: Record<string, any>;
+    status: string;
+}
+
+/**
+ * Represents a unique AI agent with scoped permissions.
+ *
+ * AgentIdentity enables the Principle of Least Privilege for AI agents.
+ * Register your agent once, receive scoped credentials, and use them
+ * with any SupraWall wrapper (withSupraWall, protect, createSupraWallMiddleware).
+ *
+ * @example
+ * ```ts
+ * import { AgentIdentity } from "@suprawall/sdk";
+ *
+ * const agent = await AgentIdentity.register({
+ *   name: "csv-report-builder",
+ *   apiKey: "ag_your_org_key",
+ *   scopes: ["files:read", "email:send"],
+ *   scopeLimits: { "email:send": { maxPerDay: 50 } }
+ * });
+ *
+ * console.log(agent.credentials.apiKey);  // ag_xxxx (unique per-agent key)
+ * console.log(agent.credentials.uri);     // agent://csv-report-builder@agentgate.com
+ *
+ * // Use the agent's key with protect()
+ * const secured = protect(myAgent, { apiKey: agent.credentials.apiKey });
+ * ```
+ */
+export class AgentIdentity {
+    public readonly credentials: AgentCredentials;
+
+    private constructor(credentials: AgentCredentials) {
+        this.credentials = credentials;
+    }
+
+    /**
+     * Register a new agent with scoped permissions.
+     * Returns an AgentIdentity instance with credential info.
+     */
+    static async register(config: AgentIdentityConfig): Promise<AgentIdentity> {
+        const {
+            name,
+            apiKey,
+            scopes,
+            scopeLimits,
+            registrationUrl = 'https://supra-wall-rho.vercel.app/api/agents/register',
+        } = config;
+
+        if (!name || !apiKey || !scopes || scopes.length === 0) {
+            throw new Error(
+                '[SupraWall] AgentIdentity.register() requires: name, apiKey, and at least one scope.\n' +
+                '  Example: AgentIdentity.register({ name: "my-agent", apiKey: "ag_...", scopes: ["crm:read"] })'
+            );
+        }
+
+        // Decode the userId from the org key
+        // For now, pass it as-is — the server resolves the user from the org key
+        const response = await fetch(registrationUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
+            },
+            body: JSON.stringify({
+                name,
+                userId: apiKey, // the registration endpoint will resolve the actual userId
+                scopes,
+                scopeLimits: scopeLimits || {},
+            }),
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({})) as { error?: string };
+            throw new Error(
+                `[SupraWall] Agent registration failed (${response.status}): ` +
+                `${errorBody.error || response.statusText}`
+            );
+        }
+
+        const data = (await response.json()) as AgentCredentials;
+        return new AgentIdentity(data);
+    }
+
+    /**
+     * Get SupraWallOptions configured for this agent identity.
+     * Merge these into your withSupraWall / protect options.
+     */
+    toOptions(overrides?: Partial<SupraWallOptions>): SupraWallOptions {
+        return {
+            apiKey: this.credentials.apiKey,
+            agentRole: this.credentials.name,
+            ...overrides,
+        };
+    }
+
+    /** Agent URI in the format agent://name@agentgate.com */
+    get uri(): string {
+        return this.credentials.uri;
+    }
+
+    /** The scoped API key for this agent */
+    get apiKey(): string {
+        return this.credentials.apiKey;
+    }
+
+    /** The granted scopes */
+    get scopes(): string[] {
+        return this.credentials.scopes;
+    }
+}
