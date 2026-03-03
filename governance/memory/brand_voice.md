@@ -23,3 +23,25 @@ We don't sell "safety," we sell "governance." We don't "filter outputs," we "int
 ## 5. Sample Conversion
 - **Before**: "SupraWall helps you keep your AI agents safe from bad prompts."
 - **After**: "SupraWall shims the execution boundary to block destructive tool calls at the runtime level."
+
+## 6. CTR OPTIMIZATION RULES
+
+TITLE TAGS:
+- Use the formula for your page type (see formulas above)
+- Primary keyword in first 40 chars
+- Max 60 chars total
+- Include year (2026) where formula allows
+- Never write: "A Guide to..." or "Everything You Need to Know About..."
+
+META DESCRIPTIONS:
+- Open with the outcome, not the topic
+- Include at least one specific technical detail (line count, framework name, time to implement)
+- Max 155 chars
+- Never open with: "In this article", "Learn about", "This page covers"
+- Must answer: "what will I get if I click this?"
+
+SCHEMA:
+- Every page gets TechArticle minimum
+- Integration pages get HowTo
+- Use case + comparison pages get FAQ
+- Validate before marking task complete

@@ -11,8 +11,8 @@ The agents operate using a dual-state system:
 1. **Instruction**: User triggers a batch (e.g., "Run B1").
 2. **Analysis**: Orchestrator reads **Memory** to verify no keyword conflicts or duplicate URLs.
 3. **Execution Chain**:
-   - **Content Writer**: Drafts page based on `brand_voice.md` and `keyword_map.md`.
-   - **Schema Agent**: Generates JSON-LD.
+   - **Content Writer**: Drafts page based on `brand_voice.md` and `keyword_map.md`. MUST adhere to the **CTR OPTIMIZATION RULES** (title tags, meta descriptions formulas).
+   - **Schema Agent**: Generates JSON-LD. MUST integrate specific Schema (TechArticle, HowTo, FAQPage) per CTR Schema rules.
    - **Internal Linker**: Consults links map.
 4. **Draft Submission**:
    - Orchestrator calls `POST /api/tasks` with the full task object.

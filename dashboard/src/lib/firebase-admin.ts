@@ -1,17 +1,25 @@
+
 import admin from 'firebase-admin';
 
 function getFirebaseAdmin() {
     if (!admin.apps.length) {
-        const privateKey = process.env.FIREBASE_PRIVATE_KEY;
-        const formattedKey = privateKey
-            ? privateKey.replace(/\\n/g, '\n').replace(/"/g, '').trim()
-            : undefined;
+        let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+        
+        // Robust formatting for potentially corrupted environment variables
+        const begin = "-----BEGIN PRIVATE KEY-----";
+        const end = "-----END PRIVATE KEY-----";
+        if (privateKey) {
+            let base64 = privateKey.replace(begin, "").replace(end, "");
+            base64 = base64.replace(/[^A-Za-z0-9+/=]/g, ""); // Keep only valid base64
+            const wrapped = base64.match(/.{1,64}/g)?.join('\n') || '';
+            privateKey = `${ begin } \n${ wrapped } \n${ end } \n`;
+        }
 
         admin.initializeApp({
             credential: admin.credential.cert({
                 projectId: process.env.FIREBASE_PROJECT_ID!,
                 clientEmail: process.env.FIREBASE_CLIENT_EMAIL!,
-                privateKey: formattedKey,
+                privateKey: privateKey,
             }),
         });
     }
