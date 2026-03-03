@@ -18,8 +18,8 @@ function getFirebaseAdmin() {
 
         admin.initializeApp({
             credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID?.trim()!,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL?.trim()!,
+                projectId: process.env.FIREBASE_PROJECT_ID?.replace(/\\n/g, '')?.trim()!,
+                clientEmail: process.env.FIREBASE_CLIENT_EMAIL?.replace(/\\n/g, '')?.trim()!,
                 privateKey: privateKey,
             }),
         });
