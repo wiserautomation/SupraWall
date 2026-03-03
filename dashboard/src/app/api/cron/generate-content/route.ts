@@ -189,6 +189,10 @@ export async function GET(request: Request) {
     }
 
     console.log('[CRON] Triggered generate-content');
+    const privateKey = process.env.FIREBASE_PRIVATE_KEY;
+    console.log('[CRON] Private key length:', privateKey?.length);
+    console.log('[CRON] Private key starts with:', privateKey?.substring(0, 20));
+    console.log('[CRON] Private key ends with:', privateKey?.substring((privateKey?.length || 0) - 20));
     const db = getAdminDb();
     console.log('[CRON] Firebase Admin DB initialized');
 
