@@ -188,7 +188,9 @@ export async function GET(request: Request) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    console.log('[CRON] Triggered generate-content');
     const db = getAdminDb();
+    console.log('[CRON] Firebase Admin DB initialized');
 
     try {
         // Step 1: Ensure the content queue is seeded
@@ -210,13 +212,16 @@ export async function GET(request: Request) {
 
         const queueDoc = queueSnapshot.docs[0];
         const queueItem = queueDoc.data() as QueueItem;
+        console.log(`[CRON] Selected item for generation: ${queueItem.urlPath} (Priority ${queueItem.priority})`);
 
         // Step 3: Mark as "generating" to prevent double processing
         await queueDoc.ref.update({ status: 'generating' });
 
         // Step 4: Generate content via Gemini
+        console.log('[CRON] Initializing Gemini AI...');
         const apiKey = process.env.GEMINI_API_KEY;
         if (!apiKey) {
+            console.error('[CRON] Missing GEMINI_API_KEY');
             await queueDoc.ref.update({ status: 'failed' });
             return NextResponse.json({ error: 'Missing GEMINI_API_KEY' }, { status: 500 });
         }
@@ -238,15 +243,18 @@ Write content that is:
 Target keyword: "${queueItem.primaryKeyword}"
 Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', ')}`;
 
+        console.log('[CRON] Calling Gemini generateContent...');
         const aiResponse = await ai.models.generateContent({
-            model: 'gemini-2.0-flash',
+            model: 'gemini-1.5-flash',
             contents: queueItem.prompt,
             config: {
                 systemInstruction: systemPrompt,
                 temperature: 0.7,
-                maxOutputTokens: 8192,
+                maxOutputTokens: 2048, // Reduced for faster generation during testing
             }
         });
+
+        console.log('[CRON] Gemini response received');
 
         const contentDraft = aiResponse.text || '';
 
@@ -297,6 +305,7 @@ Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', '
             taskNumber,
         });
 
+        console.log(`[CRON] Successfully generated task: ${taskNumber}`);
         return NextResponse.json({
             status: 'success',
             taskNumber,
@@ -306,9 +315,25 @@ Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', '
         });
 
     } catch (error: any) {
-        console.error('Cron generate-content error:', error);
+        console.error('[CRON] Error during content generation:', error);
+        console.error('[CRON] Stack:', error.stack);
+
+        // Attempt to mark as failed if we have a doc ref
+        try {
+            const queueSnapshot = await db.collection('content_queue')
+                .where('status', '==', 'generating')
+                .limit(1)
+                .get();
+            if (!queueSnapshot.empty) {
+                await queueSnapshot.docs[0].ref.update({ status: 'failed' });
+            }
+        } catch (e) {
+            console.error('[CRON] Failed to update status to failed:', e);
+        }
+
         return NextResponse.json({
             error: error.message || 'Unknown error',
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
         }, { status: 500 });
     }
 }
