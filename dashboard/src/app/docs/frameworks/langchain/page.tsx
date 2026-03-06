@@ -4,12 +4,12 @@ import Link from "next/link";
 import { ArrowRight, Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LangchainGuide() {
-    const starterCode = `import { SupraWallLangChainCallback, SupraWallOptions } from "suprawall";
+    const starterCode = `import { AgentGateLangChainCallback, AgentGateOptions } from "agentgate";
 import { AgentExecutor } from "langchain/agents";
 
 // 1. Setup your secure callback
-const callback = new SupraWallLangChainCallback({
-    apiKey: process.env.SUPRAWALL_API_KEY
+const callback = new AgentGateLangChainCallback({
+    apiKey: process.env.AGENTGATE_API_KEY
 });
 
 // 2. Attach to your executor
@@ -32,7 +32,7 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
                     LangChain Integration
                 </h1>
                 <p className="text-xl text-neutral-400 max-w-2xl leading-relaxed">
-                    Secure your LangChain runnables and agents effortlessly by attaching the SupraWall callback handler.
+                    Secure your LangChain runnables and agents effortlessly by attaching the AgentGate callback handler.
                 </p>
             </div>
 
@@ -49,12 +49,12 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="npm install suprawall langchain @langchain/core" language="bash" />
+                <CodeBlock code="npm install agentgate langchain @langchain/core" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                <p className="text-neutral-400 text-sm">See how SupraWall dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
+                <p className="text-neutral-400 text-sm">See how AgentGate dynamically governs a LangChain agent below. Change the active policy to test the response.</p>
                 <CodePlayground
                     framework="LangChain"
                     initialCode={starterCode}
@@ -64,13 +64,13 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Python Implementation</h2>
-                <p className="text-neutral-400 text-sm">SupraWall provides a native callback handler for Python LangChain agents as well.</p>
-                <CodeBlock language="python" code={`from suprawall import SupraWallLangChainCallback, SupraWallOptions
+                <p className="text-neutral-400 text-sm">AgentGate provides a native callback handler for Python LangChain agents as well.</p>
+                <CodeBlock language="python" code={`from agentgate import AgentGateLangChainCallback, AgentGateOptions
                 from langchain.agents import AgentExecutor
 
                 # 1. Setup callback
-                callback = SupraWallLangChainCallback(
-                SupraWallOptions(api_key="ag_your_api_key_here")
+                callback = AgentGateLangChainCallback(
+                AgentGateOptions(api_key="ag_your_api_key_here")
                 )
 
                 # 2. Attach to executor

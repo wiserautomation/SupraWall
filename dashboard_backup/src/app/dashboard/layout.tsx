@@ -33,7 +33,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <aside className="w-64 border-r border-neutral-800 bg-neutral-900 flex flex-col">
                 <div className="h-16 flex items-center px-6 border-b border-neutral-800">
                     <Shield className="w-6 h-6 text-indigo-500 mr-3" />
-                    <span className="font-bold text-lg tracking-tight">SupraWall</span>
+                    <span className="font-bold text-lg tracking-tight">agentgate</span>
                 </div>
                 <nav className="flex-1 py-4 flex flex-col gap-1">
                     {navItems.map((item) => {

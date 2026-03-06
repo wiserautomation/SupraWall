@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Security for PydanticAI Agents | SupraWall Guide",
+    title: "Security for PydanticAI Agents | AgentGate Guide",
     description: "Secure PydanticAI agents with runtime tool governance. Prevent rogue tool calls, enforce Pydantic-validated policies, and integrate real-time guardrails.",
     keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai"],
     openGraph: {
-        title: "Securing PydanticAI Agents | The SupraWall Way",
+        title: "Securing PydanticAI Agents | The AgentGate Way",
         description: "Official security layer for PydanticAI. Type-safe runtime governance for production agents.",
     }
 };
@@ -17,11 +17,11 @@ export default function PydanticAIIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "SupraWall for PydanticAI",
+        "name": "AgentGate for PydanticAI",
         "description": "Enterprise-grade runtime security shim for PydanticAI autonomous agents.",
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/pydanticai",
-        "author": { "@type": "Organization", "name": "SupraWall" },
+        "url": "https://www.agentgate.ai/integrations/pydanticai",
+        "author": { "@type": "Organization", "name": "AgentGate" },
         "featureList": [
             "Typed Tool Interception",
             "Real-time Audit Logs",
@@ -53,7 +53,7 @@ export default function PydanticAIIntegrationPage() {
                         <div className="max-w-3xl mx-auto pt-10">
                             <p className="text-xl md:text-2xl text-neutral-300 leading-snug font-medium italic">
                                 PydanticAI security requires type-safe runtime governance that validates agent tool calls against execution boundaries without breaking the developer workflow.
-                                SupraWall shims the execution context of PydanticAI agents to provide real-time interception, enabling teams to enforce security policies and audit autonomous behavior at the runtime level.
+                                AgentGate shims the execution context of PydanticAI agents to provide real-time interception, enabling teams to enforce security policies and audit autonomous behavior at the runtime level.
                             </p>
                         </div>
 
@@ -73,7 +73,7 @@ export default function PydanticAIIntegrationPage() {
                             <p className="text-lg text-neutral-400 leading-relaxed">
                                 PydanticAI is praised for its type safety, but type safety is not execution safety.
                                 A well-typed `delete_user(user_id: str)` call is still destructive if the agent decides to trigger it maliciously or via indirect prompt injection.
-                                SupraWall provides the <strong>governance layer</strong> that sits between PydanticAI's internal tool dispatcher and your environment.
+                                AgentGate provides the <strong>governance layer</strong> that sits between PydanticAI's internal tool dispatcher and your environment.
                             </p>
                         </section>
 
@@ -83,10 +83,10 @@ export default function PydanticAIIntegrationPage() {
                             </h2>
                             <div className="bg-neutral-900 rounded-[2.5rem] p-10 border border-white/5 font-mono text-emerald-400 shadow-2xl">
                                 <p className="mb-4 text-neutral-500"># Install the official integration package</p>
-                                <p className="text-white font-bold mb-6">pip install suprawall-python</p>
+                                <p className="text-white font-bold mb-6">pip install agentgate-python</p>
                                 <p className="text-neutral-500"># Secure your agent executor</p>
                                 <p className="text-emerald-300">from <span className="text-white">pydantic_ai</span> import <span className="text-white">Agent</span></p>
-                                <p className="text-emerald-300">from <span className="text-white">suprawall.pydantic_ai</span> import <span className="text-white">Guard</span></p>
+                                <p className="text-emerald-300">from <span className="text-white">agentgate.pydantic_ai</span> import <span className="text-white">Guard</span></p>
                                 <br />
                                 <p className="text-emerald-300">my_agent = Agent(...)</p>
                                 <p className="text-white font-bold"># Wrap it for runtime interception</p>
@@ -99,14 +99,14 @@ export default function PydanticAIIntegrationPage() {
                                 <Shield className="w-12 h-12 text-emerald-500 mb-6" />
                                 <h3 className="text-xl font-bold uppercase text-white tracking-widest mb-4 italic">Injection Blocking</h3>
                                 <p className="text-sm text-neutral-500 leading-relaxed">
-                                    SupraWall monitors PydanticAI's tool calling patterns specifically looking for indirect prompt injection vectors in RAG-provided data.
+                                    AgentGate monitors PydanticAI's tool calling patterns specifically looking for indirect prompt injection vectors in RAG-provided data.
                                 </p>
                             </div>
                             <div className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 transition-all">
                                 <Box className="w-12 h-12 text-emerald-500 mb-6" />
                                 <h3 className="text-xl font-bold uppercase text-white tracking-widest mb-4 italic">Type-Safe Audits</h3>
                                 <p className="text-sm text-neutral-500 leading-relaxed">
-                                    Because PydanticAI uses strongly-typed models, SupraWall logs audit data with full JSON schema compliance, making it easy to analyze failures.
+                                    Because PydanticAI uses strongly-typed models, AgentGate logs audit data with full JSON schema compliance, making it easy to analyze failures.
                                 </p>
                             </div>
                         </section>
@@ -117,7 +117,7 @@ export default function PydanticAIIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mb-10">
                                 In production, an agent shouldn't be allowed to execute tools like <code className="text-emerald-400">db_execute</code> or <code className="text-emerald-400">send_api_request</code> without a boundary verification.
-                                SupraWall's integration follows the <Link href="/spec" className="text-emerald-400 underline decoration-emerald-500/30">AGPS Spec</Link> to intercept these calls before they hit your infrastructure.
+                                AgentGate's integration follows the <Link href="/spec" className="text-emerald-400 underline decoration-emerald-500/30">AGPS Spec</Link> to intercept these calls before they hit your infrastructure.
                             </p>
 
                             <div className="bg-neutral-900/50 p-12 rounded-[3rem] border border-white/10 space-y-6">

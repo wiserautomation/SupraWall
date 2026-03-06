@@ -7,11 +7,11 @@ import Link from "next/link";
 
 export default function vsGuardrailsAI() {
     const comparisonData = [
-        { feature: "Runtime Interception", supra: true, guard: false, note: "Guardrails AI is mostly validation-focused (pre/post-llm)." },
-        { feature: "Action Blocking", supra: true, guard: false, note: "SupraWall specifically blocks tool/env actions at runtime." },
-        { feature: "Agent Frameworks", supra: "Native", guard: "Wrapper", note: "SupraWall has deep integration with LangChain/CrewAI logic." },
-        { feature: "Managed Hub", supra: true, guard: true, note: "Both have a policy hub, but SupraWall focuses on live enforcement." },
-        { feature: "Audit Rail", supra: "Action-Level", guard: "Content-Level", note: "SupraWall audits exactly what the agent *did* vs what it *said*." }
+        { feature: "Runtime Interception", agentgate: true, guard: false, note: "Guardrails AI is mostly validation-focused (pre/post-llm)." },
+        { feature: "Action Blocking", agentgate: true, guard: false, note: "AgentGate specifically blocks tool/env actions at runtime." },
+        { feature: "Agent Frameworks", agentgate: "Native", guard: "Wrapper", note: "AgentGate has deep integration with LangChain/CrewAI logic." },
+        { feature: "Managed Hub", agentgate: true, guard: true, note: "Both have a policy hub, but AgentGate focuses on live enforcement." },
+        { feature: "Audit Rail", agentgate: "Action-Level", guard: "Content-Level", note: "AgentGate audits exactly what the agent *did* vs what it *said*." }
     ];
 
     return (
@@ -31,7 +31,7 @@ export default function vsGuardrailsAI() {
                             Competitor Analysis
                         </motion.div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none uppercase italic">
-                            SupraWall vs <br />
+                            AgentGate vs <br />
                             <span className="text-neutral-500">Guardrails AI</span>
                         </h1>
                         <p className="text-xl text-neutral-400 max-w-2xl mx-auto font-medium">
@@ -58,7 +58,7 @@ export default function vsGuardrailsAI() {
                         <div className="p-10 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 space-y-8 shadow-[0_0_50px_rgba(16,185,129,0.05)]">
                             <div className="space-y-4">
                                 <h3 className="text-2xl font-black uppercase italic text-white flex items-center gap-3">
-                                    SupraWall <Zap className="w-5 h-5 text-emerald-500 fill-emerald-500" />
+                                    AgentGate <Zap className="w-5 h-5 text-emerald-500 fill-emerald-500" />
                                 </h3>
                                 <p className="text-sm text-neutral-300 leading-relaxed font-medium">
                                     The Agent Runtime Firewall. Focuses on preventing the agent from causing real-world damage. Best for autonomous actors.
@@ -84,7 +84,7 @@ export default function vsGuardrailsAI() {
                                     <tr className="border-b border-white/5 bg-white/[0.02]">
                                         <th className="p-6 font-black uppercase tracking-widest text-neutral-500">Requirement</th>
                                         <th className="p-6 font-black uppercase tracking-widest text-neutral-500">Guardrails AI</th>
-                                        <th className="p-6 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
+                                        <th className="p-6 font-black uppercase tracking-widest text-emerald-500">AgentGate</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -96,8 +96,8 @@ export default function vsGuardrailsAI() {
                                             </td>
                                             <td className="p-6">
                                                 <div className="flex items-center gap-2">
-                                                    {row.supra === true || row.supra === "Native" ? <Check className="w-5 h-5 text-emerald-500" /> : <X className="w-5 h-5 text-rose-500" />}
-                                                    <span className="font-bold text-emerald-500">{row.supra === "Native" ? "(Native)" : ""}</span>
+                                                    {row.agentgate === true || row.agentgate === "Native" ? <Check className="w-5 h-5 text-emerald-500" /> : <X className="w-5 h-5 text-rose-500" />}
+                                                    <span className="font-bold text-emerald-500">{row.agentgate === "Native" ? "(Native)" : ""}</span>
                                                 </div>
                                                 <p className="text-[10px] text-neutral-600 mt-2 font-medium">{row.note}</p>
                                             </td>
@@ -112,11 +112,11 @@ export default function vsGuardrailsAI() {
                     <div className="p-12 rounded-[40px] bg-neutral-900 border border-white/5 text-center space-y-6">
                         <h3 className="text-3xl font-black uppercase italic">Final Verdict</h3>
                         <p className="text-neutral-400 max-w-2xl mx-auto leading-relaxed font-medium">
-                            If your goal is <strong className="text-white">Validation</strong> (making sure the LLM response is valid JSON), use Guardrails AI. If your goal is <strong className="text-white">Security</strong> (making sure the agent doesn't wipe your database or exfiltrate logs), use <strong className="text-emerald-500 italic">SupraWall</strong>.
+                            If your goal is <strong className="text-white">Validation</strong> (making sure the LLM response is valid JSON), use Guardrails AI. If your goal is <strong className="text-white">Security</strong> (making sure the agent doesn't wipe your database or exfiltrate logs), use <strong className="text-emerald-500 italic">AgentGate</strong>.
                         </p>
                         <div className="pt-4 flex justify-center">
                             <Link href="/login" className="px-8 py-4 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all flex items-center gap-2 shadow-2xl">
-                                Deploy SupraWall <ArrowRight className="w-4 h-4" />
+                                Deploy AgentGate <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
                     </div>

@@ -14,9 +14,9 @@ export const PolicyEditor: React.FC<PolicyEditorProps> = ({ agentId, apiKey, cla
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         setSaving(true);
-        // Call SupraWall API
+        // Call agentgate API
         try {
-            await fetch(\`https://api.suprawall.io/v1/agents/\${agentId}/policies\`, {
+            await fetch(\`https://api.agentgate.io/v1/agents/\${agentId}/policies\`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

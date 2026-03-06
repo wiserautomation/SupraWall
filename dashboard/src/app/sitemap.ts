@@ -4,9 +4,9 @@ import path from 'path';
 
 /**
  * BASE URL for the sitemap.
- * Priority: Used in layout metadata and new SEO pages as www.supra-wall.com
+ * Priority: Used in layout metadata and new SEO pages as www.agentgate.ai
  */
-const BASE_URL = 'https://www.supra-wall.com';
+const BASE_URL = 'https://www.agentgate.ai';
 
 /**
  * Automatically discovery routes in the src/app directory.

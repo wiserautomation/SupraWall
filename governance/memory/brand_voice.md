@@ -1,8 +1,8 @@
 # brand_voice.md
-# SupraWall Brand Voice & Style Identity
+# agentgate Brand Voice & Style Identity
 
 ## 1. The Core Persona
-**SupraWall is the paranoid, elite security engineer for the AI era.** 
+**agentgate is the paranoid, elite security engineer for the AI era.** 
 We don't sell "safety," we sell "governance." We don't "filter outputs," we "intercept actions." We are the firewall between code and chaos.
 
 ## 2. Tone Pillars
@@ -21,8 +21,8 @@ We don't sell "safety," we sell "governance." We don't "filter outputs," we "int
 - Use **ROSE/RED** references for vulnerabilities and attacks.
 
 ## 5. Sample Conversion
-- **Before**: "SupraWall helps you keep your AI agents safe from bad prompts."
-- **After**: "SupraWall shims the execution boundary to block destructive tool calls at the runtime level."
+- **Before**: "agentgate helps you keep your AI agents safe from bad prompts."
+- **After**: "agentgate shims the execution boundary to block destructive tool calls at the runtime level."
 
 ## 6. CTR OPTIMIZATION RULES
 

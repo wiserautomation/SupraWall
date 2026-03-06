@@ -13,20 +13,20 @@ import { Database } from 'sqlite3';
 dotenv.config();
 
 const program = new Command();
-const API_URL = process.env.SUPRAWALL_API_URL || 'https://api.suprawall.io/v1';
+const API_URL = process.env.agentgate_API_URL || 'https://api.agentgate.io/v1';
 
 function getApiKey() {
-    const key = process.env.SUPRAWALL_API_KEY;
+    const key = process.env.agentgate_API_KEY;
     if (!key) {
-        console.error(chalk.red("Error: SUPRAWALL_API_KEY environment variable is required."));
+        console.error(chalk.red("Error: agentgate_API_KEY environment variable is required."));
         process.exit(1);
     }
     return key;
 }
 
 program
-    .name('suprawall')
-    .description('SupraWall CLI - The powerful way to manage AI Agent Security')
+    .name('agentgate')
+    .description('agentgate CLI - The powerful way to manage AI Agent Security')
     .version('1.0.0');
 
 // Login Command
@@ -34,8 +34,8 @@ program
     .command('login')
     .description('Authenticate the CLI')
     .action(() => {
-        console.log(chalk.blue('To authenticate, set the SUPRAWALL_API_KEY environment variable.'));
-        console.log(chalk.gray('Example: export SUPRAWALL_API_KEY="ag_test_your_key_here"'));
+        console.log(chalk.blue('To authenticate, set the agentgate_API_KEY environment variable.'));
+        console.log(chalk.gray('Example: export agentgate_API_KEY="ag_test_your_key_here"'));
     });
 
 // Agents Subcommands
@@ -161,7 +161,7 @@ program
     .description('Starts a local, isolated development environment server')
     .option('-p, --port <port>', 'Port to run on', '4242')
     .action((options) => {
-        console.log(chalk.cyan("Starting SupraWall Local Dev Server..."));
+        console.log(chalk.cyan("Starting agentgate Local Dev Server..."));
         
         const app = express();
         app.use(express.json());
@@ -197,7 +197,7 @@ program
 
         app.listen(options.port, () => {
             console.log(chalk.green(`✔ Local server listening on http://localhost:${options.port}`));
-            console.log(chalk.gray(`Point SUPRAWALL_API_URL=http://localhost:${options.port}/v1 in your code to test offline.`));
+            console.log(chalk.gray(`Point agentgate_API_URL=http://localhost:${options.port}/v1 in your code to test offline.`));
             console.log(chalk.magenta(`Note: Keys starting with ag_test_* automatically bypass evaluation logic.`));
         });
     });

@@ -6,7 +6,7 @@ import OpenClawClient from "./OpenClawClient";
 
 export const metadata: Metadata = {
     title: "OpenClaw Security Firewall | Autonomous Browser Protection",
-    description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage, session hijacking, and unauthorized web actions with SupraWall's runtime firewall.",
+    description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage, session hijacking, and unauthorized web actions with AgentGate's runtime firewall.",
     keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails"],
     openGraph: {
         title: "How to Secure Autonomous Browsers with OpenClaw",
@@ -18,13 +18,13 @@ export default function OpenClawIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "SupraWall for OpenClaw",
+        "name": "AgentGate for OpenClaw",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/openclaw",
+        "url": "https://www.agentgate.ai/integrations/openclaw",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "description": "The first security firewall for autonomous browsing agents and OpenClaw swarms.",
         "featureList": [
@@ -83,7 +83,7 @@ export default function OpenClawIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
                                 Traditional web security relies on URL filters. Autonomous agents require something deeper.
-                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">runtime security</Link>
+                                AgentGate's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">runtime security</Link>
                                 for OpenClaw analyzes the *context* of a click. If an agent tries to click "Transfer Funds" but the
                                 prompt intent was only to "Check Balance", the action is blocked instantly at the browser layer.
                             </p>
@@ -105,7 +105,7 @@ export default function OpenClawIntegrationPage() {
                             <p className="text-lg text-neutral-400 mt-6">
                                 Browsers are playgrounds for data leakage. An agent instructed to "Extract data" could
                                 maliciously or accidentally scrape its own `localStorage` which might contain API keys or auth tokens.
-                                SupraWall's sandbox ensures the agent only "sees" the part of the DOM it needs to perform its job.
+                                AgentGate's sandbox ensures the agent only "sees" the part of the DOM it needs to perform its job.
                             </p>
 
                             {/* H2: SPEC REQUIRED */}
@@ -114,7 +114,7 @@ export default function OpenClawIntegrationPage() {
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "Initialize the @suprawall/claw package",
+                                    "Initialize the @agentgate/claw package",
                                     "Wrapp your Playwright/Puppeteer browser instance",
                                     "Define 'No-Write' or 'Read-Only' zones for specific domains",
                                     "Enable Step-by-Step navigation verification",

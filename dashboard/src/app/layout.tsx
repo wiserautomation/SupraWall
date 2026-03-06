@@ -21,21 +21,21 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    template: "%s | SupraWall"
+    default: "AgentGate | Enterprise AI Agent Security & Runtime Guardrails",
+    template: "%s | AgentGate"
   },
   description: "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
   keywords: ["AI agent security", "runtime guardrails", "prompt injection prevention", "secure langchain", "ai agent firewall"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.supra-wall.com",
-    siteName: "SupraWall",
+    url: "https://www.agent-gate.ai",
+    siteName: "AgentGate",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SupraWall | Enterprise AI Agent Security",
+    title: "AgentGate | Enterprise AI Agent Security",
     description: "The zero-trust shim for your autonomous AI swarm.",
   },
   robots: {

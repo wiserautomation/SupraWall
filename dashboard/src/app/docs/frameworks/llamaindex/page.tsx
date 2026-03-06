@@ -4,13 +4,13 @@ import Link from "next/link";
 import { Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LlamaIndexGuide() {
-    const starterCode = `from suprawall import SupraWallLlamaIndex, SupraWallOptions
+    const starterCode = `from agentgate import AgentGateLlamaIndex, AgentGateOptions
 from llama_index.core.agent import ReActAgent
 
 # 1. Wrap your tools for LlamaIndex
-secured_tools = SupraWallLlamaIndex.wrap_tools(
+secured_tools = AgentGateLlamaIndex.wrap_tools(
     tools=my_tools,
-    options=SupraWallOptions(api_key="ag_your_api_key_here")
+    options=AgentGateOptions(api_key="ag_your_api_key_here")
 )
 
 # 2. Initialize ReAct agent with secured tools
@@ -46,12 +46,12 @@ agent.chat("Please drop the users database table")`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="pip install suprawall llama-index" language="bash" />
+                <CodeBlock code="pip install agentgate llama-index" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Interactive Playground</h2>
-                <p className="text-neutral-400 text-sm">See SupraWall protect a LlamaIndex query engine.</p>
+                <p className="text-neutral-400 text-sm">See AgentGate protect a LlamaIndex query engine.</p>
                 <CodePlayground
                     framework="LlamaIndex"
                     initialCode={starterCode}

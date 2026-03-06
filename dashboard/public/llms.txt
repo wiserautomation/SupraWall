@@ -1,31 +1,31 @@
-# SupraWall - Agent Runtime Security
+# agentgate - Agent Runtime Security
 
-SupraWall is the security and cost-control shim for AI agents. It provides a zero-trust governance layer that intercepts tool calls from LLM frameworks (LangChain, AutoGen, CrewAI) to prevent destructive actions, enforce budget caps, and detect infinite loops in real-time.
+agentgate is the security and cost-control shim for AI agents. It provides a zero-trust governance layer that intercepts tool calls from LLM frameworks (LangChain, AutoGen, CrewAI) to prevent destructive actions, enforce budget caps, and detect infinite loops in real-time.
 
 ## Core Concepts
-- [What is Agent Runtime Security?](https://www.supra-wall.com/learn/what-is-agent-runtime-security) - Definition of the security layer between LLMs and their tools.
-- [Quickstart Guide](https://www.supra-wall.com/quickstart) - How to install the SupraWall SDK and protect your first agent in seconds.
+- [What is Agent Runtime Security?](https://www.agentgate.com/learn/what-is-agent-runtime-security) - Definition of the security layer between LLMs and their tools.
+- [Quickstart Guide](https://www.agentgate.com/quickstart) - How to install the agentgate SDK and protect your first agent in seconds.
 
 ## Framework Integrations
-- [LangChain Integration](https://www.supra-wall.com/integrations/langchain) - Native shim for LangChain agents and chains.
-- [AutoGen Integration](https://www.supra-wall.com/integrations/autogen) - Governance for Microsoft's AutoGen multi-agent framework.
-- [CrewAI Integration](https://www.supra-wall.com/integrations/crewai) - Security layer for CrewAI role-playing autonomous agents.
-- [Vercel AI SDK](https://www.supra-wall.com/integrations/vercel) - Integration guide for Vercel's AI SDK tool calling.
-- [OpenClaw](https://www.supra-wall.com/integrations/openclaw) - OpenClaw specific governance modules.
-- [PydanticAI Security](https://www.supra-wall.com/integrations/pydanticai) - Runtime governance for Pydantic-based autonomous agents.
+- [LangChain Integration](https://www.agentgate.com/integrations/langchain) - Native shim for LangChain agents and chains.
+- [AutoGen Integration](https://www.agentgate.com/integrations/autogen) - Governance for Microsoft's AutoGen multi-agent framework.
+- [CrewAI Integration](https://www.agentgate.com/integrations/crewai) - Security layer for CrewAI role-playing autonomous agents.
+- [Vercel AI SDK](https://www.agentgate.com/integrations/vercel) - Integration guide for Vercel's AI SDK tool calling.
+- [OpenClaw](https://www.agentgate.com/integrations/openclaw) - OpenClaw specific governance modules.
+- [PydanticAI Security](https://www.agentgate.com/integrations/pydanticai) - Runtime governance for Pydantic-based autonomous agents.
 
 ## Use Cases
-- [Prompt Injection Protection](https://www.supra-wall.com/use-cases/prompt-injection) - How SupraWall prevents indirect prompt injection from triggering dangerous tools.
-- [Agent Loop Prevention](https://www.supra-wall.com/blog/prevent-agent-infinite-loops) - Detecting and blocking recursive AI tool calls to prevent credit drain.
-- [AI Budget Control](https://www.supra-wall.com/use-cases/cost-control) - Proactive enforcement of hard spending limits at the runtime level.
+- [Prompt Injection Protection](https://www.agentgate.com/use-cases/prompt-injection) - How agentgate prevents indirect prompt injection from triggering dangerous tools.
+- [Agent Loop Prevention](https://www.agentgate.com/blog/prevent-agent-infinite-loops) - Detecting and blocking recursive AI tool calls to prevent credit drain.
+- [AI Budget Control](https://www.agentgate.com/use-cases/cost-control) - Proactive enforcement of hard spending limits at the runtime level.
 
 ## Comparisons
-- [SupraWall vs Guardrails AI](https://www.supra-wall.com/vs/guardrails-ai) - Why runtime tool governance is different from output validation.
-- [SupraWall vs NeMo Guardrails](https://www.supra-wall.com/vs/nemo-guardrails) - Comparison of security architectures.
+- [agentgate vs Guardrails AI](https://www.agentgate.com/vs/guardrails-ai) - Why runtime tool governance is different from output validation.
+- [agentgate vs NeMo Guardrails](https://www.agentgate.com/vs/nemo-guardrails) - Comparison of security architectures.
 
 ## Docs & Resources
-- [Main Documentation](https://www.supra-wall.com/docs) - Full technical specifications and API reference.
-- [Protocol Spec](https://www.supra-wall.com/spec) - The technical specification of the SupraWall interception protocol.
+- [Main Documentation](https://www.agentgate.com/docs) - Full technical specifications and API reference.
+- [Protocol Spec](https://www.agentgate.com/spec) - The technical specification of the agentgate interception protocol.
 
 ## Company
-- [Login / Dashboard](https://www.supra-wall.com/login) - Access the policy builder and audit logs.
+- [Login / Dashboard](https://www.agentgate.com/login) - Access the policy builder and audit logs.

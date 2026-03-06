@@ -4,11 +4,11 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "How to Prevent Agent Infinite Loops in Production | SupraWall",
+    title: "How to Prevent Agent Infinite Loops in Production | AgentGate",
     description: "Discover how to detect and block recursive AI agent tool calls. Prevent infinite loops from draining your LLM budget with runtime circuit breakers and governance.",
     keywords: ["agent loop prevention", "agent loop detection", "recursive ai costs", "secure agent execution", "ai circuit breaker"],
     openGraph: {
-        title: "Stopping the $2,000 AI Agent Loop | SupraWall Strategy",
+        title: "Stopping the $2,000 AI Agent Loop | AgentGate Strategy",
         description: "Infinite recursive loops are the single most expensive failure mode for autonomous agents. Here is how to shim the runtime to stop them.",
     }
 };
@@ -21,15 +21,15 @@ export default function InfiniteLoopsBlogPage() {
         "description": "A technical guide on implementing runtime circuit breakers to detect and prevent infinite loops in autonomous AI agents.",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "genre": "AI Security",
         "keywords": "agent loop prevention, ai governance, runtime security",
         "publisher": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
-        "mainEntityOfPage": "https://www.supra-wall.com/blog/prevent-agent-infinite-loops"
+        "mainEntityOfPage": "https://www.agentgate.ai/blog/prevent-agent-infinite-loops"
     };
 
     const howToJsonLd = {
@@ -81,7 +81,7 @@ export default function InfiniteLoopsBlogPage() {
                         <div className="pt-6 border-l-4 border-emerald-500 pl-8">
                             <p className="text-xl md:text-2xl text-neutral-300 leading-snug font-medium italic">
                                 Agent loop prevention is the process of detecting and halting recursive AI tool calls that occur when an autonomous agent enters a semantic failure cycle.
-                                SupraWall shims the execution boundary to implement statistical circuit breakers that stop infinite loops in real-time, safeguarding your LLM budget from exponential token drain.
+                                AgentGate shims the execution boundary to implement statistical circuit breakers that stop infinite loops in real-time, safeguarding your LLM budget from exponential token drain.
                             </p>
                         </div>
                     </div>
@@ -128,7 +128,7 @@ export default function InfiniteLoopsBlogPage() {
                                 </div>
                                 <div className="p-8 rounded-3xl bg-emerald-500/5 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.05)]">
                                     <Shield className="w-8 h-8 text-emerald-500 mb-4" />
-                                    <h4 className="font-bold uppercase text-emerald-400 tracking-widest text-sm mb-2">SupraWall Interception</h4>
+                                    <h4 className="font-bold uppercase text-emerald-400 tracking-widest text-sm mb-2">AgentGate Interception</h4>
                                     <p className="text-xs text-neutral-400 italic">"Block if tool(X) repeated with same hash(args) within Window(Y)." - Precision protection.</p>
                                 </div>
                             </div>
@@ -141,7 +141,7 @@ export default function InfiniteLoopsBlogPage() {
                             <p className="text-lg text-neutral-400">
                                 To protect your production environment, you must wrap your agent's tool execution block.
                                 Using the <Link href="/spec" className="text-emerald-400 underline decoration-emerald-500/30">AGPS Spec</Link>,
-                                SupraWall shims the <code className="text-emerald-400">AgentExecutor</code> to track state across tool calls.
+                                AgentGate shims the <code className="text-emerald-400">AgentExecutor</code> to track state across tool calls.
                             </p>
 
                             <div className="space-y-4">
@@ -150,7 +150,7 @@ export default function InfiniteLoopsBlogPage() {
                                         <div className="px-3 py-1 bg-emerald-500/10 text-emerald-500 rounded-md text-[10px] font-bold">PYTHON</div>
                                     </div>
                                     <pre className="text-emerald-100/90 leading-relaxed whitespace-pre-wrap">
-                                        {`from suprawall.langchain import protect
+                                        {`from agentgate.langchain import protect
 
 # 🛡️ Shim the executor with a Loop Policy
 secured_agent = protect(

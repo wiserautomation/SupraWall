@@ -21,7 +21,7 @@ export default function CrewAIClient() {
                             </div>
                             <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Role-Based Interception</h2>
                             <p className="text-neutral-400 font-medium">
-                                In CrewAI, agents perform tasks based on predefined roles. SupraWall maps these roles to verified tool permissions, preventing privilege escalation.
+                                In CrewAI, agents perform tasks based on predefined roles. AgentGate maps these roles to verified tool permissions, preventing privilege escalation.
                             </p>
                         </motion.div>
 

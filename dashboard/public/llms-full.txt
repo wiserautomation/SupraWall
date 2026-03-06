@@ -1,9 +1,9 @@
-# SupraWall: Full Product Context & Technical Overview
+# agentgate: Full Product Context & Technical Overview
 
-SupraWall is an "Agent Runtime Security" platform designed to solve the "Agentic Security Gap." While LLM firewalls and prompt-injection detectors focus on the INPUT (the prompt), SupraWall focuses on the OUTPUT (the tool execution).
+agentgate is an "Agent Runtime Security" platform designed to solve the "Agentic Security Gap." While LLM firewalls and prompt-injection detectors focus on the INPUT (the prompt), agentgate focuses on the OUTPUT (the tool execution).
 
 ## The Core Technical Thesis
-Agents fail securely when they have unmediated access to tools. SupraWall provides a "Shim" that wraps around any agent framework. Before a tool (like `send_email` or `execute_bash`) is actually run, the metadata of the call is sent to SupraWall's zero-trust gateway.
+Agents fail securely when they have unmediated access to tools. agentgate provides a "Shim" that wraps around any agent framework. Before a tool (like `send_email` or `execute_bash`) is actually run, the metadata of the call is sent to agentgate's zero-trust gateway.
 
 ## Features
 1. Zero-Trust Tool Governance: Every tool call must satisfy a policy.
@@ -12,8 +12,8 @@ Agents fail securely when they have unmediated access to tools. SupraWall provid
 4. Audit Logs: Immutable record of every tool call and its security status.
 
 ## Framework Support
-SupraWall provides native drop-in wrappers for:
-- LangChain: `SupraWallTracer` and `ToolShim`.
+agentgate provides native drop-in wrappers for:
+- LangChain: `agentgateTracer` and `ToolShim`.
 - AutoGen: `SecureAgent` wrapper.
 - CrewAI: `GovernanceManager` hook.
 
@@ -24,4 +24,4 @@ Policies can be defined using simple YAML or the visual builder. Example:
 - "Block file system access in /etc/ directory."
 
 ## Implementation Details
-The SupraWall protocol uses a lightweight JSON/REST pattern. It is designed for <10ms overhead. You can self-host the policy engine via Docker or use the hosted cloud platform at www.supra-wall.com.
+The agentgate protocol uses a lightweight JSON/REST pattern. It is designed for <10ms overhead. You can self-host the policy engine via Docker or use the hosted cloud platform at www.agentgate.com.

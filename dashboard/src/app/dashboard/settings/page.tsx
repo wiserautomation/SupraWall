@@ -1,30 +1,86 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap } from "lucide-react";
-import { useState } from "react";
+import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap, Key, ShieldCheck, Slack, Copy, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { auth, db } from "@/lib/firebase";
+import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
+import Link from "next/link";
 
 export default function SettingsPage() {
+    const [user] = useAuthState(auth);
+    const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
     const [savedDb, setSavedDb] = useState(false);
     const [savedWebhook, setSavedWebhook] = useState(false);
+    const [savedSlack, setSavedSlack] = useState(false);
+    const [savedMaster, setSavedMaster] = useState(false);
     const [testSent, setTestSent] = useState(false);
+    const [copiedKey, setCopiedKey] = useState(false);
 
+    // Form States
     const [dbType, setDbType] = useState("firebase");
     const [dbString, setDbString] = useState("");
-
     const [webhookUrl, setWebhookUrl] = useState("");
-    const [webhookSecret, setWebhookSecret] = useState("whsec_test_secret_key_change_me");
+    const [webhookSecret, setWebhookSecret] = useState("");
+    const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
+    const [masterApiKey, setMasterApiKey] = useState("");
 
-    const handleSaveDb = (e: React.FormEvent) => {
-        e.preventDefault();
-        setSavedDb(true);
-        setTimeout(() => setSavedDb(false), 2000);
+    // Initialize/Sync settings
+    useEffect(() => {
+        if (!user) return;
+
+        const unsubscribe = onSnapshot(doc(db, "users", user.uid), (snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.data();
+                setDbType(data.dbType || "firebase");
+                setDbString(data.dbString || "");
+                setWebhookUrl(data.webhookUrl || "");
+                setWebhookSecret(data.webhookSecret || "");
+                setSlackWebhookUrl(data.slackWebhookUrl || "");
+                setMasterApiKey(data.masterApiKey || "");
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, [user]);
+
+    const handleSaveGeneral = async (field: string, value: any, setStatus: (v: boolean) => void) => {
+        if (!user) return;
+        setSaving(true);
+        try {
+            await setDoc(doc(db, "users", user.uid), {
+                [field]: value,
+                updatedAt: new Date().toISOString()
+            }, { merge: true });
+            setStatus(true);
+            setTimeout(() => setStatus(false), 2000);
+        } catch (error) {
+            console.error(`Error saving ${field}:`, error);
+        } finally {
+            setSaving(false);
+        }
     };
 
+    const handleGenerateMasterKey = () => {
+        const key = 'ag_master_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        setMasterApiKey(key);
+    };
+
+    const handleSaveMasterKey = () => handleSaveGeneral("masterApiKey", masterApiKey, setSavedMaster);
+    const handleSaveDb = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSaveGeneral("dbType", dbType, setSavedDb);
+    };
     const handleSaveWebhook = (e: React.FormEvent) => {
         e.preventDefault();
-        setSavedWebhook(true);
-        setTimeout(() => setSavedWebhook(false), 2000);
+        handleSaveGeneral("webhookUrl", webhookUrl, setSavedWebhook);
+    };
+    const handleSaveSlack = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSaveGeneral("slackWebhookUrl", slackWebhookUrl, setSavedSlack);
     };
 
     const handleGenerateSecret = () => {
@@ -34,6 +90,7 @@ export default function SettingsPage() {
             str += chars.charAt(Math.floor(Math.random() * chars.length));
         }
         setWebhookSecret(str);
+        handleSaveGeneral("webhookSecret", str, () => { });
     };
 
     const handleTestWebhook = () => {
@@ -41,171 +98,220 @@ export default function SettingsPage() {
         setTimeout(() => setTestSent(false), 3000);
     };
 
-    return (
-        <div className="max-w-3xl space-y-12 pb-12">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-white mb-2">Settings</h1>
-                <p className="text-neutral-400 text-lg">
-                    Manage your core platform integrations, architecture, and subscriptions.
-                </p>
-            </div>
+    const copyMasterKey = () => {
+        navigator.clipboard.writeText(masterApiKey);
+        setCopiedKey(true);
+        setTimeout(() => setCopiedKey(false), 2000);
+    };
 
-            {/* DATABASE CONFIG */}
-            <section>
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg">
-                        <Database className="w-5 h-5 text-emerald-400" />
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-full">
+                <p className="text-neutral-500 animate-pulse font-medium tracking-wide">Retrieving configuration...</p>
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-4xl space-y-12 pb-24">
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Settings</h1>
+                <p className="text-neutral-400 text-lg leading-relaxed">
+                    Define your security infrastructure, team notifications, and organizational access.
+                </p>
+            </motion.div>
+
+            {/* MASTER API KEY SECTION */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                        <Key className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-semibold text-white">Database Architecture</h2>
-                        <p className="text-sm text-neutral-400">SupraWall is database agnostic. Choose your persistence layer.</p>
+                        <h2 className="text-2xl font-bold text-white tracking-tight">Management Access</h2>
+                        <p className="text-sm text-neutral-400">Master Org Key used for SDK-based agent registration.</p>
                     </div>
                 </div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-neutral-900 border border-white/[0.05] rounded-xl overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative overflow-hidden group shadow-2xl"
                 >
-                    <form onSubmit={handleSaveDb} className="p-6 space-y-6">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
+                    <div className="relative space-y-6">
                         <div className="space-y-3">
-                            <label className="text-sm font-medium text-neutral-300">Persistence Layer</label>
-                            <select
-                                value={dbType}
-                                onChange={(e) => setDbType(e.target.value)}
-                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                            >
-                                <option value="firebase">Firebase (Cloud Firestore) - Default</option>
-                                <option value="postgres">PostgreSQL</option>
-                                <option value="mysql">MySQL</option>
-                                <option value="mongodb">MongoDB</option>
-                                <option value="supabase">Supabase</option>
-                            </select>
+                            <div className="flex justify-between items-center px-1">
+                                <label className="text-sm font-semibold text-neutral-300">Master Organizational API Key</label>
+                                {masterApiKey && (
+                                    <button onClick={copyMasterKey} className="text-xs flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors bg-white/5 px-2 py-1 rounded-md border border-white/5">
+                                        {copiedKey ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                        {copiedKey ? "Copied" : "Copy"}
+                                    </button>
+                                )}
+                            </div>
+                            <div className="flex gap-3">
+                                <div className="relative flex-1">
+                                    <input
+                                        type="text"
+                                        readOnly
+                                        value={masterApiKey || "No key generated yet"}
+                                        className={`w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-emerald-300 font-mono text-sm shadow-inner transition-all ${!masterApiKey && "text-neutral-600 italic"}`}
+                                    />
+                                    {masterApiKey && <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-50" />}
+                                </div>
+                                <Button
+                                    onClick={handleGenerateMasterKey}
+                                    variant="outline"
+                                    className="bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 h-auto py-3 px-5 rounded-xl shadow-lg transition-all"
+                                >
+                                    <RefreshCcw className="w-4 h-4 mr-2" /> {masterApiKey ? "Regenerate" : "Generate"}
+                                </Button>
+                                {masterApiKey && (
+                                    <Button
+                                        onClick={handleSaveMasterKey}
+                                        className={`h-auto py-3 px-6 rounded-xl transition-all shadow-lg ${savedMaster ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-blue-600 hover:bg-blue-500 text-white"}`}
+                                    >
+                                        {savedMaster ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                                        {savedMaster ? "Saved" : "Save Key"}
+                                    </Button>
+                                )}
+                            </div>
+                        </div>
+                        <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10 flex items-start gap-3">
+                            <Zap className="w-5 h-5 text-blue-400 mt-0.5" />
+                            <p className="text-xs leading-relaxed text-blue-300/80">
+                                This key grants permission to automatically register new agents via the <code className="bg-blue-500/20 px-1.5 py-0.5 rounded text-blue-100 font-mono">AgentGate SDK</code>. Treat it as a sensitive secret. Regenerating it will invalidate all ongoing automated registration flows.
+                            </p>
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* SLACK INTEGRATION */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-[#4A154B]/10 rounded-xl border border-[#4A154B]/20 shadow-[0_0_15px_rgba(74,21,75,0.1)]">
+                        <Slack className="w-5 h-5 text-[#E01E5A]" />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-white tracking-tight">Slack Notifications</h2>
+                        <p className="text-sm text-neutral-400">Human-In-The-Loop approval requests and security alerts.</p>
+                    </div>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative shadow-xl overflow-hidden"
+                >
+                    <form onSubmit={handleSaveSlack} className="space-y-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-neutral-300">Incoming Webhook URL</label>
+                            <input
+                                type="url"
+                                placeholder="https://hooks.slack.com/services/T000.../B000.../XXXX..."
+                                value={slackWebhookUrl}
+                                onChange={(e) => setSlackWebhookUrl(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                            />
+                            <div className="flex justify-between items-center text-xs">
+                                <p className="text-neutral-500 italic">Used for policy triggers requiring Human Authorization.</p>
+                                <Link
+                                    href="https://api.slack.com/messaging/webhooks"
+                                    target="_blank"
+                                    className="flex items-center gap-1 text-neutral-400 hover:text-white transition-colors"
+                                >
+                                    Create Webhook <ExternalLink className="w-3 h-3" />
+                                </Link>
+                            </div>
                         </div>
 
-                        {dbType !== "firebase" && (
-                            <motion.div
-                                initial={{ opacity: 0, height: 0 }}
-                                animate={{ opacity: 1, height: 'auto' }}
-                                className="space-y-3"
-                            >
-                                <label className="text-sm font-medium text-neutral-300">Connection String (URL)</label>
-                                <input
-                                    type="text"
-                                    placeholder={`e.g. ${dbType}://user:pass@localhost:5432/suprawall`}
-                                    value={dbString}
-                                    onChange={(e) => setDbString(e.target.value)}
-                                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                                />
-                                <p className="text-xs text-neutral-500">Ensure your cloud instance allows external connections from our IP ranges.</p>
-                            </motion.div>
-                        )}
-
-                        <div className="pt-4 border-t border-white/5 flex justify-end">
-                            <button
+                        <div className="flex justify-end pt-4 border-t border-white/5">
+                            <Button
                                 type="submit"
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${savedDb
-                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
-                                    }`}
+                                className={`h-auto py-2.5 px-6 rounded-xl transition-all shadow-md font-bold ${savedSlack ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-[#4A154B] hover:bg-[#611f69] text-white"}`}
                             >
-                                {savedDb ? (
-                                    <>
-                                        <CheckCircle2 className="w-4 h-4" /> Connected
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="w-4 h-4" /> Apply Database
-                                    </>
-                                )}
-                            </button>
+                                {savedSlack ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                                {savedSlack ? "Saved" : "Connect Slack"}
+                            </Button>
                         </div>
                     </form>
                 </motion.div>
             </section>
 
-            {/* WEBHOOKS CONFIG */}
-            <section>
-                <div className="flex items-center gap-3 mb-6">
-                    <div className="p-2 bg-emerald-500/10 rounded-lg">
+            {/* EVENT WEBHOOKS */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                         <Webhook className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-semibold text-white">Event Webhooks</h2>
-                        <p className="text-sm text-neutral-400">Receive real-time push events when policies are triggered or denied.</p>
+                        <h2 className="text-2xl font-bold text-white tracking-tight">Audit Webhooks</h2>
+                        <p className="text-sm text-neutral-400">Security monitoring webhooks for your internal audit SIEM.</p>
                     </div>
                 </div>
 
                 <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="bg-neutral-900 border border-white/[0.05] rounded-xl overflow-hidden"
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative shadow-xl overflow-hidden"
                 >
-                    <form onSubmit={handleSaveWebhook} className="p-6 space-y-6">
-                        <div className="space-y-3">
-                            <label className="text-sm font-medium text-neutral-300">Endpoint URL</label>
-                            <input
-                                type="url"
-                                placeholder="https://your-api.com/webhooks/suprawall"
-                                value={webhookUrl}
-                                onChange={(e) => setWebhookUrl(e.target.value)}
-                                className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-                            />
-                            <p className="text-xs text-neutral-500">We send POST requests with application/json payloads. Automatic exponential backoff applies to failed deliveries.</p>
-                        </div>
-
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-end">
-                                <label className="text-sm font-medium text-neutral-300">Signing Secret</label>
-                                <button type="button" onClick={handleGenerateSecret} className="text-xs flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors">
-                                    <RefreshCcw className="w-3 h-3" /> Roll Secret
-                                </button>
+                    <form onSubmit={handleSaveWebhook} className="space-y-8">
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-neutral-300">Target Endpoint URL</label>
+                                <input
+                                    type="url"
+                                    placeholder="https://your-api.com/webhooks/gate"
+                                    value={webhookUrl}
+                                    onChange={(e) => setWebhookUrl(e.target.value)}
+                                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                                />
                             </div>
-                            <div className="relative">
+
+                            <div className="space-y-2">
+                                <div className="flex justify-between items-center">
+                                    <label className="text-sm font-semibold text-neutral-300">Signing Secret</label>
+                                    <button type="button" onClick={handleGenerateSecret} className="text-xs font-bold flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/5 px-2 py-1 rounded">
+                                        <RefreshCcw className="w-3.5 h-3.5" /> Reset Secret
+                                    </button>
+                                </div>
                                 <input
                                     type="text"
                                     readOnly
-                                    value={webhookSecret}
-                                    className="w-full bg-black border border-white/10 rounded-lg px-4 py-3 text-neutral-400 text-sm font-mono cursor-not-allowed"
+                                    value={webhookSecret || "Roll secret to display"}
+                                    className={`w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-neutral-400 text-sm font-mono shadow-inner ${!webhookSecret && "italic text-neutral-600"}`}
                                 />
+                                <p className="text-[10px] text-neutral-600 tracking-wider font-bold uppercase">HMAC SHA256 SHARED SECRET</p>
                             </div>
-                            <p className="text-xs text-neutral-500">Used to verify the SupraWall-Signature HMAC SHA256 header securely.</p>
                         </div>
 
-                        <div className="pt-4 border-t border-white/5 flex justify-end gap-3">
-                            <button
+                        <div className="pt-6 border-t border-white/5 flex justify-end gap-3">
+                            <Button
                                 type="button"
                                 onClick={handleTestWebhook}
                                 disabled={!webhookUrl}
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                variant="outline"
+                                className={`py-2.5 px-6 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50`}
                             >
-                                {testSent ? (
-                                    <>
-                                        <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Event Sent
-                                    </>
-                                ) : (
-                                    <>
-                                        <Zap className="w-4 h-4" /> Send Test Event
-                                    </>
-                                )}
-                            </button>
-                            <button
+                                {testSent ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
+                                {testSent ? "Test Sent" : "Test Hook"}
+                            </Button>
+                            <Button
                                 type="submit"
-                                className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${savedWebhook
-                                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                    : "bg-emerald-600 text-white hover:bg-emerald-700"
-                                    }`}
+                                className={`py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedWebhook ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
                             >
-                                {savedWebhook ? (
-                                    <>
-                                        <CheckCircle2 className="w-4 h-4" /> Endpoint Active
-                                    </>
-                                ) : (
-                                    <>
-                                        <Save className="w-4 h-4" /> Save Webhook
-                                    </>
-                                )}
-                            </button>
+                                {savedWebhook ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                                {savedWebhook ? "Active" : "Save Webhook"}
+                            </Button>
                         </div>
                     </form>
                 </motion.div>
@@ -213,3 +319,21 @@ export default function SettingsPage() {
         </div>
     );
 }
+
+const Button = ({ children, variant, className, type, onClick, disabled }: any) => {
+    const baseClasses = "flex items-center justify-center gap-2 rounded-lg text-sm font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed";
+    const variantClasses = variant === 'outline'
+        ? "border border-white/10 bg-transparent text-white hover:bg-white/5"
+        : "bg-emerald-600 text-white hover:bg-emerald-700 shadow-md";
+
+    return (
+        <button
+            type={type || "button"}
+            onClick={onClick}
+            disabled={disabled}
+            className={`${baseClasses} ${variantClasses} ${className}`}
+        >
+            {children}
+        </button>
+    );
+};

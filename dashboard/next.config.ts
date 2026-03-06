@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: [
-    "@suprawall/core",
+    "@agentgate/core",
     "react-remove-scroll",
     "use-sync-external-store",
     "web-streams-polyfill"

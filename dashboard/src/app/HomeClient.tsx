@@ -12,86 +12,25 @@ import { useState, useEffect } from "react";
 
 // --- Components ---
 
-export function CodeTerminal() {
-    const [lines, setLines] = useState<string[]>([]);
-    const terminalLines = [
-        "> LangChain Agent: Executing...",
-        "> Tool: send_email (instance #1)",
-        "> Tool: send_email (instance #2)",
-        "> Tool: send_email (instance #3)",
-        "⚠️  LOOP DETECTED: 3x consecutive calls",
-        "🛡️  Circuit Breaker Triggered",
-        "❌ BLOCKED - infinite loop prevented",
-        "✅ Saved $2.40 in API credits",
-    ];
-
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-        let index = 0;
-        let isRunning = true;
-
-        const tick = () => {
-            if (!isRunning) return;
-
-            if (index < terminalLines.length) {
-                const line = terminalLines[index];
-                setLines(prev => [...prev, line]);
-                index++;
-                setTimeout(tick, 800);
-            } else {
-                setTimeout(() => {
-                    if (!isRunning) return;
-                    setLines([]);
-                    index = 0;
-                    tick();
-                }, 2000);
-            }
-        };
-
-        tick();
-        return () => { isRunning = false; };
-    }, []);
-
-    if (!mounted) {
-        return <div className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative" />;
-    }
-
+export function SwarmVisualization() {
     return (
-        <div suppressHydrationWarning className="w-full max-w-lg aspect-square md:aspect-video bg-[#0D0D0D] border border-white/10 rounded-2xl shadow-2xl overflow-hidden font-mono text-sm relative text-left">
-            <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5 bg-white/[0.02]">
-                <div className="w-3 h-3 rounded-full bg-red-500/50" />
-                <div className="w-3 h-3 rounded-full bg-yellow-500/50" />
-                <div className="w-3 h-3 rounded-full bg-green-500/50" />
-                <span className="ml-4 text-[10px] text-neutral-500 uppercase tracking-widest">AI Agent Execution Log</span>
-            </div>
-            <div className="p-6 space-y-2">
-                {lines.map((line, i) => {
-                    const safeLine = line || "";
-                    const isWarning = safeLine?.includes("⚠️");
-                    const isDenied = safeLine?.includes("❌");
-                    const isSuccess = safeLine?.includes("✅");
-                    const isCheck = safeLine?.includes("🛡️");
-
-                    return (
-                        <motion.div
-                            key={`terminal-line-${i}`}
-                            initial={{ opacity: 0, x: -5 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className={`${isWarning ? 'text-amber-400 font-bold' : i >= 3 && !isSuccess ? 'text-rose-400 font-bold' : isSuccess ? 'text-emerald-400 font-bold' : isCheck ? 'text-emerald-400' : 'text-neutral-400'}`}
-                        >
-                            {safeLine}
-                        </motion.div>
-                    );
-                })}
-            </div>
-            <div className="absolute bottom-4 right-4 text-[10px] text-neutral-600">
-                💾 Local Security Policy v2.4
+        <div suppressHydrationWarning className="w-full max-w-lg aspect-square bg-[#0D0D0D] border border-white/10 rounded-[3rem] shadow-[0_0_100px_rgba(16,185,129,0.15)] overflow-hidden font-mono text-sm relative group text-left">
+            <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent mix-blend-overlay pointer-events-none z-10" />
+            <img
+                src="/network-nodes.png"
+                alt="AgentGate Secure Swarm Infrastructure"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out"
+            />
+            <div className="absolute bottom-6 left-6 z-20">
+                <div className="inline-flex items-center px-4 py-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-md text-xs font-bold text-white tracking-widest uppercase">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                    Secure Swarm Hub Active
+                </div>
             </div>
         </div>
     );
 }
+
 
 export function ClawbotDemo() {
     const [lines, setLines] = useState<string[]>([]);
@@ -163,19 +102,19 @@ export function TechTabs() {
     const techExamples: Record<string, any> = {
         "TypeScript": {
             before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
-            after: `import { protect } from "@suprawall/sdk";\n\n// 🛡️ Zero-Config Protection\nconst secured = protect(myAgent);\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
+            after: `import { protect } from "@agentgate/sdk";\n\n// 🛡️ Zero-Config Protection\nconst secured = protect(myAgent);\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
         },
         "Python": {
             before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
-            after: `from suprawall import secure\n\n# 🛡️ Native Framework evolution\n@secure(api_key="ag_...")\ndef run_swarm():\n    # Agent is automatically protected\n    return Agent(...)\n\n# ✅ Destructive acts blocked`
+            after: `from agentgate import secure\n\n# 🛡️ Native Framework evolution\n@secure(api_key="ag_...")\ndef run_swarm():\n    # Agent is automatically protected\n    return Agent(...)\n\n# ✅ Destructive acts blocked`
         },
         "MCP": {
             before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
-            after: `import { secureMCP } from "suprawall";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secureMCP(server);\n\n// ✅ Tool calls governed via cloud\nawait secured.start();`
+            after: `import { secureMCP } from "agentgate";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secureMCP(server);\n\n// ✅ Tool calls governed via cloud\nawait secured.start();`
         },
         "Browser": {
             before: `const agent = new Clawbot(browser);\n// ⚠️ Unlimited navigation/clicks\nawait agent.execute("Delete AWS Account");\n# System wiped 💀`,
-            after: `import { secureClaw } from "@suprawall/claw";\n\n// 🛡️ Native Browser Guard\nconst secured = secureClaw(agent);\n\n// ✅ High-risk actions intercepted\nawait secured.execute("Delete AWS Account");\n# ❌ Access Denied: Dangerous Command`
+            after: `import { secureClaw } from "@agentgate/claw";\n\n// 🛡️ Native Browser Guard\nconst secured = secureClaw(agent);\n\n// ✅ High-risk actions intercepted\nawait secured.execute("Delete AWS Account");\n# ❌ Access Denied: Dangerous Command`
         }
     };
 

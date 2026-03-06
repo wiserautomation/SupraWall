@@ -12,7 +12,7 @@ export function Navbar() {
                     <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_20px_rgba(5,150,105,0.4)] group-hover:scale-110 transition-transform duration-500">
                         <BrickWall className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-white font-black text-2xl tracking-[ -0.05em] uppercase italic">SupraWall</span>
+                    <span className="text-white font-black text-2xl tracking-[-0.05em] uppercase italic">AgentGate</span>
                 </Link>
 
                 <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-widest">

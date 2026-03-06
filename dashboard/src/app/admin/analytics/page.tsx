@@ -81,7 +81,7 @@ export default function AdminAnalyticsPage() {
                 }));
 
             } catch (error) {
-                console.error("SupraWall Analytics Error", error);
+                console.error("AgentGate Analytics Error", error);
             }
             setLoading(false);
         }

@@ -37,6 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Integrations", href: "/dashboard/integrations", icon: Zap },
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Approvals", href: "/approvals", icon: UserCheck },
+        { name: "Team", href: "/dashboard/team", icon: Users },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },
         { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ];
@@ -66,7 +67,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <aside className="w-64 border-r border-white-[0.05] bg-neutral-950/50 backdrop-blur-2xl flex flex-col relative z-20">
                 <div className="h-16 flex items-center px-6 border-b border-white/[0.05]">
                     <BrickWall className="w-6 h-6 text-emerald-400 mr-3 animate-pulse" />
-                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm">SupraWall</span>
+                    <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm uppercase tracking-tighter italic">AgentGate</span>
                 </div>
                 <nav className="flex-1 py-4 flex flex-col gap-1">
                     {navItems.map((item) => {

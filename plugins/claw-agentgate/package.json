@@ -1,0 +1,16 @@
+{
+    "name": "@agentgate/claw",
+    "version": "0.1.0",
+    "description": "Native agentgate security integration for OpenClaw autonomous browser",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "agentgate": "file:../../agentgate-sdk"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

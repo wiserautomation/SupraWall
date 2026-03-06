@@ -181,7 +181,7 @@ export const issueConnectKey = functions.https.onCall(async (data, context) => {
     if (!platformSnap.data()?.connectEnabled) {
         throw new functions.https.HttpsError(
             "failed-precondition",
-            "SupraWall Connect is not enabled for this platform."
+            "agentgate Connect is not enabled for this platform."
         );
     }
 
@@ -511,7 +511,7 @@ export const notifyPlatformWebhook = functions.firestore
 
         try {
             const payload = {
-                event: "suprawall.policy_decision",
+                event: "agentgate.policy_decision",
                 decision: event.decision,
                 platformId: event.platformId,
                 customerId: event.customerId,
@@ -525,9 +525,9 @@ export const notifyPlatformWebhook = functions.firestore
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    "X-SupraWall-Webhook": "1",
+                    "X-agentgate-Webhook": "1",
                     // HMAC signature for webhook verification (platform can validate)
-                    "X-SupraWall-Signature": generateWebhookSignature(
+                    "X-agentgate-Signature": generateWebhookSignature(
                         JSON.stringify(payload),
                         event.platformId
                     ),
@@ -538,14 +538,14 @@ export const notifyPlatformWebhook = functions.firestore
 
             if (!response.ok) {
                 console.error(
-                    `[SupraWall] Webhook delivery failed for platform ${event.platformId}: ` +
+                    `[agentgate] Webhook delivery failed for platform ${event.platformId}: ` +
                     `HTTP ${response.status}`
                 );
             }
         } catch (e) {
             // Non-fatal — webhook delivery failures must never affect policy evaluation
             console.error(
-                `[SupraWall] Webhook error for platform ${event.platformId}:`, e
+                `[agentgate] Webhook error for platform ${event.platformId}:`, e
             );
         }
 
@@ -558,7 +558,7 @@ function generateWebhookSignature(payload: string, platformId: string): string {
     const crypto = require("crypto");
     // In production: store a per-platform webhook secret in Firestore or Secret Manager
     // For now: use platformId + a server-side salt from environment config
-    const secret = `${platformId}_${functions.config().suprawall?.webhook_salt ?? "dev_salt"}`;
+    const secret = `${platformId}_${functions.config().agentgate?.webhook_salt ?? "dev_salt"}`;
     return crypto
         .createHmac("sha256", secret)
         .update(payload)

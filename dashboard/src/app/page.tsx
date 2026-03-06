@@ -7,10 +7,10 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { CodeTerminal, TechTabs, ClawbotDemo, TagBadge, AnimatedBox } from "./HomeClient";
+import { SwarmVisualization, TechTabs, ClawbotDemo, TagBadge, AnimatedBox } from "./HomeClient";
 
 export const metadata: Metadata = {
-    title: "SupraWall | The Agent Security Runtime for Autonomous AI",
+    title: "AgentGate | The Agent Security Runtime for Autonomous AI",
     description: "Secure your AI agents with the global standard for agentic governance. Zero-trust tool calls, loop detection, and cost control for LangChain, AutoGen, CrewAI, and OpenClaw.",
     keywords: ["agent security", "ai governance", "secure langsmith alternative", "prevent agent prompt injection"],
 };
@@ -19,14 +19,14 @@ export default function LandingPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebApplication",
-        "name": "SupraWall",
-        "url": "https://www.supra-wall.com",
+        "name": "AgentGate",
+        "url": "https://www.agent-gate.ai",
         "description": "The security and cost-control shim for autonomous AI agents.",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "featureList": [
             "Real-time Tool Interception",
@@ -57,73 +57,45 @@ export default function LandingPage() {
                         <div className="lg:col-span-7 space-y-8 text-left">
                             <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-xs font-bold text-emerald-400 tracking-wider uppercase">
                                 <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                                SupraWall API & OS Architecture 1.0 is live: for "Security Infrastructure for AI Agents."
+                                AgentGate Dashboard 1.0 is live: Full Control & Audit for AI Agents.
                             </div>
 
-                            <h1 className="text-6xl md:text-[90px] font-extrabold tracking-tight text-white leading-[0.9] uppercase italic">
+                            <h1 className="text-6xl md:text-[90px] font-extrabold tracking-tight text-white leading-[0.9] uppercase italic text-glow">
                                 We Block Your <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline decoration-emerald-500/30">Agent</Link> <br />
                                 <span className="text-emerald-500">from going Rogue.</span>
                             </h1>
 
                             <p className="text-xl md:text-2xl text-neutral-400 max-w-3xl leading-relaxed font-medium italic">
-                                The security & cost-control shim for <Link href="/integrations/langchain" className="text-white hover:text-emerald-400">LangChain</Link>, <Link href="/integrations/autogen" className="text-white hover:text-emerald-400">AutoGen</Link>, <Link href="/integrations/crewai" className="text-white hover:text-emerald-400">CrewAI</Link>, and <Link href="/integrations/openclaw" className="text-white hover:text-emerald-400">OpenClaw</Link>.
-                                Prevent rogue behavior and runaway budgets with zero-trust tool governance.
+                                Centralized security, audit logs, and cost-control for <Link href="/integrations/langchain" className="text-white hover:text-emerald-400">LangChain</Link>, <Link href="/integrations/autogen" className="text-white hover:text-emerald-400">AutoGen</Link>, <Link href="/integrations/crewai" className="text-white hover:text-emerald-400">CrewAI</Link>, and <Link href="/integrations/openclaw" className="text-white hover:text-emerald-400">OpenClaw</Link>.
+                                Manage policies and monitor your autonomous agent swarm in real-time from our global dashboard.
                             </p>
 
                             <div className="flex flex-wrap items-center gap-4 pt-4">
-                                <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all flex flex-col items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                                <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all flex flex-col items-center justify-center shadow-[0_0_50px_rgba(255,255,255,0.1)] group">
                                     <div className="flex items-center gap-3">
-                                        Secure My Agents <ArrowRight className="w-5 h-5" />
+                                        Secure My Agents <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-2" />
                                     </div>
                                     <span className="text-[10px] opacity-60 font-black tracking-widest mt-1 uppercase leading-none mt-2">No credit card required</span>
                                 </Link>
 
-                                <div className="flex flex-col gap-1 ml-4 py-2 border-l border-white/10 pl-6">
+                                <div className="flex flex-col gap-1 ml-4 py-2 border-l border-white/10 pl-6 text-glow-emerald">
                                     <div className="flex gap-1">
-                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-emerald-500 text-emerald-500" />)}
+                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-3 h-3 fill-emerald-500 text-emerald-500 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />)}
                                     </div>
                                     <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500">
                                         Reviewed by <span className="text-white">500+ Security Engineers</span>
                                     </p>
                                 </div>
                             </div>
-
-                            <div className="pt-8">
-                                <div className="p-8 bg-neutral-900 border border-white/5 rounded-[3rem] max-w-md relative group">
-                                    <div className="flex gap-1 mb-4">
-                                        {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-4 h-4 fill-emerald-500 text-emerald-500" />)}
-                                    </div>
-                                    <p className="text-xl font-bold text-neutral-200 italic mb-8 leading-relaxed">
-                                        "Essential for anyone running <Link href="/integrations/openclaw" className="text-emerald-500 underline">Claw agents</Link> in prod. Caught 30 dangerous clicks before they happened."
-                                    </p>
-                                    <div className="flex items-center gap-4 pt-6 border-t border-white/5">
-                                        <div className="w-12 h-12 rounded-full border border-emerald-500/30 overflow-hidden bg-neutral-800" />
-                                        <div>
-                                            <p className="font-black text-sm text-white uppercase tracking-tight">— @maxhaining</p>
-                                            <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest leading-none">Creator of OpenClaw</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
 
                         <div className="lg:col-span-5 relative">
-                            <CodeTerminal />
+                            <SwarmVisualization />
                             <div className="mt-6 flex items-center gap-2 justify-center lg:justify-start">
                                 <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.6)]" />
                                 <span className="text-xs font-black uppercase tracking-[0.2em] text-neutral-400">
-                                    LIVE: Blocked 12,402 rogue tool calls today
+                                    LIVE: Dashboard Monitoring Active
                                 </span>
-                            </div>
-
-                            <div className="mt-12 space-y-4 opacity-40 hover:opacity-100 transition-opacity duration-500">
-                                <p className="text-[10px] font-black uppercase tracking-[0.5em] text-neutral-500 text-center lg:text-left">Trusted by the best teams</p>
-                                <div className="flex flex-wrap items-center gap-8 justify-center lg:justify-start grayscale">
-                                    <span className="text-xl font-black italic tracking-tighter">Anthropic</span>
-                                    <span className="text-xl font-black italic tracking-tighter">OpenAI</span>
-                                    <span className="text-xl font-black italic tracking-tighter">DeepMind</span>
-                                    <span className="text-xl font-black italic tracking-tighter">Mistral</span>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -133,7 +105,7 @@ export default function LandingPage() {
                 <section className="py-24 px-6 border-b border-white/5 bg-black">
                     <div className="max-w-7xl mx-auto">
                         <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] mb-12 text-center italic">The Industry Standard Alternative</p>
-                        <div className="flex flex-wrap justify-center items-center gap-10 md:gap-24">
+                        <div className="flex flex-wrap justify-center items-center gap-10 md:gap-24 opacity-60 hover:opacity-100 transition-opacity">
                             <Link href="/vs/nemo-guardrails" className="text-2xl font-black text-neutral-500 hover:text-white transition-colors uppercase italic tracking-tighter">
                                 Better than NeMo Guardrails →
                             </Link>
@@ -141,11 +113,11 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 📐 POLICY SECTION */}
+                {/* 📐 POLICY SECTION (UPGRADED) */}
                 <section className="py-40 px-6 bg-[#030303] text-white">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="space-y-10">
-                            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none uppercase">
+                            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-none uppercase text-glow">
                                 Policy <br />
                                 <span className="text-emerald-500 font-black">As Code.</span>
                             </h2>
@@ -160,7 +132,7 @@ export default function LandingPage() {
                                     { title: "Prompt Injection Blocking", desc: "Detects hidden instructions in untrusted data." },
                                     { title: "Cost Control", desc: "Hard-budget caps on expensive tool chains." }
                                 ].map((item, i) => (
-                                    <div key={i} className="flex items-center gap-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5">
+                                    <div key={i} className="flex items-center gap-4 p-6 rounded-3xl bg-neutral-900/50 border border-white/5 hover:border-emerald-500/30 transition-all duration-500">
                                         <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                                         <div>
                                             <h4 className="font-black text-sm uppercase tracking-widest">{item.title}</h4>
@@ -180,11 +152,11 @@ export default function LandingPage() {
                         <h3 className="text-5xl md:text-8xl font-black tracking-tighter italic uppercase leading-none">Safe Mode <br />in the Wild.</h3>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left">
+                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left hover:shadow-[10px_10px_0_0_#10b981] transition-all">
                                 <span className="text-[10px] font-black uppercase tracking-widest py-1 px-4 border border-black rounded-full">Injection Prevention</span>
                                 <h4 className="text-3xl font-black italic leading-none">Stop Prompt Injection.</h4>
                                 <p className="text-neutral-600 font-bold leading-relaxed">
-                                    Our <Link href="/use-cases/prompt-injection" className="text-black underline">Prompt Injection Prevention</Link> system catches
+                                    Our <Link href="/use-cases/prompt-injection" className="text-black underline font-black">Prompt Injection Prevention</Link> system catches
                                     adversarial attempts to hijack your agent's tool access via untrusted context.
                                 </p>
                                 <div className="h-40 rounded-2xl bg-black overflow-hidden border-2 border-black">
@@ -192,16 +164,16 @@ export default function LandingPage() {
                                 </div>
                             </div>
 
-                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left">
+                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left hover:shadow-[10px_10px_0_0_#10b981] transition-all">
                                 <span className="text-[10px] font-black uppercase tracking-widest py-1 px-4 border border-black rounded-full">Cost Governance</span>
                                 <h4 className="text-3xl font-black italic leading-none">Unlimited Loop Protection.</h4>
                                 <p className="text-neutral-600 font-bold leading-relaxed">
-                                    Agents can get stuck in loops that drain $1000s in minutes. SupraWall's circuit breakers
+                                    Agents can get stuck in loops that drain $1000s in minutes. AgentGate's circuit breakers
                                     cut the power as soon as a repeat pattern is detected.
                                 </p>
                             </div>
 
-                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left">
+                            <div className="p-10 rounded-[3rem] border-2 border-black space-y-8 bg-neutral-50 text-left hover:shadow-[10px_10px_0_0_#10b981] transition-all">
                                 <span className="text-[10px] font-black uppercase tracking-widest py-1 px-4 border border-black rounded-full">Tool Sandboxing</span>
                                 <h4 className="text-3xl font-black italic leading-none">Dangerous Tool Guard.</h4>
                                 <p className="text-neutral-600 font-bold leading-relaxed">
@@ -216,8 +188,8 @@ export default function LandingPage() {
                 {/* 📐 FINAL CTA */}
                 <section className="py-40 px-6 bg-black relative text-center">
                     <div className="max-w-4xl mx-auto space-y-12">
-                        <h2 className="text-7xl md:text-[9rem] font-black uppercase italic leading-[0.8] tracking-tighter">STOP <br />GUESSING.</h2>
-                        <Link href="/login" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all inline-block shadow-[0_0_100px_rgba(16,185,129,0.3)]">
+                        <h2 className="text-7xl md:text-[9rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">STOP <br />GUESSING.</h2>
+                        <Link href="/login" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all inline-block shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-bounce font-mono">
                             SECURE YOUR SWARM →
                         </Link>
                     </div>
@@ -229,8 +201,8 @@ export default function LandingPage() {
                 <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16">
                     <div className="col-span-2 space-y-8">
                         <div className="flex items-center gap-3">
-                            <BrickWall className="w-8 h-8 text-emerald-500" />
-                            <span className="text-white font-black text-3xl uppercase italic tracking-tighter">SupraWall</span>
+                            <BrickWall className="w-8 h-8 text-emerald-400" />
+                            <span className="text-white font-black text-3xl uppercase italic tracking-tighter">AgentGate</span>
                         </div>
                         <p className="max-w-sm text-lg font-bold leading-tight uppercase italic opacity-60">
                             The security standard for autonomous AI agents. Scaling the zero-trust future.
@@ -255,8 +227,8 @@ export default function LandingPage() {
                         </ul>
                     </div>
                 </div>
-                <div className="max-w-7xl mx-auto pt-32 text-[10px] font-black uppercase tracking-[0.6em] text-center opacity-20">
-                    © 2026 SUPRAWALL • SECURING THE AUTONOMOUS FUTURE.
+                <div className="max-w-7xl mx-auto pt-32 text-[10px] font-black uppercase tracking-[0.6em] text-center opacity-20 italic">
+                    © 2026 AGENTGATE • SECURING THE AUTONOMOUS FUTURE.
                 </div>
             </footer>
         </div>

@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     description: "Agent Runtime Security (ARS) is the layer of protection between autonomous AI agents and your systems. Learn how to prevent prompt injection and unauthorized actions.",
     keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents"],
     openGraph: {
-        title: "What is Agent Runtime Security? | SupraWall Guide",
+        title: "What is Agent Runtime Security? | AgentGate Guide",
         description: "The complete guide to securing autonomous AI agents in production.",
     }
 };
@@ -22,7 +22,7 @@ export default function AgentRuntimeSecurityPage() {
         "description": "Agent Runtime Security (ARS) is the safety layer for AI agents that prevents malicious or accidental system damage via tool calling.",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "genre": "Security Guide",
         "keywords": "ai agents, security, runtime, guardrails"
@@ -84,10 +84,10 @@ export default function AgentRuntimeSecurityPage() {
                         <section className="space-y-8">
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white flex items-center gap-4">
                                 <Shield className="w-8 h-8 text-emerald-500" />
-                                The SupraWall Shield
+                                The AgentGate Shield
                             </h2>
                             <p className="text-lg leading-relaxed">
-                                SupraWall provides the missing governance layer for popular frameworks. By wrapping handlers in
+                                AgentGate provides the missing governance layer for popular frameworks. By wrapping handlers in
                                 <Link href="/integrations/langchain" className="text-emerald-500 font-bold hover:underline mx-1">LangChain</Link>,
                                 <Link href="/integrations/crewai" className="text-emerald-500 font-bold hover:underline mx-1">CrewAI</Link>, and
                                 <Link href="/integrations/autogen" className="text-emerald-500 font-bold hover:underline mx-1">AutoGen</Link>,
@@ -141,7 +141,7 @@ export default function AgentRuntimeSecurityPage() {
 
             <footer className="py-20 border-t border-white/5 text-center">
                 <p className="text-neutral-600 text-[10px] font-black uppercase tracking-[0.5em]">
-                    SupraWall © 2026 • Real-time Agent Governance
+                    AgentGate © 2026 • Real-time Agent Governance
                 </p>
             </footer>
         </div>

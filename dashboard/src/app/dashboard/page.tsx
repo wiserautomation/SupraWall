@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
-import { suprawall } from "@/lib/suprawall";
+import { agentgate } from "@/lib/agentgate";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
@@ -127,7 +127,7 @@ export default function AgentsPage() {
     }, [user]);
 
     const generateApiKey = () => {
-        return 'ga_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        return 'ag_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     };
 
     const createAgent = async () => {
@@ -153,8 +153,8 @@ export default function AgentsPage() {
                 status: 'active',
             };
 
-            // Replaced generic Firebase addDoc with our database-agnostic suprawall core SDK
-            await suprawall.agents.create(newAgent);
+            // Replaced generic Firebase addDoc with our database-agnostic agentgate core SDK
+            await agentgate.agents.create(newAgent);
             setNewAgentName("");
             setSelectedScopes([]);
             setIsCreateModalOpen(false);
@@ -181,13 +181,13 @@ export default function AgentsPage() {
         }
     };
 
-    const getNodeCode = (apiKey: string) => `import { protect } from '@suprawall/sdk';
+    const getNodeCode = (apiKey: string) => `import { protect } from '@agentgate/sdk';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 
 // 1. Initialize your Agent (LangChain, Vercel AI, etc.)
 const agent = createReactAgent({ llm, tools });
 
-// 2. Protect it with SupraWall (Zero-Config)
+// 2. Protect it with AgentGate (Zero-Config)
 const secured = protect(agent, {
   apiKey: "${apiKey}"
 });
@@ -195,7 +195,7 @@ const secured = protect(agent, {
 // 3. Run safely
 await secured.invoke({ messages: [...] });`;
 
-    const getPythonCode = (apiKey: string) => `from suprawall import secure
+    const getPythonCode = (apiKey: string) => `from agentgate import secure
 from langchain_openai import ChatOpenAI
 
 # 🛡️ Secure any LangChain agent with one decorator
@@ -206,7 +206,7 @@ def create_my_agent():
 agent = create_my_agent()
 agent.invoke({"messages": [...]})`;
 
-    const getCurlCode = (apiKey: string) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
+    const getCurlCode = (apiKey: string) => `curl -X POST https://api.agentgate.ai/v1/evaluate \\
   -H "Authorization: Bearer ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -641,7 +641,7 @@ agent.invoke({"messages": [...]})`;
                             Connect {selectedAgent?.name}
                         </DialogTitle>
                         <DialogDescription className="text-neutral-400">
-                            Copy and paste this code into your AI agent&apos;s codebase to secure it with GateAPI.
+                            Copy and paste this code into your AI agent&apos;s codebase to secure it with AgentGate.
                         </DialogDescription>
                     </DialogHeader>
 

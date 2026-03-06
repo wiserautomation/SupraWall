@@ -26,7 +26,7 @@ export default function PromptInjectionPage() {
             },
             {
                 "@type": "HowToStep",
-                "text": "Wrap your agent executor in a security shim like SupraWall."
+                "text": "Wrap your agent executor in a security shim like AgentGate."
             },
             {
                 "@type": "HowToStep",
@@ -102,14 +102,14 @@ export default function PromptInjectionPage() {
                         </div>
                     </section>
 
-                    {/* How SupraWall Defends */}
+                    {/* How AgentGate Defends */}
                     <section className="space-y-12">
                         <h2 className="text-4xl font-black uppercase italic tracking-tight text-white flex items-center gap-4">
                             <Zap className="w-8 h-8 text-emerald-500" />
                             Multi-Layer Defense
                         </h2>
                         <p className="text-lg text-neutral-400">
-                            SupraWall doesn't just look at the text; it looks at the <strong>Action</strong>. By wrapping frameworks like
+                            AgentGate doesn't just look at the text; it looks at the <strong>Action</strong>. By wrapping frameworks like
                             <Link href="/integrations/langchain" className="text-emerald-500 font-bold hover:underline mx-1">LangChain</Link>,
                             we intercept the tool selection process itself.
                         </p>
@@ -129,7 +129,7 @@ export default function PromptInjectionPage() {
                         <h2 className="text-4xl font-black uppercase italic tracking-tight text-white">1-Line Inoculation</h2>
                         <div className="bg-neutral-900 border border-white/10 rounded-[3rem] p-12 font-mono text-sm leading-relaxed overflow-hidden relative">
                             <div className="absolute top-0 right-0 p-6 opacity-10 text-[10px] font-black uppercase">Secure Wrapper</div>
-                            <p className="text-emerald-400">from <span className="text-white">suprawall</span> import <span className="text-white">protect</span></p>
+                            <p className="text-emerald-400">from <span className="text-white">agentgate</span> import <span className="text-white">protect</span></p>
                             <p className="text-neutral-500 mt-4"># Applies real-time injection behavior analysis</p>
                             <p className="text-white">secured_agent = protect(my_agent, mode="fail-closed")</p>
                         </div>

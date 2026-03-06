@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import AutoGenClient from "./AutoGenClient";
 
 export const metadata: Metadata = {
-    title: "Secure Microsoft AutoGen Agents | SupraWall Governance",
+    title: "Secure Microsoft AutoGen Agents | AgentGate Governance",
     description: "Enterprise security and runtime guardrails for Microsoft AutoGen. Block infinite loops, monitor inter-agent communication, and prevent dangerous code execution.",
     keywords: ["autogen agent policy", "secure autogen agents", "microsoft autogen security", "agent conversation audit"],
     openGraph: {
@@ -18,13 +18,13 @@ export default function AutoGenIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "SupraWall for AutoGen",
+        "name": "AgentGate for AutoGen",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/autogen",
+        "url": "https://www.agentgate.ai/integrations/autogen",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "description": "Runtime security and conversation auditing for Microsoft AutoGen multiple agent systems.",
         "featureList": [
@@ -82,7 +82,7 @@ export default function AutoGenIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
                                 AutoGen's greatest strength—its ability to write and run code—is also its greatest security risk.
-                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-purple-500 underline">runtime security protocol</Link>
+                                AgentGate's <Link href="/learn/what-is-agent-runtime-security" className="text-purple-500 underline">runtime security protocol</Link>
                                 intercepts the code output before the UserProxy can execute it, analyzing it for destructive patterns and potential
                                 data exfiltration commands.
                             </p>
@@ -103,7 +103,7 @@ export default function AutoGenIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
                                 Multi-agent systems can often get stuck in loops where agents continually pass errors back and forth,
-                                exhausting credit limits without making progress. SupraWall's governance engine monitors conversation
+                                exhausting credit limits without making progress. AgentGate's governance engine monitors conversation
                                 topological complexity and breaks these loops automatically when no utility gain is detected.
                             </p>
 
@@ -113,7 +113,7 @@ export default function AutoGenIntegrationPage() {
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "Initialize SupraWall SDK with AutoGen context",
+                                    "Initialize AgentGate SDK with AutoGen context",
                                     "Wrap the AssistantAgent and UserProxy executors",
                                     "Define script execution constraints (e.g., no internet for scripts)",
                                     "Configure maximum conversation turns before auto-termination",

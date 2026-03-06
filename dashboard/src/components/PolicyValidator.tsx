@@ -72,7 +72,7 @@ export function PolicyValidator() {
                     ) : isValid ? (
                         <div className="text-emerald-400 flex flex-col gap-2">
                             <Badge className="bg-emerald-500/20 text-emerald-500 border-none w-min"><Check className="w-3 h-3 mr-1" /> VALID</Badge>
-                            <span>Schema is fully compliant with SupraWall Policy Spec!</span>
+                            <span>Schema is fully compliant with AgentGate Policy Spec!</span>
                         </div>
                     ) : (
                         <div className="text-rose-400 flex flex-col gap-2">

@@ -1,7 +1,7 @@
 {
-    "name": "@suprawall/vue",
+    "name": "@agentgate/vue",
     "version": "0.1.0",
-    "description": "Drop-in Vue components for SupraWall.",
+    "description": "Drop-in Vue components for agentgate.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "peerDependencies": {

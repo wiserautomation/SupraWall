@@ -31,7 +31,7 @@ export default function NemoVsClient() {
                         <div className="w-10 h-10 rounded-full bg-emerald-500 flex items-center justify-center text-black font-black">
                             S
                         </div>
-                        <h3 className="font-black uppercase tracking-tight text-white italic">SupraWall Architecture</h3>
+                        <h3 className="font-black uppercase tracking-tight text-white italic">AgentGate Architecture</h3>
                     </div>
                     <div className="space-y-4 font-mono text-[10px] text-neutral-300">
                         <div className="p-3 bg-white/5 rounded-lg border border-white/5 text-center">User Prompt</div>

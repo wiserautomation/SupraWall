@@ -4,12 +4,12 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "AI Budget Control & Cost Guardrails | SupraWall",
+    title: "AI Budget Control & Cost Guardrails | AgentGate",
     description: "Enforce real-time budget caps on autonomous AI agents. Prevent credit drain with runtime cost circuit breakers and session-based spending limits.",
     keywords: ["ai budget control", "llm cost management", "agent spending limits", "secure ai orchestration", "token budget enforcement"],
     openGraph: {
-        title: "Real-time AI Cost Circuit Breakers | SupraWall",
-        description: "Don't let rogue agents exhaust your budget. SupraWall provides the industry's first runtime circuit breaker for LLM spending.",
+        title: "Real-time AI Cost Circuit Breakers | AgentGate",
+        description: "Don't let rogue agents exhaust your budget. AgentGate provides the industry's first runtime circuit breaker for LLM spending.",
     }
 };
 
@@ -21,14 +21,14 @@ export default function CostControlPage() {
         "description": "A technical overview of enforcing hard cost boundaries at the agent execution level using the AGPS protocol.",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "genre": "AI Governance",
         "publisher": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
-        "mainEntityOfPage": "https://www.supra-wall.com/use-cases/cost-control"
+        "mainEntityOfPage": "https://www.agentgate.ai/use-cases/cost-control"
     };
 
     const howToJsonLd = {
@@ -42,7 +42,7 @@ export default function CostControlPage() {
             },
             {
                 "@type": "HowToStep",
-                "text": "Shim the LLM provider calls using the SupraWall runtime interceptor."
+                "text": "Shim the LLM provider calls using the AgentGate runtime interceptor."
             },
             {
                 "@type": "HowToStep",
@@ -79,7 +79,7 @@ export default function CostControlPage() {
                         <div className="pt-6 border-l-4 border-emerald-500 pl-8">
                             <p className="text-xl md:text-2xl text-neutral-300 leading-snug font-medium italic">
                                 AI budget control is the real-time enforcement of spending limits on autonomous agents to prevent catastrophic API credit drain.
-                                SupraWall provides the runtime circuit breakers necessary to intercept token usage metrics and halt execution immediately when a session, user, or organization-level budget is exceeded.
+                                AgentGate provides the runtime circuit breakers necessary to intercept token usage metrics and halt execution immediately when a session, user, or organization-level budget is exceeded.
                             </p>
                         </div>
                     </div>
@@ -94,7 +94,7 @@ export default function CostControlPage() {
                             <p className="text-lg text-neutral-400 leading-relaxed">
                                 In a traditional cloud environment, a coding error triggers a timeout. In an agentic environment, a coding error triggers a $1,000 bill.
                                 Without <strong>runtime budget control</strong>, an agent performing high-token tasks (like large-scale data retrieval or deep reasoning) can exhaust a monthly quota in minutes.
-                                SupraWall shifts cost management from *reactive alerting* (emailing you after the spend) to *proactive enforcement* (blocking the tool call before it happens).
+                                AgentGate shifts cost management from *reactive alerting* (emailing you after the spend) to *proactive enforcement* (blocking the tool call before it happens).
                             </p>
 
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8">
@@ -121,7 +121,7 @@ export default function CostControlPage() {
                                 How Runtime Circuit Breakers Work
                             </h2>
                             <p className="text-lg text-neutral-400">
-                                SupraWall treats API cost as a first-class security primitive.
+                                AgentGate treats API cost as a first-class security primitive.
                                 By shimming the <Link href="/spec" className="text-emerald-400 font-bold hover:underline">AGPS Spec</Link> into your agent framework,
                                 we inject a governance layer into the <code className="text-emerald-400">on_token_usage</code> lifecycle event.
                             </p>
@@ -129,7 +129,7 @@ export default function CostControlPage() {
                             <div className="bg-neutral-900 rounded-[2rem] p-8 border border-white/5 relative group overflow-hidden">
                                 <div className="absolute top-4 right-6 text-[10px] font-mono text-neutral-600 uppercase">Implementation: Async Budget Guard</div>
                                 <pre className="font-mono text-sm leading-relaxed text-emerald-400/80">
-                                    {`from suprawall.core import BudgetGuard
+                                    {`from agentgate.core import BudgetGuard
 
 # 🛡️ Initialize a $2.00 hard cap circuit breaker
 guard = BudgetGuard(
@@ -140,7 +140,7 @@ guard = BudgetGuard(
 
 async def run_agent(task):
     async with guard.session():
-        # SupraWall shims the underlying LLM calls
+        # AgentGate shims the underlying LLM calls
         # If cumulative spend > $2.00, raises QuotaExceededException
         response = await agent.arun(task)
         return response`}
@@ -153,7 +153,7 @@ async def run_agent(task):
                                 Governance Strategies
                             </h2>
                             <p className="text-lg text-neutral-400">
-                                Effective <strong>ai budget control</strong> requires tiered enforcement. SupraWall models these as distinct policy actions:
+                                Effective <strong>ai budget control</strong> requires tiered enforcement. AgentGate models these as distinct policy actions:
                             </p>
                             <div className="space-y-4">
                                 <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 flex gap-6 items-start">
@@ -182,7 +182,7 @@ async def run_agent(task):
                                     "Set session-level hard dollar caps on all playground/testing agents.",
                                     "Link budget policies to specific organizational API keys.",
                                     "Enable 'Downgrade' mode for high-volume customer support agents.",
-                                    "Audit spend real-time via the SupraWall console rather than monthly reports."
+                                    "Audit spend real-time via the AgentGate console rather than monthly reports."
                                 ].map((item, idx) => (
                                     <li key={idx} className="flex gap-4 items-start">
                                         <CheckCircle2 className="w-5 h-5 text-emerald-500 mt-1 shrink-0" />

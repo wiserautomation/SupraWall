@@ -16,13 +16,13 @@ export default function SpecPage() {
         "description": "An open standard for intercepting and governing AI agent tool calls.",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "publisher": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
-        "mainEntityOfPage": "https://www.supra-wall.com/spec"
+        "mainEntityOfPage": "https://www.agentgate.ai/spec"
     };
 
     return (

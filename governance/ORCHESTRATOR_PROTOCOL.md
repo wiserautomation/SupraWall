@@ -1,6 +1,6 @@
-# SupraWall Orchestration Protocol (Level 3 — Admin Integrated)
+# agentgate Orchestration Protocol (Level 3 — Admin Integrated)
 
-This document defines the operational workflow for the SupraWall AI Content & SEO System.
+This document defines the operational workflow for the agentgate AI Content & SEO System.
 
 ## 🧠 System Memory
 The agents operate using a dual-state system:

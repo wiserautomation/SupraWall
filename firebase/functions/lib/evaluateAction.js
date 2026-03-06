@@ -104,7 +104,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     console.warn(`Failed to update organization ${ownerId}:`, err.message);
                 }));
             }
-            Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
+            Promise.all(updates).catch((e) => console.error("agentgate: Non-critical write failed:", e));
             res.status(200).json(Object.assign(Object.assign({}, decision), { estimated_cost_usd: estimatedCost }));
             return;
         }
@@ -158,8 +158,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
         }
     }
     catch (e) {
-        console.error("SupraWall evaluateAction error:", e);
-        res.status(500).json({ error: "Internal SupraWall error.", decision: "DENY" });
+        console.error("agentgate evaluateAction error:", e);
+        res.status(500).json({ error: "Internal agentgate error.", decision: "DENY" });
     }
 });
 // ── Connect Helpers ────────────────────────────────────────────────────────

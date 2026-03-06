@@ -4,5 +4,5 @@ Disallow: /admin
 Disallow: /api
 Disallow: /dashboard
 
-Sitemap: https://www.supra-wall.com/sitemap.xml
-LLMs: https://www.supra-wall.com/llms.txt
+Sitemap: https://www.agentgate.com/sitemap.xml
+LLMs: https://www.agentgate.com/llms.txt

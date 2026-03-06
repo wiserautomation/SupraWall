@@ -139,7 +139,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 );
             }
 
-            Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
+            Promise.all(updates).catch((e) => console.error("agentgate: Non-critical write failed:", e));
 
             res.status(200).json({ ...decision, estimated_cost_usd: estimatedCost });
             return;
@@ -294,6 +294,23 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                         estimatedCostUsd: estimatedCost
                     });
                     requestId = newReq.id;
+
+                    // ── Trigger Slack Notification ──
+                    const orgSnap = await db.collection("organizations").doc(userId).get();
+                    const slackUrl = orgSnap.data()?.slackWebhookUrl;
+                    if (slackUrl) {
+                        try {
+                            await sendSlackNotification(slackUrl, {
+                                requestId,
+                                agentName: agentData.name || "Unknown Agent",
+                                toolName,
+                                arguments: argsString,
+                                estimatedCost
+                            });
+                        } catch (err) {
+                            console.error("[AgentGate] Slack notification failed:", err);
+                        }
+                    }
                 }
 
                 await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole);
@@ -337,8 +354,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
 
     } catch (e) {
-        console.error("SupraWall evaluateAction error:", e);
-        res.status(500).json({ error: "Internal SupraWall error.", decision: "DENY" });
+        console.error("AgentGate evaluateAction error:", e);
+        res.status(500).json({ error: "Internal AgentGate error.", decision: "DENY" });
     }
 });
 
@@ -420,6 +437,64 @@ function estimateActionCost(args: any, toolName: string, model: string = "gpt-4o
     const tokens = Math.ceil(payloadLength / 4) + 50; // +50 tokens for tool overhead
     const costPerToken = 0.00000015; // $0.15 per 1M tokens
     return parseFloat((tokens * costPerToken).toFixed(8));
+}
+
+async function sendSlackNotification(url: string, data: { requestId: string, agentName: string, toolName: string, arguments: string, estimatedCost: number }) {
+    const dashboardUrl = "https://agent-gate.vercel.app/approvals";
+
+    // Slack Block Kit message for a premium look
+    const payload = {
+        blocks: [
+            {
+                type: "header",
+                text: {
+                    type: "plain_text",
+                    text: "🛡️ AgentGate: Action Approval Required",
+                    emoji: true
+                }
+            },
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: `*Agent:* ${data.agentName}\n*Tool:* \`${data.toolName}\`\n*Estimated Cost:* $${data.estimatedCost.toFixed(4)}`
+                }
+            },
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: `*Arguments:*\n\`\`\`${data.arguments.slice(0, 1000)}${data.arguments.length > 1000 ? '...' : ''}\`\`\``
+                }
+            },
+            {
+                type: "actions",
+                elements: [
+                    {
+                        type: "button",
+                        text: {
+                            type: "plain_text",
+                            text: "Review in Dashboard",
+                            emoji: true
+                        },
+                        url: dashboardUrl,
+                        style: "primary",
+                        action_id: "review_action"
+                    }
+                ]
+            }
+        ]
+    };
+
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+        throw new Error(`Slack API error: ${response.statusText}`);
+    }
 }
 
 function sanitizeArgs(args: any): any {

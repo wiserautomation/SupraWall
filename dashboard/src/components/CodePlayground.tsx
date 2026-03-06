@@ -23,7 +23,7 @@ export function CodePlayground({
         // Simulate execution based on policy
         setTimeout(() => {
             const logs: { type: string; decision?: string; text: string }[] = [
-                { type: "sys", text: `[Initialization] SupraWall attached to ${framework} agent.` },
+                { type: "sys", text: `[Initialization] AgentGate attached to ${framework} agent.` },
                 { type: "sys", text: `[Attempt] Executing tool call: os.run("ls -la")` },
             ];
 
@@ -32,7 +32,7 @@ export function CodePlayground({
                 logs.push({ type: "out", text: "total 42\ndrwxr-xr-x 1 user group 4096 .." });
             } else if (policyMode === "DENY") {
                 logs.push({ type: "decision", decision: "DENY", text: "Policy check failed: Tool 'os.run' explicitly denied" });
-                logs.push({ type: "err", text: "Error: SupraWall blocked execution of 'os.run'" });
+                logs.push({ type: "err", text: "Error: AgentGate blocked execution of 'os.run'" });
             } else {
                 logs.push({ type: "decision", decision: "REQUIRE_APPROVAL", text: "Policy check paused: Tool 'os.run' requires human approval" });
                 logs.push({ type: "sys", text: "Agent execution paused waiting for dashboard approval." });
@@ -80,7 +80,7 @@ export function CodePlayground({
                         className="w-full mt-2 py-2 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-md text-sm font-medium transition-all"
                     >
                         {isRunning ? <Terminal className="w-4 h-4 animate-bounce" /> : <Play className="w-4 h-4" />}
-                        {isRunning ? "Executing..." : "Run with SupraWall"}
+                        {isRunning ? "Executing..." : "Run with AgentGate"}
                     </button>
                 </div>
                 <div className="flex-1 p-4 font-mono text-xs overflow-y-auto space-y-2 h-48 md:h-auto">

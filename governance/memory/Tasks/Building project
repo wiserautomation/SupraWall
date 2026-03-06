@@ -1,4 +1,4 @@
-SupraWall Project
+agentgate Project
 What I Told You To Build:
 text
 "Agent Identity + Permissions API"
@@ -10,7 +10,7 @@ text
 - Network effect from shared threat intelligence
 What You Actually Built:
 text
-AgentGate/AgentGuard/SupraWall (pick one!)
+AgentGate/AgentGuard/agentgate (pick one!)
 - Basic tool call interception
 - Simple regex pattern matching ("rm -rf" → DENY)
 - Firebase CRUD dashboard

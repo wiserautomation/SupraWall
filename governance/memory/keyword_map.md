@@ -1,5 +1,5 @@
 # keyword_map.md
-# SupraWall Keyword Distribution (Anti-Cannibalization)
+# agentgate Keyword Distribution (Anti-Cannibalization)
 
 | Primary Keyword | Target URL | Search Volume (AI) | Target Intent | Global Diff |
 |:---|:---|:---|:---|:---|

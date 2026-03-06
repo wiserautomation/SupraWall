@@ -21,7 +21,7 @@ export default function VercelClient() {
                             </div>
                             <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Edge-Level Governance</h2>
                             <p className="text-neutral-400 font-medium">
-                                Vercel AI SDK powers high-performance streaming agents. SupraWall integrates with the `tool` definition to provide pre-execution verification at the edge, ensuring zero-latency security.
+                                Vercel AI SDK powers high-performance streaming agents. AgentGate integrates with the `tool` definition to provide pre-execution verification at the edge, ensuring zero-latency security.
                             </p>
                         </motion.div>
 

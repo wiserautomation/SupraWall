@@ -5,11 +5,11 @@ import { Metadata } from "next";
 import LangChainClient from "./LangChainClient";
 
 export const metadata: Metadata = {
-    title: "Security for LangChain Agents | SupraWall Guide",
-    description: "Learn how to secure LangChain agents with runtime guardrails, policy enforcement, and audit logging using SupraWall. Prevent prompt injection and rogue tool execution.",
+    title: "Security for LangChain Agents | AgentGate Guide",
+    description: "Learn how to secure LangChain agents with runtime guardrails, policy enforcement, and audit logging using AgentGate. Prevent prompt injection and rogue tool execution.",
     keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection"],
     openGraph: {
-        title: "Security for LangChain Agents | SupraWall",
+        title: "Security for LangChain Agents | AgentGate",
         description: "The official security layer for the LangChain ecosystem. Prevent destructive tool usage with zero performance impact.",
     }
 };
@@ -18,18 +18,18 @@ export default function LangChainIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "SupraWall for LangChain",
+        "name": "AgentGate for LangChain",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/langchain",
+        "url": "https://www.agentgate.ai/integrations/langchain",
         "author": {
             "@type": "Organization",
-            "name": "SupraWall"
+            "name": "AgentGate"
         },
         "description": "Enterprise security and runtime guardrails for LangChain agents and chains.",
         "sameAs": [
-            "https://github.com/suprawall",
-            "https://pypi.org/project/suprawall"
+            "https://github.com/agentgate",
+            "https://pypi.org/project/agentgate"
         ],
         "featureList": [
             "Tool Execution Policy",
@@ -48,15 +48,15 @@ export default function LangChainIntegrationPage() {
                 "name": "How do I secure a LangChain agent?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "You can secure a LangChain agent by using a runtime security layer like SupraWall. It intercepts tool calls via callbacks to verify them against your security policies before execution."
+                    "text": "You can secure a LangChain agent by using a runtime security layer like AgentGate. It intercepts tool calls via callbacks to verify them against your security policies before execution."
                 }
             },
             {
                 "@type": "Question",
-                "name": "Does SupraWall slow down LangChain performance?",
+                "name": "Does AgentGate slow down LangChain performance?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "No, SupraWall is designed for low-latency interception. Policies are evaluated locally or via an optimized edge firewall, ensuring near-zero impact on agent response times."
+                    "text": "No, AgentGate is designed for low-latency interception. Policies are evaluated locally or via an optimized edge firewall, ensuring near-zero impact on agent response times."
                 }
             }
         ]
@@ -93,7 +93,7 @@ export default function LangChainIntegrationPage() {
                         <div className="max-w-3xl mx-auto">
                             <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
                                 LangChain agent security is critical for production AI systems to prevent prompt injection and unauthorized shell access.
-                                SupraWall provides a zero-trust runtime security layer that intercepts and validates every tool call against enterprise-grade policies,
+                                AgentGate provides a zero-trust runtime security layer that intercepts and validates every tool call against enterprise-grade policies,
                                 ensuring your agents operate within safe boundaries.
                             </p>
                         </div>
@@ -117,18 +117,18 @@ export default function LangChainIntegrationPage() {
                             </p>
                             <div className="bg-neutral-900 rounded-3xl p-8 border border-white/5 font-mono text-emerald-400">
                                 <p># Python</p>
-                                <p className="mb-4">pip install <span className="text-white font-bold">suprawall</span></p>
+                                <p className="mb-4">pip install <span className="text-white font-bold">agentgate</span></p>
                                 <p className="text-neutral-500"># and wrap your executor</p>
-                                <p>from <span className="text-white">suprawall.langchain</span> import <span className="text-white">protect</span></p>
+                                <p>from <span className="text-white">agentgate.langchain</span> import <span className="text-white">protect</span></p>
                                 <p>secured_agent = protect(agent_executor)</p>
                             </div>
 
                             {/* H2: SPEC REQUIRED */}
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-8">
-                                What SupraWall Intercepts
+                                What AgentGate Intercepts
                             </h2>
                             <p className="text-lg text-neutral-400">
-                                SupraWall sits between the LLM and the environment. When an autonomous agent decides to use a tool,
+                                AgentGate sits between the LLM and the environment. When an autonomous agent decides to use a tool,
                                 our callback handler triggers.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-20">
@@ -150,7 +150,7 @@ export default function LangChainIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
                                 Autonomous agents are vulnerable to indirect prompt injection through search results or file reading.
-                                SupraWall specifically monitors the <span className="text-white font-mono">AgentAction</span> payload
+                                AgentGate specifically monitors the <span className="text-white font-mono">AgentAction</span> payload
                                 to verify the intent matches the assigned policy for the current user session.
                             </p>
 

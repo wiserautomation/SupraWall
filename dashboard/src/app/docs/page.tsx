@@ -9,7 +9,7 @@ export default function DocsPage() {
                     <BookOpen className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white drop-shadow-sm">
-                    SupraWall Documentation
+                    AgentGate Documentation
                 </h1>
                 <p className="text-xl text-neutral-400 max-w-2xl leading-relaxed">
                     The open standard for AI agent security. Learn how to secure, monitor, and govern your agents in less than 5 minutes.

@@ -36,7 +36,7 @@ export default function ConnectPage() {
                     <div className="inline-flex p-3 bg-emerald-50 rounded-full mb-4">
                         <BrickWall className="w-8 h-8 text-emerald-600" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Set up SupraWall Connect</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">Set up AgentGate Connect</h1>
                     <p className="text-gray-500 mt-2">
                         Issue security keys to your customers. Govern all their agents
                         from one place.
@@ -108,7 +108,7 @@ export default function ConnectPage() {
             <div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">
-                        SupraWall Connect
+                        AgentGate Connect
                     </h1>
                     <p className="text-gray-500 text-sm mt-1">
                         Platform: <span className="font-medium text-gray-700">{platform.name}</span>
