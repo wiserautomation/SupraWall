@@ -1,0 +1,17 @@
+name: SupraWall Security
+id: suprawall-security
+version: 1.0.0
+description: "Zero-trust execution security for AI agents. Intercepts tool calls, enforces policies, and prevents destructive, runaway, or unauthorized agent actions."
+author: SupraWall
+homepage: https://www.supra-wall.com
+icon: icon.png
+config:
+  SUPRAWALL_API_KEY:
+    type: string
+    description: "Your SupraWall API Key from https://app.supra-wall.com/settings"
+    required: true
+    secret: true
+capabilities:
+  - slash_commands
+  - mcp_server
+  - sub_agent

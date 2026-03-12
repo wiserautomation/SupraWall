@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import {
     Activity, Shield, ShieldAlert, CheckCircle2, Clock, Search,
     Download, Filter, AlertTriangle, Hash, TrendingUp, XCircle,
-    ChevronDown, ChevronUp, Eye, Fingerprint, ShieldCheck
+    ChevronDown, ChevronUp, Eye, Fingerprint, ShieldCheck, FileText, Calendar, Users
 } from "lucide-react";
 import { Agent, AuditLog } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,6 +34,25 @@ export default function ForensicAuditPage() {
 
     // Detail panel
     const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
+
+    // Compliance export modal
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [exportFrom, setExportFrom] = useState(() => {
+        const d = new Date(Date.now() - 30 * 86_400_000);
+        return d.toISOString().split("T")[0];
+    });
+    const [exportTo, setExportTo] = useState(() => new Date().toISOString().split("T")[0]);
+    const [exportAgentId, setExportAgentId] = useState("ALL");
+
+    const downloadCompliancePDF = () => {
+        const apiUrl = process.env.NEXT_PUBLIC_AGENTGATE_API_URL || "http://localhost:3000";
+        const url = new URL(`${apiUrl}/v1/compliance/report`);
+        url.searchParams.set("from", exportFrom);
+        url.searchParams.set("to", exportTo);
+        if (exportAgentId !== "ALL") url.searchParams.set("agentId", exportAgentId);
+        window.open(url.toString(), "_blank");
+        setShowExportModal(false);
+    };
 
     // Fetch agents
     useEffect(() => {
@@ -219,14 +238,121 @@ export default function ForensicAuditPage() {
                         </div>
                     </div>
                 </div>
-                <button
-                    onClick={exportCSV}
-                    disabled={filteredLogs.length === 0}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/30 rounded-xl text-sm font-medium text-white transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed group"
-                >
-                    <Download className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-                    Export CSV
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={exportCSV}
+                        disabled={filteredLogs.length === 0}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.08] hover:border-emerald-500/30 rounded-xl text-sm font-medium text-white transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed group"
+                    >
+                        <Download className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
+                        Export CSV
+                    </button>
+                    <button
+                        onClick={() => setShowExportModal(true)}
+                        className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-sm font-medium text-emerald-400 transition-all duration-300 group"
+                    >
+                        <FileText className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        Compliance Report
+                    </button>
+                </div>
+
+                {/* Compliance Export Modal */}
+                <AnimatePresence>
+                    {showExportModal && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+                            onClick={(e) => e.target === e.currentTarget && setShowExportModal(false)}
+                        >
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                                transition={{ duration: 0.2 }}
+                                className="bg-neutral-950 border border-white/[0.08] rounded-2xl p-6 w-full max-w-md shadow-2xl"
+                            >
+                                <div className="flex items-center justify-between mb-5">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
+                                            <FileText className="w-5 h-5 text-emerald-400" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-base font-semibold text-white">Export Compliance Report</h2>
+                                            <p className="text-xs text-neutral-500 mt-0.5">Human Oversight Evidence Report (PDF)</p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() => setShowExportModal(false)}
+                                        className="text-neutral-500 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
+                                    >
+                                        <XCircle className="w-4 h-4" />
+                                    </button>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-2 gap-3">
+                                        <div>
+                                            <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 mb-1.5">
+                                                <Calendar className="w-3.5 h-3.5" /> From
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={exportFrom}
+                                                onChange={(e) => setExportFrom(e.target.value)}
+                                                className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 mb-1.5">
+                                                <Calendar className="w-3.5 h-3.5" /> To
+                                            </label>
+                                            <input
+                                                type="date"
+                                                value={exportTo}
+                                                onChange={(e) => setExportTo(e.target.value)}
+                                                className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="flex items-center gap-1.5 text-xs font-medium text-neutral-400 mb-1.5">
+                                            <Users className="w-3.5 h-3.5" /> Agent
+                                        </label>
+                                        <select
+                                            value={exportAgentId}
+                                            onChange={(e) => setExportAgentId(e.target.value)}
+                                            className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/30 transition-all appearance-none cursor-pointer"
+                                        >
+                                            <option value="ALL">All Agents</option>
+                                            {agents.map((a) => (
+                                                <option key={a.id} value={a.id}>{a.name}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 flex gap-3">
+                                    <button
+                                        onClick={() => setShowExportModal(false)}
+                                        className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] rounded-xl text-sm font-medium text-neutral-400 hover:text-white transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={downloadCompliancePDF}
+                                        className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-emerald-500/15 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-sm font-semibold text-emerald-400 transition-all"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                        Download PDF
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* Stats Grid */}

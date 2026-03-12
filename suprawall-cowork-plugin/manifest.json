@@ -1,0 +1,26 @@
+{
+    "id": "suprawall-security",
+    "version": "1.0.0",
+    "name": "SupraWall Security",
+    "description": "Deterministic control plane for AI agents. Intercepts tool calls and enforces zero-trust execution policies.",
+    "author": "SupraWall",
+    "homepage": "https://www.supra-wall.com",
+    "repository": "https://github.com/supra-wall/cowork-plugin",
+    "icon": "icon.png",
+    "permissions": [
+        "slash_commands",
+        "mcp_tools",
+        "sub_agent_monitoring"
+    ],
+    "config_definitions": {
+        "SUPRAWALL_API_KEY": {
+            "type": "string",
+            "required": true,
+            "description": "Your API key from supra-wall.com"
+        }
+    },
+    "scopes": [
+        "tool_interception",
+        "audit_log_read"
+    ]
+}

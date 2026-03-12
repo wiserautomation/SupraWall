@@ -20,7 +20,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AuditLog } from "@/types/database";
 import { format } from "date-fns";
 
-export default function AgentsPage() {
+export default function OverviewPage() {
     const [user] = useAuthState(auth);
     const [agents, setAgents] = useState<Agent[]>([]);
     const [loading, setLoading] = useState(true);
@@ -181,37 +181,38 @@ export default function AgentsPage() {
         }
     };
 
-    const getNodeCode = (apiKey: string) => `import { protect } from '@agentgate/sdk';
+    const getNodeCode = (apiKey: string) => `import { protect } from '@agentgate/langchain';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 
-// 1. Initialize your Agent (LangChain, Vercel AI, etc.)
+// 1. Initialize your LangGraph Agent
 const agent = createReactAgent({ llm, tools });
 
-// 2. Protect it with AgentGate (Zero-Config)
+// 2. Wrap it with AgentGate (Zero-Config)
 const secured = protect(agent, {
-  apiKey: "${apiKey}"
+  apiKey: "${apiKey}",
+  riskThreshold: 70 // Optional: block actions >= 70 risk score
 });
 
-// 3. Run safely
+// 3. Run safely - Forensic logs are automatically streamed
 await secured.invoke({ messages: [...] });`;
 
-    const getPythonCode = (apiKey: string) => `from agentgate import secure
-from langchain_openai import ChatOpenAI
+    const getPythonCode = (apiKey: string) => `from agentgate import protect
+from langgraph.prebuilt import create_react_agent
 
-# 🛡️ Secure any LangChain agent with one decorator
-@secure(api_key="${apiKey}")
-def create_my_agent():
-    return create_react_agent(llm, tools)
+# 🛡️ Secure any LangGraph agent with one wrapper
+agent = create_react_agent(llm, tools)
+secured = protect(agent, api_key="${apiKey}")
 
-agent = create_my_agent()
-agent.invoke({"messages": [...]})`;
+# That's it. Tool usage is now governed.
+secured.invoke({"messages": [...]})`;
 
     const getCurlCode = (apiKey: string) => `curl -X POST https://api.agentgate.ai/v1/evaluate \\
   -H "Authorization: Bearer ${apiKey}" \\
   -H "Content-Type: application/json" \\
   -d '{
     "toolName": "bash_tool",
-    "args": { "command": "rm -rf /" }
+    "args": { "command": "rm -rf /" },
+    "agentRole": "customer-support"
   }'`;
 
     return (

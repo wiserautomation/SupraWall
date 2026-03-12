@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { initDb } from "./db";
 import { evaluatePolicy } from "./policy";
+import complianceRouter from "./routes/compliance";
 
 dotenv.config();
 
@@ -17,6 +18,9 @@ app.get("/health", (req, res) => res.status(200).json({ status: "ok" }));
 
 // Policy Evaluation Webhook
 app.post("/v1/evaluate", evaluatePolicy);
+
+// Compliance Routes
+app.use("/v1/compliance", complianceRouter);
 
 const startServer = async () => {
     try {

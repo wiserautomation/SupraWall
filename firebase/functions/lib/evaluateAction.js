@@ -5,6 +5,7 @@ const https_1 = require("firebase-functions/v2/https");
 const admin = require("firebase-admin");
 const firestore_1 = require("firebase-admin/firestore");
 const genai_1 = require("@google/genai");
+const crypto = require("crypto");
 if (!admin.apps.length) {
     admin.initializeApp();
 }
@@ -25,6 +26,11 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
     const args = body.args;
     const sessionId = body.sessionId || null;
     const agentRole = body.agentRole || null;
+    const model = body.model || "gpt-4o-mini";
+    const inputTokens = body.inputTokens || 0;
+    const outputTokens = body.outputTokens || 0;
+    const clientReportedCost = body.costUsd || null;
+    const isLoopDetectedByClient = body.isLoop || false;
     const startTime = Date.now();
     if (!apiKey || !toolName || args === undefined) {
         res.status(400).json({ error: "apiKey and toolName are required." });
@@ -71,7 +77,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             // Policy evaluation
             const decision = evaluatePolicies(toolName, args, effectiveRules);
             // Cost estimation
-            const estimatedCost = estimateActionCost(args, toolName);
+            const estimatedCost = clientReportedCost !== null && clientReportedCost !== void 0 ? clientReportedCost : estimateActionCost(args, toolName, model, inputTokens, outputTokens);
             const latencyMs = Date.now() - startTime;
             // Update usage counters and write audit log (non-blocking)
             const updates = [
@@ -90,7 +96,21 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     reason: (_f = decision.reason) !== null && _f !== void 0 ? _f : null,
                     latencyMs,
                     costUsd: estimatedCost,
+                    isLoop: isLoopDetectedByClient,
                     timestamp: firestore_1.FieldValue.serverTimestamp(),
+                }),
+                // ── Global Stats Update (for ROI Counter) ──
+                db.collection("global_stats").doc("aggregate").update({
+                    totalInteractions: firestore_1.FieldValue.increment(1),
+                    totalDollarsSaved: decision.decision === "DENY" ? firestore_1.FieldValue.increment(2.50) : firestore_1.FieldValue.increment(0),
+                    rogueActionsBlocked: decision.decision === "DENY" ? firestore_1.FieldValue.increment(1) : firestore_1.FieldValue.increment(0),
+                }).catch(() => {
+                    // Fallback to set if doc doesn't exist
+                    db.collection("global_stats").doc("aggregate").set({
+                        totalInteractions: 1,
+                        totalDollarsSaved: decision.decision === "DENY" ? 2.50 : 0,
+                        rogueActionsBlocked: decision.decision === "DENY" ? 1 : 0
+                    }, { merge: true });
                 })
             ];
             // If we found an owner, increment their monthly billing counter
@@ -121,6 +141,77 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
             const userId = agentDoc.data().userId;
+            const agentData = agentDoc.data();
+            // ── 1.5 Agent Status Check ──
+            if (agentData.status && agentData.status !== 'active') {
+                await logAudit(agentId, toolName, argsString, "DENY", 0, `Agent is ${agentData.status}`, sessionId, agentRole);
+                res.status(403).json({ decision: "DENY", reason: `Agent is ${agentData.status}. Contact your administrator.` });
+                return;
+            }
+            // ── 1.6 Scope Enforcement (Principle of Least Privilege) ──
+            const agentScopes = agentData.scopes;
+            if (agentScopes && agentScopes.length > 0) {
+                const hasScope = agentScopes.some(scope => {
+                    if (scope === '*:*')
+                        return true; // wildcard: all access
+                    const [ns, action] = scope.split(':');
+                    if (action === '*') {
+                        // namespace wildcard: e.g. "crm:*" matches "crm:read", "crm:write"
+                        return toolName.startsWith(ns + ':') || toolName.startsWith(ns + '_');
+                    }
+                    // exact match or prefix match (e.g., scope "email:send" matches tool "email:send" or "email_send")
+                    return toolName === scope || toolName === `${ns}_${action}`;
+                });
+                if (!hasScope) {
+                    const reason = `Agent lacks scope for tool '${toolName}'. Granted scopes: [${agentScopes.join(', ')}]`;
+                    await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                    res.status(403).json({ decision: "DENY", reason });
+                    return;
+                }
+            }
+            // ── 1.7 Scope Limits Enforcement (Per-Scope Rate Limiting) ──
+            const scopeLimits = agentData.scopeLimits;
+            if (scopeLimits) {
+                // Find the matching scope limit for this tool
+                const matchingLimit = Object.entries(scopeLimits).find(([scopeKey]) => {
+                    if (scopeKey === '*:*')
+                        return true;
+                    const [ns, action] = scopeKey.split(':');
+                    if (action === '*') {
+                        return toolName.startsWith(ns + ':') || toolName.startsWith(ns + '_');
+                    }
+                    return toolName === scopeKey || toolName === `${ns}_${action}`;
+                });
+                if (matchingLimit) {
+                    const [scopeKey, limits] = matchingLimit;
+                    // Check each time-window limit
+                    const timeWindows = [
+                        { key: 'max_per_minute', label: 'minute', ms: 60 * 1000 },
+                        { key: 'max_per_hour', label: 'hour', ms: 60 * 60 * 1000 },
+                        { key: 'max_per_day', label: 'day', ms: 24 * 60 * 60 * 1000 },
+                    ];
+                    for (const tw of timeWindows) {
+                        const maxCalls = limits[tw.key];
+                        if (maxCalls !== undefined && maxCalls !== null) {
+                            const since = new Date(Date.now() - tw.ms);
+                            const recentCalls = await db.collection("auditLogs")
+                                .where("agentId", "==", agentId)
+                                .where("toolName", "==", toolName)
+                                .where("decision", "==", "ALLOW")
+                                .where("timestamp", ">=", admin.firestore.Timestamp.fromDate(since))
+                                .count()
+                                .get();
+                            const count = recentCalls.data().count;
+                            if (count >= maxCalls) {
+                                const reason = `Scope limit exceeded for '${scopeKey}': ${count}/${maxCalls} calls per ${tw.label}. Try again later.`;
+                                await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                                res.status(429).json({ decision: "DENY", reason });
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
             // 2. Query policies for this agent and toolName
             const policiesSnapshot = await db.collection("policies")
                 .where("agentId", "==", agentId)
@@ -139,11 +230,79 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     }
                 }
             }
-            // 4. Log the audit event
-            const estimatedCost = estimateActionCost(args, toolName);
-            // 5. Update usage counters (non-blocking)
+            // 4. Cost estimation (moved up)
+            const estimatedCost = clientReportedCost !== null && clientReportedCost !== void 0 ? clientReportedCost : estimateActionCost(args, toolName, model, inputTokens, outputTokens);
+            // ── 5. Handle Approval Flow ──
+            if (finalDecision === "REQUIRE_APPROVAL") {
+                // Check if an identical pending request already exists for this agent
+                const existingReq = await db.collection("approvalRequests")
+                    .where("agentId", "==", agentId)
+                    .where("toolName", "==", toolName)
+                    .where("arguments", "==", argsString)
+                    .where("status", "==", "pending")
+                    .limit(1)
+                    .get();
+                let requestId;
+                if (!existingReq.empty) {
+                    requestId = existingReq.docs[0].id;
+                }
+                else {
+                    const newReq = await db.collection("approvalRequests").add({
+                        userId, // shared with the organization owner
+                        agentId,
+                        agentName: agentData.name || "Unknown Agent",
+                        toolName,
+                        arguments: argsString,
+                        sessionId,
+                        agentRole,
+                        status: "pending",
+                        createdAt: firestore_1.FieldValue.serverTimestamp(),
+                        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 24 * 60 * 60 * 1000)), // 24h
+                        estimatedCostUsd: estimatedCost
+                    });
+                    requestId = newReq.id;
+                    // ── Trigger Slack Notification ──
+                    const orgSnap = await db.collection("organizations").doc(userId).get();
+                    const orgData = orgSnap.data();
+                    const slackUrl = orgData === null || orgData === void 0 ? void 0 : orgData.slackWebhookUrl;
+                    const contactEmail = (orgData === null || orgData === void 0 ? void 0 : orgData.contactEmail) || (orgData === null || orgData === void 0 ? void 0 : orgData.email);
+                    if (slackUrl) {
+                        try {
+                            await sendSlackNotification(slackUrl, {
+                                requestId,
+                                agentName: agentData.name || "Unknown Agent",
+                                toolName,
+                                arguments: argsString,
+                                estimatedCost
+                            });
+                        }
+                        catch (err) {
+                            console.error("[AgentGate] Slack notification failed:", err);
+                        }
+                    }
+                    // ── Trigger Email Alert ──
+                    if (contactEmail && (orgData === null || orgData === void 0 ? void 0 : orgData.emailAlertsEnabled) !== false) {
+                        try {
+                            await sendEmailNotification(contactEmail, {
+                                requestId,
+                                agentName: agentData.name || "Unknown Agent",
+                                toolName,
+                                arguments: argsString,
+                                estimatedCost
+                            });
+                        }
+                        catch (err) {
+                            console.error("[AgentGate] Email alert failed:", err);
+                        }
+                    }
+                }
+                await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole);
+                res.json({ decision: "REQUIRE_APPROVAL", reason: "This action requires human approval.", requestId });
+                return;
+            }
+            // 6. Update usage counters (non-blocking)
             const updates = [
-                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole)
+                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient)
             ];
             if (userId) {
                 updates.push(db.collection("organizations").doc(userId).update({
@@ -151,15 +310,25 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     lastUsedAt: firestore_1.FieldValue.serverTimestamp(),
                 }).catch(err => console.warn(`Failed to update organization ${userId}:`, err.message)));
             }
+            // Also update agent level stats
+            updates.push(db.collection("agents").doc(agentId).update({
+                totalCalls: firestore_1.FieldValue.increment(1),
+                totalSpendUsd: firestore_1.FieldValue.increment(estimatedCost),
+                lastUsedAt: firestore_1.FieldValue.serverTimestamp()
+            }).catch(err => console.warn(`Failed to update agent ${agentId}:`, err.message)));
             Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
             // 6. Return the decision
-            res.status(200).json({ decision: finalDecision, estimated_cost_usd: estimatedCost });
+            res.status(200).json({
+                decision: finalDecision,
+                estimated_cost_usd: estimatedCost,
+                is_loop: isLoopDetectedByClient
+            });
             return;
         }
     }
     catch (e) {
-        console.error("agentgate evaluateAction error:", e);
-        res.status(500).json({ error: "Internal agentgate error.", decision: "DENY" });
+        console.error("AgentGate evaluateAction error:", e);
+        res.status(500).json({ error: "Internal AgentGate error.", decision: "DENY" });
     }
 });
 // ── Connect Helpers ────────────────────────────────────────────────────────
@@ -204,15 +373,85 @@ async function checkRateLimit(key, config) {
     return { allowed: true };
 }
 /**
- * Rough estimation of agentic 'overhead' cost for a tool call.
- * Based on argument payload size using 1 token ≈ 4 chars.
- * Price base: $0.15/1M tokens (GPT-4o-mini rates) + small fixed base cost.
+ * Enhanced estimation of agentic 'overhead' cost for a tool call.
  */
-function estimateActionCost(args, toolName) {
+function estimateActionCost(args, toolName, model = "gpt-4o-mini", inTokens = 0, outTokens = 0) {
+    // If tokens provided, use them
+    if (inTokens > 0 || outTokens > 0) {
+        const rates = {
+            "gpt-4o": { in: 0.005, out: 0.015 },
+            "gpt-4o-mini": { in: 0.00015, out: 0.0006 },
+            "claude-3-5-sonnet": { in: 0.003, out: 0.015 },
+            "gemini-1.5-pro": { in: 0.00125, out: 0.005 },
+        };
+        const key = Object.keys(rates).find(k => model.toLowerCase().includes(k)) || "gpt-4o-mini";
+        const rate = rates[key];
+        return (inTokens / 1000 * rate.in) + (outTokens / 1000 * rate.out);
+    }
+    // Heuristic fallback
     const payloadLength = JSON.stringify(args || {}).length + toolName.length;
     const tokens = Math.ceil(payloadLength / 4) + 50; // +50 tokens for tool overhead
     const costPerToken = 0.00000015; // $0.15 per 1M tokens
     return parseFloat((tokens * costPerToken).toFixed(8));
+}
+async function sendSlackNotification(url, data) {
+    const dashboardUrl = "https://agent-gate.vercel.app/approvals";
+    // Slack Block Kit message for a premium look
+    const payload = {
+        blocks: [
+            {
+                type: "header",
+                text: {
+                    type: "plain_text",
+                    text: "🛡️ AgentGate: Action Approval Required",
+                    emoji: true
+                }
+            },
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: `*Agent:* ${data.agentName}\n*Tool:* \`${data.toolName}\`\n*Estimated Cost:* $${data.estimatedCost.toFixed(4)}`
+                }
+            },
+            {
+                type: "section",
+                text: {
+                    type: "mrkdwn",
+                    text: `*Arguments:*\n\`\`\`${data.arguments.slice(0, 1000)}${data.arguments.length > 1000 ? '...' : ''}\`\`\``
+                }
+            },
+            {
+                type: "actions",
+                elements: [
+                    {
+                        type: "button",
+                        text: {
+                            type: "plain_text",
+                            text: "Review in Dashboard",
+                            emoji: true
+                        },
+                        url: dashboardUrl,
+                        style: "primary",
+                        action_id: "review_action"
+                    }
+                ]
+            }
+        ]
+    };
+    const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+        throw new Error(`Slack API error: ${response.statusText}`);
+    }
+}
+async function sendEmailNotification(email, data) {
+    console.log(`[AgentGate] 📧 Sending email alert to ${email} for request ${data.requestId}`);
+    // In production, use @sendgrid/mail or resend here.
+    // This demonstrates the integration hook.
 }
 function sanitizeArgs(args) {
     if (!args || typeof args !== "object")
@@ -225,9 +464,86 @@ function sanitizeArgs(args) {
     }
     return sanitized;
 }
-async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason = null, sessionId = null, agentRole = null) {
+// ── Forensic Risk Scoring ───────────────────────────────────────────────
+const HIGH_RISK_TOOLS = ['delete', 'drop', 'remove', 'destroy', 'execute', 'eval', 'exec', 'sudo', 'admin', 'transfer', 'payment', 'withdraw'];
+const SENSITIVE_ARG_PATTERNS = [/password/i, /secret/i, /token/i, /api.?key/i, /authorization/i, /credit.?card/i, /ssn/i, /\broot\b/i, /\/etc\//i];
+function computeRiskScore(toolName, args, decision, costUsd, isLoop) {
+    let score = 0;
+    const factors = [];
+    // Tool name sensitivity
+    const toolLower = toolName.toLowerCase();
+    if (HIGH_RISK_TOOLS.some(t => toolLower.includes(t))) {
+        score += 35;
+        factors.push(`High-risk tool pattern: '${toolName}'`);
+    }
+    // Decision-based risk
+    if (decision === 'DENY') {
+        score += 25;
+        factors.push('Action was denied by policy');
+    }
+    else if (decision === 'PAUSED' || decision === 'REQUIRE_APPROVAL') {
+        score += 15;
+        factors.push('Action required human approval');
+    }
+    // Cost-based risk
+    if (costUsd > 0.10) {
+        score += 15;
+        factors.push(`High estimated cost: $${costUsd.toFixed(4)}`);
+    }
+    else if (costUsd > 0.01) {
+        score += 5;
+        factors.push(`Moderate cost: $${costUsd.toFixed(4)}`);
+    }
+    // Argument sensitivity scan
+    for (const pattern of SENSITIVE_ARG_PATTERNS) {
+        if (pattern.test(args)) {
+            score += 10;
+            factors.push(`Sensitive data pattern detected in arguments`);
+            break; // only count once
+        }
+    }
+    // Loop detection
+    if (isLoop) {
+        score += 20;
+        factors.push('Detected as part of a loop pattern');
+    }
+    // Payload size risk
+    if (args.length > 5000) {
+        score += 5;
+        factors.push(`Large payload: ${args.length} chars`);
+    }
+    return { score: Math.min(score, 100), factors };
+}
+// ── Forensic Audit Logger (Tamper-Proof Hash Chain) ─────────────────────
+let _lastHash = 'GENESIS'; // In-memory cache of last hash for chain linking
+let _sequenceCounter = 0;
+async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason = null, sessionId = null, agentRole = null, isLoop = false) {
     try {
-        await db.collection("audit_logs").add({
+        // 1. Compute risk score
+        const { score: riskScore, factors: riskFactors } = computeRiskScore(toolName, args, decision, costUsd, isLoop);
+        // 2. Get previous hash for chain integrity
+        // Fetch the latest log to get its hash (or use in-memory cache for perf)
+        if (_lastHash === 'GENESIS') {
+            const lastLogSnap = await db.collection("auditLogs")
+                .orderBy("sequenceNumber", "desc")
+                .limit(1)
+                .get();
+            if (!lastLogSnap.empty) {
+                _lastHash = lastLogSnap.docs[0].data().integrityHash || 'GENESIS';
+                _sequenceCounter = (lastLogSnap.docs[0].data().sequenceNumber || 0);
+            }
+        }
+        _sequenceCounter++;
+        // 3. Build the canonical payload for hashing
+        const canonicalPayload = JSON.stringify({
+            seq: _sequenceCounter,
+            prev: _lastHash,
+            agentId, toolName, args, decision, reason, sessionId, agentRole, costUsd, isLoop, riskScore
+        });
+        // 4. Compute SHA-256 integrity hash
+        const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
+        // 5. Write the forensic log entry
+        await db.collection("auditLogs").add({
             agentId,
             toolName,
             arguments: args,
@@ -236,11 +552,20 @@ async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason =
             sessionId,
             agentRole,
             cost_usd: costUsd,
+            is_loop: isLoop,
+            // Forensic fields
+            integrityHash,
+            previousHash: _lastHash,
+            sequenceNumber: _sequenceCounter,
+            riskScore,
+            riskFactors,
             timestamp: firestore_1.FieldValue.serverTimestamp()
         });
+        // 6. Update chain state
+        _lastHash = integrityHash;
     }
     catch (error) {
-        console.error("Failed to log audit event:", error);
+        console.error("Failed to log forensic audit event:", error);
     }
 }
 exports.generatePolicyRegex = (0, https_1.onRequest)({ cors: true }, async (request, response) => {

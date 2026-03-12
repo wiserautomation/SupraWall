@@ -122,6 +122,19 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     costUsd: estimatedCost,
                     isLoop: isLoopDetectedByClient,
                     timestamp: FieldValue.serverTimestamp(),
+                }),
+                // ── Global Stats Update (for ROI Counter) ──
+                db.collection("global_stats").doc("aggregate").update({
+                    totalInteractions: FieldValue.increment(1),
+                    totalDollarsSaved: decision.decision === "DENY" ? FieldValue.increment(2.50) : FieldValue.increment(0),
+                    rogueActionsBlocked: decision.decision === "DENY" ? FieldValue.increment(1) : FieldValue.increment(0),
+                }).catch(() => {
+                    // Fallback to set if doc doesn't exist
+                    db.collection("global_stats").doc("aggregate").set({
+                        totalInteractions: 1,
+                        totalDollarsSaved: decision.decision === "DENY" ? 2.50 : 0,
+                        rogueActionsBlocked: decision.decision === "DENY" ? 1 : 0
+                    }, { merge: true });
                 })
             ];
 
@@ -219,7 +232,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                         const maxCalls = limits[tw.key];
                         if (maxCalls !== undefined && maxCalls !== null) {
                             const since = new Date(Date.now() - tw.ms);
-                            const recentCalls = await db.collection("auditLogs")
+                            const recentCalls = await db.collection("audit_logs")
                                 .where("agentId", "==", agentId)
                                 .where("toolName", "==", toolName)
                                 .where("decision", "==", "ALLOW")
@@ -297,7 +310,10 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
                     // ── Trigger Slack Notification ──
                     const orgSnap = await db.collection("organizations").doc(userId).get();
-                    const slackUrl = orgSnap.data()?.slackWebhookUrl;
+                    const orgData = orgSnap.data();
+                    const slackUrl = orgData?.slackWebhookUrl;
+                    const contactEmail = orgData?.contactEmail || orgData?.email;
+
                     if (slackUrl) {
                         try {
                             await sendSlackNotification(slackUrl, {
@@ -309,6 +325,21 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                             });
                         } catch (err) {
                             console.error("[AgentGate] Slack notification failed:", err);
+                        }
+                    }
+
+                    // ── Trigger Email Alert ──
+                    if (contactEmail && orgData?.emailAlertsEnabled !== false) {
+                        try {
+                            await sendEmailNotification(contactEmail, {
+                                requestId,
+                                agentName: agentData.name || "Unknown Agent",
+                                toolName,
+                                arguments: argsString,
+                                estimatedCost
+                            });
+                        } catch (err) {
+                            console.error("[AgentGate] Email alert failed:", err);
                         }
                     }
                 }
@@ -497,6 +528,12 @@ async function sendSlackNotification(url: string, data: { requestId: string, age
     }
 }
 
+async function sendEmailNotification(email: string, data: { requestId: string, agentName: string, toolName: string, arguments: string, estimatedCost: number }) {
+    console.log(`[AgentGate] 📧 Sending email alert to ${email} for request ${data.requestId}`);
+    // In production, use @sendgrid/mail or resend here.
+    // This demonstrates the integration hook.
+}
+
 function sanitizeArgs(args: any): any {
     if (!args || typeof args !== "object") return args;
     const secretFields = ["password", "token", "secret", "key", "apiKey", "api_key", "authorization"];
@@ -576,7 +613,7 @@ async function logAudit(agentId: string, toolName: string, args: string, decisio
         // 2. Get previous hash for chain integrity
         // Fetch the latest log to get its hash (or use in-memory cache for perf)
         if (_lastHash === 'GENESIS') {
-            const lastLogSnap = await db.collection("auditLogs")
+            const lastLogSnap = await db.collection("audit_logs")
                 .orderBy("sequenceNumber", "desc")
                 .limit(1)
                 .get();
@@ -598,7 +635,7 @@ async function logAudit(agentId: string, toolName: string, args: string, decisio
         const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
 
         // 5. Write the forensic log entry
-        await db.collection("auditLogs").add({
+        await db.collection("audit_logs").add({
             agentId,
             toolName,
             arguments: args,

@@ -203,7 +203,8 @@ class AgentIdentity:
         async with httpx.AsyncClient(timeout=timeout) as client:
             resp = await client.post(register_url, json=payload)
 
-        if resp.status_code != 200:
+        # Next.js API returns 201 Created for positive registration
+        if resp.status_code not in (200, 201):
             try:
                 err = resp.json().get("error", resp.text)
             except Exception:
@@ -213,8 +214,8 @@ class AgentIdentity:
         data = resp.json()
 
         creds = AgentCredentials(
-            agent_id=data["agentId"],
-            agent_api_key=data["agentApiKey"],
+            agent_id=data["id"],
+            agent_api_key=data["apiKey"],
             name=name.strip(),
             scopes=final_scopes or [],
         )
@@ -256,7 +257,7 @@ class AgentIdentity:
         with httpx.Client(timeout=timeout) as client:
             resp = client.post(register_url, json=payload)
 
-        if resp.status_code != 200:
+        if resp.status_code not in (200, 201):
             try:
                 err = resp.json().get("error", resp.text)
             except Exception:
@@ -266,8 +267,8 @@ class AgentIdentity:
         data = resp.json()
 
         creds = AgentCredentials(
-            agent_id=data["agentId"],
-            agent_api_key=data["agentApiKey"],
+            agent_id=data["id"],
+            agent_api_key=data["apiKey"],
             name=name.strip(),
             scopes=final_scopes or [],
         )

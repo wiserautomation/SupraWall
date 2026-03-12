@@ -71,6 +71,32 @@ export default function MonitoringPage() {
         ? logs.filter(l => (l.sessionId || "Global") === selectedSession)
         : logs;
 
+    const handleExport = () => {
+        if (!user || agents.length === 0) return;
+        
+        // Export CSV for current visible logs
+        const headers = ["TIMESTAMP", "AGENT", "ACTION", "DECISION", "COST", "ARGS"];
+        const rows = filteredLogs.map(l => [
+            l.timestamp?.toDate?.().toISOString() || "Now",
+            l.agentId,
+            l.toolName,
+            l.decision,
+            l.cost_usd || 0,
+            `"${l.arguments?.toString().replace(/"/g, '""')}"`
+        ]);
+        
+        const csv = [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', `agentgate_audit_${new Date().toISOString()}.csv`);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     return (
         <div className="space-y-8 font-sans">
             <div className="flex justify-between items-end">
@@ -80,6 +106,14 @@ export default function MonitoringPage() {
                 </div>
                 <div className="flex gap-3">
                     <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleExport}
+                        className="bg-white/5 border border-white/5 text-neutral-400 hover:text-white"
+                    >
+                        Export CSV
+                    </Button>
+                    <Button
                         variant="outline"
                         size="sm"
                         onClick={() => setIsLive(!isLive)}
@@ -87,9 +121,6 @@ export default function MonitoringPage() {
                     >
                         {isLive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
                         {isLive ? 'Live Feed' : 'Paused'}
-                    </Button>
-                    <Button variant="outline" size="sm" className="bg-white/5 border-white/10 text-white">
-                        <Filter className="w-4 h-4 mr-2" /> Filter
                     </Button>
                 </div>
             </div>

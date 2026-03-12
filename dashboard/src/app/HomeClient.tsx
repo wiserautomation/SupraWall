@@ -18,13 +18,13 @@ export function SwarmVisualization() {
             <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent mix-blend-overlay pointer-events-none z-10" />
             <img
                 src="/network-nodes.png"
-                alt="AgentGate Secure Swarm Infrastructure"
+                alt="SupraWall Secure Agent Infrastructure"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out"
             />
             <div className="absolute bottom-6 left-6 z-20">
                 <div className="inline-flex items-center px-4 py-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-md text-xs font-bold text-white tracking-widest uppercase">
                     <div className="w-2 h-2 rounded-full bg-emerald-500 mr-3 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
-                    Secure Swarm Hub Active
+                    SupraWall Node Active
                 </div>
             </div>
         </div>
@@ -36,12 +36,12 @@ export function ClawbotDemo() {
     const [lines, setLines] = useState<string[]>([]);
     const [mounted, setMounted] = useState(false);
     const sequence = [
-        "> clawbot.click(\"Settings\")",
+        "> agent.click(\"Settings\")",
         "✅ Navigated to /settings",
-        "> clawbot.click(\"Delete Account\")",
-        "⚠️  DETECTION: destructive_pattern",
-        "❌ BLOCKED: Policy \"SafeMode-V1\"",
-        "🛡️  Prevented data loss"
+        "> agent.click(\"Delete Production DB\")",
+        "⚠️  DETECTION: destructive_command",
+        "❌ BLOCKED: Policy \"Anti-Data-Loss\"",
+        "🛡️  SupraWall Intercepted."
     ];
 
     useEffect(() => {
@@ -77,7 +77,7 @@ export function ClawbotDemo() {
                 <div className="w-2 h-2 rounded-full bg-red-500/40" />
                 <div className="w-2 h-2 rounded-full bg-yellow-500/40" />
                 <div className="w-2 h-2 rounded-full bg-green-500/40" />
-                <span className="ml-2 uppercase tracking-widest text-[8px] text-neutral-400">Browser Security Monitor</span>
+                <span className="ml-2 uppercase tracking-widest text-[8px] text-neutral-400">Agent Interceptor Monitor</span>
             </div>
             {lines.map((l, i) => {
                 const safeL = l || "";
@@ -102,19 +102,19 @@ export function TechTabs() {
     const techExamples: Record<string, any> = {
         "TypeScript": {
             before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
-            after: `import { protect } from "@agentgate/sdk";\n\n// 🛡️ Zero-Config Protection\nconst secured = protect(myAgent);\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
+            after: `import { secure_agent } from "suprawall";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "sw_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
         },
         "Python": {
             before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
-            after: `from agentgate import secure\n\n# 🛡️ Native Framework evolution\n@secure(api_key="ag_...")\ndef run_swarm():\n    # Agent is automatically protected\n    return Agent(...)\n\n# ✅ Destructive acts blocked`
+            after: `from suprawall import secure_agent\n\n# 🛡️ Hard-coded security shim\nsecured = secure_agent(my_agent, api_key="sw_...")\n\n# Agent is automatically protected\n# ✅ Destructive acts blocked deterministically`
         },
         "MCP": {
             before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
-            after: `import { secureMCP } from "agentgate";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secureMCP(server);\n\n// ✅ Tool calls governed via cloud\nawait secured.start();`
+            after: `import { secure_mcp } from "suprawall";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secure_mcp(server);\n\n// ✅ Tool calls governed via SupraWall\nawait secured.start();`
         },
-        "Browser": {
-            before: `const agent = new Clawbot(browser);\n// ⚠️ Unlimited navigation/clicks\nawait agent.execute("Delete AWS Account");\n# System wiped 💀`,
-            after: `import { secureClaw } from "@agentgate/claw";\n\n// 🛡️ Native Browser Guard\nconst secured = secureClaw(agent);\n\n// ✅ High-risk actions intercepted\nawait secured.execute("Delete AWS Account");\n# ❌ Access Denied: Dangerous Command`
+        "Vercel AI": {
+            before: `const { text } = await generateText({...});\n// ⚠️ No pre-execution check\n# System at mercy of LLM 💀`,
+            after: `import { secure } from "suprawall";\n\n// 🛡️ Middleware protection\nconst { text } = await secure(generateText)({\n  ...config\n});\n\n// ✅ Fail-safe security layer`
         }
     };
 
@@ -136,7 +136,7 @@ export function TechTabs() {
                 <div className="space-y-3">
                     <div className="bg-[#0A0A0A] border border-emerald-500/40 rounded-[2.5rem] p-10 font-mono text-xs md:text-sm overflow-x-auto text-emerald-100 shadow-[0_0_50px_rgba(16,185,129,0.1)] relative group">
                         <div className="absolute top-6 right-8 p-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
-                            SECURED
+                            SECURED BY SUPRAWALL
                         </div>
                         <pre className="leading-relaxed opacity-90">{techExamples[activeTechTab].after}</pre>
                     </div>

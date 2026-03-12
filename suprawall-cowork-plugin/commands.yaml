@@ -1,0 +1,35 @@
+commands:
+  - name: suprawall-check
+    description: Validate a tool call payload for security violations.
+    usage: "/suprawall-check [tool_name] [payload_json]"
+    arguments:
+      - name: tool_name
+        type: string
+        required: true
+      - name: payload_json
+        type: string
+        required: true
+
+  - name: suprawall-policy
+    description: List, add, or remove security guardrails.
+    usage: "/suprawall-policy [action] [rule]"
+    arguments:
+      - name: action
+        type: string
+        required: true
+        values: ["list", "add", "remove"]
+      - name: rule
+        type: string
+        required: false
+
+  - name: suprawall-audit
+    description: Retrieve the tamper-proof agent execution log.
+    usage: "/suprawall-audit [limit]"
+    arguments:
+      - name: limit
+        type: number
+        default: 10
+
+  - name: suprawall-status
+    description: View connection health and active protection stats.
+    usage: "/suprawall-status"
