@@ -194,7 +194,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                         const maxCalls = limits[tw.key];
                         if (maxCalls !== undefined && maxCalls !== null) {
                             const since = new Date(Date.now() - tw.ms);
-                            const recentCalls = await db.collection("auditLogs")
+                            const recentCalls = await db.collection("audit_logs")
                                 .where("agentId", "==", agentId)
                                 .where("toolName", "==", toolName)
                                 .where("decision", "==", "ALLOW")
@@ -524,7 +524,7 @@ async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason =
         // 2. Get previous hash for chain integrity
         // Fetch the latest log to get its hash (or use in-memory cache for perf)
         if (_lastHash === 'GENESIS') {
-            const lastLogSnap = await db.collection("auditLogs")
+            const lastLogSnap = await db.collection("audit_logs")
                 .orderBy("sequenceNumber", "desc")
                 .limit(1)
                 .get();
@@ -543,7 +543,7 @@ async function logAudit(agentId, toolName, args, decision, costUsd = 0, reason =
         // 4. Compute SHA-256 integrity hash
         const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
         // 5. Write the forensic log entry
-        await db.collection("auditLogs").add({
+        await db.collection("audit_logs").add({
             agentId,
             toolName,
             arguments: args,
