@@ -424,7 +424,3 @@ export default function LandingPage() {
         </div>
     );
 }
-
-        </div>
-    );
-}

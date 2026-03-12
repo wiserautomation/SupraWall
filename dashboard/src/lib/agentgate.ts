@@ -1,4 +1,4 @@
-import { agentgate as agentgate } from "@agentgate/core";
+import { suprawall as agentgate } from "@agentgate/core";
 import { db } from "./firebase";
 
 // Configure AgentGate Core to use the Firebase abstraction
