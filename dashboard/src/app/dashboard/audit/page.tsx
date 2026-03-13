@@ -45,7 +45,7 @@ export default function ForensicAuditPage() {
     const [exportAgentId, setExportAgentId] = useState("ALL");
 
     const downloadCompliancePDF = () => {
-        const apiUrl = process.env.NEXT_PUBLIC_AGENTGATE_API_URL || "http://localhost:3000";
+        const apiUrl = process.env.NEXT_PUBLIC_SUPRAWALL_API_URL || "http://localhost:3000";
         const url = new URL(`${apiUrl}/v1/compliance/report`);
         url.searchParams.set("from", exportFrom);
         url.searchParams.set("to", exportTo);
@@ -233,8 +233,8 @@ export default function ForensicAuditPage() {
                             <Fingerprint className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-extrabold tracking-tight text-white">Forensic Audit Logs</h1>
-                            <p className="text-neutral-400 text-sm">Tamper-proof, cryptographically-chained event stream with risk intelligence.</p>
+                            <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Forensic Audit Logs</h1>
+                            <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Tamper-proof, cryptographically-chained event stream with risk intelligence.</p>
                         </div>
                     </div>
                 </div>
@@ -451,11 +451,11 @@ export default function ForensicAuditPage() {
             </Card>
 
             {/* Main Table */}
-            <Card className="bg-black/40 backdrop-blur-xl border-white/[0.05] shadow-2xl overflow-hidden relative group">
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
+            <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl overflow-hidden relative group">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
 
-                <CardHeader className="border-b border-white/[0.05] flex flex-row items-center justify-between pb-4 bg-white/[0.01]">
-                    <CardTitle className="text-lg flex items-center gap-2 font-semibold text-white/90 tracking-tight">
+                <CardHeader className="border-b border-white/[0.04] flex flex-row items-center justify-between pb-4 bg-black/20">
+                    <CardTitle className="text-sm flex items-center gap-2 font-black text-white uppercase italic tracking-tighter">
                         <Activity className="w-5 h-5 text-emerald-400" /> Live Feed
                         <span className="text-xs text-neutral-500 font-normal ml-2">
                             {filteredLogs.length} of {logs.length} events
@@ -611,7 +611,7 @@ export default function ForensicAuditPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {/* Metadata */}
                                     <div className="space-y-3">
-                                        <h3 className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Event Metadata</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Event Metadata</h3>
                                         <div className="space-y-2">
                                             {[
                                                 { label: "Agent", value: getAgentName(selectedLog.agentId) },
@@ -630,7 +630,7 @@ export default function ForensicAuditPage() {
 
                                     {/* Risk Analysis */}
                                     <div className="space-y-3">
-                                        <h3 className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Risk Analysis</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Risk Analysis</h3>
                                         {selectedLog.riskScore != null ? (
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-3">
@@ -661,7 +661,7 @@ export default function ForensicAuditPage() {
 
                                     {/* Integrity Chain */}
                                     <div className="space-y-3">
-                                        <h3 className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Integrity Chain</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Integrity Chain</h3>
                                         {selectedLog.integrityHash ? (
                                             <div className="space-y-2">
                                                 <div>
@@ -696,7 +696,7 @@ export default function ForensicAuditPage() {
                                 </div>
                                 {selectedLog.reason && (
                                     <div className="space-y-2">
-                                        <h3 className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Decision Reason</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Decision Reason</h3>
                                         <p className="text-sm text-neutral-300 bg-red-500/5 border border-red-500/10 rounded-xl p-3">{selectedLog.reason}</p>
                                     </div>
                                 )}

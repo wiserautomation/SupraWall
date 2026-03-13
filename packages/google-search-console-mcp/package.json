@@ -1,5 +1,5 @@
 {
-  "name": "@agentgate/google-search-console-mcp",
+  "name": "@suprawall/google-search-console-mcp",
   "version": "1.0.0",
   "description": "MCP server for Google Search Console",
   "main": "build/index.js",

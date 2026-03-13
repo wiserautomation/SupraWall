@@ -21,7 +21,7 @@ export default function AutoGenClient() {
                             </div>
                             <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Code Interception</h2>
                             <p className="text-neutral-400 font-medium">
-                                AutoGen agents generate and execute code autonomously. AgentGate acts as a proxy between the code-generation agent and the user-proxy execution environment, ensuring safety.
+                                AutoGen agents generate and execute code autonomously. SupraWall acts as a proxy between the code-generation agent and the user-proxy execution environment, ensuring safety.
                             </p>
                         </motion.div>
 

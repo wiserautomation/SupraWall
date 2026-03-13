@@ -21,7 +21,7 @@ This task outlines the required SEO improvements for all LIVE pages, following t
 ## 3. Use Case (`/use-cases/prompt-injection`)
 - **Primary Keyword**: `prompt injection prevention`
 - **Title Tag**: `How to Block Prompt Injection in AI Agents (2026 Guide)`
-- **Meta Description**: `Block prompt injection before execution. agentgate intercepts agent I/O at runtime. Works with LangChain, CrewAI, AutoGen in 3 lines of code. SOC2-ready.`
+- **Meta Description**: `Block prompt injection before execution. suprawall intercepts agent I/O at runtime. Works with LangChain, CrewAI, AutoGen in 3 lines of code. SOC2-ready.`
 - **Schema**: TechArticle, BreadcrumbList, FAQPage
 - **Code Snippet**: `protect(your_agent)`
 - **Visible Text**: Add `Last updated: March 2026`
@@ -76,8 +76,8 @@ This task outlines the required SEO improvements for all LIVE pages, following t
 
 ## 10. Comparison (`/vs/nemo-guardrails`)
 - **Primary Keyword**: `nemo guardrails alternative`
-- **Title Tag**: `agentgate vs NeMo Guardrails: Runtime vs Model Filters`
-- **Meta Description**: `NeMo works at the model level. agentgate works at runtime, intercepting tool calls before execution. Framework-agnostic. 3-line install vs full pipeline.`
+- **Title Tag**: `suprawall vs NeMo Guardrails: Runtime vs Model Filters`
+- **Meta Description**: `NeMo works at the model level. suprawall works at runtime, intercepting tool calls before execution. Framework-agnostic. 3-line install vs full pipeline.`
 - **Schema**: TechArticle, BreadcrumbList, FAQPage
 - **Code Snippet**: `protect(agent)`
 - **Visible Text**: Add `Last updated: March 2026`
@@ -85,17 +85,17 @@ This task outlines the required SEO improvements for all LIVE pages, following t
 ## 11. Blog/Content (`/blog/prevent-agent-infinite-loops`)
 - **Primary Keyword**: `agent loop prevention`
 - **Title Tag**: `Prevent AI Agent Infinite Loops in Production (With Code)`
-- **Meta Description**: `Agent stuck in a loop and draining your budget? agentgate's logic-breaker halts runaway loops before they execute. Hard dollar caps in 3 lines of code.`
+- **Meta Description**: `Agent stuck in a loop and draining your budget? suprawall's logic-breaker halts runaway loops before they execute. Hard dollar caps in 3 lines of code.`
 - **Schema**: TechArticle, BreadcrumbList
 - **Code Snippet**: `protect(your_agent)`
 - **Visible Text**: Add `Last updated: March 2026`
 
 ## 12. Docs Page (`/docs`)
 - **Primary Keyword**: `agent security docs`
-- **Title Tag**: `The 2026 Guide to Agent Security Docs — agentgate`
-- **Meta Description**: `agentgate Agent Security documentation. Secure agents at runtime in 3 lines of code. Includes LangChain, CrewAI, AutoGen integration guides. Zero config.`
+- **Title Tag**: `The 2026 Guide to Agent Security Docs — suprawall`
+- **Meta Description**: `suprawall Agent Security documentation. Secure agents at runtime in 3 lines of code. Includes LangChain, CrewAI, AutoGen integration guides. Zero config.`
 - **Schema**: TechArticle, BreadcrumbList
-- **Code Snippet**: `pip install agentgate`
+- **Code Snippet**: `pip install suprawall`
 - **Visible Text**: Add `Last updated: March 2026`
 
 ## 13. Use Case (`/use-cases/cost-control`)

@@ -1,5 +1,5 @@
 # site_map_state.md
-# agentgate Live URL Inventory
+# suprawall Live URL Inventory
 
 | URL Path | Type | Status | SEO Optimized | Spec v1.0 | Last Audit |
 |:---|:---|:---|:---|:---|:---|

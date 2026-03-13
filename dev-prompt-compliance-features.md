@@ -7,7 +7,7 @@ Use this prompt with your AI coding assistant (Claude Code, Cursor, Copilot, etc
 ## Context: Existing Codebase
 
 **Stack:**
-- Backend: Express.js + TypeScript (`/agentgate-server/src/`)
+- Backend: Express.js + TypeScript (`/suprawall-server/src/`)
 - Frontend: Next.js App Router (`/dashboard/src/app/`)
 - Database: PostgreSQL via `pg` Pool
 - Existing pages: `/dashboard`, `/dashboard/audit`, `/dashboard/policies`, `/dashboard/approvals`, `/dashboard/monitoring`, `/dashboard/settings`, `/dashboard/team`
@@ -35,7 +35,7 @@ CREATE TABLE audit_logs (
 );
 ```
 
-**Policy engine** (`/agentgate-server/src/policy.ts`): evaluates tool calls against policies. On every evaluation it writes a row to `audit_logs` with agentId, toolName, arguments, and decision. Fails closed (defaults to DENY on error).
+**Policy engine** (`/suprawall-server/src/policy.ts`): evaluates tool calls against policies. On every evaluation it writes a row to `audit_logs` with agentId, toolName, arguments, and decision. Fails closed (defaults to DENY on error).
 
 ---
 
@@ -46,7 +46,7 @@ A downloadable PDF report titled **"Human Oversight Evidence Report"** that an e
 
 ### Backend — New API endpoint
 
-**File:** `/agentgate-server/src/routes/compliance.ts`
+**File:** `/suprawall-server/src/routes/compliance.ts`
 
 Create a new Express route:
 ```
@@ -153,10 +153,10 @@ append-only logs.
 
 **Install dependency:**
 ```bash
-cd agentgate-server && npm install pdfkit @types/pdfkit
+cd suprawall-server && npm install pdfkit @types/pdfkit
 ```
 
-**Register the route in** `/agentgate-server/src/index.ts`:
+**Register the route in** `/suprawall-server/src/index.ts`:
 ```typescript
 import complianceRouter from "./routes/compliance";
 app.use("/v1/compliance", complianceRouter);
@@ -247,7 +247,7 @@ Three action cards at the bottom:
 
 ### Backend — New API Endpoint for Checklist Status
 
-**File:** `/agentgate-server/src/routes/compliance.ts` (add to same file as Feature 1)
+**File:** `/suprawall-server/src/routes/compliance.ts` (add to same file as Feature 1)
 
 ```
 GET /v1/compliance/status
@@ -289,26 +289,26 @@ Place it between "Policies" and "Settings" in the sidebar order.
 Before marking either feature done, verify:
 
 **Feature 1 (PDF Export):**
-- [ ] PDF downloads when clicking the button in the audit page
-- [ ] PDF contains correct data from the DB (not hardcoded)
-- [ ] Date range filter works correctly
-- [ ] Agent filter works (single agent and all agents)
-- [ ] PDF is readable and professional (not broken layout)
-- [ ] Works with 0 audit log entries (empty state handled gracefully)
+- [x] PDF downloads when clicking the button in the audit page
+- [x] PDF contains correct data from the DB (not hardcoded)
+- [x] Date range filter works correctly
+- [x] Agent filter works (single agent and all agents)
+- [x] PDF is readable and professional (not broken layout)
+- [x] Works with 0 audit log entries (empty state handled gracefully)
 
 **Feature 2 (Compliance Page):**
-- [ ] Page loads at `/dashboard/compliance`
-- [ ] Status badges reflect actual DB state (not hardcoded)
-- [ ] All 6 checklist cards render with correct status
-- [ ] Links to other dashboard pages work
-- [ ] "Download Compliance Report" button triggers PDF download
-- [ ] Appears in sidebar navigation
+- [x] Page loads at `/dashboard/compliance`
+- [x] Status badges reflect actual DB state (not hardcoded)
+- [x] All 6 checklist cards render with correct status
+- [x] Links to other dashboard pages work
+- [x] "Download Compliance Report" button triggers PDF download
+- [x] Appears in sidebar navigation
 
 ---
 
 ## Implementation Order
 
-1. Create `/agentgate-server/src/routes/compliance.ts` with both endpoints
+1. Create `/suprawall-server/src/routes/compliance.ts` with both endpoints
 2. Register compliance router in `index.ts`
 3. Install `pdfkit`
 4. Test both API endpoints with curl/Postman

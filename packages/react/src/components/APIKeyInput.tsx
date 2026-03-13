@@ -5,7 +5,7 @@ export const APIKeyInput: React.FC<{ onValidKey: (key: string) => void; classNam
 
     return (
         <div className={\`flex flex-col space-y-2 \${className}\`}>
-            <label className="text-sm font-medium text-gray-700">agentgate API Key</label>
+            <label className="text-sm font-medium text-gray-700">suprawall API Key</label>
             <div className="flex gap-2">
                 <input 
                     type="password"

@@ -40,7 +40,7 @@ export function SpecClient() {
                     <BrickWall className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white uppercase italic">
-                    AgentGate Policy Spec (AGPS)
+                    SupraWall Policy Spec (AGPS)
                 </h1>
                 <p className="text-xl text-neutral-400 max-w-2xl leading-relaxed italic">
                     The open standard for AI agent governance. AGPS defines a unified JSON format for intercepting tool calls and enforcing security boundaries.

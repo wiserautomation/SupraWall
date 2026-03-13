@@ -11,7 +11,7 @@
         e.preventDefault();
         saving = true;
         try {
-            await fetch(\`https://api.agentgate.io/v1/agents/\${agentId}/policies\`, {
+            await fetch(\`https://api.suprawall.io/v1/agents/\${agentId}/policies\`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

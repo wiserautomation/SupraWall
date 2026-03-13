@@ -33,7 +33,7 @@ export async function GET(
         });
 
     } catch (error: any) {
-        console.error('[AgentGate] Error fetching approval status:', error);
+        console.error('[SupraWall] Error fetching approval status:', error);
         return NextResponse.json({ error: 'Failed to fetch status' }, { status: 500 });
     }
 }

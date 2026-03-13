@@ -11,7 +11,7 @@
 [info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
 [debug] [2026-02-24T10:54:35.838Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T10:54:35.838Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2026-02-24T10:54:35.841Z] [hub] writing locator at /var/folders/73/w3c6rgdj0j76kmkrhr1n49lh0000gn/T/hub-agentgate-mvp.json
+[debug] [2026-02-24T10:54:35.841Z] [hub] writing locator at /var/folders/73/w3c6rgdj0j76kmkrhr1n49lh0000gn/T/hub-suprawall-mvp.json
 [debug] [2026-02-24T10:54:36.021Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T10:54:36.022Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T10:54:36.022Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
@@ -32,9 +32,9 @@ For CI servers and headless environments, generate a new token with firebase log
 [error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
 
 For CI servers and headless environments, generate a new token with firebase login:ci
-[debug] [2026-02-24T10:54:36.384Z] Failed to get Admin SDK config for agentgate-mvp, falling back to cache Failed to get Admin SDK for Firebase project agentgate-mvp. Please make sure the project exists and your account has permission to access it. {"name":"FirebaseError","children":[],"exit":2,"message":"Failed to get Admin SDK for Firebase project agentgate-mvp. Please make sure the project exists and your account has permission to access it.","original":{"name":"FirebaseError","children":[],"exit":1,"message":"Authentication Error: Your credentials are no longer valid. Please run \u001b[1mfirebase login --reauth\u001b[22m\n\nFor CI servers and headless environments, generate a new token with \u001b[1mfirebase login:ci\u001b[22m","status":500},"status":500}
+[debug] [2026-02-24T10:54:36.384Z] Failed to get Admin SDK config for suprawall-mvp, falling back to cache Failed to get Admin SDK for Firebase project suprawall-mvp. Please make sure the project exists and your account has permission to access it. {"name":"FirebaseError","children":[],"exit":2,"message":"Failed to get Admin SDK for Firebase project suprawall-mvp. Please make sure the project exists and your account has permission to access it.","original":{"name":"FirebaseError","children":[],"exit":1,"message":"Authentication Error: Your credentials are no longer valid. Please run \u001b[1mfirebase login --reauth\u001b[22m\n\nFor CI servers and headless environments, generate a new token with \u001b[1mfirebase login:ci\u001b[22m","status":500},"status":500}
 [warn] ⚠  functions: Unable to fetch project Admin SDK configuration, Admin SDK behavior in Cloud Functions emulator may be incorrect. {"metadata":{"emulator":{"name":"functions"},"message":"Unable to fetch project Admin SDK configuration, Admin SDK behavior in Cloud Functions emulator may be incorrect."}}
-[info] i  functions: Watching "/Users/peghin/.gemini/antigravity/playground/AgentGate/firebase/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/peghin/.gemini/antigravity/playground/AgentGate/firebase/functions\" for Cloud Functions..."}}
+[info] i  functions: Watching "/Users/peghin/.gemini/antigravity/playground/SUPRA-WALL/firebase/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/peghin/.gemini/antigravity/playground/SUPRA-WALL/firebase/functions\" for Cloud Functions..."}}
 [debug] [2026-02-24T10:54:36.786Z] Validating nodejs source
 [warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
 [warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
@@ -74,16 +74,16 @@ For CI servers and headless environments, generate a new token with firebase log
   "private": true
 }
 [debug] [2026-02-24T10:54:39.042Z] Building nodejs source
-[debug] [2026-02-24T10:54:39.045Z] Failed to find version of module node: reached end of search path /Users/peghin/.gemini/antigravity/playground/AgentGate/firebase/functions/node_modules
+[debug] [2026-02-24T10:54:39.045Z] Failed to find version of module node: reached end of search path /Users/peghin/.gemini/antigravity/playground/SUPRA-WALL/firebase/functions/node_modules
 [warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "22". Using node@22 from host. 
 [info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
 [debug] [2026-02-24T10:54:39.100Z] Could not find functions.yaml. Must use http discovery
-[debug] [2026-02-24T10:54:39.126Z] Found firebase-functions binary at '/Users/peghin/.gemini/antigravity/playground/AgentGate/firebase/functions/node_modules/.bin/firebase-functions'
+[debug] [2026-02-24T10:54:39.126Z] Found firebase-functions binary at '/Users/peghin/.gemini/antigravity/playground/SUPRA-WALL/firebase/functions/node_modules/.bin/firebase-functions'
 [info] Serving at port 8143
 
 [debug] [2026-02-24T10:54:39.849Z] Got response from /__/functions.yaml {"endpoints":{"evaluateAction":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"evaluateAction"}},"specVersion":"v1alpha1","requiredAPIs":[]}
 [info] ✔  functions: Loaded functions definitions from source: evaluateAction. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: evaluateAction."}}
-[info] ✔  functions[us-central1-evaluateAction]: http function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/evaluateAction). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/evaluateAction)."}}
+[info] ✔  functions[us-central1-evaluateAction]: http function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/evaluateAction). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/evaluateAction)."}}
 [debug] [2026-02-24T10:54:43.932Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
 [info] 
 ┌─────────────────────────────────────────────────────────────┐
@@ -29895,7 +29895,7 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
 [debug] [2026-02-24T15:22:08.612Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T15:22:08.612Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
-[debug] [2026-02-24T15:22:08.615Z] [hub] writing locator at /var/folders/73/w3c6rgdj0j76kmkrhr1n49lh0000gn/T/hub-agentgate-mvp.json
+[debug] [2026-02-24T15:22:08.615Z] [hub] writing locator at /var/folders/73/w3c6rgdj0j76kmkrhr1n49lh0000gn/T/hub-suprawall-mvp.json
 [debug] [2026-02-24T15:22:08.740Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T15:22:08.740Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
 [debug] [2026-02-24T15:22:08.740Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
@@ -29916,9 +29916,9 @@ For CI servers and headless environments, generate a new token with firebase log
 [error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
 
 For CI servers and headless environments, generate a new token with firebase login:ci
-[debug] [2026-02-24T15:22:08.890Z] Failed to get Admin SDK config for agentgate-mvp, falling back to cache Failed to get Admin SDK for Firebase project agentgate-mvp. Please make sure the project exists and your account has permission to access it. {"name":"FirebaseError","children":[],"exit":2,"message":"Failed to get Admin SDK for Firebase project agentgate-mvp. Please make sure the project exists and your account has permission to access it.","original":{"name":"FirebaseError","children":[],"exit":1,"message":"Authentication Error: Your credentials are no longer valid. Please run \u001b[1mfirebase login --reauth\u001b[22m\n\nFor CI servers and headless environments, generate a new token with \u001b[1mfirebase login:ci\u001b[22m","status":500},"status":500}
+[debug] [2026-02-24T15:22:08.890Z] Failed to get Admin SDK config for suprawall-mvp, falling back to cache Failed to get Admin SDK for Firebase project suprawall-mvp. Please make sure the project exists and your account has permission to access it. {"name":"FirebaseError","children":[],"exit":2,"message":"Failed to get Admin SDK for Firebase project suprawall-mvp. Please make sure the project exists and your account has permission to access it.","original":{"name":"FirebaseError","children":[],"exit":1,"message":"Authentication Error: Your credentials are no longer valid. Please run \u001b[1mfirebase login --reauth\u001b[22m\n\nFor CI servers and headless environments, generate a new token with \u001b[1mfirebase login:ci\u001b[22m","status":500},"status":500}
 [warn] ⚠  functions: Unable to fetch project Admin SDK configuration, Admin SDK behavior in Cloud Functions emulator may be incorrect. {"metadata":{"emulator":{"name":"functions"},"message":"Unable to fetch project Admin SDK configuration, Admin SDK behavior in Cloud Functions emulator may be incorrect."}}
-[info] i  functions: Watching "/Users/peghin/Desktop/AgentGate/firebase/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/peghin/Desktop/AgentGate/firebase/functions\" for Cloud Functions..."}}
+[info] i  functions: Watching "/Users/peghin/Desktop/SUPRA-WALL/firebase/functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"/Users/peghin/Desktop/SUPRA-WALL/firebase/functions\" for Cloud Functions..."}}
 [debug] [2026-02-24T15:22:08.904Z] Validating nodejs source
 [warn] ⚠  functions: package.json indicates an outdated version of firebase-functions. Please upgrade using npm install --save firebase-functions@latest in your functions directory. 
 [warn] ⚠  functions: Please note that there will be breaking changes when you upgrade. 
@@ -29959,17 +29959,17 @@ For CI servers and headless environments, generate a new token with firebase log
   "private": true
 }
 [debug] [2026-02-24T15:22:09.353Z] Building nodejs source
-[debug] [2026-02-24T15:22:09.353Z] Failed to find version of module node: reached end of search path /Users/peghin/Desktop/AgentGate/firebase/functions/node_modules
+[debug] [2026-02-24T15:22:09.353Z] Failed to find version of module node: reached end of search path /Users/peghin/Desktop/SUPRA-WALL/firebase/functions/node_modules
 [warn] ⚠  functions: Your requested "node" version "18" doesn't match your global version "22". Using node@22 from host. 
 [info] i  functions: You are using a version of firebase-functions SDK (4.9.0) that does not have support for the newest Firebase Extensions features. Please update firebase-functions SDK to >=5.1.0 to use them correctly 
 [debug] [2026-02-24T15:22:09.355Z] Could not find functions.yaml. Must use http discovery
-[debug] [2026-02-24T15:22:09.358Z] Found firebase-functions binary at '/Users/peghin/Desktop/AgentGate/firebase/functions/node_modules/.bin/firebase-functions'
+[debug] [2026-02-24T15:22:09.358Z] Found firebase-functions binary at '/Users/peghin/Desktop/SUPRA-WALL/firebase/functions/node_modules/.bin/firebase-functions'
 [info] Serving at port 8183
 
 [debug] [2026-02-24T15:22:09.771Z] Got response from /__/functions.yaml {"endpoints":{"evaluateAction":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"evaluateAction"},"generatePolicyRegex":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"httpsTrigger":{},"entryPoint":"generatePolicyRegex"}},"specVersion":"v1alpha1","requiredAPIs":[]}
 [info] ✔  functions: Loaded functions definitions from source: evaluateAction, generatePolicyRegex. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: evaluateAction, generatePolicyRegex."}}
-[info] ✔  functions[us-central1-evaluateAction]: http function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/evaluateAction). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/evaluateAction)."}}
-[info] ✔  functions[us-central1-generatePolicyRegex]: http function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/generatePolicyRegex). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/agentgate-mvp/us-central1/generatePolicyRegex)."}}
+[info] ✔  functions[us-central1-evaluateAction]: http function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/evaluateAction). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/evaluateAction)."}}
+[info] ✔  functions[us-central1-generatePolicyRegex]: http function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/generatePolicyRegex). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/suprawall-mvp/us-central1/generatePolicyRegex)."}}
 [debug] [2026-02-24T15:22:13.839Z] Could not find VSCode notification endpoint: FetchError: request to http://localhost:40001/vscode/notify failed, reason: . If you are not running the Firebase Data Connect VSCode extension, this is expected and not an issue.
 [info] 
 ┌─────────────────────────────────────────────────────────────┐
@@ -37643,7 +37643,7 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
     at doWrite (/usr/local/lib/node_modules/firebase-tools/node_modules/winston-transport/node_modules/readable-stream/lib/_stream_writable.js:390:139)
 [error] 
 [debug] [2026-02-24T19:34:27.284Z] ----------------------------------------------------------------------
-[debug] [2026-02-24T19:34:27.286Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions --project demo-agentgate
+[debug] [2026-02-24T19:34:27.286Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy --only functions --project demo-suprawall
 [debug] [2026-02-24T19:34:27.286Z] CLI Version:   14.12.0
 [debug] [2026-02-24T19:34:27.286Z] Platform:      darwin
 [debug] [2026-02-24T19:34:27.286Z] Node Version:  v22.12.0
@@ -37652,7 +37652,7 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] 
 [debug] [2026-02-24T19:34:27.412Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
 [debug] [2026-02-24T19:34:27.412Z] > authorizing via signed-in user (peghin@gmail.com)
-[debug] [2026-02-24T19:34:27.412Z] [iam] checking project demo-agentgate for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
+[debug] [2026-02-24T19:34:27.412Z] [iam] checking project demo-suprawall for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]
 [debug] [2026-02-24T19:34:27.413Z] Checked if tokens are valid: false, expires at: 1771960558544
 [debug] [2026-02-24T19:34:27.413Z] Checked if tokens are valid: false, expires at: 1771960558544
 [debug] [2026-02-24T19:34:27.413Z] > refreshing access token with scopes: []
@@ -37660,12 +37660,12 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] [2026-02-24T19:34:27.414Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
 [debug] [2026-02-24T19:34:27.589Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
 [debug] [2026-02-24T19:34:27.589Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
-[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions [none]
-[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions x-goog-quota-user=projects/demo-agentgate
-[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
-[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions 200
-[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-agentgate:testIamPermissions {}
-[debug] [2026-02-24T19:34:28.592Z] [iam] error while checking permissions, command may fail: Authorization failed. This account is missing the following required permissions on project demo-agentgate:
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-suprawall:testIamPermissions [none]
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-suprawall:testIamPermissions x-goog-quota-user=projects/demo-suprawall
+[debug] [2026-02-24T19:34:27.599Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-suprawall:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get"]}
+[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-suprawall:testIamPermissions 200
+[debug] [2026-02-24T19:34:28.592Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/demo-suprawall:testIamPermissions {}
+[debug] [2026-02-24T19:34:28.592Z] [iam] error while checking permissions, command may fail: Authorization failed. This account is missing the following required permissions on project demo-suprawall:
 
   cloudfunctions.functions.create
   cloudfunctions.functions.delete
@@ -37676,5 +37676,5 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
   firebase.projects.get
 [debug] [2026-02-24T19:34:28.593Z] Checked if tokens are valid: true, expires at: 1771965266589
 [debug] [2026-02-24T19:34:28.593Z] Checked if tokens are valid: true, expires at: 1771965266589
-[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/demo-agentgate/serviceAccounts/demo-agentgate@appspot.gserviceaccount.com:testIamPermissions [none]
-[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/demo-agentgate/serviceAccounts/demo-agentgate@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/demo-suprawall/serviceAccounts/demo-suprawall@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-02-24T19:34:28.593Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/demo-suprawall/serviceAccounts/demo-suprawall@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}

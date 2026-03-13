@@ -1,5 +1,5 @@
 # publishing_queue.md
-# agentgate Production Queue
+# suprawall Production Queue
 
 | Batch | Title | Type | Keyword | Priority | Status |
 |:---|:---|:---|:---|:---|:---|

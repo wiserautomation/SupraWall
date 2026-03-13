@@ -1,5 +1,5 @@
 # internal_link_map.md
-# agentgate Graph Hierarchy (P1 Links)
+# suprawall Graph Hierarchy (P1 Links)
 
 | Source URL | Target URL | Link Type | Anchor Text | Context |
 |:---|:---|:---|:---|:---|
@@ -8,7 +8,7 @@
 | `/` | `/integrations/crewai` | Integration | CrewAI Integration | Integration Grid |
 | `/` | `/integrations/autogen` | Integration | AutoGen Support | Integration Grid |
 | `/` | `/integrations/vercel` | Integration | Vercel AI SDK | Integration Grid |
-| `/learn/*` | `/` | Nav | agentgate | Logo |
+| `/learn/*` | `/` | Nav | suprawall | Logo |
 | `/learn/what-is-agent-runtime-security` | `/integrations/langchain` | Cross-link | LangChain | Shield Section |
 | `/learn/what-is-agent-runtime-security` | `/integrations/crewai` | Cross-link | CrewAI | Shield Section |
 | `/learn/what-is-agent-runtime-security` | `/integrations/autogen` | Cross-link | AutoGen | Shield Section |

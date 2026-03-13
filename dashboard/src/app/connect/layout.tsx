@@ -13,7 +13,7 @@ export default function ConnectLayout({
                 <div className="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row sm:items-center">
                     <Link href="/dashboard" className="flex items-center gap-2 text-emerald-600 hover:text-emerald-700 font-semibold py-3 pr-6 sm:border-r border-gray-200 sm:mr-4 shrink-0 transition-colors">
                         <BrickWall className="w-5 h-5" />
-                        <span>AgentGate Connect</span>
+                        <span>SupraWall Connect</span>
                     </Link>
                     <div className="flex items-center gap-1 overflow-x-auto pb-2 sm:pb-0">
                         {[

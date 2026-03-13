@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
         // --- 3. Generate Agent Credentials ---
         const agentApiKey = 'ag_' + randomBytes(24).toString('hex');
-        const agentUri = `agent://${name.trim().toLowerCase().replace(/\s+/g, '-')}-${randomBytes(4).toString('hex')}@agentgate.com`;
+        const agentUri = `agent://${name.trim().toLowerCase().replace(/\s+/g, '-')}-${randomBytes(4).toString('hex')}@suprawall.com`;
 
         const agentData = {
             userId,
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
         }, { status: 201 });
 
     } catch (error: any) {
-        console.error('[AgentGate] Agent registration error:', error);
+        console.error('[SupraWall] Agent registration error:', error);
         return NextResponse.json(
             { error: 'Internal server error during agent registration.' },
             { status: 500 }

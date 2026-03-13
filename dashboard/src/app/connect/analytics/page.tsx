@@ -32,7 +32,7 @@ export default function ConnectAnalyticsPage() {
             <EmptyState
                 icon={Activity}
                 title="No platform set up"
-                description="Set up AgentGate Connect first."
+                description="Set up SupraWall Connect first."
                 action={<a href="/connect"><Button>Go to Connect</Button></a>}
             />
         );

@@ -20,7 +20,7 @@ export default function LangChainClient() {
                     <div className="p-10 space-y-8 font-mono text-sm leading-relaxed text-left">
                         <div className="space-y-2">
                             <p className="text-neutral-600"># 1. Initialize the firewall</p>
-                            <p className="text-emerald-400">from agentgate.langchain import protect</p>
+                            <p className="text-emerald-400">from suprawall.langchain import protect</p>
                         </div>
 
                         <div className="space-y-4">

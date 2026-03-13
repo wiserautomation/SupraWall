@@ -16,7 +16,7 @@
 </script>
 
 <div class="flex flex-col space-y-2 {className}">
-    <label class="text-sm font-medium text-gray-700">AgentGate API Key</label>
+    <label class="text-sm font-medium text-gray-700">SUPRA-WALL API Key</label>
     <div class="flex gap-2">
         <input 
             type="password"

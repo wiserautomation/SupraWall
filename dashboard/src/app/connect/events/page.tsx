@@ -41,7 +41,7 @@ export default function ConnectEventsPage() {
             <EmptyState
                 icon={Shield}
                 title="No platform set up"
-                description="Set up AgentGate Connect first."
+                description="Set up SupraWall Connect first."
                 action={<a href="/connect"><Button>Go to Connect</Button></a>}
             />
         );

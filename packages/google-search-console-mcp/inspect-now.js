@@ -4,8 +4,8 @@ import fs from 'fs';
 async function main() {
     const authData = JSON.parse(fs.readFileSync('./service-account.json', 'utf8'));
     const gsc = new GSCClient(authData);
-    const siteUrl = 'sc-domain:agentgate.com';
-    const inspectionUrl = 'https://www.agentgate.com/';
+    const siteUrl = 'sc-domain:suprawall.com';
+    const inspectionUrl = 'https://www.suprawall.com/';
 
     try {
         console.log(`Inspecting URL: ${inspectionUrl}`);

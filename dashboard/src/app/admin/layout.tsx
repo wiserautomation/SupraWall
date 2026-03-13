@@ -78,7 +78,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 <div className="h-16 flex items-center px-6 border-b border-white/5 bg-black/40">
                     <BrickWall className="w-6 h-6 text-red-500 mr-3" />
                     <span className="font-bold text-lg tracking-tight text-white drop-shadow-sm flex items-center gap-2">
-                        AgentGate <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">Admin</span>
+                        SupraWall <span className="bg-red-500/20 text-red-400 text-[10px] px-2 py-0.5 rounded-full uppercase font-bold tracking-wider">Admin</span>
                     </span>
                 </div>
 

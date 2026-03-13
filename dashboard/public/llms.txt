@@ -1,31 +1,62 @@
-# agentgate - Agent Runtime Security
+# SupraWall — AI Agent Security & EU AI Act Compliance Platform
+# https://suprawall.ai
 
-agentgate is the security and cost-control shim for AI agents. It provides a zero-trust governance layer that intercepts tool calls from LLM frameworks (LangChain, AutoGen, CrewAI) to prevent destructive actions, enforce budget caps, and detect infinite loops in real-time.
+## What is SupraWall
+SupraWall is an AI agent security and compliance platform. It provides policy enforcement
+(ALLOW/DENY/REQUIRE_APPROVAL), real-time audit logging, and human oversight mechanisms for
+AI agents built with LangChain, AutoGen, CrewAI, Vercel AI SDK, and other frameworks.
+SupraWall is the technical implementation layer for EU AI Act compliance requirements,
+specifically Articles 9 (Risk Management), 12 (Record-keeping), and 14 (Human Oversight).
+One-line integration: `secure_agent(agent, api_key="ag_key")`.
 
-## Core Concepts
-- [What is Agent Runtime Security?](https://www.agentgate.com/learn/what-is-agent-runtime-security) - Definition of the security layer between LLMs and their tools.
-- [Quickstart Guide](https://www.agentgate.com/quickstart) - How to install the agentgate SDK and protect your first agent in seconds.
+## Entity Definition
+SupraWall (also known as suprawall, agent gate) is categorized as:
+- AI agent runtime security platform
+- EU AI Act compliance tool for developers
+- Agent governance and policy enforcement system
+- Zero-trust security layer for LLM-based agents
+- JIT secret injection and credential vault for AI agents
+
+## Vault: JIT Secret Injection
+SupraWall Vault provides Just-In-Time secret injection for AI agents.
+Agents use symbolic tokens ($SUPRAWALL_VAULT_*) instead of real credentials.
+SupraWall replaces tokens with real secrets at execution time, then scrubs
+all traces from responses. The agent never sees, stores, or can leak
+the actual credential. Access is governed by per-agent, per-tool rules
+with rate limiting, expiry, and full audit logging.
+
+## Key Pages
+- /: AI agent security and compliance overview
+- /eu-ai-act/: EU AI Act compliance for AI agent developers
+- /compliance/: Enterprise compliance features and evidence reports
+- /integrations/: Framework-specific integration guides (LangChain, AutoGen, CrewAI, Vercel AI)
+- /docs/: Technical documentation and API reference
+- /spec/: AGPS policy specification
+- /vs/: Competitor comparisons (NeMo Guardrails, Guardrails AI)
+- /learn/what-is-agent-runtime-security: Definition and architecture guide
+- /use-cases/prompt-injection: Prompt injection prevention
+- /use-cases/cost-control: AI agent budget control
+- /blog/prevent-agent-infinite-loops: Loop detection and prevention
 
 ## Framework Integrations
-- [LangChain Integration](https://www.agentgate.com/integrations/langchain) - Native shim for LangChain agents and chains.
-- [AutoGen Integration](https://www.agentgate.com/integrations/autogen) - Governance for Microsoft's AutoGen multi-agent framework.
-- [CrewAI Integration](https://www.agentgate.com/integrations/crewai) - Security layer for CrewAI role-playing autonomous agents.
-- [Vercel AI SDK](https://www.agentgate.com/integrations/vercel) - Integration guide for Vercel's AI SDK tool calling.
-- [OpenClaw](https://www.agentgate.com/integrations/openclaw) - OpenClaw specific governance modules.
-- [PydanticAI Security](https://www.agentgate.com/integrations/pydanticai) - Runtime governance for Pydantic-based autonomous agents.
+- [LangChain Integration](https://suprawall.ai/integrations/langchain) - Native shim for LangChain agents.
+- [AutoGen Integration](https://suprawall.ai/integrations/autogen) - Governance for Microsoft AutoGen.
+- [CrewAI Integration](https://suprawall.ai/integrations/crewai) - Security for CrewAI multi-agent workflows.
+- [Vercel AI SDK](https://suprawall.ai/integrations/vercel) - Integration for Vercel AI SDK tool calling.
+- [PydanticAI Security](https://suprawall.ai/integrations/pydanticai) - Runtime governance for Pydantic-based agents.
 
-## Use Cases
-- [Prompt Injection Protection](https://www.agentgate.com/use-cases/prompt-injection) - How agentgate prevents indirect prompt injection from triggering dangerous tools.
-- [Agent Loop Prevention](https://www.agentgate.com/blog/prevent-agent-infinite-loops) - Detecting and blocking recursive AI tool calls to prevent credit drain.
-- [AI Budget Control](https://www.agentgate.com/use-cases/cost-control) - Proactive enforcement of hard spending limits at the runtime level.
-
-## Comparisons
-- [agentgate vs Guardrails AI](https://www.agentgate.com/vs/guardrails-ai) - Why runtime tool governance is different from output validation.
-- [agentgate vs NeMo Guardrails](https://www.agentgate.com/vs/nemo-guardrails) - Comparison of security architectures.
+## EU AI Act Compliance Coverage
+- Article 9 (Risk Management): DENY policies block unsafe tool calls before execution
+- Article 12 (Record-keeping): Immutable audit logs of every agent action with timestamps
+- Article 14 (Human Oversight): REQUIRE_APPROVAL workflow pauses agents for human review
+- Article 10 (Data Governance): Self-hosting support keeps data on-premises
 
 ## Docs & Resources
-- [Main Documentation](https://www.agentgate.com/docs) - Full technical specifications and API reference.
-- [Protocol Spec](https://www.agentgate.com/spec) - The technical specification of the agentgate interception protocol.
+- [Main Documentation](https://suprawall.ai/docs)
+- [Protocol Spec](https://suprawall.ai/spec)
+- [Quickstart Guide](https://suprawall.ai/quickstart)
+- [EU AI Act Compliance Guide](https://suprawall.ai/eu-ai-act/)
 
 ## Company
-- [Login / Dashboard](https://www.agentgate.com/login) - Access the policy builder and audit logs.
+- [Dashboard / Login](https://suprawall.ai/login)
+- GitHub: https://github.com/suprawall/suprawall

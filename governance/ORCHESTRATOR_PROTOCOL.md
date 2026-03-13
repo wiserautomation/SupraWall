@@ -1,6 +1,6 @@
-# agentgate Orchestration Protocol (Level 3 — Admin Integrated)
+# suprawall Orchestration Protocol (Level 3 — Admin Integrated)
 
-This document defines the operational workflow for the agentgate AI Content & SEO System.
+This document defines the operational workflow for the suprawall AI Content & SEO System.
 
 ## 🧠 System Memory
 The agents operate using a dual-state system:
@@ -11,8 +11,9 @@ The agents operate using a dual-state system:
 1. **Instruction**: User triggers a batch (e.g., "Run B1").
 2. **Analysis**: Orchestrator reads **Memory** to verify no keyword conflicts or duplicate URLs.
 3. **Execution Chain**:
-   - **Content Writer**: Drafts page based on `brand_voice.md` and `keyword_map.md`. MUST adhere to the **CTR OPTIMIZATION RULES** (title tags, meta descriptions formulas).
-   - **Schema Agent**: Generates JSON-LD. MUST integrate specific Schema (TechArticle, HowTo, FAQPage) per CTR Schema rules.
+   - **Content Writer**: Drafts page based on `brand_voice.md` and `keyword_map.md`. MUST adhere to the **CTR OPTIMIZATION RULES** (title tags, meta descriptions formulas). MUST adhere to the **GEO CONTENT FORMAT RULES** (answer-first opening + FAQ block). See `brand_voice.md` sections 7 and 8.
+   - **GEO Check**: Every blog post and pillar page MUST open with a 2-sentence direct answer. Every blog post and pillar page MUST end with a 5-8 question FAQ block with FAQPage schema. If these are missing, return the draft to the writer before submission.
+   - **Schema Agent**: Generates JSON-LD. MUST integrate specific Schema (TechArticle, HowTo, FAQPage) per CTR Schema rules. FAQPage schema is required on ALL pages with FAQ blocks.
    - **Internal Linker**: Consults links map.
 4. **Draft Submission**:
    - Orchestrator calls `POST /api/tasks` with the full task object.

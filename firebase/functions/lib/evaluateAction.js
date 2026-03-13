@@ -124,7 +124,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     console.warn(`Failed to update organization ${ownerId}:`, err.message);
                 }));
             }
-            Promise.all(updates).catch((e) => console.error("agentgate: Non-critical write failed:", e));
+            Promise.all(updates).catch((e) => console.error("suprawall: Non-critical write failed:", e));
             res.status(200).json(Object.assign(Object.assign({}, decision), { estimated_cost_usd: estimatedCost }));
             return;
         }
@@ -268,16 +268,18 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     const contactEmail = (orgData === null || orgData === void 0 ? void 0 : orgData.contactEmail) || (orgData === null || orgData === void 0 ? void 0 : orgData.email);
                     if (slackUrl) {
                         try {
+                            const showBranding = (orgData === null || orgData === void 0 ? void 0 : orgData.plan) !== "growth" && (orgData === null || orgData === void 0 ? void 0 : orgData.plan) !== "enterprise";
                             await sendSlackNotification(slackUrl, {
                                 requestId,
                                 agentName: agentData.name || "Unknown Agent",
                                 toolName,
                                 arguments: argsString,
-                                estimatedCost
+                                estimatedCost,
+                                showBranding
                             });
                         }
                         catch (err) {
-                            console.error("[AgentGate] Slack notification failed:", err);
+                            console.error("[SUPRA-WALL] Slack notification failed:", err);
                         }
                     }
                     // ── Trigger Email Alert ──
@@ -292,7 +294,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                             });
                         }
                         catch (err) {
-                            console.error("[AgentGate] Email alert failed:", err);
+                            console.error("[SUPRA-WALL] Email alert failed:", err);
                         }
                     }
                 }
@@ -327,8 +329,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
         }
     }
     catch (e) {
-        console.error("AgentGate evaluateAction error:", e);
-        res.status(500).json({ error: "Internal AgentGate error.", decision: "DENY" });
+        console.error("SUPRA-WALL evaluateAction error:", e);
+        res.status(500).json({ error: "Internal SUPRA-WALL error.", decision: "DENY" });
     }
 });
 // ── Connect Helpers ────────────────────────────────────────────────────────
@@ -403,7 +405,7 @@ async function sendSlackNotification(url, data) {
                 type: "header",
                 text: {
                     type: "plain_text",
-                    text: "🛡️ AgentGate: Action Approval Required",
+                    text: "🛡️ SUPRA-WALL: Action Approval Required",
                     emoji: true
                 }
             },
@@ -436,7 +438,21 @@ async function sendSlackNotification(url, data) {
                         action_id: "review_action"
                     }
                 ]
-            }
+            },
+            ...(data.showBranding ? [{
+                    type: "context",
+                    elements: [
+                        {
+                            type: "image",
+                            image_url: "https://supra-wall.com/icon-small.png",
+                            alt_text: "Supra-wall"
+                        },
+                        {
+                            type: "mrkdwn",
+                            text: "🛡️ Protected by <https://supra-wall.com?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
+                        }
+                    ]
+                }] : [])
         ]
     };
     const response = await fetch(url, {
@@ -449,7 +465,7 @@ async function sendSlackNotification(url, data) {
     }
 }
 async function sendEmailNotification(email, data) {
-    console.log(`[AgentGate] 📧 Sending email alert to ${email} for request ${data.requestId}`);
+    console.log(`[SUPRA-WALL] 📧 Sending email alert to ${email} for request ${data.requestId}`);
     // In production, use @sendgrid/mail or resend here.
     // This demonstrates the integration hook.
 }

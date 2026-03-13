@@ -14,7 +14,7 @@ let interval: any;
 
 const fetchLogs = async () => {
   try {
-    const res = await fetch(\`https://api.agentgate.io/v1/agents/\${props.agentId}/logs?limit=\${props.limit || 50}\`, {
+    const res = await fetch(\`https://api.suprawall.io/v1/agents/\${props.agentId}/logs?limit=\${props.limit || 50}\`, {
       headers: { "Authorization": \`Bearer \${props.apiKey}\` }
     });
     if (res.ok) {

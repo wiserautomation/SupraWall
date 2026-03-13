@@ -19,6 +19,18 @@ export default function ApprovalsPage() {
     const [loading, setLoading] = useState(true);
     const [selectedRequest, setSelectedRequest] = useState<ApprovalRequest | null>(null);
     const [isProcessing, setIsProcessing] = useState<string | null>(null);
+    const [plan, setPlan] = useState<string>("starter");
+
+    useEffect(() => {
+        if (!user) return;
+        const orgRef = doc(db, "organizations", user.uid);
+        const unsubscribe = onSnapshot(orgRef, (snap) => {
+            if (snap.exists()) {
+                setPlan(snap.data()?.plan || "starter");
+            }
+        });
+        return () => unsubscribe();
+    }, [user]);
 
     useEffect(() => {
         if (!user) return;
@@ -240,6 +252,29 @@ export default function ApprovalsPage() {
                     </div>
                 </div>
             </motion.div>
+
+            {/* Footer Branding (Free/Starter only) */}
+            {plan === "starter" && (
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.8 }}
+                    className="mt-20 border-t border-white/5 bg-black/40 py-8 text-center"
+                >
+                    <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-xs font-medium text-neutral-500">
+                        <div className="flex items-center gap-2">
+                            <Shield className="w-3 h-3 text-emerald-500" />
+                            <span>Protected by <a href="https://suprawall.ai?ref=dashboard-approvals" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-bold">SupraWall</a></span>
+                        </div>
+                        <span className="hidden md:inline text-neutral-800">|</span>
+                        <span>Enterprise AI security & compliance infrastructure</span>
+                        <span className="hidden md:inline text-neutral-800">|</span>
+                        <a href="/pricing" className="text-neutral-400 hover:text-white transition-colors flex items-center gap-1">
+                            Remove this branding <ArrowRight className="w-3 h-3" />
+                        </a>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Inspect Dialog */}
             <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>

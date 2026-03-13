@@ -67,12 +67,12 @@ export async function GET(request: NextRequest) {
         return new NextResponse(csvString, {
             headers: {
                 'Content-Type': 'text/csv',
-                'Content-Disposition': `attachment; filename="agentgate_audit_${new Date().toISOString().split('T')[0]}.csv"`,
+                'Content-Disposition': `attachment; filename="suprawall_audit_${new Date().toISOString().split('T')[0]}.csv"`,
             },
         });
 
     } catch (error: any) {
-        console.error('[AgentGate] Export failed:', error);
+        console.error('[SupraWall] Export failed:', error);
         return NextResponse.json({ error: 'Export failed' }, { status: 500 });
     }
 }

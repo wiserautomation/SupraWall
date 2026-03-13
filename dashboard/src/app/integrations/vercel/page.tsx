@@ -5,8 +5,8 @@ import { Metadata } from "next";
 import VercelClient from "./VercelClient";
 
 export const metadata: Metadata = {
-    title: "Vercel AI SDK Security & Runtime Interception | AgentGate",
-    description: "Secure your Next.js AI agents with AgentGate. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
+    title: "Vercel AI SDK Security & Runtime Interception | SupraWall",
+    description: "Secure your Next.js AI agents with SupraWall. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
     keywords: ["vercel ai sdk security", "secure nextjs agents", "ai sdk tool governance", "edge runtime security"],
     openGraph: {
         title: "How to Secure Vercel AI SDK Agents",
@@ -18,13 +18,13 @@ export default function VercelIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "AgentGate for Vercel AI SDK",
+        "name": "SupraWall for Vercel AI SDK",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.agentgate.ai/integrations/vercel",
+        "url": "https://www.suprawall.ai/integrations/vercel",
         "author": {
             "@type": "Organization",
-            "name": "AgentGate"
+            "name": "SupraWall"
         },
         "description": "Secure edge-based agentic workflows built with the Vercel AI SDK and Next.js.",
         "featureList": [
@@ -61,7 +61,7 @@ export default function VercelIntegrationPage() {
                         <div className="max-w-3xl mx-auto">
                             <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
                                 Securing Vercel AI SDK agents is paramount for building production-ready AI applications on Next.js.
-                                By deploying the AgentGate edge shim, developers can intercept tool calls from `streamText` and `generateText`
+                                By deploying the SupraWall edge shim, developers can intercept tool calls from `streamText` and `generateText`
                                 in real-time, enforcing security policies at the edge before any backend systems are accessed.
                             </p>
                         </div>
@@ -81,7 +81,7 @@ export default function VercelIntegrationPage() {
                                 Zero-Latency Interception
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
-                                Vercel apps thrive on speed. The AgentGate <Link href="/learn/what-is-agent-runtime-security" className="text-blue-500 underline">runtime security layer</Link>
+                                Vercel apps thrive on speed. The SupraWall <Link href="/learn/what-is-agent-runtime-security" className="text-blue-500 underline">runtime security layer</Link>
                                 is optimized for the Edge Runtime. By pre-compiling security policies into a highly efficient decision engine,
                                 we verify tool parameters (like `send_email` recipients or `database_query` complexity) in under 1ms.
                             </p>
@@ -102,7 +102,7 @@ export default function VercelIntegrationPage() {
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
                                 The Vercel AI SDK relies on streaming for superior UX. Traditional firewalls wait for the full response.
-                                AgentGate works within the stream, allowing you to stop execution mid-sentence if the agent attempts
+                                SupraWall works within the stream, allowing you to stop execution mid-sentence if the agent attempts
                                 to "leak" its own system prompt or access tools it shouldn't.
                             </p>
 
@@ -112,11 +112,11 @@ export default function VercelIntegrationPage() {
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "npm install @agentgate/sdk",
+                                    "npm install @suprawall/sdk",
                                     "Initialize the protector in your Next.js API route",
                                     "Wrap your tools object with the 'protect' helper",
                                     "Configure Edge Middleware for global budget caps",
-                                    "Enable real-time telemetry into the AgentGate Dashboard"
+                                    "Enable real-time telemetry into the SupraWall Dashboard"
                                 ].map((item, idx) => (
                                     <div key={idx} className="flex items-center gap-4 p-5 rounded-2xl bg-blue-500/5 border border-blue-500/10">
                                         <CheckCircle2 className="w-5 h-5 text-blue-500" />

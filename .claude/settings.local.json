@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xxd)",
+      "Bash(npm install -D @types/pg)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(python3 -c \":*)"
+    ]
+  }
+}

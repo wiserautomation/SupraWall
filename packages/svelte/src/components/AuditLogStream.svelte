@@ -12,7 +12,7 @@
 
     async function fetchLogs() {
         try {
-            const res = await fetch(\`https://api.agentgate.io/v1/agents/\${agentId}/logs?limit=\${limit}\`, {
+            const res = await fetch(\`https://api.suprawall.io/v1/agents/\${agentId}/logs?limit=\${limit}\`, {
                 headers: { "Authorization": \`Bearer \${apiKey}\` }
             });
             if (res.ok) {

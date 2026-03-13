@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(approvals);
     } catch (error: any) {
-        console.error('[AgentGate] Error fetching approvals:', error);
+        console.error('[SupraWall] Error fetching approvals:', error);
         return NextResponse.json({ error: 'Failed to fetch approvals' }, { status: 500 });
     }
 }

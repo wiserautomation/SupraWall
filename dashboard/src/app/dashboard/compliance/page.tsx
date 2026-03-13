@@ -6,12 +6,12 @@ import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Shield, CheckCircle2, AlertTriangle, XCircle, Download,
-    FileText, Settings, ExternalLink, RefreshCw
+    FileText, Settings, ExternalLink, RefreshCw, Award, Linkedin, Copy, Check
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 
-const API_URL = process.env.NEXT_PUBLIC_AGENTGATE_API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_SUPRAWALL_API_URL || "http://localhost:3000";
 
 type CheckStatus = "pass" | "partial" | "fail";
 
@@ -128,11 +128,25 @@ function OverallBadge({ overall }: { overall: ComplianceStatus["overall"] }) {
     );
 }
 
+interface CertificateData {
+    certId: string;
+    orgName: string;
+    issueDate: string;
+    complianceScore: number;
+    articlesCompliant: string[];
+    certificateUrl: string;
+    verificationUrl: string;
+    userId: string;
+}
+
 export default function CompliancePage() {
     const [user] = useAuthState(auth);
     const [status, setStatus] = useState<ComplianceStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [certLoading, setCertLoading] = useState(false);
+    const [certificate, setCertificate] = useState<CertificateData | null>(null);
+    const [copied, setCopied] = useState(false);
 
     const fetchStatus = async () => {
         setLoading(true);
@@ -146,7 +160,7 @@ export default function CompliancePage() {
             setError(
                 e instanceof Error
                     ? e.message
-                    : "Failed to fetch compliance status. Ensure NEXT_PUBLIC_AGENTGATE_API_URL is set and the agentgate server is running."
+                    : "Failed to fetch compliance status. Ensure NEXT_PUBLIC_SUPRAWALL_API_URL is set and the suprawall server is running."
             );
         } finally {
             setLoading(false);
@@ -156,6 +170,32 @@ export default function CompliancePage() {
     useEffect(() => {
         if (user) fetchStatus();
     }, [user]);
+
+    const generateCertificate = async () => {
+        if (!user) return;
+        setCertLoading(true);
+        try {
+            const res = await fetch("/api/compliance/certificate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId: user.uid }),
+            });
+            if (!res.ok) throw new Error("Failed to generate certificate");
+            const data = await res.json();
+            setCertificate(data.certificate);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setCertLoading(false);
+        }
+    };
+
+    const copyVerificationUrl = async () => {
+        if (!certificate) return;
+        await navigator.clipboard.writeText(certificate.verificationUrl);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     const downloadReport = () => {
         const url = new URL(`${API_URL}/v1/compliance/report`);
@@ -181,10 +221,10 @@ export default function CompliancePage() {
                             <Shield className="w-6 h-6 text-emerald-400" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-extrabold tracking-tight text-white">
-                                EU AI Act Compliance Status
+                            <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
+                                EU AI Act Compliance
                             </h1>
-                            <p className="text-neutral-400 text-sm mt-0.5">
+                            <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1">
                                 Real-time compliance readiness across EU AI Act requirements.
                             </p>
                         </div>
@@ -193,7 +233,7 @@ export default function CompliancePage() {
                 <button
                     onClick={fetchStatus}
                     disabled={loading}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.08] rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-all disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2.5 bg-black/60 hover:bg-white/[0.05] border border-emerald-500/20 hover:border-emerald-500/40 rounded-xl text-[10px] font-black uppercase tracking-wider text-neutral-400 hover:text-white transition-all disabled:opacity-50"
                 >
                     <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
                     Refresh
@@ -201,7 +241,8 @@ export default function CompliancePage() {
             </div>
 
             {/* Overall Status Card */}
-            <Card className="bg-black/40 backdrop-blur-xl border-white/[0.05]">
+            <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent" />
                 <CardContent className="p-6">
                     {loading ? (
                         <div className="flex items-center gap-3 text-neutral-400 animate-pulse">
@@ -212,17 +253,17 @@ export default function CompliancePage() {
                         <div className="flex items-start gap-3">
                             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                             <div>
-                                <p className="text-sm font-medium text-amber-400">Could not reach agentgate server</p>
+                                <p className="text-sm font-medium text-amber-400">Could not reach suprawall server</p>
                                 <p className="text-xs text-neutral-500 mt-1">{error}</p>
                                 <p className="text-xs text-neutral-600 mt-1">
-                                    Set <code className="text-emerald-400/80">NEXT_PUBLIC_AGENTGATE_API_URL</code> in your <code className="text-emerald-400/80">.env.local</code>
+                                    Set <code className="text-emerald-400/80">NEXT_PUBLIC_SUPRAWALL_API_URL</code> in your <code className="text-emerald-400/80">.env.local</code>
                                 </p>
                             </div>
                         </div>
                     ) : status ? (
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div className="space-y-1">
-                                <p className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Overall Status</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Overall Status</p>
                                 <OverallBadge overall={status.overall} />
                             </div>
                             <p className="text-xs text-neutral-600">
@@ -236,7 +277,7 @@ export default function CompliancePage() {
             {/* Checklist */}
             {status && (
                 <div>
-                    <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
+                    <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.25em] mb-4">
                         Requirement Checklist
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -249,14 +290,14 @@ export default function CompliancePage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.06 }}
                                 >
-                                    <Card className="bg-black/30 backdrop-blur-xl border-white/[0.05] hover:border-white/[0.08] transition-all duration-300 h-full">
+                                    <Card className="bg-black/60 backdrop-blur-xl border-white/[0.05] hover:border-emerald-500/20 transition-all duration-300 h-full relative overflow-hidden group">
                                         <CardContent className="p-5 flex flex-col gap-3">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div>
                                                     <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-500/60">
                                                         {item.article}
                                                     </span>
-                                                    <h3 className="text-sm font-semibold text-white mt-0.5">
+                                                    <h3 className="text-sm font-black text-white uppercase italic tracking-tight mt-0.5">
                                                         {item.name}
                                                     </h3>
                                                 </div>
@@ -281,6 +322,82 @@ export default function CompliancePage() {
                     </div>
                 </div>
             )}
+
+            {/* Compliance Certificate */}
+            <div>
+                <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
+                    Compliance Certificate
+                </h2>
+                <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                    <CardContent className="p-6">
+                        {!certificate ? (
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                <div>
+                                    <h3 className="text-sm font-black text-white uppercase italic tracking-tight mb-1">Generate EU AI Act Certificate</h3>
+                                    <p className="text-xs text-neutral-400">
+                                        Create a shareable compliance certificate. Share on LinkedIn to drive brand awareness.
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={generateCertificate}
+                                    disabled={certLoading}
+                                    className="shrink-0 flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors"
+                                >
+                                    <Award className="w-4 h-4" />
+                                    {certLoading ? "Generating…" : "Generate Certificate"}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                                        <Award className="w-5 h-5 text-emerald-400" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-white">Certificate Generated</p>
+                                        <p className="text-xs text-neutral-400">ID: {certificate.certId} · Score: {certificate.complianceScore}/100</p>
+                                    </div>
+                                </div>
+                                <div className="flex flex-wrap gap-2">
+                                    <a
+                                        href={certificate.certificateUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] rounded-lg text-xs font-medium text-white transition-colors"
+                                    >
+                                        <Download className="w-3.5 h-3.5" />
+                                        View &amp; Print Certificate
+                                    </a>
+                                    <a
+                                        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(certificate.verificationUrl)}&text=${encodeURIComponent(`Our AI agents are now EU AI Act compliant ✅\n\nArticle 14 human oversight, Article 12 audit logging, and Article 9 risk management — all verified by Supra-wall.\n\nWith August 2026 enforcement approaching, compliance isn't optional.\n\n#EUAIAct #AICompliance #AIAgentSecurity`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-2 px-4 py-2 bg-[#0a66c2]/20 hover:bg-[#0a66c2]/30 border border-[#0a66c2]/30 rounded-lg text-xs font-medium text-[#70a9e8] transition-colors"
+                                    >
+                                        <Linkedin className="w-3.5 h-3.5" />
+                                        Share on LinkedIn
+                                    </a>
+                                    <button
+                                        onClick={copyVerificationUrl}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] rounded-lg text-xs font-medium text-neutral-300 transition-colors"
+                                    >
+                                        {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                        {copied ? "Copied!" : "Copy Verification URL"}
+                                    </button>
+                                    <button
+                                        onClick={() => setCertificate(null)}
+                                        className="flex items-center gap-2 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.07] border border-white/[0.06] rounded-lg text-xs font-medium text-neutral-400 transition-colors"
+                                    >
+                                        <RefreshCw className="w-3.5 h-3.5" />
+                                        Regenerate
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            </div>
 
             {/* Quick Actions */}
             <div>

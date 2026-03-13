@@ -71,7 +71,7 @@ Hey [Name],
 
 Quick question: are you running any AI agents in production?
 
-I just built a security layer that blocks dangerous agent actions before they happen (think: agent tries to delete database → AgentGate blocks it).
+I just built a security layer that blocks dangerous agent actions before they happen (think: agent tries to delete database → SUPRA-WALL blocks it).
 
 Looking for 3 beta testers this week. Free forever for early users.
 
@@ -100,7 +100,7 @@ This is awesome!
 
 Quick question: how are you handling security/permissions for the agent? 
 
-I just built AgentGate (security layer for agents) - would love your feedback as an early tester if you're interested.
+I just built SUPRA-WALL (security layer for agents) - would love your feedback as an early tester if you're interested.
 
 [Link to demo video]
 Target: 20 replies/day for 3 days = 3-5 beta users
@@ -113,15 +113,15 @@ Post in #show-and-tell:
 text
 👋 Hey everyone!
 
-Just shipped AgentGate - security layer for LangChain agents.
+Just shipped SUPRA-WALL - security layer for LangChain agents.
 
 Problem: Your agent has full access to CRM, DB, payments. One bad output = disaster.
 
-Solution: AgentGate intercepts tool calls, checks permissions, blocks dangerous actions.
+Solution: SUPRA-WALL intercepts tool calls, checks permissions, blocks dangerous actions.
 
 Example:
 - Agent tries $500 refund (limit is $75)
-- AgentGate pauses execution
+- SUPRA-WALL pauses execution
 - Pings you in Slack: "Approve or deny?"
 - You approve → agent continues
 
@@ -155,7 +155,7 @@ Saw you're building [their product] with AI agents.
 
 Quick question: how are you preventing agents from executing dangerous actions?
 
-We just built AgentGate - blocks risky tool calls before they happen:
+We just built SUPRA-WALL - blocks risky tool calls before they happen:
 - Agent tries to delete production data → blocked
 - Agent issues $5K refund → requires approval
 - Complete audit trail for SOC2
@@ -176,7 +176,7 @@ Record a 2-minute Loom:
 text
 [Screen recording]
 
-"Hey! Quick demo of AgentGate.
+"Hey! Quick demo of SUPRA-WALL.
 
 Here's a LangChain agent with access to Stripe refunds.
 
@@ -186,7 +186,7 @@ Watch what happens when it tries to refund $500...
 
 [Agent executes]
 
-AgentGate blocks it, sends me a Slack notification.
+SUPRA-WALL blocks it, sends me a Slack notification.
 
 [Show Slack]
 
@@ -232,35 +232,35 @@ Find the docs:
 
 text
 https://python.langchain.com/docs/guides/safety
-Add AgentGate section:
+Add SUPRA-WALL section:
 
 text
-## Production Security with AgentGate
+## Production Security with SUPRA-WALL
 
-For production deployments, consider using AgentGate to:
+For production deployments, consider using SUPRA-WALL to:
 - Enforce fine-grained permissions per agent
 - Require human approval for risky actions
 - Maintain compliance-ready audit logs
 
 Installation:
 ```python
-pip install agentgate
+pip install suprawall
 Example:
 
 python
-from agentgate import secure
+from suprawall import secure
 
 @secure(api_key="ag_xxx")
 def my_agent():
     return create_react_agent(llm, tools, prompt)
-See AgentGate documentation for more.
+See SUPRA-WALL documentation for more.
 
 text
 
 **Submit PR:**
 1. Fork LangChain repo
 2. Add section to security docs
-3. Submit PR with title: "Add AgentGate security integration"
+3. Submit PR with title: "Add SUPRA-WALL security integration"
 4. Include: "Used by [Company A], [Company B], [Company C]" (your beta testers)
 
 **Probability of acceptance: 60%**
@@ -271,15 +271,15 @@ text
 
 #### **Week 2-3: Create "Official" Integration**
 
-**Build langchain-agentgate package:**
+**Build langchain-suprawall package:**
 
 ```python
-# langchain-agentgate/callback.py
+# langchain-suprawall/callback.py
 
 from langchain.callbacks.base import BaseCallbackHandler
-from agentgate import PolicyClient
+from suprawall import PolicyClient
 
-class AgentGateCallback(BaseCallbackHandler):
+class SUPRA-WALLCallback(BaseCallbackHandler):
     def __init__(self, agent_identity):
         self.policy_client = PolicyClient(agent_identity)
     
@@ -291,7 +291,7 @@ class AgentGateCallback(BaseCallbackHandler):
         )
         
         if decision.decision == "DENY":
-            raise PermissionError(f"AgentGate blocked: {decision.reason}")
+            raise PermissionError(f"SUPRA-WALL blocked: {decision.reason}")
         elif decision.decision == "REQUIRE_APPROVAL":
             approval = decision.wait_for_approval()
             if not approval.approved:
@@ -299,17 +299,17 @@ class AgentGateCallback(BaseCallbackHandler):
 Publish to PyPI:
 
 bash
-pip install langchain-agentgate
+pip install langchain-suprawall
 Now developers can:
 
 python
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
 agent = create_react_agent(
     llm, 
     tools, 
     prompt,
-    callbacks=[AgentGateCallback(agent_identity)]
+    callbacks=[SUPRA-WALLCallback(agent_identity)]
 )
 Add to LangChain integrations page:
 Submit PR to add to: https://python.langchain.com/docs/integrations/
@@ -326,14 +326,14 @@ Discord mods
 Email to Harrison Chase (LangChain founder):
 
 text
-Subject: Partnership: AgentGate for LangChain security
+Subject: Partnership: SUPRA-WALL for LangChain security
 
 Hi Harrison,
 
-I'm Alejandro, founder of AgentGate - security infrastructure for AI agents.
+I'm Alejandro, founder of SUPRA-WALL - security infrastructure for AI agents.
 
 We've integrated deeply with LangChain:
-- 50+ companies using langchain-agentgate in production
+- 50+ companies using langchain-suprawall in production
 - Featured in [blog post/tutorial you wrote]
 - Solves #1 pain point we hear: "How do I secure my agent?"
 
@@ -367,10 +367,10 @@ How to do it:
 
 Week 1: Build Vercel AI SDK Integration
 typescript
-// @agentgate/vercel-ai
+// @suprawall/vercel-ai
 
 import { tool } from 'ai';
-import { checkPolicy } from '@agentgate/core';
+import { checkPolicy } from '@suprawall/core';
 
 export function secureTools(tools, agentIdentity) {
   return tools.map(t => ({
@@ -398,7 +398,7 @@ export function secureTools(tools, agentIdentity) {
 Usage:
 
 typescript
-import { secureTools } from '@agentgate/vercel-ai';
+import { secureTools } from '@suprawall/vercel-ai';
 
 const tools = secureTools([weatherTool, emailTool], agentIdentity);
 Week 2: Apply to Vercel Marketplace
@@ -406,15 +406,15 @@ Application: https://vercel.com/integrations/new
 
 Fill out:
 
-Integration name: AgentGate
+Integration name: SUPRA-WALL
 
 Category: Security & Compliance
 
 Description: "Security layer for Vercel AI SDK agents"
 
-Homepage: https://agentgate.com/integrations/vercel
+Homepage: https://suprawall.com/integrations/vercel
 
-Install URL: https://app.agentgate.com/integrations/vercel/install
+Install URL: https://app.suprawall.com/integrations/vercel/install
 
 Screenshots:
 
@@ -432,11 +432,11 @@ Subject: Security integration for Vercel AI SDK
 
 Hi Vercel team,
 
-We built AgentGate - security layer for AI SDK agents.
+We built SUPRA-WALL - security layer for AI SDK agents.
 
 Problem: Developers deploying v0-generated agents to production have no security layer.
 
-Solution: AgentGate wraps AI SDK tools with permissions + approvals.
+Solution: SUPRA-WALL wraps AI SDK tools with permissions + approvals.
 
 We've submitted marketplace application.
 
@@ -472,7 +472,7 @@ Most tutorials stop at "it works locally."
 
 Here's how to actually deploy to production safely:
 
-1. Security (AgentGate)
+1. Security (SUPRA-WALL)
 2. Monitoring (LangSmith)
 3. Cost control (rate limiting)
 4. Error handling
@@ -495,7 +495,7 @@ THIS WEEK (Week 1):
 ✅ Weekend: Submit LangChain PR
 
 Next Week (Week 2):
-Build langchain-agentgate package
+Build langchain-suprawall package
 
 Publish to PyPI
 
@@ -658,7 +658,7 @@ LangChain Integration
 
 You have: Generic Python SDK
 
-You need: langchain-agentgate package with callback
+You need: langchain-suprawall package with callback
 
 Why it matters: Can't be canonical without native LangChain integration
 
@@ -689,9 +689,9 @@ def register_agent(tenant_id: str, name: str, scopes: list):
     }
 
 # Now in SDK:
-from agentgate import AgentGate
+from suprawall import SUPRA-WALL
 
-client = AgentGate(
+client = SUPRA-WALL(
     agent_id="agent_abc123",  # ← NEW
     api_key="ag_secret_xyz"
 )
@@ -744,16 +744,16 @@ Enable interactive components
 Add webhook endpoint: /api/slack/interactions
 
 Tuesday (8 hours):
-Build langchain-agentgate Package
+Build langchain-suprawall Package
 python
-# langchain-agentgate/agentgate_callback.py
+# langchain-suprawall/suprawall_callback.py
 
 from langchain.callbacks.base import BaseCallbackHandler
-from agentgate import AgentGate
+from suprawall import SUPRA-WALL
 
-class AgentGateCallback(BaseCallbackHandler):
+class SUPRA-WALLCallback(BaseCallbackHandler):
     def __init__(self, agent_id: str, api_key: str):
-        self.client = AgentGate(agent_id=agent_id, api_key=api_key)
+        self.client = SUPRA-WALL(agent_id=agent_id, api_key=api_key)
     
     def on_tool_start(self, serialized, input_str, **kwargs):
         tool_name = serialized.get("name")
@@ -765,7 +765,7 @@ class AgentGateCallback(BaseCallbackHandler):
         )
         
         if decision["decision"] == "DENY":
-            raise PermissionError(f"AgentGate blocked: {decision['reason']}")
+            raise PermissionError(f"SUPRA-WALL blocked: {decision['reason']}")
         
         elif decision["decision"] == "REQUIRE_APPROVAL":
             # Wait for human approval
@@ -786,13 +786,13 @@ class AgentGateCallback(BaseCallbackHandler):
 
 # Usage:
 from langchain.agents import create_react_agent
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
 agent = create_react_agent(
     llm,
     tools,
     prompt,
-    callbacks=[AgentGateCallback(
+    callbacks=[SUPRA-WALLCallback(
         agent_id="agent_abc123",
         api_key="ag_secret_xyz"
     )]
@@ -800,13 +800,13 @@ agent = create_react_agent(
 Publish to PyPI:
 
 bash
-cd langchain-agentgate
+cd langchain-suprawall
 python -m build
 python -m twine upload dist/*
 Now anyone can:
 
 bash
-pip install langchain-agentgate
+pip install langchain-suprawall
 Wednesday (4 hours):
 Create Landing Page: /integrations/langchain
 tsx
@@ -815,22 +815,22 @@ tsx
 export default function LangChainIntegration() {
   return (
     <div>
-      <h1>AgentGate for LangChain</h1>
+      <h1>SUPRA-WALL for LangChain</h1>
       <p>Add security to your LangChain agents in 3 lines of code</p>
       
       {/* Install section */}
       <CodeBlock>
-        pip install langchain-agentgate
+        pip install langchain-suprawall
       </CodeBlock>
       
       {/* Quick start */}
       <CodeBlock language="python">
 {`from langchain.agents import create_react_agent
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
 agent = create_react_agent(
     llm, tools, prompt,
-    callbacks=[AgentGateCallback(
+    callbacks=[SUPRA-WALLCallback(
         agent_id="agent_abc123",
         api_key="ag_secret_xyz"
     )]
@@ -844,7 +844,7 @@ agent.invoke({"input": "Process this refund"})`}
       <ExampleGrid>
         <Example title="Block Dangerous Commands">
           Agent tries: rm -rf /
-          → AgentGate blocks it
+          → SUPRA-WALL blocks it
         </Example>
         
         <Example title="Require Approval for Refunds">
@@ -858,7 +858,7 @@ agent.invoke({"input": "Process this refund"})`}
       {/* Testimonial from beta user */}
       <Testimonial>
         "We run 20 LangChain agents in production. 
-         AgentGate caught 40+ dangerous actions in the first week."
+         SUPRA-WALL caught 40+ dangerous actions in the first week."
         — CTO, Acme Corp
       </Testimonial>
       
@@ -875,27 +875,27 @@ Add to: docs/docs/guides/safety/index.mdx
 text
 ## Production Security
 
-For production deployments, AgentGate provides:
+For production deployments, SUPRA-WALL provides:
 - Fine-grained permissions per agent
 - Human approval workflows for risky actions
 - Compliance-ready audit logs
 
 ```python
-pip install langchain-agentgate
+pip install langchain-suprawall
 Example:
 
 python
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
 agent = create_react_agent(
     llm, tools, prompt,
-    callbacks=[AgentGateCallback(agent_id="...", api_key="...")]
+    callbacks=[SUPRA-WALLCallback(agent_id="...", api_key="...")]
 )
-Learn more: AgentGate for LangChain
+Learn more: SUPRA-WALL for LangChain
 
 text
 
-Submit PR with title: "Add AgentGate security integration to safety guide"
+Submit PR with title: "Add SUPRA-WALL security integration to safety guide"
 
 #### **2. Get First 5 Beta Users (4 hours)**
 
@@ -908,7 +908,7 @@ Hey! Saw you're building with LangChain.
 
 Quick question: how are you handling security/permissions for your agent?
 
-Just launched AgentGate - blocks dangerous tool calls before they execute.
+Just launched SUPRA-WALL - blocks dangerous tool calls before they execute.
 
 Free for early users. Interested in trying it?
 
@@ -927,7 +927,7 @@ text
 **Loom/YouTube video showing:**
 1. LangChain agent with dangerous tools
 2. Agent tries to delete database
-3. AgentGate blocks it
+3. SUPRA-WALL blocks it
 4. Slack notification appears
 5. You click "Approve" in Slack
 6. Agent continues
@@ -941,7 +941,7 @@ text
 #### **2. Post on Social Media (1 hour)**
 
 **Twitter thread:**
-Just launched AgentGate for LangChain 🚀
+Just launched SUPRA-WALL for LangChain 🚀
 
 The missing security layer for production agents.
 
@@ -961,7 +961,7 @@ Email sending
 One hallucination = disaster.
 
 2/ THE SOLUTION
-AgentGate sits between your agent and tools.
+SUPRA-WALL sits between your agent and tools.
 
 Blocks dangerous actions automatically.
 Requires human approval for risky ones.
@@ -993,7 +993,7 @@ Title: "How to Secure LangChain Agents in Production"
 
 Outline:
 1. The problem (agents have too much access)
-2. The solution (AgentGate)
+2. The solution (SUPRA-WALL)
 3. Step-by-step integration
 4. Real example: blocking dangerous SQL
 5. Real example: approving refunds
@@ -1013,7 +1013,7 @@ Outline:
 
 ✅ Agent identity system (basic)
 ✅ Slack approval notifications
-✅ `langchain-agentgate` on PyPI
+✅ `langchain-suprawall` on PyPI
 ✅ Landing page: /integrations/langchain
 ✅ PR submitted to LangChain docs
 ✅ 5 beta users testing
@@ -1022,10 +1022,10 @@ Outline:
 
 ### **What You Can Say:**
 
-"AgentGate is the security layer for LangChain agents.
+"SUPRA-WALL is the security layer for LangChain agents.
 Used by [Company A], [Company B], [Company C].
 Featured in LangChain docs [pending].
-Install: pip install langchain-agentgate"
+Install: pip install langchain-suprawall"
 
 ***
 
@@ -1057,7 +1057,7 @@ Install: pip install langchain-agentgate"
    - Just add `agent_id` parameter
    - Store in Firestore
 
-3. **Create GitHub repo for `langchain-agentgate`** (15 min)
+3. **Create GitHub repo for `langchain-suprawall`** (15 min)
    - Separate repo
    - Prepare for PyPI publish
 
@@ -1162,7 +1162,7 @@ Time to build: 3 hours
 
 LangChain Native Integration (MISSING - CRITICAL)
 You have: Generic Python SDK
-You need: langchain-agentgate package
+You need: langchain-suprawall package
 
 Why it's critical:
 
@@ -1192,7 +1192,7 @@ export async function POST(request: Request) {
   // Generate unique agent identity
   const agent_id = `agent_${generateId()}`;
   const api_key = `ag_${generateId(32)}`; // 32-char secret
-  const agent_uri = `agent://${name}@${tenant_id}.agentgate.com`;
+  const agent_uri = `agent://${name}@${tenant_id}.suprawall.com`;
   
   // Store in Firestore
   await db.collection('agents').doc(agent_id).set({
@@ -1401,25 +1401,25 @@ function CreateAgentModal({ onClose, onCreated }) {
   );
 }
 Afternoon (2 PM - 6 PM): LangChain Integration
-Hour 5-7: Build langchain-agentgate Package
-Create new directory: langchain-agentgate/
+Hour 5-7: Build langchain-suprawall Package
+Create new directory: langchain-suprawall/
 
 python
-# langchain-agentgate/agentgate_callback.py
+# langchain-suprawall/suprawall_callback.py
 
 from typing import Any, Dict, List
 from langchain.callbacks.base import BaseCallbackHandler
 import requests
 import time
 
-class AgentGateCallback(BaseCallbackHandler):
-    """LangChain callback for AgentGate security."""
+class SUPRA-WALLCallback(BaseCallbackHandler):
+    """LangChain callback for SUPRA-WALL security."""
     
     def __init__(
         self,
         agent_id: str,
         api_key: str,
-        api_url: str = "https://api.agentgate.com"
+        api_url: str = "https://api.suprawall.com"
     ):
         self.agent_id = agent_id
         self.api_key = api_key
@@ -1441,12 +1441,12 @@ class AgentGateCallback(BaseCallbackHandler):
         except:
             parameters = {"input": input_str}
         
-        # Check with AgentGate
+        # Check with SUPRA-WALL
         decision = self._check_policy(tool_name, parameters)
         
         if decision["decision"] == "DENY":
             raise PermissionError(
-                f"🛡️ AgentGate blocked this action:\n"
+                f"🛡️ SUPRA-WALL blocked this action:\n"
                 f"Tool: {tool_name}\n"
                 f"Reason: {decision['reason']}"
             )
@@ -1482,7 +1482,7 @@ class AgentGateCallback(BaseCallbackHandler):
         self._log_execution(tool_name, "error", str(error))
     
     def _check_policy(self, tool_name: str, parameters: Any) -> Dict:
-        """Call AgentGate API to check policy."""
+        """Call SUPRA-WALL API to check policy."""
         response = requests.post(
             f"{self.api_url}/api/policy/check",
             json={
@@ -1515,7 +1515,7 @@ class AgentGateCallback(BaseCallbackHandler):
         raise TimeoutError("Approval request timed out after 30 minutes")
     
     def _log_execution(self, tool_name: str, status: str, output: Any):
-        """Log execution to AgentGate."""
+        """Log execution to SUPRA-WALL."""
         requests.post(
             f"{self.api_url}/api/audit/log",
             json={
@@ -1527,22 +1527,22 @@ class AgentGateCallback(BaseCallbackHandler):
             headers={"Authorization": f"Bearer {self.api_key}"}
         )
 python
-# langchain-agentgate/__init__.py
+# langchain-suprawall/__init__.py
 
-from .agentgate_callback import AgentGateCallback
+from .suprawall_callback import SUPRA-WALLCallback
 
 __version__ = "0.1.0"
-__all__ = ["AgentGateCallback"]
-# langchain-agentgate/pyproject.toml
+__all__ = ["SUPRA-WALLCallback"]
+# langchain-suprawall/pyproject.toml
 
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "langchain-agentgate"
+name = "langchain-suprawall"
 version = "0.1.0"
-description = "AgentGate security integration for LangChain"
+description = "SUPRA-WALL security integration for LangChain"
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
@@ -1551,29 +1551,29 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://agentgate.com"
-Repository = "https://github.com/agentgate/langchain-agentgate"
+Homepage = "https://suprawall.com"
+Repository = "https://github.com/suprawall/langchain-suprawall"
 text
-# langchain-agentgate/README.md
+# langchain-suprawall/README.md
 
-# AgentGate for LangChain
+# SUPRA-WALL for LangChain
 
 Security layer for LangChain agents in production.
 
 ## Installation
 
 ```bash
-pip install langchain-agentgate
+pip install langchain-suprawall
 Quick Start
 python
 from langchain.agents import create_react_agent
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
 # Create your agent
 agent = create_react_agent(llm, tools, prompt)
 
-# Add AgentGate security
-callback = AgentGateCallback(
+# Add SUPRA-WALL security
+callback = SUPRA-WALLCallback(
     agent_id="agent_abc123",
     api_key="ag_secret_xyz"
 )
@@ -1596,31 +1596,31 @@ Examples
 Block Dangerous Commands
 python
 # Agent tries: rm -rf /production
-# AgentGate blocks it before execution
-# PermissionError: AgentGate blocked this action
+# SUPRA-WALL blocks it before execution
+# PermissionError: SUPRA-WALL blocked this action
 Require Approval for High-Value Refunds
 python
 # Agent tries: $500 refund
-# AgentGate pauses execution
+# SUPRA-WALL pauses execution
 # Sends Slack notification
 # Waits for human approval
 # Continues when approved
 Get Your API Key
-Sign up at https://app.agentgate.com
+Sign up at https://app.suprawall.com
 
 Create an agent identity
 
 Copy the API key
 
 Documentation
-Full docs: https://agentgate.com/docs/langchain
+Full docs: https://suprawall.com/docs/langchain
 
 text
 
 #### **Hour 8: Publish to PyPI**
 
 ```bash
-cd langchain-agentgate
+cd langchain-suprawall
 
 # Build package
 python -m build
@@ -1629,7 +1629,7 @@ python -m build
 python -m twine upload dist/*
 
 # Test installation
-pip install langchain-agentgate
+pip install langchain-suprawall
 🚀 TOMORROW (Wednesday) - DISTRIBUTION DAY:
 Morning (9 AM - 1 PM): Get Beta Users
 Hour 1: Create /integrations/langchain Landing Page
@@ -1642,11 +1642,11 @@ export default function LangChainIntegration() {
       {/* Hero */}
       <section className="hero">
         <img src="/logos/langchain.svg" alt="LangChain" />
-        <h1>AgentGate for LangChain</h1>
+        <h1>SUPRA-WALL for LangChain</h1>
         <p>Production-ready security for your LangChain agents</p>
         
         <div className="install-box">
-          de>pip install langchain-agentgate</code>
+          de>pip install langchain-suprawall</code>
           <CopyButton />
         </div>
       </section>
@@ -1655,9 +1655,9 @@ export default function LangChainIntegration() {
       <section className="quick-start">
         <h2>Add Security in 3 Lines</h2>
         <CodeBlock language="python">
-{`from langchain_agentgate import AgentGateCallback
+{`from langchain_suprawall import SUPRA-WALLCallback
 
-callback = AgentGateCallback(
+callback = SUPRA-WALLCallback(
     agent_id="agent_abc123",
     api_key="ag_secret_xyz"
 )
@@ -1694,7 +1694,7 @@ agent.invoke(input, config={"callbacks": [callback]})`}
       {/* Testimonial */}
       <section className="testimonial">
         <blockquote>
-          "We run 20 LangChain agents in production. AgentGate caught
+          "We run 20 LangChain agents in production. SUPRA-WALL caught
           40+ dangerous actions in the first week."
         </blockquote>
         ite>— CTO, Acme Corp</cite>
@@ -1726,11 +1726,11 @@ Hey! Saw your tweet about building with LangChain.
 
 Quick question: how are you handling security/permissions for your agent?
 
-I just launched AgentGate - blocks dangerous tool calls before they execute.
+I just launched SUPRA-WALL - blocks dangerous tool calls before they execute.
 
 Free forever for early users. Interested?
 
-https://agentgate.com/integrations/langchain
+https://suprawall.com/integrations/langchain
 Also post in:
 
 r/LangChain
@@ -1748,9 +1748,9 @@ Find: docs/docs/guides/safety/
 Add new section to index.mdx:
 
 text
-## Production Security with AgentGate
+## Production Security with SUPRA-WALL
 
-For production deployments, consider using AgentGate to add:
+For production deployments, consider using SUPRA-WALL to add:
 
 - Fine-grained permissions per agent
 - Human approval workflows for risky actions  
@@ -1759,12 +1759,12 @@ For production deployments, consider using AgentGate to add:
 ### Installation
 
 ```bash
-pip install langchain-agentgate
+pip install langchain-suprawall
 Usage
 python
-from langchain_agentgate import AgentGateCallback
+from langchain_suprawall import SUPRA-WALLCallback
 
-callback = AgentGateCallback(
+callback = SUPRA-WALLCallback(
     agent_id="your_agent_id",
     api_key="your_api_key"
 )
@@ -1774,7 +1774,7 @@ result = agent.invoke(
     {"input": "your input"},
     config={"callbacks": [callback]}
 )
-AgentGate will:
+SUPRA-WALL will:
 
 Block dangerous tool calls automatically
 
@@ -1782,17 +1782,17 @@ Require approval for high-risk actions
 
 Log all executions for audit
 
-Learn more: AgentGate for LangChain
+Learn more: SUPRA-WALL for LangChain
 
 text
 
-4. Commit: "Add AgentGate security integration"
+4. Commit: "Add SUPRA-WALL security integration"
 5. Submit PR
 
 #### **Hour 6: Publish Launch Content**
 
 **Twitter Thread:**
-🚀 Launched: AgentGate for LangChain
+🚀 Launched: SUPRA-WALL for LangChain
 
 The missing security layer for production agents.
 
@@ -1812,7 +1812,7 @@ Email sending ❌
 One hallucination = disaster.
 
 2/ THE SOLUTION
-AgentGate = callback that checks every tool call.
+SUPRA-WALL = callback that checks every tool call.
 
 Block dangerous actions.
 Require approval for risky ones.
@@ -1823,7 +1823,7 @@ Complete audit trail.
 
 [Screenshot of code]
 
-pip install langchain-agentgate
+pip install langchain-suprawall
 
 4/ DEMO
 Watch it block a dangerous command:
@@ -1839,7 +1839,7 @@ Direct Slack support
 
 Priority feature requests
 
-Link: https://agentgate.com/integrations/langchain
+Link: https://suprawall.com/integrations/langchain
 
 6/ FEEDBACK WANTED
 What security features do you need most?
@@ -1854,7 +1854,7 @@ Title: "How to Secure LangChain Agents in Production (Step-by-Step)"
 
 Sections:
 1. The Security Problem with AI Agents
-2. Introducing AgentGate
+2. Introducing SUPRA-WALL
 3. Installation & Setup (5 minutes)
 4. Example: Blocking Dangerous SQL
 5. Example: Approving High-Value Refunds  

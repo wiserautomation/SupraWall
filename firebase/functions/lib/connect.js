@@ -121,7 +121,7 @@ exports.issueConnectKey = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("permission-denied", "Access denied.");
     }
     if (!((_b = platformSnap.data()) === null || _b === void 0 ? void 0 : _b.connectEnabled)) {
-        throw new functions.https.HttpsError("failed-precondition", "agentgate Connect is not enabled for this platform.");
+        throw new functions.https.HttpsError("failed-precondition", "suprawall Connect is not enabled for this platform.");
     }
     // Prevent duplicate sub-key for the same customerId under this platform
     const duplicateSnap = await db
@@ -392,7 +392,7 @@ exports.notifyPlatformWebhook = functions.firestore
         return null;
     try {
         const payload = {
-            event: "agentgate.policy_decision",
+            event: "suprawall.policy_decision",
             decision: event.decision,
             platformId: event.platformId,
             customerId: event.customerId,
@@ -405,21 +405,21 @@ exports.notifyPlatformWebhook = functions.firestore
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-agentgate-Webhook": "1",
+                "X-suprawall-Webhook": "1",
                 // HMAC signature for webhook verification (platform can validate)
-                "X-agentgate-Signature": generateWebhookSignature(JSON.stringify(payload), event.platformId),
+                "X-suprawall-Signature": generateWebhookSignature(JSON.stringify(payload), event.platformId),
             },
             body: JSON.stringify(payload),
             signal: AbortSignal.timeout(5000), // 5s timeout
         });
         if (!response.ok) {
-            console.error(`[agentgate] Webhook delivery failed for platform ${event.platformId}: ` +
+            console.error(`[suprawall] Webhook delivery failed for platform ${event.platformId}: ` +
                 `HTTP ${response.status}`);
         }
     }
     catch (e) {
         // Non-fatal — webhook delivery failures must never affect policy evaluation
-        console.error(`[agentgate] Webhook error for platform ${event.platformId}:`, e);
+        console.error(`[suprawall] Webhook error for platform ${event.platformId}:`, e);
     }
     return null;
 });
@@ -429,7 +429,7 @@ function generateWebhookSignature(payload, platformId) {
     const crypto = require("crypto");
     // In production: store a per-platform webhook secret in Firestore or Secret Manager
     // For now: use platformId + a server-side salt from environment config
-    const secret = `${platformId}_${(_b = (_a = functions.config().agentgate) === null || _a === void 0 ? void 0 : _a.webhook_salt) !== null && _b !== void 0 ? _b : "dev_salt"}`;
+    const secret = `${platformId}_${(_b = (_a = functions.config().suprawall) === null || _a === void 0 ? void 0 : _a.webhook_salt) !== null && _b !== void 0 ? _b : "dev_salt"}`;
     return crypto
         .createHmac("sha256", secret)
         .update(payload)

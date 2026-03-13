@@ -161,17 +161,21 @@ export default function PoliciesPage() {
         >
             <div className="flex justify-between items-end mb-8">
                 <div className="space-y-1">
-                    <h1 className="text-4xl font-extrabold tracking-tight text-white">Security Policies</h1>
-                    <p className="text-neutral-400 text-sm">Define access control and approval flows for your agents&apos; tools.</p>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                        <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">Zero-Trust Rules</span>
+                    </div>
+                    <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Security Policies</h1>
+                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Define access control and approval flows for your agents&apos; tools.</p>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <Card className="col-span-1 bg-black/40 backdrop-blur-xl border-white/[0.05] shadow-2xl h-fit relative group overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-1000" />
-                    <CardHeader className="bg-white/[0.01] border-b border-white/[0.05]">
+                <Card className="col-span-1 bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl h-fit relative group overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
+                    <CardHeader className="bg-black/20 border-b border-white/[0.04]">
                         <div className="flex justify-between items-center w-full">
-                            <CardTitle className="text-lg flex items-center font-semibold text-white/90 tracking-tight">
+                            <CardTitle className="text-sm flex items-center font-black text-white uppercase italic tracking-tighter">
                                 <ShieldAlert className="w-5 h-5 mr-2 text-emerald-400" />
                                 New Policy Rule
                             </CardTitle>

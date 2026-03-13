@@ -91,7 +91,7 @@ export default function MonitoringPage() {
         const a = document.createElement('a');
         a.setAttribute('hidden', '');
         a.setAttribute('href', url);
-        a.setAttribute('download', `agentgate_audit_${new Date().toISOString()}.csv`);
+        a.setAttribute('download', `suprawall_audit_${new Date().toISOString()}.csv`);
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -100,9 +100,13 @@ export default function MonitoringPage() {
     return (
         <div className="space-y-8 font-sans">
             <div className="flex justify-between items-end">
-                <div className="space-y-1">
+                <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5">
+                        <span className={`w-1.5 h-1.5 rounded-full ${isLive ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-600'}`} />
+                        <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">{isLive ? 'Live Feed' : 'Paused'}</span>
+                    </div>
                     <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Live Swarm Inspector</h1>
-                    <p className="text-neutral-500 text-sm font-medium uppercase tracking-widest">Real-time agent orchestration & tool governance</p>
+                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Real-time agent orchestration &amp; tool governance</p>
                 </div>
                 <div className="flex gap-3">
                     <Button
@@ -117,10 +121,10 @@ export default function MonitoringPage() {
                         variant="outline"
                         size="sm"
                         onClick={() => setIsLive(!isLive)}
-                        className={`border-white/5 ${isLive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-neutral-400'}`}
+                        className={`border-white/10 text-[10px] font-black uppercase tracking-wider ${isLive ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-white/5 text-neutral-400'}`}
                     >
-                        {isLive ? <Pause className="w-4 h-4 mr-2" /> : <Play className="w-4 h-4 mr-2" />}
-                        {isLive ? 'Live Feed' : 'Paused'}
+                        {isLive ? <Pause className="w-3.5 h-3.5 mr-1.5" /> : <Play className="w-3.5 h-3.5 mr-1.5" />}
+                        {isLive ? 'Pause' : 'Resume'}
                     </Button>
                 </div>
             </div>

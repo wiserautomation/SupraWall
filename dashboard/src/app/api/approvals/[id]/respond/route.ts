@@ -54,7 +54,7 @@ export async function POST(
         });
 
     } catch (error: any) {
-        console.error('[AgentGate] Error responding to approval:', error);
+        console.error('[SupraWall] Error responding to approval:', error);
         return NextResponse.json({ error: 'Failed to update approval status.' }, { status: 500 });
     }
 }

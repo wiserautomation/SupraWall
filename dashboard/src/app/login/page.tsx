@@ -42,7 +42,7 @@ export default function LoginPage() {
             <Card className="w-[400px] border-neutral-800 bg-neutral-900">
                 <CardHeader>
                     <CardTitle className="text-2xl font-bold tracking-tight">
-                        AgentGate {isRegistering ? "Registration" : "Login"}
+                        SupraWall {isRegistering ? "Registration" : "Login"}
                     </CardTitle>
                 </CardHeader>
                 <CardContent>

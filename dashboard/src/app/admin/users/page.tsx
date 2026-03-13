@@ -70,7 +70,7 @@ export default function AdminUsersPage() {
                         <Users className="w-8 h-8 text-emerald-500" />
                         User Management
                     </h1>
-                    <p className="text-neutral-400 text-sm">View, search, and manage all users on the AgentGate platform.</p>
+                    <p className="text-neutral-400 text-sm">View, search, and manage all users on the SupraWall platform.</p>
                 </div>
             </div>
 

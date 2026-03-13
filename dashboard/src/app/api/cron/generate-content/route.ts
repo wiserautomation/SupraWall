@@ -33,21 +33,21 @@ const CONTENT_QUEUE: Omit<QueueItem, 'id' | 'createdAt' | 'generatedAt'>[] = [
         secondaryKeywords: ['datafeedwatch vs', 'feed management security', 'ai agent feed protection'],
         targetSearchVolume: 1300,
         priority: 1,
-        prompt: `Write a comprehensive comparison landing page for AgentGate vs DataFeedWatch.
+        prompt: `Write a comprehensive comparison landing page for SupraWall vs DataFeedWatch.
 
-AgentGate is an AI agent security platform (runtime firewall) that protects AI agents from rogue behavior, infinite loops, and unauthorized tool calls.
+SupraWall is an AI agent security platform (runtime firewall) that protects AI agents from rogue behavior, infinite loops, and unauthorized tool calls.
 DataFeedWatch is a product feed management tool.
 
 The page should:
 - Have a compelling H1 targeting "DataFeedWatch Alternative"
 - Include a comparison table (features, pricing, use case fit)
-- Highlight AgentGate's unique security capabilities
+- Highlight SupraWall's unique security capabilities
 - Include sections: Overview, Feature Comparison, Pricing, Who Should Choose What, FAQ
 - Use persuasive but honest copy
 - Be optimized for the keyword "datafeedwatch alternative"
 - Format as markdown with proper heading hierarchy (H1, H2, H3)
 - Be approximately 1500-2000 words
-- Include a clear CTA to try AgentGate`
+- Include a clear CTA to try SupraWall`
     },
     {
         status: 'queued',
@@ -57,15 +57,15 @@ The page should:
         secondaryKeywords: ['llm guardrails', 'prompt injection prevention', 'ai security'],
         targetSearchVolume: 880,
         priority: 2,
-        prompt: `Write a comprehensive comparison landing page for AgentGate vs Prompt Guard.
+        prompt: `Write a comprehensive comparison landing page for SupraWall vs Prompt Guard.
 
-AgentGate is an AI agent security platform (runtime firewall) that protects AI agents from rogue behavior, infinite loops, cost overruns, and unauthorized tool calls. It operates at the tool execution layer, not just the prompt layer.
+SupraWall is an AI agent security platform (runtime firewall) that protects AI agents from rogue behavior, infinite loops, cost overruns, and unauthorized tool calls. It operates at the tool execution layer, not just the prompt layer.
 Prompt Guard focuses on prompt-level guardrails.
 
 The page should:
 - Have a compelling H1 targeting "Prompt Guard Alternative"
 - Include a comparison table (features, pricing, defense layers)
-- Highlight that AgentGate protects at runtime (tool execution) while Prompt Guard only protects at the prompt layer
+- Highlight that SupraWall protects at runtime (tool execution) while Prompt Guard only protects at the prompt layer
 - Include sections: Overview, Feature Comparison, Defense Layers, Pricing, FAQ
 - Format as markdown with proper heading hierarchy
 - Be approximately 1500-2000 words
@@ -81,16 +81,16 @@ The page should:
         priority: 3,
         prompt: `Write an in-depth blog post about AI Agent Cost Control.
 
-Context: AgentGate is a runtime security platform for AI agents. One of its key features is cost control — preventing infinite loops, setting budget caps per agent, and tracking API credit usage in real-time.
+Context: SupraWall is a runtime security platform for AI agents. One of its key features is cost control — preventing infinite loops, setting budget caps per agent, and tracking API credit usage in real-time.
 
 The blog post should:
 - Have a compelling H1 targeting "AI Agent Cost Control: The Complete Guide"
 - Cover: Why AI agents are expensive to run, common cost explosion scenarios (infinite loops, LLM API abuse), how to set budget caps, monitoring & alerting, circuit breakers
-- Include practical code examples showing AgentGate's budget cap configuration
+- Include practical code examples showing SupraWall's budget cap configuration
 - Include real-world cost scenarios and savings calculations
 - Format as markdown with proper heading hierarchy
 - Be approximately 2000-2500 words
-- Include a CTA to try AgentGate's free tier`
+- Include a CTA to try SupraWall's free tier`
     },
     {
         status: 'queued',
@@ -102,12 +102,12 @@ The blog post should:
         priority: 4,
         prompt: `Write a use case page about securing AI agents in financial services.
 
-Context: AgentGate is a runtime security platform. Financial institutions need strict controls on what their AI agents can do — preventing unauthorized transactions, enforcing compliance limits, audit trails for regulators.
+Context: SupraWall is a runtime security platform. Financial institutions need strict controls on what their AI agents can do — preventing unauthorized transactions, enforcing compliance limits, audit trails for regulators.
 
 The page should:
 - Have a compelling H1 targeting "AI Agent Security for Financial Services"
 - Cover: Compliance requirements (SOC2, GDPR, PCI), transaction limits, approval workflows for high-value actions, audit trails
-- Include a scenario showing a financial AI agent attempting an unauthorized trade and AgentGate blocking it
+- Include a scenario showing a financial AI agent attempting an unauthorized trade and SupraWall blocking it
 - Format as markdown with proper heading hierarchy
 - Be approximately 1500 words
 - Include a CTA`
@@ -122,16 +122,16 @@ The page should:
         priority: 5,
         prompt: `Write an expert blog post about LangChain Security Best Practices.
 
-Context: AgentGate provides a drop-in security shim for LangChain agents. This post should educate LangChain developers on security risks and position AgentGate as the solution.
+Context: SupraWall provides a drop-in security shim for LangChain agents. This post should educate LangChain developers on security risks and position SupraWall as the solution.
 
 The post should:
 - Have a compelling H1 targeting "LangChain Security Best Practices (2026 Guide)"
 - Cover: Top 5 security risks in LangChain agents, prompt injection, tool abuse, data exfiltration, infinite loops, unauthorized API calls
-- Include code examples showing vulnerable LangChain code and the fix with AgentGate
+- Include code examples showing vulnerable LangChain code and the fix with SupraWall
 - Show before/after code snippets
 - Format as markdown
 - Be approximately 2000-2500 words
-- Include a CTA to install AgentGate's LangChain plugin`
+- Include a CTA to install SupraWall's LangChain plugin`
     },
     {
         status: 'queued',
@@ -141,16 +141,16 @@ The post should:
         secondaryKeywords: ['guardrails ai vs', 'ai output validation', 'runtime ai security'],
         targetSearchVolume: 950,
         priority: 6,
-        prompt: `Write a comprehensive comparison page for AgentGate vs Guardrails AI.
+        prompt: `Write a comprehensive comparison page for SupraWall vs Guardrails AI.
 
-AgentGate is an AI agent runtime security platform — it intercepts and controls tool calls, prevents infinite loops, enforces budget caps, and provides forensic audit logs.
+SupraWall is an AI agent runtime security platform — it intercepts and controls tool calls, prevents infinite loops, enforces budget caps, and provides forensic audit logs.
 Guardrails AI focuses on validating LLM outputs (schema validation, semantic checks).
 
 The page should:
 - Have a compelling H1 targeting "Guardrails AI Alternative"
 - Include a comparison table highlighting different defense layers
-- Show that AgentGate operates at the tool/action layer while Guardrails AI operates at the output/validation layer
-- Both have value — position AgentGate as complementary but more comprehensive
+- Show that SupraWall operates at the tool/action layer while Guardrails AI operates at the output/validation layer
+- Both have value — position SupraWall as complementary but more comprehensive
 - Format as markdown
 - Be approximately 1500-2000 words`
     },
@@ -164,12 +164,12 @@ The page should:
         priority: 7,
         prompt: `Write a detailed blog post about preventing data exfiltration by AI agents.
 
-Context: AI agents with tool access can inadvertently or maliciously exfiltrate sensitive data. AgentGate prevents this with URL allowlists, data flow policies, and real-time monitoring.
+Context: AI agents with tool access can inadvertently or maliciously exfiltrate sensitive data. SupraWall prevents this with URL allowlists, data flow policies, and real-time monitoring.
 
 The post should:
 - Cover real-world data exfiltration scenarios with AI agents
 - Explain how agents can leak data through tool calls (HTTP requests, email, file writes)
-- Show how AgentGate's policy engine blocks unauthorized data flows
+- Show how SupraWall's policy engine blocks unauthorized data flows
 - Include code examples and policy configurations
 - Format as markdown
 - Be approximately 1800-2200 words`
@@ -228,8 +228,8 @@ export async function GET(request: Request) {
 
         const ai = new GoogleGenAI({ apiKey });
         const systemPrompt = `You are an expert SEO content writer and cybersecurity engineer. 
-You write for AgentGate (agentgate.ai), an AI agent runtime security platform.
-AgentGate is a firewall for AI agents — it intercepts tool calls, prevents infinite loops, 
+You write for SupraWall (suprawall.ai), an AI agent runtime security platform.
+SupraWall is a firewall for AI agents — it intercepts tool calls, prevents infinite loops, 
 enforces budget caps, blocks unauthorized actions, and provides forensic audit logs.
 It supports LangChain, CrewAI, AutoGen, Vercel AI SDK, and OpenClaw.
 
@@ -276,7 +276,7 @@ Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', '
             primaryKeyword: queueItem.primaryKeyword,
             secondaryKeywords: queueItem.secondaryKeywords,
             sourceFile: `auto-generated (cron)`,
-            previewUrl: `https://www.agentgate.ai${queueItem.urlPath}`,
+            previewUrl: `https://www.suprawall.ai${queueItem.urlPath}`,
             contentDraft,
             checklist: [
                 '✅ AI-generated content via Gemini',

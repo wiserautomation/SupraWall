@@ -144,7 +144,7 @@ export default function AdminOverviewPage() {
                 });
 
             } catch (error) {
-                console.error("AgentGate Admin: Failed to load admin insights", error);
+                console.error("SupraWall Admin: Failed to load admin insights", error);
             }
             setLoading(false);
         }

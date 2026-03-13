@@ -13,7 +13,7 @@ import { SwarmVisualization, TechTabs, ClawbotDemo, TagBadge, AnimatedBox } from
 export const metadata: Metadata = {
     title: "SupraWall | The Deterministic Security Layer for AI Agents",
     description: "Zero-trust security for AI agents. Intercept every tool call, enforce hard policies, and generate EU AI Act-ready compliance reports — in one line of code.",
-    keywords: ["agent security", "ai governance", "eu ai act compliance", "prompt injection prevention", "langchain security", "crewai monitoring", "agentic security"],
+    keywords: ["agent security", "ai governance", "eu ai act compliance", "prompt injection prevention", "langchain security", "crewai monitoring", "agentic security", "ai agent firewall"],
 };
 
 export default function LandingPage() {
@@ -21,7 +21,7 @@ export default function LandingPage() {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "SupraWall",
-        "url": "https://www.supra-wall.com",
+        "url": "https://www.suprawall.ai",
         "description": "Deterministic security and EU AI Act compliance for autonomous AI agents.",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
@@ -38,11 +38,38 @@ export default function LandingPage() {
         ]
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How does SupraWall secure AI agents?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "SupraWall acts as a deterministic firewall that intercepts every tool call your agent attempts to execute. It evaluates these calls against hard-coded security policies to prevent unauthorized actions like data exfiltration or system deletions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does SupraWall help with EU AI Act compliance?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, SupraWall specifically targets Articles 9, 11, 12, and 14 of the EU AI Act by providing deterministic risk management, logging, technical documentation, and human-in-the-loop oversight controls."
+                }
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-emerald-500/30 selection:text-white">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <Navbar />
 
@@ -57,7 +84,7 @@ export default function LandingPage() {
                     <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
                         <div className="animate-fade-in inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-black tracking-[0.2em] text-emerald-400 uppercase">
                             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                            Now Integrated with Claude Cowork & Vercel AI
+                            Production AI Security Hub
                         </div>
 
                         <div className="space-y-6">
@@ -69,7 +96,7 @@ export default function LandingPage() {
                             </h1>
 
                             <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                                Zero-trust security for AI agents. Intercept every tool call, enforce hard policies, and generate EU AI Act-ready compliance reports — in one line of code.
+                                Zero-trust security for AI agents. Interception at the SDK level ensures your autonomous systems never exceed their authority — no matter what the LLM hallucinates.
                             </p>
                         </div>
 
@@ -110,15 +137,15 @@ export default function LandingPage() {
                     <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                         <div className="flex items-center gap-4 text-rose-400">
                             <AlertTriangle className="w-5 h-5 flex-shrink-0 animate-pulse" />
-                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">$47M LOST</span> — Amazon Kiro agent deleted 847 instances</p>
+                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">PROMPT INJECTION</span> — 94% of system prompts are bypassable</p>
                         </div>
                         <div className="flex items-center gap-4 text-rose-400">
                             <Shield className="w-5 h-5 flex-shrink-0 animate-pulse" />
-                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">94% FAILURE</span> — Prompt injections bypass system prompts</p>
+                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">SDK VULNERABILITY</span> — Shell tools allow root access by default</p>
                         </div>
                         <div className="flex items-center gap-4 text-rose-400">
                             <FileText className="w-5 h-5 flex-shrink-0 animate-pulse" />
-                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">EU AI ACT ART 9</span> — Requires documented human oversight</p>
+                            <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">EU AI ACT</span> — Mandates logging and human oversight</p>
                         </div>
                     </div>
                 </section>
@@ -127,17 +154,17 @@ export default function LandingPage() {
                 <section className="py-40 px-6 bg-black relative overflow-hidden">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
                         <div className="space-y-8">
-                            <TagBadge>Governance vs Intent</TagBadge>
+                            <TagBadge>Real-time Governance</TagBadge>
                             <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase text-glow">
-                                System prompts <br />
-                                <span className="text-emerald-500">are not a</span> <br />
-                                security layer.
+                                Deterministic <br />
+                                <span className="text-emerald-500 font-bold">Action Control.</span> <br />
+                                Not "Advisory".
                             </h2>
                             <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic">
-                                You told your LLM <span className="text-white font-bold tracking-tight">"NEVER DROP TABLES"</span>. It listened perfectly — until the context window filled up, the model hallucinated, and it deleted your production database anyway.
+                                You told your LLM <span className="text-white font-bold tracking-tight">"NEVER EXTRAPOLATE PII"</span>. It listened perfectly — until at 3AM an indirect injection via a search result tricked it into emailing your database to a competitor.
                             </p>
                             <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic">
-                                SupraWall sits between your agent and the real world. It intercepts every tool call deterministically, before it executes — no matter what the model thinks it should do.
+                                SupraWall sits between your agent and the real world. It intercepts every tool call deterministically, verifying the intention and payload before compute is consumed.
                             </p>
                         </div>
                         <div className="relative">
@@ -151,8 +178,8 @@ export default function LandingPage() {
                 <section id="how-it-works" className="py-40 px-6 bg-[#030303] border-y border-white/5">
                     <div className="max-w-7xl mx-auto space-y-24">
                         <div className="text-center space-y-4">
-                            <h3 className="text-5xl md:text-7xl font-black italic uppercase italic tracking-tighter">How SupraWall <span className="text-emerald-500">Secures</span> Your Swarm.</h3>
-                            <p className="text-xl text-neutral-500 font-bold uppercase tracking-widest">A deterministic middleware for the agentic future.</p>
+                            <h3 className="text-5xl md:text-7xl font-black italic uppercase italic tracking-tighter">How SupraWall <span className="text-emerald-500 font-bold">Shields</span> Your Swarm.</h3>
+                            <p className="text-xl text-neutral-500 font-bold uppercase tracking-widest">A deterministic middle-layer for the agentic future.</p>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -169,7 +196,7 @@ export default function LandingPage() {
                                         <span className="text-4xl font-black text-white/10 italic leading-none">{s.step}</span>
                                     </div>
                                     <h4 className="text-3xl font-black italic uppercase text-white">{s.title}</h4>
-                                    <p className="text-neutral-500 font-bold leading-relaxed italic">{s.desc}</p>
+                                    <p className="text-neutral-500 font-bold leading-relaxed italic uppercase tracking-tight text-xs">{s.desc}</p>
                                 </div>
                             ))}
                         </div>
@@ -195,7 +222,7 @@ export default function LandingPage() {
                                 { title: "Infinite Loop Circuit Breaker", desc: "Detects repetitive failed tool calls and halts the agent before it burns thousands in tokens overnight.", icon: <RefreshCw className="w-6 h-6" /> },
                                 { title: "Human-in-the-Loop Approvals", desc: "Route sensitive actions (sending emails, transactions, deletions) to a human approval queue before execution.", icon: <Users className="w-6 h-6" /> },
                                 { title: "Compliance Report Export", desc: "Generate a one-click PDF 'Human Oversight Evidence Report' with audit logs built for EU AI Act auditors.", icon: <FileText className="w-6 h-6" /> },
-                                { title: "EU AI Act Compliance Dashboard", desc: "Live status badges mapped to specific Articles (Art. 9, 13, 14). Know your compliance posture in real time.", icon: <LayoutDashboard className="w-6 h-6" /> }
+                                { title: "EU AI Act Compliance Dashboard", desc: "Live status badges mapped to specific Articles (Art. 9, 11, 12, 14). Know your compliance posture in real time.", icon: <LayoutDashboard className="w-6 h-6" /> }
                             ].map((f, i) => (
                                 <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/30 border border-white/5 hover:bg-neutral-900/50 hover:border-emerald-500/20 transition-all group backdrop-blur-3xl min-h-[300px] flex flex-col justify-between">
                                     <div className="space-y-6">
@@ -203,7 +230,7 @@ export default function LandingPage() {
                                             {f.icon}
                                         </div>
                                         <h4 className="text-2xl font-black italic uppercase text-white leading-tight">{f.title}</h4>
-                                        <p className="text-sm font-bold text-neutral-500 leading-relaxed uppercase tracking-tight">{f.desc}</p>
+                                        <p className="text-xs font-bold text-neutral-500 leading-relaxed uppercase tracking-widest">{f.desc}</p>
                                     </div>
                                 </div>
                             ))}
@@ -211,10 +238,9 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 🧬 COMPATIBILITY STRIP */}
                 <section className="py-20 border-y border-white/5 bg-[#020202]">
                     <div className="max-w-7xl mx-auto px-6 space-y-12">
-                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">Works with every stack you already use</p>
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">One Line of code to secure any stack</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-10 items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
                             {['Python', 'TypeScript', 'LangChain', 'CrewAI', 'AutoGen', 'Vercel AI', 'PostgreSQL', 'Docker'].map((tech) => (
                                 <div key={tech} className="text-sm font-black text-white italic text-center uppercase tracking-widest">{tech}</div>
@@ -223,7 +249,6 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* ⚖️ COMPLIANCE SECTION */}
                 <section className="py-40 px-6 bg-gradient-to-b from-black to-[#050505]">
                     <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
                         <div className="space-y-10 order-2 lg:order-1">
@@ -234,21 +259,21 @@ export default function LandingPage() {
                                 <div className="space-y-6 relative z-10">
                                     <div className="flex items-center gap-3 text-emerald-500">
                                         <Shield className="w-8 h-8" />
-                                        <span className="font-black uppercase tracking-widest">H.O.E. Report v1.0</span>
+                                        <span className="font-black uppercase tracking-widest">Agent Action Log v1.0</span>
                                     </div>
                                     <div className="h-px w-full bg-white/10" />
-                                    <h5 className="text-3xl font-black italic uppercase leading-none">Human Oversight <br />Evidence Report</h5>
+                                    <h5 className="text-3xl font-black italic uppercase leading-none text-white">EU AI Act <br />Evidence Export</h5>
                                     <div className="grid grid-cols-1 gap-4">
                                         <div className="flex items-center justify-between p-4 rounded-xl bg-green-500/10 border border-green-500/20">
-                                            <span className="text-[10px] font-black uppercase text-green-500">Article 09 - Risk Mgmt</span>
+                                            <span className="text-[10px] font-black uppercase text-green-500 font-bold uppercase tracking-widest">Article 09 - Risk Mgmt</span>
                                             <CheckCircle2 className="w-4 h-4 text-green-500" />
                                         </div>
                                         <div className="flex items-center justify-between p-4 rounded-xl bg-amber-500/10 border border-amber-500/20">
-                                            <span className="text-[10px] font-black uppercase text-amber-500">Article 13 - Transparency</span>
+                                            <span className="text-[10px] font-black uppercase text-amber-500 font-bold uppercase tracking-widest">Article 12 - Automatic Logging</span>
                                             <CheckCircle2 className="w-4 h-4 text-amber-500" />
                                         </div>
                                         <div className="flex items-center justify-between p-4 rounded-xl bg-blue-500/10 border border-blue-500/20">
-                                            <span className="text-[10px] font-black uppercase text-blue-500">Article 14 - Oversight</span>
+                                            <span className="text-[10px] font-black uppercase text-blue-500 font-bold uppercase tracking-widest">Article 14 - Human Oversight</span>
                                             <CheckCircle2 className="w-4 h-4 text-blue-500" />
                                         </div>
                                     </div>
@@ -262,12 +287,12 @@ export default function LandingPage() {
                                 <span className="text-emerald-500 italic">the audit.</span>
                             </h2>
                             <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic">
-                                SupraWall doesn't just protect your agents — it documents that protection in the format regulators expect. Every policy decision is signed, timestamped, and exportable.
+                                SupraWall doesn't just protect your agents — it documents that protection in the format regulators expect. Every policy decision is signed, timestamped, and exportable for legal review.
                             </p>
                             <ul className="space-y-4 pt-4">
                                 {[
                                     { art: "Art. 9", label: "Risk management system" },
-                                    { art: "Art. 13", label: "Transparency and logging" },
+                                    { art: "Art. 12", label: "Automatic Record-Keeping" },
                                     { art: "Art. 14", label: "Human oversight controls" }
                                 ].map((a, i) => (
                                     <li key={i} className="flex items-center gap-4 text-xl font-bold uppercase italic group">
@@ -277,16 +302,10 @@ export default function LandingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <div className="pt-6">
-                                <Link href="/compliance" className="text-emerald-400 font-black uppercase tracking-widest text-sm flex items-center gap-2 hover:gap-4 transition-all">
-                                    Export Compliance Report <ArrowRight className="w-4 h-4" />
-                                </Link>
-                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* 💳 PRICING SECTION */}
                 <section id="pricing" className="py-40 px-6 bg-black">
                     <div className="max-w-7xl mx-auto space-y-24">
                         <div className="text-center space-y-6">
@@ -347,30 +366,23 @@ export default function LandingPage() {
                                 </div>
                             ))}
                         </div>
-                        
-                        <div className="text-center max-w-2xl mx-auto space-y-4 bg-white/5 p-8 rounded-3xl border border-white/10 italic">
-                             <p className="text-sm font-bold text-neutral-400 uppercase tracking-widest leading-relaxed">
-                                Every tool call your agent fires costs you a fraction of a cent. You only pay when SupraWall is actually protecting you.
-                             </p>
-                        </div>
                     </div>
                 </section>
 
-                {/* 🔚 FINAL CTA */}
                 <section className="py-48 px-6 bg-black relative text-center">
                     <div className="absolute inset-0 bg-emerald-500/10 blur-[150px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none" />
                     <div className="max-w-4xl mx-auto space-y-12 relative z-10">
                         <TagBadge>Join the Guardians</TagBadge>
                         <h2 className="text-7xl md:text-[9rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">
                             Is Your Agent <br />
-                            <span className="text-emerald-500 underline decoration-white/20">SAFE?</span>
+                            <span className="text-emerald-500 underline decoration-white/20 font-bold italic">SAFE?</span>
                         </h2>
                         <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
                             Add SupraWall in the next 10 minutes. Forever free for indie developers.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                            <Link href="/login" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-bounce tracking-tighter flex items-center gap-4">
-                                UNLOCK API KEY <ArrowRight className="w-10 h-10" />
+                            <Link href="/login" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-pulse tracking-tighter flex items-center gap-4 group">
+                                UNLOCK API KEY <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                             </Link>
                             <Link href="/docs" className="text-white font-black uppercase tracking-[0.3em] text-sm hover:text-emerald-400 transition-colors underline decoration-white/10 underline-offset-8">
                                 READ THE DOCS
@@ -381,7 +393,7 @@ export default function LandingPage() {
 
             </main>
 
-            <footer className="bg-black border-t border-white/5 py-32 px-6 text-neutral-500">
+            <footer className="bg-black border-t border-white/5 py-32 px-6 text-neutral-500 font-bold uppercase tracking-widest text-[10px]">
                 <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16">
                     <div className="col-span-2 space-y-8">
                         <div className="flex items-center gap-3">
@@ -394,7 +406,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                         <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Ecosystem</h4>
-                        <ul className="space-y-4 text-sm font-bold uppercase tracking-tight">
+                        <ul className="space-y-4">
                             <li><Link href="/integrations/langchain" className="hover:text-emerald-500 transition-colors">LangChain</Link></li>
                             <li><Link href="/integrations/crewai" className="hover:text-emerald-500 transition-colors">CrewAI</Link></li>
                             <li><Link href="/integrations/autogen" className="hover:text-emerald-500 transition-colors">AutoGen</Link></li>
@@ -403,10 +415,10 @@ export default function LandingPage() {
                     </div>
                     <div>
                         <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Pillars</h4>
-                        <ul className="space-y-4 text-sm font-bold uppercase tracking-tight">
-                            <li><Link href="/compliance" className="hover:text-emerald-500 transition-colors">EU AI Act Dashboard</Link></li>
-                            <li><Link href="/reports" className="hover:text-emerald-500 transition-colors">H.O.E. Exports</Link></li>
-                            <li><Link href="/learn/what-is-agent-runtime-security" className="hover:text-emerald-500 transition-colors">Security Hub</Link></li>
+                        <ul className="space-y-4">
+                            <li><Link href="/compliance" className="hover:text-emerald-500 transition-colors tracking-tight">EU AI Act Dashboard</Link></li>
+                            <li><Link href="/reports" className="hover:text-emerald-500 transition-colors tracking-tight">H.O.E. Exports</Link></li>
+                            <li><Link href="/learn/what-is-agent-runtime-security" className="hover:text-emerald-500 transition-colors tracking-tight">Security Hub</Link></li>
                         </ul>
                     </div>
                 </div>

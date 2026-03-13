@@ -141,22 +141,22 @@ export default function QuickstartPage() {
                     description="Native packages available for all major environments."
                 >
                     {activeTab === "TypeScript" && (
-                        <CodeBlock code="npm install agentgate" language="bash" />
+                        <CodeBlock code="npm install suprawall" language="bash" />
                     )}
                     {activeTab === "Python" && (
                         <div className="space-y-4">
-                            <CodeBlock code="pip install agentgate" language="bash" />
+                            <CodeBlock code="pip install suprawall" language="bash" />
                             <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
                                 <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
                                 <CodeBlock
-                                    code={`pip install "agentgate[langchain]"   # LangChain\npip install "agentgate[openai]"      # OpenAI Agents\npip install "agentgate[all]"         # Full SDK`}
+                                    code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[openai]"      # OpenAI Agents\npip install "suprawall[all]"         # Full SDK`}
                                     language="bash"
                                 />
                             </div>
                         </div>
                     )}
                     {activeTab === "MCP Server" && (
-                        <CodeBlock code="npm install agentgate" language="bash" />
+                        <CodeBlock code="npm install suprawall" language="bash" />
                     )}
                 </Step>
 
@@ -169,12 +169,12 @@ export default function QuickstartPage() {
                     {activeTab === "TypeScript" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { protect } from "@agentgate/sdk";
+                            code={`import { protect } from "@suprawall/sdk";
     
     // 1. Any agent (LangChain, Vercel AI, etc.)
     const agent = createMyAgent();
     
-    // 2. Wrap it with AgentGate (Zero-Config)
+    // 2. Wrap it with SupraWall (Zero-Config)
     const secured = protect(agent, {
       apiKey: "ag_your_key_here",
     });
@@ -187,7 +187,7 @@ export default function QuickstartPage() {
                         <div className="space-y-6">
                             <CodeBlock
                                 language="python"
-                                code={`from agentgate import secure
+                                code={`from suprawall import secure
 from crewai import Agent
 
 # 🛡️ Secure your agent runtime with one line
@@ -202,7 +202,7 @@ agent.start()`}
                                 <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Wrapper</p>
                                 <CodeBlock
                                     language="python"
-                                    code={`from agentgate import secure
+                                    code={`from suprawall import secure
 
 # Intercepts every tool call automatically
 secured_agent = secure(my_langchain_agent, api_key="ag_...")
@@ -214,9 +214,9 @@ secured_agent.invoke({"input": "..."})`}
                     {activeTab === "MCP Server" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { createAgentGateMiddleware } from "agentgate";
+                            code={`import { createSupraWallMiddleware } from "suprawall";
     
-    const gate = createAgentGateMiddleware({
+    const gate = createSupraWallMiddleware({
       apiKey: "ag_your_key_here",
     });
     
@@ -325,7 +325,7 @@ secured_agent.invoke({"input": "..."})`}
                         },
                         {
                             q: "Do I need to change my prompt engineering?",
-                            a: "No. AgentGate lives in the execution layer. Your prompts remain yours — we only govern the tool outputs and inputs.",
+                            a: "No. SupraWall lives in the execution layer. Your prompts remain yours — we only govern the tool outputs and inputs.",
                         }
                     ].map((item) => (
                         <div

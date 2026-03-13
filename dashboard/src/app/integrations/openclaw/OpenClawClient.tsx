@@ -21,7 +21,7 @@ export default function OpenClawClient() {
                             </div>
                             <h2 className="text-4xl font-black text-white italic uppercase tracking-tighter">Browser-Level Interception</h2>
                             <p className="text-neutral-400 font-medium">
-                                OpenClaw agents interact with the web via browser automation. AgentGate's shim intercepts actions at the CDP level, analyzing the DOM context before clicks or keyboard events are emitted.
+                                OpenClaw agents interact with the web via browser automation. SupraWall's shim intercepts actions at the CDP level, analyzing the DOM context before clicks or keyboard events are emitted.
                             </p>
                         </motion.div>
 

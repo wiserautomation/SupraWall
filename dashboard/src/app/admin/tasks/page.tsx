@@ -84,7 +84,7 @@ export default function TaskReviewPage() {
         <div className="p-8 max-w-6xl mx-auto">
             <header className="mb-8 flex justify-between items-center bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-2xl">
                 <div>
-                    <h1 className="text-2xl font-bold text-white mb-1">AgentGate Admin · Task Review</h1>
+                    <h1 className="text-2xl font-bold text-white mb-1">SupraWall Admin · Task Review</h1>
                     <p className="text-zinc-400 text-sm">Human-in-the-loop content governance</p>
                 </div>
                 <div className="flex gap-4">

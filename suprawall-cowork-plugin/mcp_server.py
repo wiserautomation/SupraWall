@@ -12,9 +12,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("mcp-suprawall")
 
 # Initialize FastMCP
-mcp = FastMCP("SupraWall Security")
+mcp = FastMCP("SUPRA-WALL Security")
 
-API_BASE = "https://api.supra-wall.com/v1"
+API_BASE = "https://api.suprawall.ai/v1"
 API_KEY = os.environ.get("SUPRAWALL_API_KEY")
 
 # --- Schemas for Validation ---
@@ -50,7 +50,7 @@ async def call_suprawall_api(method: str, endpoint: str, data: Optional[Dict] = 
 
 @mcp.tool()
 async def suprawall_health_check() -> Dict[str, Any]:
-    """Check connectivity to the SupraWall Security Plane."""
+    """Check connectivity to the SUPRA-WALL Security Plane."""
     try:
         # Simple ping to policy list
         await call_suprawall_api("GET", "policies")

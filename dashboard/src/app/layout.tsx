@@ -21,21 +21,21 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: {
-    default: "AgentGate | Enterprise AI Agent Security & Runtime Guardrails",
-    template: "%s | AgentGate"
+    default: "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
+    template: "%s | SupraWall"
   },
   description: "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
   keywords: ["AI agent security", "runtime guardrails", "prompt injection prevention", "secure langchain", "ai agent firewall"],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.agent-gate.ai",
-    siteName: "AgentGate",
+    url: "https://www.suprawall.ai",
+    siteName: "SupraWall",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AgentGate | Enterprise AI Agent Security",
+    title: "SupraWall | Enterprise AI Agent Security",
     description: "The zero-trust shim for your autonomous AI swarm.",
   },
   robots: {
@@ -49,6 +49,33 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "SupraWall",
+    "alternateName": "SupraWall",
+    "url": "https://www.suprawall.ai",
+    "logo": "https://www.suprawall.ai/icon.png",
+    "sameAs": [
+      "https://twitter.com/suprawall",
+      "https://github.com/suprawall"
+    ],
+    "description": "Enterprise-grade security and compliance for autonomous AI agents."
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.suprawall.ai"
+      }
+    ]
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -58,6 +85,14 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
         {children}
         <GoogleAnalytics gaId="G-5LXMT6RZQS" />
       </body>

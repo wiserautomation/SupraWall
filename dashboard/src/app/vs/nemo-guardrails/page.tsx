@@ -5,12 +5,12 @@ import { Metadata } from "next";
 import NemoVsClient from "./NemoVsClient";
 
 export const metadata: Metadata = {
-    title: "AgentGate vs NeMo Guardrails | Best Agent Security Platform",
-    description: "Compare AgentGate and NVIDIA NeMo Guardrails. Learn why native runtime security is superior to static policy proxies for autonomous LangChain and AutoGen agents.",
-    keywords: ["nemo guardrails alternative", "agentgate vs nemo guardrails", "agent security comparison", "llm guardrail framework"],
+    title: "SupraWall vs NeMo Guardrails | Best Agent Security Platform",
+    description: "Compare SupraWall and NVIDIA NeMo Guardrails. Learn why native runtime security is superior to static policy proxies for autonomous LangChain and AutoGen agents.",
+    keywords: ["nemo guardrails alternative", "suprawall vs nemo guardrails", "agent security comparison", "llm guardrail framework"],
     openGraph: {
-        title: "AgentGate vs NeMo Guardrails Comparison Guide",
-        description: "Why developers are switching from NeMo's Colang to AgentGate's zero-trust runtime security SDK.",
+        title: "SupraWall vs NeMo Guardrails Comparison Guide",
+        description: "Why developers are switching from NeMo's Colang to SupraWall's zero-trust runtime security SDK.",
     }
 };
 
@@ -18,26 +18,26 @@ export default function vsNemoGuardrailsPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "Product",
-        "name": "AgentGate Agent Security",
+        "name": "SupraWall Agent Security",
         "description": "Enterprise-grade runtime security layer for autonomous AI agents, compared to NeMo Guardrails.",
         "brand": {
             "@type": "Brand",
-            "name": "AgentGate"
+            "name": "SupraWall"
         },
         "offers": {
             "@type": "Offer",
-            "url": "https://www.agentgate.ai/login",
+            "url": "https://www.suprawall.ai/login",
             "price": "0",
             "priceCurrency": "USD"
         }
     };
 
     const comparisonData = [
-        { feature: "Runtime Interception", agentgate: true, nemo: false, note: "NeMo is post-facto; AgentGate is native runtime." },
-        { feature: "Multi-Agent Swarm Support", agentgate: true, nemo: false, note: "Native hooks for CrewAI and AutoGen delegation." },
-        { feature: "One-Line Integration", agentgate: true, nemo: false, note: "NeMo requires YAML/Colang; AgentGate is a Python decorator." },
-        { feature: "Managed Policy Dashboard", agentgate: true, nemo: "Self-hosted", note: "Real-time audit logs and live policy updates." },
-        { feature: "Low Latency Overheads", agentgate: "< 1ms", nemo: "20ms+", note: "AgentGate runs inside the local app process." }
+        { feature: "Runtime Interception", suprawall: true, nemo: false, note: "NeMo is post-facto; SupraWall is native runtime." },
+        { feature: "Multi-Agent Swarm Support", suprawall: true, nemo: false, note: "Native hooks for CrewAI and AutoGen delegation." },
+        { feature: "One-Line Integration", suprawall: true, nemo: false, note: "NeMo requires YAML/Colang; SupraWall is a Python decorator." },
+        { feature: "Managed Policy Dashboard", suprawall: true, nemo: "Self-hosted", note: "Real-time audit logs and live policy updates." },
+        { feature: "Low Latency Overheads", suprawall: "< 1ms", nemo: "20ms+", note: "SupraWall runs inside the local app process." }
     ];
 
     return (
@@ -59,7 +59,7 @@ export default function vsNemoGuardrailsPage() {
 
                         {/* H1: SPEC REQUIRED */}
                         <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
-                            AgentGate vs <br />
+                            SupraWall vs <br />
                             <span className="text-neutral-500">NeMo Guardrails</span>
                         </h1>
 
@@ -67,7 +67,7 @@ export default function vsNemoGuardrailsPage() {
                         <div className="max-w-3xl mx-auto">
                             <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
                                 Choosing a nemo guardrails alternative is critical when building production agents that take real-world actions.
-                                While NVIDIA's framework is powerful for content moderation, AgentGate's native runtime security protocol
+                                While NVIDIA's framework is powerful for content moderation, SupraWall's native runtime security protocol
                                 provides the deep tool-level interception and multi-agent governance that autonomous frameworks like
                                 LangChain and AutoGen require for enterprise safety.
                             </p>
@@ -86,7 +86,7 @@ export default function vsNemoGuardrailsPage() {
                                     <tr className="border-b border-white/5 bg-white/[0.02]">
                                         <th className="p-8 font-black uppercase tracking-widest text-neutral-500">Feature</th>
                                         <th className="p-8 font-black uppercase tracking-widest text-neutral-500">NeMo Guardrails</th>
-                                        <th className="p-8 font-black uppercase tracking-widest text-emerald-500">AgentGate</th>
+                                        <th className="p-8 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -97,7 +97,7 @@ export default function vsNemoGuardrailsPage() {
                                                 {row.nemo === true ? <Check className="w-6 h-6 text-emerald-500" /> : row.nemo === false ? <X className="w-6 h-6 text-rose-900" /> : <span className="text-neutral-500 font-bold">{row.nemo}</span>}
                                             </td>
                                             <td className="p-8 bg-emerald-500/[0.02]">
-                                                {row.agentgate === true ? <Check className="w-6 h-6 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]" /> : <span className="text-emerald-500 font-black text-lg">{row.agentgate}</span>}
+                                                {row.suprawall === true ? <Check className="w-6 h-6 text-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]" /> : <span className="text-emerald-500 font-black text-lg">{row.suprawall}</span>}
                                                 <p className="text-[10px] text-neutral-500 mt-2 font-bold uppercase tracking-widest leading-relaxed">{row.note}</p>
                                             </td>
                                         </tr>
@@ -117,7 +117,7 @@ export default function vsNemoGuardrailsPage() {
                             <p className="text-lg text-neutral-400 mt-6 leading-relaxed">
                                 NeMo Guardrails was designed as a middleware proxy for chat. When an agent decides to
                                 run a bash command, NeMo struggles to see the *functional intent* inside the execution environment.
-                                AgentGate's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">Agent Runtime Security (ARS)</Link>
+                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">Agent Runtime Security (ARS)</Link>
                                 framework hooks directly into the framework callbacks, allowing for pre-flight verification
                                 of tool arguments with zero latency impact.
                             </p>
@@ -125,7 +125,7 @@ export default function vsNemoGuardrailsPage() {
                             <div className="bg-neutral-900 rounded-[2.5rem] p-12 border border-white/5 mt-16 space-y-6">
                                 <h3 className="text-2xl font-black uppercase italic tracking-tight text-white uppercase italic">The Verdict</h3>
                                 <p className="text-neutral-400 leading-relaxed font-medium">
-                                    Use <strong className="text-white">NeMo Guardrails</strong> if you are building a pure chat interface with light content filtering needs. Choose <strong className="text-emerald-500 uppercase italic">AgentGate</strong> if you are building autonomous agents that interact with production APIs, databases, or file systems and require absolute runtime reliability.
+                                    Use <strong className="text-white">NeMo Guardrails</strong> if you are building a pure chat interface with light content filtering needs. Choose <strong className="text-emerald-500 uppercase italic">SupraWall</strong> if you are building autonomous agents that interact with production APIs, databases, or file systems and require absolute runtime reliability.
                                 </p>
                                 <div className="pt-6">
                                     <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit">

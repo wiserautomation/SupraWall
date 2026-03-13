@@ -1,7 +1,7 @@
 {
-    "name": "@agentgate/svelte",
+    "name": "@suprawall/svelte",
     "version": "0.1.0",
-    "description": "Drop-in Svelte components for agentgate.",
+    "description": "Drop-in Svelte components for suprawall.",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "peerDependencies": {

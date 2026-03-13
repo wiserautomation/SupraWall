@@ -117,7 +117,7 @@ function IssueKeyDialog({
                         </div>
                         <p className="text-xs text-gray-500">
                             Give this key to your customer. They use it exactly like a regular
-                            AgentGate API key — just with your platform policies enforced.
+                            SupraWall API key — just with your platform policies enforced.
                         </p>
                         <Button className="w-full" onClick={handleClose}>Done</Button>
                     </div>
@@ -249,7 +249,7 @@ export default function ConnectKeysPage() {
             <EmptyState
                 icon={Key}
                 title="No platform set up"
-                description="Set up AgentGate Connect first before issuing sub-keys."
+                description="Set up SupraWall Connect first before issuing sub-keys."
                 action={
                     <a href="/connect">
                         <Button>Go to Connect Setup</Button>
@@ -407,7 +407,7 @@ export default function ConnectKeysPage() {
                         <p className="font-medium mb-1">2. Customer installs SDK</p>
                         <p className="text-emerald-600">
                             They use the key with <code className="bg-emerald-100 px-1 rounded">
-                                agentgate</code> exactly like a regular API key.
+                                suprawall</code> exactly like a regular API key.
                         </p>
                     </div>
                     <div>

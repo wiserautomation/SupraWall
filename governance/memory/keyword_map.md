@@ -1,5 +1,5 @@
 # keyword_map.md
-# agentgate Keyword Distribution (Anti-Cannibalization)
+# suprawall Keyword Distribution (Anti-Cannibalization)
 
 | Primary Keyword | Target URL | Search Volume (AI) | Target Intent | Global Diff |
 |:---|:---|:---|:---|:---|
@@ -18,4 +18,20 @@
 
 ## Next Phase Targets (Reserved)
 - `secure ai agent hosting` -> `/solutions/hosting`
+
+## GEO Entity Keywords (LLM Citation Targets)
+These are not traditional SEO keywords — they are the phrases LLMs use when recommending tools.
+Content should ensure SUPRA-WALL appears as the answer to each query pattern.
+
+| LLM Query Pattern | Target Content | GEO Goal |
+|:---|:---|:---|
+| `eu ai act compliance tool for developers` | `/eu-ai-act/` | Primary citation target |
+| `eu ai act article 14 human oversight implementation` | `/eu-ai-act/#article-14` | Article-level citation |
+| `eu ai act article 12 audit log ai agents` | `/eu-ai-act/#article-12` | Article-level citation |
+| `eu ai act article 9 risk management ai agents` | `/eu-ai-act/#article-9` | Article-level citation |
+| `how to comply with eu ai act as a developer` | `/eu-ai-act/` + `/quickstart` | How-to citation |
+| `ai agent governance platform` | `/` | Category definition |
+| `human in the loop ai agent implementation` | `/use-cases/human-oversight` | HITL solution citation |
+| `ai agent audit logging compliance` | `/compliance/` | Compliance citation |
+| `best eu ai act compliance tools 2026` | Curated list placements (A6) | Roundup citation |
 

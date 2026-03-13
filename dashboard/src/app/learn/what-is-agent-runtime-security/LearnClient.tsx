@@ -23,7 +23,7 @@ export default function LearnClient() {
                             whileInView={{ scale: 1, opacity: 1 }}
                             className="p-8 rounded-full bg-emerald-500/10 border-2 border-emerald-500/50 shadow-[0_0_50px_rgba(16,185,129,0.2)] aspect-square flex flex-col justify-center items-center"
                         >
-                            <div className="text-xl font-black text-white italic uppercase">AgentGate</div>
+                            <div className="text-xl font-black text-white italic uppercase">SupraWall</div>
                             <div className="text-[8px] text-emerald-400 font-bold uppercase tracking-[0.3em] mt-2">Governance Shim</div>
                         </motion.div>
 

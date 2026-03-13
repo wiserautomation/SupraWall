@@ -5,12 +5,12 @@ import { Metadata } from "next";
 import CrewAIClient from "./CrewAIClient";
 
 export const metadata: Metadata = {
-    title: "CrewAI Security Guardrails & Runtime Governance | AgentGate",
-    description: "Secure your CrewAI agent swarms with role-based tool isolation and delegation audits. Prevent unauthorized actions in multi-agent workflows.",
-    keywords: ["crewai security guardrails", "secure crewai agents", "multi-agent orchestration security", "agent swarm governance"],
+    title: "Secure CrewAI Agent Swarms | EU AI Act Compliance | SupraWall",
+    description: "Enterprise security guardrails and EU AI Act compliance (Articles 12 & 14) for CrewAI multi-agent swarms. Enforce role-based tool isolation and delegation audits.",
+    keywords: ["crewai security guardrails", "secure crewai agents", "multi-agent orchestration security", "agent swarm governance", "eu ai act crewai", "ai act compliance"],
     openGraph: {
-        title: "How to Secure CrewAI Agent Swarms",
-        description: "Zero-trust governance for autonomous agent roles. Enforce strict boundaries between your agents and your data.",
+        title: "Secure CrewAI Agent Swarms | EU AI Act Compliance | SupraWall",
+        description: "Zero-trust governance for autonomous agent roles. Automate EU AI Act reporting and prevent privilege escalation in multi-agent workflows.",
     }
 };
 
@@ -18,13 +18,13 @@ export default function CrewAIIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "AgentGate for CrewAI",
+        "name": "SupraWall for CrewAI",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.agentgate.ai/integrations/crewai",
+        "url": "https://www.suprawall.ai/integrations/crewai",
         "author": {
             "@type": "Organization",
-            "name": "AgentGate"
+            "name": "SupraWall"
         },
         "description": "Enterprise-grade security guardrails for CrewAI multi-agent swarms.",
         "featureList": [
@@ -61,7 +61,7 @@ export default function CrewAIIntegrationPage() {
                         <div className="max-w-3xl mx-auto">
                             <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
                                 CrewAI security guardrails are essential for multi-agent workflows where agents delegate tasks autonomously.
-                                AgentGate provides the missing governance layer for agent swarms, enforcing role-based tool isolation
+                                SupraWall provides the missing governance layer for agent swarms, enforcing role-based tool isolation
                                 and real-time monitoring of inter-agent delegation paths to prevent privilege escalation.
                             </p>
                         </div>
@@ -101,8 +101,8 @@ export default function CrewAIIntegrationPage() {
                                 Role-Based tool access
                             </h2>
                             <p className="text-lg text-neutral-400 mt-6">
-                                AgentGate allows you to bind specific security policies to CrewAI agent roles. Even if a researcher
-                                is told to "format the hard drive", the AgentGate shim intercepts the tool call and denies it based on
+                                SupraWall allows you to bind specific security policies to CrewAI agent roles. Even if a researcher
+                                is told to "format the hard drive", the SupraWall shim intercepts the tool call and denies it based on
                                 the researcher's restricted policy.
                             </p>
 
@@ -112,7 +112,7 @@ export default function CrewAIIntegrationPage() {
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "Map CrewAI Roles to AgentGate Policies",
+                                    "Map CrewAI Roles to SupraWall Policies",
                                     "Enable Inter-Agent Delegation Auditing",
                                     "Configure Shared File Storage Sandbox",
                                     "Set Token Budgets per Swarm Execution",

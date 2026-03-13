@@ -1,0 +1,14 @@
+{
+    "name": "@suprawall/vercel-ai",
+    "version": "0.1.0",
+    "description": "Official suprawall security integration for Vercel AI SDK",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {},
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

@@ -41,7 +41,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                 <div className="h-16 flex items-center px-6 border-b border-white/5 bg-black/40">
                     <BrickWall className="w-6 h-6 text-emerald-500 mr-3" />
                     <Link href="/" className="font-bold text-lg tracking-tight text-white drop-shadow-sm hover:text-emerald-400 transition">
-                        AgentGate <span className="text-emerald-500/80">Docs</span>
+                        SupraWall <span className="text-emerald-500/80">Docs</span>
                     </Link>
                 </div>
 

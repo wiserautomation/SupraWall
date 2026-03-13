@@ -119,9 +119,13 @@ export default function SettingsPage() {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-4xl font-extrabold tracking-tight text-white mb-2">Settings</h1>
-                <p className="text-neutral-400 text-lg leading-relaxed">
-                    Define your security infrastructure, team notifications, and organizational access.
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">Configuration</span>
+                </div>
+                <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic mb-2">Security Settings</h1>
+                <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">
+                    Infrastructure, notifications, and organizational access.
                 </p>
             </motion.div>
 
@@ -132,7 +136,7 @@ export default function SettingsPage() {
                         <Key className="w-5 h-5 text-blue-400" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Management Access</h2>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Management Access</h2>
                         <p className="text-sm text-neutral-400">Master Org Key used for SDK-based agent registration.</p>
                     </div>
                 </div>
@@ -141,7 +145,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative overflow-hidden group shadow-2xl"
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative overflow-hidden group shadow-2xl"
                 >
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/30 to-transparent" />
                     <div className="relative space-y-6">
@@ -186,7 +190,7 @@ export default function SettingsPage() {
                         <div className="p-4 bg-blue-500/5 rounded-xl border border-blue-500/10 flex items-start gap-3">
                             <Zap className="w-5 h-5 text-blue-400 mt-0.5" />
                             <p className="text-xs leading-relaxed text-blue-300/80">
-                                This key grants permission to automatically register new agents via the <code className="bg-blue-500/20 px-1.5 py-0.5 rounded text-blue-100 font-mono">AgentGate SDK</code>. Treat it as a sensitive secret. Regenerating it will invalidate all ongoing automated registration flows.
+                                This key grants permission to automatically register new agents via the <code className="bg-blue-500/20 px-1.5 py-0.5 rounded text-blue-100 font-mono">SupraWall SDK</code>. Treat it as a sensitive secret. Regenerating it will invalidate all ongoing automated registration flows.
                             </p>
                         </div>
                     </div>
@@ -200,7 +204,7 @@ export default function SettingsPage() {
                         <Slack className="w-5 h-5 text-[#E01E5A]" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Slack Notifications</h2>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Slack Notifications</h2>
                         <p className="text-sm text-neutral-400">Human-In-The-Loop approval requests and security alerts.</p>
                     </div>
                 </div>
@@ -209,7 +213,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative shadow-xl overflow-hidden"
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
                 >
                     <form onSubmit={handleSaveSlack} className="space-y-6">
                         <div className="space-y-3">
@@ -253,7 +257,7 @@ export default function SettingsPage() {
                         <Webhook className="w-5 h-5 text-emerald-400" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Audit Webhooks</h2>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Audit Webhooks</h2>
                         <p className="text-sm text-neutral-400">Security monitoring webhooks for your internal audit SIEM.</p>
                     </div>
                 </div>
@@ -262,7 +266,7 @@ export default function SettingsPage() {
                     initial={{ opacity: 0, scale: 0.98 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
-                    className="p-8 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl relative shadow-xl overflow-hidden"
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
                 >
                     <form onSubmit={handleSaveWebhook} className="space-y-8">
                         <div className="space-y-4">

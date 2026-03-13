@@ -1,30 +1,26 @@
 import { Navbar } from "@/components/Navbar";
-import { ArrowRight, Bot, Shield, Zap, Terminal, Code2, Layers, Cpu, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Bot, Shield, Zap, Terminal, Code2, Layers, Cpu, CheckCircle2, FileText } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
 import AutoGenClient from "./AutoGenClient";
 
 export const metadata: Metadata = {
-    title: "Secure Microsoft AutoGen Agents | AgentGate Governance",
-    description: "Enterprise security and runtime guardrails for Microsoft AutoGen. Block infinite loops, monitor inter-agent communication, and prevent dangerous code execution.",
-    keywords: ["autogen agent policy", "secure autogen agents", "microsoft autogen security", "agent conversation audit"],
-    openGraph: {
-        title: "How to Secure Microsoft AutoGen Agents",
-        description: "Zero-trust loop governance for autonomous agents. Prevent emergent behavior from compromising your systems.",
-    }
+    title: "Secure Microsoft AutoGen Agents | SupraWall Governance",
+    description: "Enterprise security and runtime guardrails for Microsoft AutoGen loops. Prevent dangerous code execution, ensure data privacy, and maintain EU AI Act compliance.",
+    keywords: ["autogen agent policy", "secure microsoft autogen", "autogen code execution security", "multi-agent security governance", "eu ai act autogen"],
 };
 
 export default function AutoGenIntegrationPage() {
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
-        "name": "AgentGate for AutoGen",
+        "name": "SupraWall for AutoGen",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.agentgate.ai/integrations/autogen",
+        "url": "https://www.suprawall.ai/integrations/autogen",
         "author": {
             "@type": "Organization",
-            "name": "AgentGate"
+            "name": "SupraWall"
         },
         "description": "Runtime security and conversation auditing for Microsoft AutoGen multiple agent systems.",
         "featureList": [
@@ -35,11 +31,38 @@ export default function AutoGenIntegrationPage() {
         ]
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "How do you secure code execution in Microsoft AutoGen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "SupraWall intercepts the code proposed by an AutoGen AssistantAgent before the UserProxy executes it. It applies regex filters and logic-based policies to ensure the agent doesn't run destructive commands."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Can SupraWall prevent infinite loops in AutoGen?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. SupraWall monitors the conversation turn count and content repetition. It acts as a circuit breaker, halting the orchestration if it detects an unproductive infinite loop that would otherwise waste tokens."
+                }
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <Navbar />
 
@@ -50,14 +73,12 @@ export default function AutoGenIntegrationPage() {
                             Agentic Orchestration • Microsoft AutoGen Official
                         </div>
 
-                        {/* H1: SPEC REQUIRED */}
                         <h1 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.8] uppercase italic">
                             Govern the <br />
                             <span className="text-purple-500 text-7xl md:text-[10rem]">AutoGen</span> <br />
                             Loop.
                         </h1>
 
-                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
                         <div className="max-w-3xl mx-auto">
                             <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
                                 Microsoft AutoGen agent policy is a critical requirement for production multi-agent systems.
@@ -76,13 +97,12 @@ export default function AutoGenIntegrationPage() {
                     <div className="lg:col-span-12">
                         <div className="max-w-4xl mx-auto prose prose-invert prose-purple">
 
-                            {/* H2: SPEC REQUIRED */}
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
-                                Transparent Code Guard
+                                Transparent Code Guard for AssistantAgents
                             </h2>
-                            <p className="text-lg text-neutral-400 mt-6">
+                            <p className="text-lg text-neutral-400 mt-6 font-medium leading-relaxed">
                                 AutoGen's greatest strength—its ability to write and run code—is also its greatest security risk.
-                                AgentGate's <Link href="/learn/what-is-agent-runtime-security" className="text-purple-500 underline">runtime security protocol</Link>
+                                SupraWall's <Link href="/learn/what-is-agent-runtime-security" className="text-purple-500 underline">runtime security protocol</Link>
                                 intercepts the code output before the UserProxy can execute it, analyzing it for destructive patterns and potential
                                 data exfiltration commands.
                             </p>
@@ -97,23 +117,31 @@ export default function AutoGenIntegrationPage() {
                                 ))}
                             </div>
 
-                            {/* H2: SPEC REQUIRED */}
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24">
-                                Breaking the Infinite Loop
+                                Breaking the Infinite Error Loop
                             </h2>
-                            <p className="text-lg text-neutral-400 mt-6">
-                                Multi-agent systems can often get stuck in loops where agents continually pass errors back and forth,
-                                exhausting credit limits without making progress. AgentGate's governance engine monitors conversation
-                                topological complexity and breaks these loops automatically when no utility gain is detected.
+                            <p className="text-lg text-neutral-400 mt-6 font-medium leading-relaxed">
+                                Multi-agent systems often get stuck in loops where agents pass errors back and forth (e.g., failed imports or syntax errors),
+                                exhausting credit limits without making progress. SupraWall's governance engine monitors conversation
+                                topological complexity and breaks these loops automatically to protect your budget.
                             </p>
 
-                            {/* H2: SPEC REQUIRED */}
+                            <div className="my-16 p-10 rounded-[2.5rem] bg-purple-500/5 border border-purple-500/20 space-y-8">
+                                <div className="flex items-center gap-4 text-purple-400">
+                                    <FileText className="w-8 h-8" />
+                                    <h3 className="text-2xl font-black uppercase italic tracking-tight">EU AI Act Compliance</h3>
+                                </div>
+                                <p className="text-neutral-300 font-medium italic">
+                                    Microsoft AutoGen's autonomous nature makes it "High-Risk" under the EU AI Act if used in enterprise decision-making. SupraWall provides the mandatory <span className="text-purple-400">Human Oversight (Article 14)</span> and <span className="text-purple-400">Risk Management (Article 9)</span> layers needed for certified compliance.
+                                </p>
+                            </div>
+
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-10">
                                 Integration Guide
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "Initialize AgentGate SDK with AutoGen context",
+                                    "Initialize SupraWall SDK with AutoGen context",
                                     "Wrap the AssistantAgent and UserProxy executors",
                                     "Define script execution constraints (e.g., no internet for scripts)",
                                     "Configure maximum conversation turns before auto-termination",
@@ -129,10 +157,8 @@ export default function AutoGenIntegrationPage() {
                     </div>
                 </div>
 
-                {/* Client Side Content */}
                 <AutoGenClient />
 
-                {/* Call to Action: SPEC COMPLIANT */}
                 <div className="max-w-7xl mx-auto mt-40 p-20 rounded-[4rem] bg-purple-600 relative overflow-hidden text-center group">
                     <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-indigo-800 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
                     <div className="relative z-10 space-y-8">
