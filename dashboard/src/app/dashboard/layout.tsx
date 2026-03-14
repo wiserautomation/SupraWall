@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck },
         { name: "Vault", href: "/dashboard/vault", icon: Lock },
-        { name: "Approvals", href: "/approvals", icon: UserCheck },
+        { name: "Approvals", href: "/dashboard/approvals", icon: UserCheck },
         { name: "Team", href: "/dashboard/team", icon: Users },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },
         { name: "Settings", href: "/dashboard/settings", icon: Settings },

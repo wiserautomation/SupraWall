@@ -5,7 +5,7 @@
 **URL slug:** /blog/agent-to-agent-commerce-eu-ai-act
 **Meta description:** Palo Alto's Unit 42 flagged agent-to-agent commerce as the next major risk frontier. Here's what their threat report missed: the EU AI Act already has the answer.
 **Published:** March 13, 2026
-**Author:** Alejandro (Supra-wall)
+**Author:** Alejandro (SupraWall)
 
 ---
 
@@ -75,7 +75,7 @@ This is where the gap between security tooling and compliance tooling becomes cr
 
 Let's be precise about what Palo Alto's recommendations cover, and what they don't.
 
-| Concern | Identity Security (CyberArk/Palo Alto) | EU AI Act Compliance (Supra-wall) |
+| Concern | Identity Security (CyberArk/Palo Alto) | EU AI Act Compliance (SupraWall) |
 |---|---|---|
 | Who made the request | ✅ Covered | ✅ Covered |
 | Was the request authenticated | ✅ Covered | ✅ Covered |
@@ -88,13 +88,13 @@ Security and compliance are not the same discipline. Security minimizes attack s
 
 ---
 
-## How Supra-wall Closes the Gap
+## How SupraWall Closes the Gap
 
-Supra-wall is a policy enforcement layer that sits between your AI agent's decision-making and its ability to act. For agent-to-agent commerce specifically, it solves three problems that identity security leaves open.
+SupraWall is a policy enforcement layer that sits between your AI agent's decision-making and its ability to act. For agent-to-agent commerce specifically, it solves three problems that identity security leaves open.
 
-**Policy-level controls on delegated actions.** You define what your agent can do and under what conditions. Want to require human approval for any financial commitment above €500? Any action that modifies a contract? Any delegation to an external agent system? Those are Supra-wall policy rules — written once, enforced on every action, logged automatically.
+**Policy-level controls on delegated actions.** You define what your agent can do and under what conditions. Want to require human approval for any financial commitment above €500? Any action that modifies a contract? Any delegation to an external agent system? Those are SupraWall policy rules — written once, enforced on every action, logged automatically.
 
-**Article 14 human-in-the-loop routing.** Supra-wall's `REQUIRE_APPROVAL` policy routes high-consequence actions to a human reviewer before execution. This is not a UX feature bolted onto your interface — it's enforcement at the tool-call level, which is exactly what Article 14's "effective oversight" requirement demands.
+**Article 14 human-in-the-loop routing.** SupraWall's `REQUIRE_APPROVAL` policy routes high-consequence actions to a human reviewer before execution. This is not a UX feature bolted onto your interface — it's enforcement at the tool-call level, which is exactly what Article 14's "effective oversight" requirement demands.
 
 **Article 13 audit trails by design.** Every action your agent attempts, every policy triggered, every approval requested, every denial issued — logged to a tamper-evident audit trail in a format built to answer auditor questions, not just security incident reviews.
 
@@ -112,7 +112,7 @@ Unit 42 gave you the threat model. Here is the compliance checklist that goes wi
 
 3. **Check your audit trail against Article 13.** Can you reconstruct what your agent did, why, and based on what inputs — in a format a regulator can review? Auth logs are not enough.
 
-4. **Add a policy enforcement layer.** If you're using LangChain, AutoGen, CrewAI, or Vercel AI, Supra-wall installs in under five minutes and generates Article 14 and Article 13 audit evidence out of the box.
+4. **Add a policy enforcement layer.** If you're using LangChain, AutoGen, CrewAI, or Vercel AI, SupraWall installs in under five minutes and generates Article 14 and Article 13 audit evidence out of the box.
 
 ---
 
@@ -126,7 +126,7 @@ You need both. And the clock is running.
 
 **August 2, 2026 is 142 days away.** If you're building AI agents that act autonomously in high-risk domains, now is the time to close the compliance gap — not when the enforcement machinery is already running.
 
-[Add a policy enforcement layer to your agent in under 5 minutes → Get started with Supra-wall]
+[Add a policy enforcement layer to your agent in under 5 minutes → Get started with SupraWall]
 
 ---
 

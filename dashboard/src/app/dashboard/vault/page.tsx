@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock } from "lucide-react";
+import { auth } from "@/lib/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { motion, AnimatePresence } from "framer-motion";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-const TENANT_ID = "default-tenant";
 
 type Tab = "secrets" | "rules" | "log";
 
@@ -55,6 +57,9 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function VaultPage() {
+    const [user] = useAuthState(auth);
+    const tenantId = user?.uid || "default-tenant";
+
     const [tab, setTab] = useState<Tab>("secrets");
     const [secrets, setSecrets] = useState<VaultSecret[]>([]);
     const [rules, setRules] = useState<VaultRule[]>([]);
@@ -79,25 +84,29 @@ export default function VaultPage() {
     const [error, setError] = useState<string | null>(null);
 
     const fetchSecrets = async () => {
-        const res = await fetch(`${API_BASE}/v1/vault/secrets?tenantId=${TENANT_ID}`);
+        if (!user) return;
+        const res = await fetch(`${API_BASE}/v1/vault/secrets?tenantId=${tenantId}`);
         if (res.ok) setSecrets(await res.json());
     };
 
     const fetchRules = async () => {
-        const res = await fetch(`${API_BASE}/v1/vault/rules?tenantId=${TENANT_ID}`);
+        if (!user) return;
+        const res = await fetch(`${API_BASE}/v1/vault/rules?tenantId=${tenantId}`);
         if (res.ok) setRules(await res.json());
     };
 
     const fetchLog = async () => {
-        const res = await fetch(`${API_BASE}/v1/vault/log?tenantId=${TENANT_ID}&limit=50`);
+        if (!user) return;
+        const res = await fetch(`${API_BASE}/v1/vault/log?tenantId=${tenantId}&limit=50`);
         if (res.ok) setLog(await res.json());
     };
 
     useEffect(() => {
+        if (!user) return;
         if (tab === "secrets") fetchSecrets();
         else if (tab === "rules") { fetchRules(); fetchSecrets(); }
         else if (tab === "log") fetchLog();
-    }, [tab]);
+    }, [tab, user]);
 
     const copyToken = (secretName: string) => {
         const token = `$SUPRAWALL_VAULT_${secretName}`;
@@ -114,7 +123,7 @@ export default function VaultPage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    tenantId: TENANT_ID,
+                    tenantId: tenantId,
                     secretName: newSecretName,
                     secretValue: newSecretValue,
                     description: newSecretDesc || undefined,
@@ -133,7 +142,7 @@ export default function VaultPage() {
 
     const handleDeleteSecret = async (id: string) => {
         if (!confirm("Delete this secret? All associated access rules will also be removed.")) return;
-        await fetch(`${API_BASE}/v1/vault/secrets/${id}?tenantId=${TENANT_ID}`, { method: "DELETE" });
+        await fetch(`${API_BASE}/v1/vault/secrets/${id}?tenantId=${tenantId}`, { method: "DELETE" });
         await fetchSecrets();
     };
 
@@ -144,7 +153,7 @@ export default function VaultPage() {
             const res = await fetch(`${API_BASE}/v1/vault/secrets/${id}/rotate`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tenantId: TENANT_ID, newValue: rotateValue }),
+                body: JSON.stringify({ tenantId: tenantId, newValue: rotateValue }),
             });
             const data = await res.json();
             if (!res.ok) { setError(data.error); return; }
@@ -166,7 +175,7 @@ export default function VaultPage() {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    tenantId: TENANT_ID,
+                    tenantId: tenantId,
                     agentId: newRuleAgent,
                     secretId: secret.id,
                     allowedTools: newRuleTools.split(",").map(t => t.trim()).filter(Boolean),
@@ -185,7 +194,7 @@ export default function VaultPage() {
     };
 
     const handleDeleteRule = async (id: string) => {
-        await fetch(`${API_BASE}/v1/vault/rules/${id}?tenantId=${TENANT_ID}`, { method: "DELETE" });
+        await fetch(`${API_BASE}/v1/vault/rules/${id}?tenantId=${tenantId}`, { method: "DELETE" });
         await fetchRules();
     };
 

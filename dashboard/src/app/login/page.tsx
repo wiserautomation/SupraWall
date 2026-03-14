@@ -1,24 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/card";
+import { Shield, ArrowRight, Lock, Mail, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isRegistering, setIsRegistering] = useState(false);
     const [error, setError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
 
     const handleAuth = async (e: React.FormEvent) => {
         e.preventDefault();
         setError("");
+        setIsLoading(true);
         try {
             if (isRegistering) {
                 await createUserWithEmailAndPassword(auth, email, password);
@@ -30,61 +33,142 @@ export default function LoginPage() {
             router.push("/dashboard");
         } catch (err: unknown) {
             if (err instanceof Error) {
-                setError(err.message);
+                // Friendly error messages
+                const msg = err.message;
+                if (msg.includes("auth/invalid-credential")) setError("Invalid email or password.");
+                else if (msg.includes("auth/email-already-in-use")) setError("This email is already registered.");
+                else if (msg.includes("auth/weak-password")) setError("Password should be at least 6 characters.");
+                else setError(msg);
             } else {
                 setError("An unknown error occurred");
             }
+            setIsLoading(false);
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-neutral-950 text-neutral-50">
-            <Card className="w-[400px] border-neutral-800 bg-neutral-900">
-                <CardHeader>
-                    <CardTitle className="text-2xl font-bold tracking-tight">
-                        SupraWall {isRegistering ? "Registration" : "Login"}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleAuth} className="space-y-4">
+        <div className="flex items-center justify-center min-h-screen bg-[#020202] selection:bg-emerald-500/30">
+            {/* Background Orbs */}
+            <div className="fixed inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/10 blur-[120px] rounded-full" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-600/5 blur-[120px] rounded-full" />
+            </div>
+
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="w-full max-w-md px-6 relative z-10"
+            >
+                <div className="mb-10 text-center">
+                    <motion.div 
+                        initial={{ scale: 0.8 }}
+                        animate={{ scale: 1 }}
+                        className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 mb-6"
+                    >
+                        <Shield className="w-8 h-8 text-emerald-400" />
+                    </motion.div>
+                    <h1 className="text-4xl font-black text-white italic uppercase tracking-tighter mb-2">
+                        SupraWall
+                    </h1>
+                    <p className="text-neutral-500 font-bold uppercase tracking-[0.2em] text-[10px]">
+                        Secure Runtime Guardrails
+                    </p>
+                </div>
+
+                <div className="bg-[#0A0A0A] border border-white/[0.05] rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-emerald-500/5 backdrop-blur-3xl relative overflow-hidden group">
+                    {/* Top accent line */}
+                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+
+                    <h2 className="text-2xl font-black text-white italic uppercase tracking-tight mb-8">
+                        {isRegistering ? "Create Operator Account" : "Operator Login"}
+                    </h2>
+
+                    <form onSubmit={handleAuth} className="space-y-6">
                         <div className="space-y-2">
-                            <label htmlFor="email" className="text-sm font-medium text-neutral-400">Email</label>
-                            <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="developer@example.com"
-                                required
-                                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
-                            />
+                            <label htmlFor="email" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Email Identifier</label>
+                            <div className="relative group/input">
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600 group-focus-within/input:text-emerald-400 transition-colors" />
+                                <Input
+                                    id="email"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="operator@suprawall.ai"
+                                    required
+                                    className="h-14 pl-12 bg-black border-white/[0.05] focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
+                                />
+                            </div>
                         </div>
+
                         <div className="space-y-2">
-                            <label htmlFor="password" className="text-sm font-medium text-neutral-400">Password</label>
-                            <Input
-                                id="password"
-                                type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                                className="bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-500"
-                            />
+                            <label htmlFor="password" className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Secure Key</label>
+                            <div className="relative group/input">
+                                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600 group-focus-within/input:text-emerald-400 transition-colors" />
+                                <Input
+                                    id="password"
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                    required
+                                    className="h-14 pl-12 bg-black border-white/[0.05] focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
+                                />
+                            </div>
                         </div>
-                        {error && <p className="text-red-500 text-sm">{error}</p>}
-                        <Button type="submit" className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                            {isRegistering ? "Create Account" : "Sign In"}
+
+                        <AnimatePresence mode="wait">
+                            {error && (
+                                <motion.div 
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-wide text-center"
+                                >
+                                    {error}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
+                        <Button 
+                            disabled={isLoading}
+                            type="submit" 
+                            className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.1)] active:scale-[0.98] group"
+                        >
+                            {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <>
+                                    {isRegistering ? "Initialize Account" : "Establish Link"}
+                                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </>
+                            )}
                         </Button>
                     </form>
-                </CardContent>
-                <CardFooter>
-                    <button
-                        onClick={() => setIsRegistering(!isRegistering)}
-                        className="text-sm text-neutral-400 hover:text-white transition-colors underline mx-auto"
-                    >
-                        {isRegistering ? "Already have an account? Sign in" : "Need an account? Register"}
-                    </button>
-                </CardFooter>
-            </Card>
+
+                    <div className="mt-10 text-center">
+                        <button
+                            onClick={() => {
+                                setIsRegistering(!isRegistering);
+                                setError("");
+                            }}
+                            className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-600 hover:text-emerald-400 transition-all group"
+                        >
+                            {isRegistering ? (
+                                <>Return to <span className="text-neutral-400 group-hover:text-emerald-400">Login Base</span></>
+                            ) : (
+                                <>Authorized Access Only • <span className="text-neutral-400 group-hover:text-emerald-400 underline underline-offset-4 decoration-white/10">Register Operator</span></>
+                            )}
+                        </button>
+                    </div>
+                </div>
+
+                <div className="mt-8 text-center opacity-30">
+                    <p className="text-[10px] font-black uppercase tracking-[0.5em] text-neutral-600 italic">
+                        © 2026 SUPRAWALL • SECURE RUNTIME PROTOCOL
+                    </p>
+                </div>
+            </motion.div>
         </div>
     );
 }

@@ -5,7 +5,7 @@
 **URL slug:** /blog/ai-gateway-vs-compliance-layer
 **Meta description:** Portkey just made enterprise AI governance free. But governance and EU AI Act compliance aren't the same thing. Here's the gap — and why it matters before August 2026.
 **Published:** March 13, 2026
-**Author:** Alejandro (Supra-wall)
+**Author:** Alejandro (SupraWall)
 
 ---
 
@@ -67,7 +67,7 @@ Gateway logs are built for engineers debugging performance. Compliance audit tra
 
 ## The Feature-by-Feature Comparison
 
-| Capability | Portkey (Gateway) | Supra-wall (Compliance) |
+| Capability | Portkey (Gateway) | SupraWall (Compliance) |
 |---|---|---|
 | Route requests across model providers | ✅ Core feature | ❌ Not in scope |
 | Track cost and token usage | ✅ Core feature | ❌ Not in scope |
@@ -93,18 +93,18 @@ A reasonable architecture for an AI agent that must comply with the EU AI Act lo
 ```
 [Your AI Agent]
        ↓
-[Supra-wall — Policy enforcement, human-in-the-loop, compliance audit trail]
+[SupraWall — Policy enforcement, human-in-the-loop, compliance audit trail]
        ↓
 [Portkey — Model routing, observability, cost control, caching]
        ↓
 [Model Providers — OpenAI, Anthropic, Mistral, etc.]
 ```
 
-Supra-wall operates at the *action* layer — intercepting tool calls before they execute and enforcing policy rules. Portkey operates at the *inference* layer — managing how model API calls are made and observed. Neither replaces the other.
+SupraWall operates at the *action* layer — intercepting tool calls before they execute and enforcing policy rules. Portkey operates at the *inference* layer — managing how model API calls are made and observed. Neither replaces the other.
 
 If you are currently using Portkey (or considering adopting it given the free enterprise tier), you should also be asking: what handles my Article 14 human oversight requirement? What generates my Article 13 audit trail? What enforces the policies that keep my agent within the boundaries I've documented for my Article 9 risk assessment?
 
-Those questions don't have answers in the Portkey product. They have answers in Supra-wall.
+Those questions don't have answers in the Portkey product. They have answers in SupraWall.
 
 ---
 
@@ -132,7 +132,7 @@ But observability is not compliance. Access controls are not human oversight. To
 
 The EU AI Act asks a different set of questions than your gateway answers. Before August 2026, you need both layers covered.
 
-[See how Supra-wall adds the compliance layer to your existing agent stack → Get started in under 5 minutes]
+[See how SupraWall adds the compliance layer to your existing agent stack → Get started in under 5 minutes]
 
 ---
 

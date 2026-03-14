@@ -241,24 +241,27 @@ secured.invoke({"messages": [...]})`;
             </div>
 
             {/* Quick Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {[
                     { label: "Actual Spend", value: `$${stats.actualSpend.toFixed(2)}`, icon: <Coins className="w-4 h-4 text-amber-400" />, sub: "current month", accent: "amber" },
                     { label: "Cost Saved", value: `$${stats.costSaved.toFixed(2)}`, icon: <DollarSign className="w-4 h-4 text-emerald-400" />, sub: "by policy blocks", accent: "emerald" },
                     { label: "Blocked Actions", value: stats.blockedActions, icon: <ShieldAlert className="w-4 h-4 text-rose-400" />, sub: "dangerous/unwanted", accent: "rose" },
-                    { label: "Human Approvals", value: pendingApprovalsCount, icon: <UserCheck className="w-4 h-4 text-blue-400" />, sub: "needs intervention", href: "/approvals", accent: "blue" }
+                    { label: "Vault Secrets", value: "Active", icon: <Lock className="w-4 h-4 text-purple-400" />, sub: "secure injection", href: "/dashboard/vault", accent: "purple" },
+                    { label: "Human Approvals", value: pendingApprovalsCount, icon: <UserCheck className="w-4 h-4 text-blue-400" />, sub: "needs intervention", href: "/dashboard/approvals", accent: "blue" }
                 ].map((item, i) => {
                     const accentMap: Record<string, string> = {
                         amber: "via-amber-500/30 border-amber-500/10 hover:border-amber-500/30",
                         emerald: "via-emerald-500/30 border-emerald-500/10 hover:border-emerald-500/30",
                         rose: "via-rose-500/30 border-rose-500/10 hover:border-rose-500/30",
                         blue: "via-blue-500/30 border-blue-500/10 hover:border-blue-500/30",
+                        purple: "via-purple-500/30 border-purple-500/10 hover:border-purple-500/30",
                     };
                     const iconBgMap: Record<string, string> = {
                         amber: "bg-amber-500/10 border-amber-500/20",
                         emerald: "bg-emerald-500/10 border-emerald-500/20",
                         rose: "bg-rose-500/10 border-rose-500/20",
                         blue: "bg-blue-500/10 border-blue-500/20",
+                        purple: "bg-purple-500/10 border-purple-500/20",
                     };
                     const accent = item.accent || "emerald";
                     const content = (

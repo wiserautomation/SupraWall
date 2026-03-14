@@ -441,7 +441,7 @@ export function createSUPRA_WALLMiddleware(options: SUPRA_WALLOptions) {
         logger = console,
     } = options;
 
-    return async function agentGateMiddleware(
+    return async function supraWallMiddleware(
         toolName: string,
         args: any,
         next: (executionArgs?: any) => Promise<any>

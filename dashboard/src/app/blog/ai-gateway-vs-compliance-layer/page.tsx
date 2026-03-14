@@ -4,9 +4,9 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Your AI Gateway Isn't Your Compliance Layer | Supra-wall",
+    title: "Your AI Gateway Isn't Your Compliance Layer | SupraWall",
     description: "Portkey just made enterprise AI governance free. But governance and EU AI Act compliance aren't the same thing. Here's the gap — and why it matters before August 2026.",
-    keywords: ["AI agent compliance vs AI gateway", "Portkey governance", "EU AI Act compliance tool", "AI policy enforcement", "Article 14 human oversight"],
+    keywords: ["AI agent security", "runtime guardrails", "prompt injection prevention", "secure langchain", "ai agent firewall"],
     openGraph: {
         title: "Your AI Gateway Isn't Your Compliance Layer",
         description: "Portkey made enterprise AI governance free. But governance and EU AI Act compliance aren't the same thing.",
@@ -20,12 +20,12 @@ export default function GatewayVsCompliancePage() {
         headline: "Your AI Gateway Isn't Your Compliance Layer (And Why That Distinction Matters in 2026)",
         description:
             "Portkey made enterprise AI governance free. The EU AI Act requires something different. Here's the gap between an AI gateway and a compliance enforcement layer.",
-        author: { "@type": "Person", name: "Alejandro", worksFor: { "@type": "Organization", name: "Supra-wall" } },
+        author: { "@type": "Person", name: "Alejandro", worksFor: { "@type": "Organization", name: "SupraWall" } },
         datePublished: "2026-03-13",
         genre: "AI Compliance",
         keywords: "AI agent compliance, Portkey alternative, EU AI Act compliance tool, Article 14 human oversight",
-        publisher: { "@type": "Organization", name: "Supra-wall" },
-        mainEntityOfPage: "https://supra-wall.com/blog/ai-gateway-vs-compliance-layer",
+        publisher: { "@type": "Organization", name: "SupraWall" },
+        mainEntityOfPage: "https://suprawall.ai/blog/ai-gateway-vs-compliance-layer",
     };
 
     type Cell = boolean | "partial" | "na" | "scope";
@@ -46,8 +46,8 @@ export default function GatewayVsCompliancePage() {
     const renderCell = (val: Cell, isSuprawall = false) => {
         if (val === true) return <CheckCircle2 className="w-4 h-4 text-emerald-500 mx-auto" />;
         if (val === false) return <XCircle className="w-4 h-4 text-neutral-700 mx-auto" />;
-        if (val === "partial") return <span className={`text-xs font-medium ${isSuprawall ? "text-amber-400" : "text-amber-400"}`}>Partial</span>;
-        if (val === "scope") return <Minus className="w-4 h-4 text-neutral-700 mx-auto" title="Not in scope" />;
+        if (val === "partial") return <span className={`text-xs font-medium ${isSuprawall ? "text-emerald-400" : "text-amber-400"}`}>Partial</span>;
+        if (val === "scope") return <Minus className="w-4 h-4 text-neutral-700 mx-auto" />;
         if (val === "na") return <span className="text-xs text-neutral-700">—</span>;
         return null;
     };
