@@ -39,6 +39,11 @@ export function getAdminAuth() {
 export const db = {
     collection: (...args: Parameters<ReturnType<typeof admin.firestore>['collection']>) =>
         getAdminDb().collection(...args),
+    doc: (...args: Parameters<ReturnType<typeof admin.firestore>['doc']>) =>
+        getAdminDb().doc(...args),
+    runTransaction: <T>(updateFunction: (transaction: admin.firestore.Transaction) => Promise<T>): Promise<T> =>
+        getAdminDb().runTransaction(updateFunction),
+    batch: () => getAdminDb().batch(),
 };
 
 export { admin };
