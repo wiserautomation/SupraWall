@@ -1,7 +1,7 @@
 {
     "name": "@suprawall/core",
     "version": "1.0.0",
-    "description": "Database-agnostic core for SUPRA-WALL",
+    "description": "Database-agnostic core for SupraWall",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
@@ -9,11 +9,12 @@
         "dev": "tsc -w"
     },
     "devDependencies": {
-        "typescript": "^5.0.0"
-    },
-    "author": "SUPRA-WALL",
-    "license": "MIT",
-    "dependencies": {
+        "typescript": "^5.0.0",
         "firebase": "^12.9.0"
-    }
+    },
+    "peerDependencies": {
+        "firebase": "^12.9.0"
+    },
+    "author": "SupraWall",
+    "license": "MIT"
 }
