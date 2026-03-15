@@ -5,6 +5,7 @@ import { initDb, pool } from "./db";
 import { evaluatePolicy, scrubToolResponse } from "./policy";
 import complianceRouter from "./routes/compliance";
 import vaultRouter from "./routes/vault";
+import { gatekeeperAuth } from "./auth";
 
 dotenv.config();
 
@@ -25,7 +26,7 @@ app.get("/health", async (req, res) => {
 });
 
 // Policy Evaluation Webhook
-app.post("/v1/evaluate", evaluatePolicy);
+app.post("/v1/evaluate", gatekeeperAuth, evaluatePolicy);
 
 // Vault scrub endpoint
 app.post("/v1/scrub", scrubToolResponse);
@@ -46,7 +47,7 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
             await initDb();
             console.log("Database initialized");
             app.listen(port, () => {
-                console.log(`SUPRA-WALL Server running on port ${port}`);
+                console.log(`SupraWall Server running on port ${port}`);
             });
         } catch (e) {
             console.error("Failed to start server", e);

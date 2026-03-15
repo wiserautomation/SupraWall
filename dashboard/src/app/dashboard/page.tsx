@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, addDoc, onSnapshot } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { suprawall } from "@/lib/suprawall";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck } from "lucide-react";
+import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 
@@ -20,9 +20,12 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { AuditLog } from "@/types/database";
 import { format } from "date-fns";
 
+import { PolicyValidator } from "@/components/PolicyValidator";
+
 export default function OverviewPage() {
     const [user] = useAuthState(auth);
     const [agents, setAgents] = useState<Agent[]>([]);
+    const [isValidatorOpen, setIsValidatorOpen] = useState(false);
     const [loading, setLoading] = useState(true);
     const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
     const [copiedNode, setCopiedNode] = useState(false);
@@ -40,6 +43,7 @@ export default function OverviewPage() {
     });
     const [chartData, setChartData] = useState<any[]>([]);
     const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
 
     useEffect(() => {
@@ -48,7 +52,10 @@ export default function OverviewPage() {
             return;
         }
 
-        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const q = query(
+            collection(db, "agents"), 
+            where("userId", "==", user.uid)
+        );
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const agentsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
             setAgents(agentsList);
@@ -144,25 +151,29 @@ export default function OverviewPage() {
         }
 
         setNameError("");
+        setIsSubmitting(true);
         try {
-            const newAgent: Agent = {
+            const apiKey = generateApiKey();
+            await addDoc(collection(db, "agents"), {
                 userId: user.uid,
                 name: trimmedName,
-                apiKey: generateApiKey(),
-                scopes: selectedScopes.length > 0 ? selectedScopes : undefined,
+                apiKey,
+                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
                 status: 'active',
-            };
+                totalCalls: 0,
+                totalSpendUsd: 0,
+                createdAt: serverTimestamp(),
+            });
 
-            // Replaced generic Firebase addDoc with our database-agnostic suprawall core SDK
-            await suprawall.agents.create(newAgent);
             setNewAgentName("");
             setSelectedScopes([]);
             setIsCreateModalOpen(false);
             sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
-            // No need to fetchAgents() manually because onSnapshot handles it instantly!
         } catch (e) {
             console.error("Error creating agent", e);
             setNameError("Failed to create the agent. Please try again.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -401,6 +412,38 @@ secured.invoke({"messages": [...]})`;
                     </Button>
                 </Card>
             </motion.div>
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="space-y-4"
+            >
+                <div className="flex items-center justify-between">
+                    <div>
+                        <h2 className="text-xl font-black tracking-tighter text-white uppercase italic flex items-center gap-2">
+                            <Activity className="w-5 h-5 text-emerald-500" />
+                            Prompt Health Check
+                        </h2>
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mt-1">
+                            Validate your system prompts against active security policies.
+                        </p>
+                    </div>
+                    <Button 
+                        onClick={() => setIsValidatorOpen(!isValidatorOpen)}
+                        variant="outline"
+                        className="bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20"
+                    >
+                        {isValidatorOpen ? "Hide Tools" : "Open Validator"}
+                    </Button>
+                </div>
+                
+                {isValidatorOpen && (
+                    <div className="bg-black/40 backdrop-blur-3xl border border-emerald-500/10 rounded-3xl overflow-hidden p-6 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <PolicyValidator />
+                    </div>
+                )}
+            </motion.div>
+
 
             <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl overflow-hidden relative group">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
@@ -650,11 +693,12 @@ secured.invoke({"messages": [...]})`;
                         </div>
                     </div>
                     <div className="flex justify-end gap-3">
-                        <Button variant="outline" onClick={() => setIsCreateModalOpen(false)} className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white">
+                        <Button onClick={() => setIsCreateModalOpen(false)} variant="outline" className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white" disabled={isSubmitting}>
                             Cancel
                         </Button>
-                        <Button onClick={createAgent} className="bg-emerald-600 hover:bg-emerald-500 text-white border-transparent">
-                            Create Agent
+                        <Button onClick={createAgent} className="bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" disabled={isSubmitting}>
+                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            {isSubmitting ? "Creating..." : "Create Agent"}
                         </Button>
                     </div>
                 </DialogContent>

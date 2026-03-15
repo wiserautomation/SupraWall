@@ -80,7 +80,7 @@ secured = protect(agent, api_key="sw_...", policies=[...])
 
 ## Check Your Compliance
 
-[CTA: "Use Supra-wall's free agent audit tool to check if your deployment has similar gaps → supra-wall.com/audit"]
+[CTA: "Use Supra-wall's free agent audit tool to check if your deployment has similar gaps → suprawall.ai/audit"]
 ```
 
 ---

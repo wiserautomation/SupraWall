@@ -112,7 +112,7 @@ export default function VercelIntegrationPage() {
                             </h2>
                             <div className="space-y-4">
                                 {[
-                                    "npm install @suprawall/sdk",
+                                    "npm install @suprawall/vercel-ai",
                                     "Initialize the protector in your Next.js API route",
                                     "Wrap your tools object with the 'protect' helper",
                                     "Configure Edge Middleware for global budget caps",

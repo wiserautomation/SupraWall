@@ -10,7 +10,7 @@ Each hack exploits an existing interception point in the Supra-wall architecture
 
 | # | Hack | Injection Point | Visibility | Effort |
 |---|------|----------------|------------|--------|
-| 1 | **SDK Output Branding** | `withSUPRA-WALL()` / `protect()` tool result wrapper | Every end-user of every agent | ~2 days |
+| 1 | **SDK Output Branding** | `withSupraWall()` / `protect()` tool result wrapper | Every end-user of every agent | ~2 days |
 | 2 | **Approval Notification Footers** | Slack Block Kit + Email templates | Decision-makers & team channels | ~1 day |
 | 3 | **Embed Widget Badge** | `embed.ts` iframe + CSS overlay | Anyone viewing the embedded audit widget | ~0.5 day |
 
@@ -28,9 +28,9 @@ All file paths and function names verified against the live repo on March 12, 20
 | `evaluateAction.ts` Slack blocks | Lines 473-529, Block Kit payload with header/section/actions | Confirmed — context block goes after actions block |
 | `evaluateAction.ts` ALLOW response | Line 378, `res.status(200).json({...})` | Confirmed — add `branding` field here |
 | `evaluateAction.ts` org plan | `orgData` from Firestore `organizations` collection | Confirmed — plan stored as field (starter/growth/enterprise) |
-| SDK `withSUPRA-WALL()` | `suprawall-sdk/src/index.ts` line 376 | Confirmed — wraps `executeTool` |
+| SDK `withSupraWall()` | `suprawall-sdk/src/index.ts` line 376 | Confirmed — wraps `executeTool` |
 | SDK `wrapVercelTools()` | `suprawall-sdk/src/index.ts` line 523 | Confirmed — wraps each tool's `execute` |
-| SDK `createSUPRA-WALLMiddleware()` | `suprawall-sdk/src/index.ts` line 414 | Confirmed — MCP middleware |
+| SDK `createSupraWallMiddleware()` | `suprawall-sdk/src/index.ts` line 414 | Confirmed — MCP middleware |
 | SDK `wrapOpenClaw()` | `suprawall-sdk/src/index.ts` line 487 | Confirmed — browser agent wrapper |
 | Python SDK | `suprawall-python/suprawall/gate.py` | Confirmed — `_secured_method()` wraps all frameworks |
 | Embed widget | `packages/embed/src/embed.ts` | Confirmed — 47 lines, creates iframe from `app.suprawall.io` |
@@ -87,14 +87,14 @@ const response = {
   branding: showBranding ? {
     enabled: true,
     text: "🛡️ Secured by Supra-wall — AI agent security & EU AI Act compliance",
-    url: "https://supra-wall.com?ref=agent-output",
+    url: "https://suprawall.ai?ref=agent-output",
     format: "text", // "text" | "markdown" | "html"
   } : { enabled: false },
   // ... vault fields
 };
 ```
 
-**Schema addition to SUPRA-WALLResponse:**
+**Schema addition to SupraWallResponse:**
 ```typescript
 branding?: {
   enabled: boolean;
@@ -108,7 +108,7 @@ branding?: {
 
 **File: `suprawall-sdk/src/index.ts`**
 
-Modify both `withSUPRA-WALL()` and `wrapVercelTools()` to append branding after tool execution:
+Modify both `withSupraWall()` and `wrapVercelTools()` to append branding after tool execution:
 
 ```typescript
 // New helper function
@@ -133,7 +133,7 @@ function appendBranding(toolResult: any, branding: any): any {
 }
 ```
 
-**In `withSUPRA-WALL()` (around line 392-408):**
+**In `withSupraWall()` (around line 392-408):**
 ```typescript
 agentInstance.executeTool = async (toolName: string, args: any) => {
   const result = await internalEvaluate(toolName, args, options);
@@ -153,12 +153,12 @@ agentInstance.executeTool = async (toolName: string, args: any) => {
     return toolResult;
   }
 
-  logger.warn(`[SUPRA-WALL] ${result.decision}: ${result.reason ?? ""}`);
-  return `ERROR: ${result.reason ?? "Action blocked by SUPRA-WALL."}`;
+  logger.warn(`[SupraWall] ${result.decision}: ${result.reason ?? ""}`);
+  return `ERROR: ${result.reason ?? "Action blocked by SupraWall."}`;
 };
 ```
 
-**Same pattern in `wrapVercelTools()`, `createSUPRA-WALLMiddleware()`, and `wrapOpenClaw()`.**
+**Same pattern in `wrapVercelTools()`, `createSupraWallMiddleware()`, and `wrapOpenClaw()`.**
 
 #### 3. Python SDK: Mirror the branding logic
 
@@ -251,12 +251,12 @@ const blocks = [
     elements: [
       {
         type: "image",
-        image_url: "https://supra-wall.com/icon-small.png",
+        image_url: "https://suprawall.ai/icon-small.png",
         alt_text: "Supra-wall"
       },
       {
         type: "mrkdwn",
-        text: "🛡️ Protected by <https://supra-wall.com?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
+        text: "🛡️ Protected by <https://suprawall.ai?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
       }
     ]
   }] : [])
@@ -278,12 +278,12 @@ When the email notification system is activated (currently placeholder), add a f
     <table cellpadding="0" cellspacing="0" border="0">
       <tr>
         <td style="padding-right: 8px; vertical-align: middle;">
-          <img src="https://supra-wall.com/icon-small.png"
+          <img src="https://suprawall.ai/icon-small.png"
                width="16" height="16" alt="Supra-wall" />
         </td>
         <td style="font-size: 12px; color: #6b7280; font-family: Arial, sans-serif;">
           Protected by
-          <a href="https://supra-wall.com?ref=email-approval"
+          <a href="https://suprawall.ai?ref=email-approval"
              style="color: #10b981; text-decoration: none; font-weight: 600;">
             Supra-wall
           </a>
@@ -307,7 +307,7 @@ Add to the webhook event payload:
   // NEW
   branding: {
     powered_by: "Supra-wall",
-    url: "https://supra-wall.com?ref=webhook",
+    url: "https://suprawall.ai?ref=webhook",
     removable_on: "pro" // tells integrators which plan removes it
   }
 }
@@ -324,7 +324,7 @@ For free-tier users viewing the approval queue, add a subtle banner:
 ```tsx
 {plan === "free" && (
   <div className="text-center py-2 text-xs text-neutral-500 border-t border-neutral-800">
-    🛡️ Protected by <a href="https://supra-wall.com" className="text-emerald-400 hover:underline">Supra-wall</a>
+    🛡️ Protected by <a href="https://suprawall.ai" className="text-emerald-400 hover:underline">Supra-wall</a>
     {" · "}
     <a href="/pricing" className="text-neutral-400 hover:text-white">Remove branding →</a>
   </div>
@@ -361,7 +361,7 @@ After the iframe creation, append a badge element:
 
 // NEW: Add "Secured by" badge for free-tier
 const badge = document.createElement("a");
-badge.href = "https://supra-wall.com?ref=embed-widget";
+badge.href = "https://suprawall.ai?ref=embed-widget";
 badge.target = "_blank";
 badge.rel = "noopener noreferrer";
 badge.innerHTML = `
@@ -427,7 +427,7 @@ When users copy the embed snippet from the dashboard, show the branding notice:
 ### Testing
 1. Embed the widget on a test page with a free-tier API key
 2. Verify the badge appears below the iframe
-3. Verify the badge links to supra-wall.com with the correct ref parameter
+3. Verify the badge links to suprawall.ai with the correct ref parameter
 4. Verify a paid-tier key hides the badge
 
 ---
@@ -452,9 +452,9 @@ When users copy the embed snippet from the dashboard, show the branding notice:
 |------|------|--------|------|
 | 2.1 | `firebase/functions/src/evaluateAction.ts` | Add `branding` object to ALLOW response | 30 min |
 | 2.2 | `suprawall-sdk/src/index.ts` | Add `appendBranding()` helper | 20 min |
-| 2.3 | `suprawall-sdk/src/index.ts` | Wire into `withSUPRA-WALL()` | 30 min |
+| 2.3 | `suprawall-sdk/src/index.ts` | Wire into `withSupraWall()` | 30 min |
 | 2.4 | `suprawall-sdk/src/index.ts` | Wire into `wrapVercelTools()` | 20 min |
-| 2.5 | `suprawall-sdk/src/index.ts` | Wire into `createSUPRA-WALLMiddleware()` | 20 min |
+| 2.5 | `suprawall-sdk/src/index.ts` | Wire into `createSupraWallMiddleware()` | 20 min |
 | 2.6 | `suprawall-sdk/src/index.ts` | Wire into `wrapOpenClaw()` | 15 min |
 | 2.7 | `suprawall-sdk/src/index.ts` | Update `internalEvaluate` return type & parsing | 15 min |
 | 2.8 | `suprawall-python/suprawall/gate.py` | Add `_append_branding()` method | 30 min |
@@ -499,11 +499,11 @@ Every branded link uses a `ref` parameter for source tracking:
 
 | Source | URL | Expected Traffic |
 |--------|-----|-----------------|
-| Agent output | `supra-wall.com?ref=agent-output` | Highest volume |
-| Slack approval | `supra-wall.com?ref=slack-approval` | Decision-makers |
-| Email approval | `supra-wall.com?ref=email-approval` | Decision-makers |
-| Embed badge | `supra-wall.com?ref=embed-widget` | End-users |
-| Webhook payload | `supra-wall.com?ref=webhook` | Developers |
+| Agent output | `suprawall.ai?ref=agent-output` | Highest volume |
+| Slack approval | `suprawall.ai?ref=slack-approval` | Decision-makers |
+| Email approval | `suprawall.ai?ref=email-approval` | Decision-makers |
+| Embed badge | `suprawall.ai?ref=embed-widget` | End-users |
+| Webhook payload | `suprawall.ai?ref=webhook` | Developers |
 
 Track these in Google Analytics 4 (already integrated) to measure which channel drives the most signups.
 

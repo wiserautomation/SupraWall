@@ -1,10 +1,10 @@
-# SUPRA-WALL
+# SupraWall
 
 <div align="center">
 
 **AI Agent Security & EU AI Act Compliance Platform**
 
-*SUPRA-WALL is an AI agent security and compliance platform. It provides policy enforcement (ALLOW/DENY/REQUIRE_APPROVAL), real-time audit logging, and human oversight mechanisms for AI agents built with LangChain, AutoGen, CrewAI, Vercel AI, and other frameworks. SUPRA-WALL is the technical implementation layer for EU AI Act compliance requirements, specifically Articles 9, 12, and 14 — in one line of code.*
+*SupraWall is an AI agent security and compliance platform. It provides policy enforcement (ALLOW/DENY/REQUIRE_APPROVAL), real-time audit logging, and human oversight mechanisms for AI agents built with LangChain, AutoGen, CrewAI, Vercel AI, and other frameworks. SupraWall is the technical implementation layer for EU AI Act compliance requirements, specifically Articles 9, 12, and 14 — in one line of code.*
 
 [![npm](https://img.shields.io/npm/v/suprawall)](https://www.npmjs.com/package/suprawall)
 [![PyPI](https://img.shields.io/pypi/v/suprawall)](https://pypi.org/project/suprawall/)
@@ -16,9 +16,9 @@
 
 ---
 
-## What is SUPRA-WALL?
+## What is SupraWall?
 
-SUPRA-WALL intercepts tool calls from AI agents before they execute and evaluates them against a policy engine. Every call returns ALLOW, DENY, or REQUIRE_APPROVAL in under 10ms. The audit log records every decision with full context — providing the technical evidence trail required by EU AI Act Articles 9, 12, and 14.
+SupraWall intercepts tool calls from AI agents before they execute and evaluates them against a policy engine. Every call returns ALLOW, DENY, or REQUIRE_APPROVAL in under 10ms. The audit log records every decision with full context — providing the technical evidence trail required by EU AI Act Articles 9, 12, and 14.
 
 **Who it's for:** AI developers building agents with LangChain, AutoGen, CrewAI, or Vercel AI who operate in EU-regulated industries (fintech, HR tech, healthcare, legal, insurance) and need to comply with the EU AI Act by August 2026.
 
@@ -26,9 +26,9 @@ SUPRA-WALL intercepts tool calls from AI agents before they execute and evaluate
 
 ## EU AI Act Compliance
 
-SUPRA-WALL implements the three core technical requirements of the EU AI Act for high-risk AI systems:
+SupraWall implements the three core technical requirements of the EU AI Act for high-risk AI systems:
 
-| Article | Requirement | SUPRA-WALL Feature |
+| Article | Requirement | SupraWall Feature |
 |---------|-------------|-------------------|
 | Article 9 | Risk Management | DENY policies block unsafe tool calls before execution |
 | Article 12 | Record-keeping | Immutable audit logs, exportable as PDF evidence reports |
@@ -77,10 +77,10 @@ secured_agent = secure_agent(agent, api_key="ag_your_key")
 
 **TypeScript + Vercel AI:**
 ```typescript
-import { withSUPRA-WALL } from "suprawall";
+import { withSupraWall } from "suprawall";
 
 const agent = createMyAgent();
-const securedAgent = withSUPRA-WALL(agent, { apiKey: "ag_your_key" });
+const securedAgent = withSupraWall(agent, { apiKey: "ag_your_key" });
 ```
 
 ---
@@ -105,8 +105,8 @@ const securedAgent = withSUPRA-WALL(agent, { apiKey: "ag_your_key" });
 ```
 Your Agent
     │
-    ▼ secure_agent() / withSUPRA-WALL()
-SUPRA-WALL SDK  ◄── intercepts every tool call
+    ▼ secure_agent() / withSupraWall()
+SupraWall SDK  ◄── intercepts every tool call
     │
     ▼
 Policy Engine  ◄── checks against your rules
@@ -225,8 +225,8 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT © [SUPRA-WALL](https://suprawall.ai)
+MIT © [SupraWall](https://suprawall.ai)
 
 ---
 
-If SUPRA-WALL helps secure your AI agents or simplify EU AI Act compliance, give us a star on GitHub.
+If SupraWall helps secure your AI agents or simplify EU AI Act compliance, give us a star on GitHub.

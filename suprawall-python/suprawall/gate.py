@@ -9,7 +9,7 @@ import httpx
 from .cost import estimate_cost, format_cost
 
 DEFAULT_URL = "https://us-central1-suprawall-prod.cloudfunctions.net/evaluateAction"
-SDK_VERSION = "0.1.0"
+SDK_VERSION = "1.0.0"
 log = logging.getLogger("suprawall")
 
 # ── In-memory trackers (Budget & Loops) ───────────────────────────────
@@ -40,7 +40,7 @@ class BudgetExceededError(Exception):
         self.limit_usd = limit_usd
         self.actual_usd = actual_usd
         super().__init__(
-            f"[SUPRA-WALL] Budget cap of {format_cost(limit_usd)} exceeded "
+            f"[SupraWall] Budget cap of {format_cost(limit_usd)} exceeded "
             f"(session spend: {format_cost(actual_usd)}). Agent halted."
         )
 
@@ -94,7 +94,7 @@ class BudgetTracker:
         ):
             self._alert_fired = True
             log.warning(
-                f"[SUPRA-WALL] Budget alert: session spend {format_cost(self.session_cost)} "
+                f"[SupraWall] Budget alert: session spend {format_cost(self.session_cost)} "
                 f">= alert threshold {format_cost(self.alert_usd)}."
             )
 
@@ -120,14 +120,14 @@ class BudgetTracker:
 
 
 @dataclass
-class SUPRA-WALLOptions:
+class SupraWallOptions:
     """
-    Configuration for SUPRA-WALL.
+    Configuration for SupraWall.
 
     Only api_key is required. All other fields have sensible defaults.
 
     Example:
-        options = SUPRA-WALLOptions(
+        options = SupraWallOptions(
             api_key="ag_your_key_here",
             max_cost_usd=5.00,      # Hard stop at $5 per session
             budget_alert_usd=4.00,  # Warn at $4
@@ -154,7 +154,7 @@ class SUPRA-WALLOptions:
     vault_scrub_url: Optional[str] = None      # Override scrub endpoint URL
 
 
-def _check_budget(options: SUPRA-WALLOptions) -> Optional[dict]:
+def _check_budget(options: SupraWallOptions) -> Optional[dict]:
     """
     Checks the current session cost against configured budget caps.
     Returns a DENY decision dict if the cap has been hit, else None.
@@ -163,15 +163,17 @@ def _check_budget(options: SUPRA-WALLOptions) -> Optional[dict]:
         return None
 
     session_id = options.session_id or options.api_key
-    current = _session_costs[session_id]
+    if session_id not in _session_costs:
+        _session_costs[session_id] = 0.0
+    current = float(_session_costs[session_id])
 
     if options.budget_alert_usd is not None and current >= options.budget_alert_usd:
         log.warning(
-            f"[SUPRA-WALL] 💰 Budget alert: ${current:.4f} of ${options.max_cost_usd:.2f} cap used "
+            f"[SupraWall] 💰 Budget alert: ${current:.4f} of ${options.max_cost_usd:.2f} cap used "
             f"(session: {session_id!r})"
         )
 
-    if current >= options.max_cost_usd:
+    if options.max_cost_usd is not None and current >= options.max_cost_usd:
         return {
             "decision": "DENY",
             "reason": (
@@ -182,7 +184,7 @@ def _check_budget(options: SUPRA-WALLOptions) -> Optional[dict]:
     return None
 
 
-def _check_loops(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> Optional[dict]:
+def _check_loops(tool_name: str, args: Any, options: SupraWallOptions) -> Optional[dict]:
     """
     Checks for infinite loops and iteration limits.
     Returns a DENY decision dict if a safety breach is detected.
@@ -219,25 +221,25 @@ def _check_loops(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> Optio
     return None
 
 
-def _record_cost(options: SUPRA-WALLOptions, response: dict) -> None:
+def _record_cost(options: SupraWallOptions, response: dict) -> None:
     """Accumulates the call cost returned by the server into the session tracker."""
     cost = response.get("estimated_cost_usd")
     if cost and options.max_cost_usd is not None:
-        session_id = options.session_id or options.api_key
-        _session_costs[session_id] += float(cost)
+        session_id = options.session_id or "default"
+        _session_costs[session_id] = float(_session_costs[session_id]) + float(cost)
         log.debug(
-            f"[SUPRA-WALL] Cost recorded: +${cost:.6f} "
+            f"[SupraWall] Cost recorded: +${cost:.6f} "
             f"(session total: ${_session_costs[session_id]:.4f})"
         )
 
 
-def _derive_scrub_url(options: SUPRA-WALLOptions) -> str:
+def _derive_scrub_url(options: SupraWallOptions) -> str:
     if options.vault_scrub_url:
         return options.vault_scrub_url
     return options.cloud_function_url.replace("/v1/evaluate", "/v1/scrub")
 
 
-def _scrub_response(tool_response: Any, injected_secrets: list, options: SUPRA-WALLOptions) -> Any:
+def _scrub_response(tool_response: Any, injected_secrets: list, options: SupraWallOptions) -> Any:
     """Calls server scrub endpoint to strip vault secret traces from response."""
     scrub_url = _derive_scrub_url(options)
     try:
@@ -253,11 +255,11 @@ def _scrub_response(tool_response: Any, injected_secrets: list, options: SUPRA-W
             if resp.status_code == 200:
                 return resp.json().get("scrubbedResponse", tool_response)
     except Exception as e:
-        log.warning(f"[SUPRA-WALL] Vault scrub endpoint unreachable: {e} — returning redacted response")
+        log.warning(f"[SupraWall] Vault scrub endpoint unreachable: {e} — returning redacted response")
     return "[Response redacted — vault scrub unavailable]"
 
 
-async def _scrub_response_async(tool_response: Any, injected_secrets: list, options: SUPRA-WALLOptions) -> Any:
+async def _scrub_response_async(tool_response: Any, injected_secrets: list, options: SupraWallOptions) -> Any:
     """Async version of _scrub_response."""
     scrub_url = _derive_scrub_url(options)
     try:
@@ -273,17 +275,17 @@ async def _scrub_response_async(tool_response: Any, injected_secrets: list, opti
             if resp.status_code == 200:
                 return resp.json().get("scrubbedResponse", tool_response)
     except Exception as e:
-        log.warning(f"[SUPRA-WALL] Vault scrub endpoint unreachable: {e} — returning redacted response")
+        log.warning(f"[SupraWall] Vault scrub endpoint unreachable: {e} — returning redacted response")
     return "[Response redacted — vault scrub unavailable]"
 
 
-def _poll_approval(request_id: str, options: SUPRA-WALLOptions) -> dict:
+def _poll_approval(request_id: str, options: SupraWallOptions) -> dict:
     """Blocks and polls the dashboard until a human approves or denies."""
     import time
     start_time = time.time()
     poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
-    log.warning(f"[SUPRA-WALL] ⏳ Action requires human intervention. Waiting for approval...")
-    log.warning(f"[SUPRA-WALL] 👉 Approve at: {options.dashboard_api_url}/approvals")
+    log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
+    log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
 
     while time.time() - start_time < options.approval_timeout:
         try:
@@ -293,25 +295,25 @@ def _poll_approval(request_id: str, options: SUPRA-WALLOptions) -> dict:
                     data = resp.json()
                     status = data.get("status")
                     if status == "approved":
-                        log.info("[SUPRA-WALL] ✅ Action APPROVED by human. Resuming...")
+                        log.info("[SupraWall] ✅ Action APPROVED by human. Resuming...")
                         return {"decision": "ALLOW"}
                     if status == "denied":
-                        log.error("[SUPRA-WALL] ❌ Action DENIED by human.")
+                        log.error("[SupraWall] ❌ Action DENIED by human.")
                         return {"decision": "DENY", "reason": "Explicitly denied by human administrator."}
         except Exception as e:
-            log.debug(f"[SUPRA-WALL] Polling error: {e}")
+            log.debug(f"[SupraWall] Polling error: {e}")
         time.sleep(options.approval_poll_interval)
 
     return {"decision": "DENY", "reason": f"Approval timed out after {options.approval_timeout}s."}
 
 
-async def _poll_approval_async(request_id: str, options: SUPRA-WALLOptions) -> dict:
+async def _poll_approval_async(request_id: str, options: SupraWallOptions) -> dict:
     """Non-blocking poll of the dashboard until a human approves or denies."""
     import asyncio, time
     start_time = time.time()
     poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
-    log.warning(f"[SUPRA-WALL] ⏳ Action requires human intervention. Waiting for approval...")
-    log.warning(f"[SUPRA-WALL] 👉 Approve at: {options.dashboard_api_url}/approvals")
+    log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
+    log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
 
     while time.time() - start_time < options.approval_timeout:
         try:
@@ -321,20 +323,20 @@ async def _poll_approval_async(request_id: str, options: SUPRA-WALLOptions) -> d
                     data = resp.json()
                     status = data.get("status")
                     if status == "approved":
-                        log.info("[SUPRA-WALL] ✅ Action APPROVED by human. Resuming...")
+                        log.info("[SupraWall] ✅ Action APPROVED by human. Resuming...")
                         return {"decision": "ALLOW"}
                     if status == "denied":
-                        log.error("[SUPRA-WALL] ❌ Action DENIED by human.")
+                        log.error("[SupraWall] ❌ Action DENIED by human.")
                         return {"decision": "DENY", "reason": "Explicitly denied by human administrator."}
         except Exception as e:
-            log.debug(f"[SUPRA-WALL] Polling error: {e}")
+            log.debug(f"[SupraWall] Polling error: {e}")
         await asyncio.sleep(options.approval_poll_interval)
 
     return {"decision": "DENY", "reason": f"Approval timed out after {options.approval_timeout}s."}
 
 
-def _evaluate(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> dict:
-    """Makes a synchronous policy check call to SUPRA-WALL."""
+def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
+    """Makes a synchronous policy check call to SupraWall."""
     # ── Safety Checks: Client-side fast-reject ──
     budget_block = _check_budget(options)
     if budget_block: return budget_block
@@ -355,11 +357,11 @@ def _evaluate(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> dict:
                 "sessionId": session_id,
                 "agentRole": options.agent_role,
             },
-            headers={"X-SUPRA-WALL-SDK": f"python-{SDK_VERSION}"},
+            headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )
     if resp.status_code == 401:
         raise ValueError(
-            "[SUPRA-WALL] Unauthorized. Check your API key at "
+            "[SupraWall] Unauthorized. Check your API key at "
             "https://suprawall.ai/"
         )
     if resp.status_code == 429:
@@ -377,8 +379,8 @@ def _evaluate(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> dict:
     return data
 
 
-async def _evaluate_async(tool_name: str, args: Any, options: SUPRA-WALLOptions) -> dict:
-    """Makes an async policy check call to SUPRA-WALL."""
+async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
+    """Makes an async policy check call to SupraWall."""
     # ── Safety Checks: Client-side fast-reject ──
     budget_block = _check_budget(options)
     if budget_block: return budget_block
@@ -399,11 +401,11 @@ async def _evaluate_async(tool_name: str, args: Any, options: SUPRA-WALLOptions)
                 "sessionId": session_id,
                 "agentRole": options.agent_role,
             },
-            headers={"X-SUPRA-WALL-SDK": f"python-{SDK_VERSION}"},
+            headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
         )
     if resp.status_code == 401:
         raise ValueError(
-            "[SUPRA-WALL] Unauthorized. Check your API key at "
+            "[SupraWall] Unauthorized. Check your API key at "
             "https://suprawall.ai/"
         )
     if resp.status_code == 429:
@@ -429,47 +431,47 @@ def _handle_decision(decision: str, reason: Optional[str], tool_name: str) -> Op
     if decision == "ALLOW":
         return None
     if decision == "DENY":
-        log.warning(f"[SUPRA-WALL] DENIED '{tool_name}'. Reason: {reason or 'Policy violation.'}")
-        return f"ERROR: Action blocked by SUPRA-WALL. {reason or ''}".strip()
+        log.warning(f"[SupraWall] DENIED '{tool_name}'. Reason: {reason or 'Policy violation.'}")
+        return f"ERROR: Action blocked by SupraWall. {reason or ''}".strip()
     if decision == "REQUIRE_APPROVAL":
-        log.warning(f"[SUPRA-WALL] PAUSED '{tool_name}'. Human approval required.")
+        log.warning(f"[SupraWall] PAUSED '{tool_name}'. Human approval required.")
         return (
             "ACTION PAUSED: This action requires human approval. "
-            "Check your SUPRA-WALL dashboard at https://suprawall.ai/"
+            "Check your SupraWall dashboard at https://suprawall.ai/"
         )
-    log.error(f"[SUPRA-WALL] Unknown decision '{decision}' received.")
-    return "ERROR: Unknown SUPRA-WALL decision."
+    log.error(f"[SupraWall] Unknown decision '{decision}' received.")
+    return "ERROR: Unknown SupraWall decision."
 
 
-def with_agent_gate(agent: Any, options: SUPRA-WALLOptions) -> Any:
+def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
     """
-    Wraps any AI agent with SUPRA-WALL security enforcement.
+    Wraps any AI agent with SupraWall security enforcement.
 
     Intercepts the agent's primary execution method (run, invoke, or __call__)
     and checks every tool call against your policies before execution.
 
     Works with: LangChain, CrewAI, AutoGen, custom agents.
     For OpenAI Agents SDK, use wrap_openai_agent() instead.
-    For LangChain tool-level enforcement, use SUPRA-WALLLangChainCallback.
+    For LangChain tool-level enforcement, use SupraWallLangChainCallback.
 
     Args:
         agent:   Any agent object with a run, invoke, or __call__ method.
-        options: SUPRA-WALLOptions — only api_key is required.
+        options: SupraWallOptions — only api_key is required.
 
     Returns:
-        The same agent instance, now protected by SUPRA-WALL.
+        The same agent instance, now protected by SupraWall.
 
     Example:
-        from suprawall import with_agent_gate, SUPRA-WALLOptions
+        from suprawall import with_suprawall, SupraWallOptions
 
-        secured = with_agent_gate(my_agent, SUPRA-WALLOptions(
+        secured = with_suprawall(my_agent, SupraWallOptions(
             api_key="ag_your_key_here"
         ))
         result = secured.run("delete_file", {"path": "/etc/passwd"})
     """
     if not options.api_key.startswith(("ag_", "agc_")):
         raise ValueError(
-            f"[SUPRA-WALL] Invalid API key: '{options.api_key}'.\n"
+            f"[SupraWall] Invalid API key: '{options.api_key}'.\n"
             "  Get your free key at https://suprawall.ai/\n"
             "  Expected format: ag_xxxxxxxxxxxxxxxx"
         )
@@ -483,7 +485,7 @@ def with_agent_gate(agent: Any, options: SUPRA-WALLOptions) -> Any:
 
     if method_name is None:
         raise ValueError(
-            "[SUPRA-WALL] Could not find a callable method on this agent. "
+            "[SupraWall] Could not find a callable method on this agent. "
             "Agent must have a 'run', 'invoke', or '__call__' method."
         )
 
@@ -508,10 +510,10 @@ def with_agent_gate(agent: Any, options: SUPRA-WALLOptions) -> Any:
                     return blocked
                 return await original_method(tool_name, args, *a, **kw)
             except httpx.RequestError as e:
-                log.error(f"[SUPRA-WALL] Network error: {e}")
+                log.error(f"[SupraWall] Network error: {e}")
                 if options.on_network_error == "fail-closed":
-                    return "ERROR: SUPRA-WALL unreachable. Action blocked (fail-closed)."
-                log.warning("[SUPRA-WALL] Proceeding without policy check (fail-open). "
+                    return "ERROR: SupraWall unreachable. Action blocked (fail-closed)."
+                log.warning("[SupraWall] Proceeding without policy check (fail-open). "
                             "Set on_network_error='fail-closed' in production.")
                 return await original_method(tool_name, args, *a, **kw)
 
@@ -526,10 +528,10 @@ def with_agent_gate(agent: Any, options: SUPRA-WALLOptions) -> Any:
                     return blocked
                 return original_method(tool_name, args, *a, **kw)
             except httpx.RequestError as e:
-                log.error(f"[SUPRA-WALL] Network error: {e}")
+                log.error(f"[SupraWall] Network error: {e}")
                 if options.on_network_error == "fail-closed":
-                    return "ERROR: SUPRA-WALL unreachable. Action blocked (fail-closed)."
-                log.warning("[SUPRA-WALL] Proceeding without policy check (fail-open). "
+                    return "ERROR: SupraWall unreachable. Action blocked (fail-closed)."
+                log.warning("[SupraWall] Proceeding without policy check (fail-open). "
                             "Set on_network_error='fail-closed' in production.")
                 return original_method(tool_name, args, *a, **kw)
 
@@ -537,9 +539,10 @@ def with_agent_gate(agent: Any, options: SUPRA-WALLOptions) -> Any:
 
     return agent
 
-def protect(agent_or_runnable: Any, options: SUPRA-WALLOptions) -> Any:
+def protect(agent_or_runnable: Any, options: SupraWallOptions) -> Any:
     """
-    Automatically detects and protects any AI agent framework in Python.
+    Universal entry point for the SupraWall SDK.
+    protects any AI agent framework in Python.
 
     Supports:
     - LangChain (BaseRunnables, AgentExecutors)
@@ -548,15 +551,19 @@ def protect(agent_or_runnable: Any, options: SUPRA-WALLOptions) -> Any:
     
     Args:
         agent_or_runnable: The agent instance to protect.
-        options: SUPRA-WALLOptions for configuration.
+        options: SupraWallOptions for configuration.
     """
     if agent_or_runnable is None:
         return None
 
     # 1. Detect LangChain (has with_config or callbacks attribute)
     if hasattr(agent_or_runnable, "with_config") or hasattr(agent_or_runnable, "callbacks"):
-        from .langchain import wrap_langchain
-        return wrap_langchain(agent_or_runnable, options)
+        try:
+            from suprawall_langchain import wrap_langchain
+            return wrap_langchain(agent_or_runnable, options)
+        except ImportError:
+            # Fallback to generic if suprawall-langchain is missing
+            log.debug("[SupraWall] LangChain detected but 'suprawall-langchain' not installed.")
 
     # 2. Detect CrewAI (Agent or Crew)
     try:
@@ -575,21 +582,24 @@ def protect(agent_or_runnable: Any, options: SUPRA-WALLOptions) -> Any:
         pass
 
     # 4. Fallback: Generic executeTool/run wrapper
-    return with_agent_gate(agent_or_runnable, options)
+    return with_suprawall(agent_or_runnable, options)
 
-def wrap_crewai(agent_or_crew: Any, options: SUPRA-WALLOptions) -> Any:
+def wrap_crewai(agent_or_crew: Any, options: SupraWallOptions) -> Any:
     """Specialized wrapper for CrewAI objects."""
     # Since CrewAI uses LangChain AgentExecutor under the hood,
     # we can often just inject a callback.
     if hasattr(agent_or_crew, "agent_executor") and agent_or_crew.agent_executor:
-        from .langchain import wrap_langchain
-        wrap_langchain(agent_or_crew.agent_executor, options)
+        try:
+            from suprawall_langchain import wrap_langchain
+            wrap_langchain(agent_or_crew.agent_executor, options)
+        except ImportError:
+            pass
     elif hasattr(agent_or_crew, "agents"): # If it's a Crew swarm
         for agent in agent_or_crew.agents:
             wrap_crewai(agent, options)
     return agent_or_crew
 
-def wrap_autogen(agent: Any, options: SUPRA-WALLOptions) -> Any:
+def wrap_autogen(agent: Any, options: SupraWallOptions) -> Any:
     """Specialized wrapper for AutoGen framework."""
     # AutoGen intercepts via registered functions or generate_reply
     # We can wrap the register_for_execution method or simply the step handler
@@ -603,17 +613,17 @@ def wrap_autogen(agent: Any, options: SUPRA-WALLOptions) -> Any:
     return agent
 
 
-class SUPRA-WALLMiddleware:
+class SupraWallMiddleware:
     """
     Framework-agnostic middleware for MCP servers and custom agent pipelines.
 
     Use this when you control the tool dispatch loop directly and want to
-    insert SUPRA-WALL as a middleware layer.
+    insert SupraWall as a middleware layer.
 
     Example (sync):
-        from suprawall import SUPRA-WALLMiddleware, SUPRA-WALLOptions
+        from suprawall import SupraWallMiddleware, SupraWallOptions
 
-        gate = SUPRA-WALLMiddleware(SUPRA-WALLOptions(api_key="ag_your_key"))
+        gate = SupraWallMiddleware(SupraWallOptions(api_key="ag_your_key"))
 
         def my_tool_dispatcher(tool_name, args):
             return gate.check(tool_name, args, lambda: run_tool(tool_name, args))
@@ -629,7 +639,7 @@ class SUPRA-WALLMiddleware:
             ...
     """
 
-    def __init__(self, options: SUPRA-WALLOptions):
+    def __init__(self, options: SupraWallOptions):
         self.options = options
         self.budget = BudgetTracker(
             max_cost_usd=options.max_cost_usd,
@@ -656,12 +666,12 @@ class SUPRA-WALLMiddleware:
                 pass
             if data.get("vaultInjected") and data.get("injectedSecrets"):
                 result = _scrub_response(result, data["injectedSecrets"], self.options)
-            log.debug(f"[SUPRA-WALL] {self.budget.summary}")
+            log.debug(f"[SupraWall] {self.budget.summary}")
             return result
         except httpx.RequestError as e:
-            log.error(f"[SUPRA-WALL] Network error: {e}")
+            log.error(f"[SupraWall] Network error: {e}")
             if self.options.on_network_error == "fail-closed":
-                return "ERROR: SUPRA-WALL unreachable. Action blocked (fail-closed)."
+                return "ERROR: SupraWall unreachable. Action blocked (fail-closed)."
             return next_fn()
 
     async def check_async(self, tool_name: str, args: Any, next_fn: callable) -> Any:
@@ -678,12 +688,12 @@ class SUPRA-WALLMiddleware:
                 result = await result
             if data.get("vaultInjected") and data.get("injectedSecrets"):
                 result = await _scrub_response_async(result, data["injectedSecrets"], self.options)
-            log.debug(f"[SUPRA-WALL] {self.budget.summary}")
+            log.debug(f"[SupraWall] {self.budget.summary}")
             return result
         except httpx.RequestError as e:
-            log.error(f"[SUPRA-WALL] Network error: {e}")
+            log.error(f"[SupraWall] Network error: {e}")
             if self.options.on_network_error == "fail-closed":
-                return "ERROR: SUPRA-WALL unreachable. Action blocked (fail-closed)."
+                return "ERROR: SupraWall unreachable. Action blocked (fail-closed)."
             result = next_fn()
             if inspect.isawaitable(result):
                 return await result
@@ -691,7 +701,7 @@ class SUPRA-WALLMiddleware:
 
     def guard(self, tool_name: Optional[str] = None):
         """
-        Decorator that wraps a function with SUPRA-WALL enforcement.
+        Decorator that wraps a function with SupraWall enforcement.
         The tool_name defaults to the function name if not provided.
 
         Example:
@@ -726,3 +736,46 @@ class SUPRA-WALLMiddleware:
                     )
                 return sync_wrapper
         return decorator
+
+class SupraWall:
+    """
+    The main entry point for the SupraWall Python SDK.
+    
+    Provides a simple, Stripe-like interface for securing AI agents.
+    
+    Example:
+        from suprawall import SupraWall
+        
+        supra = SupraWall("ag_your_key")
+        agent = supra.protect(my_agent)
+    """
+    def __init__(self, api_key: str, **kwargs):
+        self.options = SupraWallOptions(api_key=api_key, **kwargs)
+        self.middleware = SupraWallMiddleware(self.options)
+        self.__version__ = SDK_VERSION
+
+    def protect(self, agent_or_runnable: Any) -> Any:
+        """
+        Secures any supported AI agent framework (LangChain, CrewAI, AutoGen, etc.)
+        """
+        return protect(agent_or_runnable, self.options)
+
+    def health(self) -> dict:
+        """
+        Checks connectivity to the SupraWall security cloud.
+        """
+        try:
+            with httpx.Client(timeout=3.0) as client:
+                resp = client.get(f"{self.options.dashboard_api_url}/api/health")
+                return {
+                    "status": "ok" if resp.status_code == 200 else "error",
+                    "code": resp.status_code,
+                    "version": self.__version__
+                }
+        except Exception as e:
+            return {"status": "error", "message": str(e), "version": self.__version__}
+
+    @property
+    def guard(self):
+        """Access to the functional middleware guard decorator."""
+        return self.middleware.guard

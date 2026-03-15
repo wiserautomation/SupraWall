@@ -5,27 +5,33 @@ import { admin } from '@/lib/firebase-admin';
 import { encrypt } from '@/lib/vault-server';
 
 export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const tenantId = searchParams.get('tenantId');
+    try {
+        const { searchParams } = new URL(req.url);
+        const tenantId = searchParams.get('tenantId');
 
-    if (!tenantId) return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+        if (!tenantId) return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
 
-    const snap = await db.collection("vault_secrets")
-        .where("tenant_id", "==", tenantId)
-        .get();
+        const snap = await db.collection("vault_secrets")
+            .where("tenant_id", "==", tenantId)
+            .get();
 
-    const secrets = snap.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        encrypted_value: undefined // Never return the encrypted value
-    }));
+        const secrets = snap.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+            assigned_agents: doc.data().assigned_agents || [],
+            encrypted_value: undefined // Never return the encrypted value
+        }));
 
-    return NextResponse.json(secrets);
+        return NextResponse.json(secrets);
+    } catch (e: any) {
+        console.error("[Vault API GET Error]:", e);
+        return NextResponse.json({ error: e.message || "Internal Server Error" }, { status: 500 });
+    }
 }
 
 export async function POST(req: NextRequest) {
     const body = await req.json();
-    const { tenantId, secretName, secretValue, description, expiresAt } = body;
+    const { tenantId, secretName, secretValue, description, expiresAt, assignedAgents } = body;
 
     if (!tenantId || !secretName || !secretValue) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -49,6 +55,7 @@ export async function POST(req: NextRequest) {
         secret_name: secretName,
         encrypted_value: encrypted,
         description: description || null,
+        assigned_agents: assignedAgents || [],
         expires_at: expiresAt ? new Date(expiresAt) : null,
         last_rotated_at: new Date(),
         created_at: new Date()

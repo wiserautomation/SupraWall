@@ -92,6 +92,14 @@ export const initDb = async () => {
             UNIQUE(tenant_id, secret_name)
         );
 
+        -- Migration: add assigned_agents to vault_secrets
+        DO $$ 
+        BEGIN 
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='vault_secrets' AND column_name='assigned_agents') THEN
+                ALTER TABLE vault_secrets ADD COLUMN assigned_agents TEXT[] DEFAULT '{}';
+            END IF;
+        END $$;
+
         -- Vault: which agent + tool combos can access which secrets
         CREATE TABLE IF NOT EXISTS vault_access_rules (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

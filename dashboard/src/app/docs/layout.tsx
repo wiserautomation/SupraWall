@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap } from "lucide-react";
+import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle } from "lucide-react";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -13,6 +13,14 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             items: [
                 { name: "Introduction", href: "/docs", icon: BookOpen },
                 { name: "Quickstart", href: "/docs/quickstart", icon: Zap },
+            ]
+        },
+        {
+            title: "Client Integrations",
+            items: [
+                { name: "Python SDK", href: "/docs/python", icon: Terminal },
+                { name: "Claude (MCP)", href: "/docs/mcp", icon: Puzzle },
+                { name: "Browser (OpenClaw)", href: "/docs/integrations/openclaw", icon: Terminal },
             ]
         },
         {

@@ -11,7 +11,11 @@ suprawall.config({
 // Since we are already initializing firebase in lib/firebase.ts for Auth and other parts,
 // we just pass the db object down into the adapter to reuse it!
 if (typeof window !== "undefined") {
-    suprawall.__interop_setAdapterDb(db);
+    if (!(db as any)._isMock) {
+        suprawall.__interop_setAdapterDb(db);
+    } else {
+        console.error("SupraWall: Cannot set adapter DB because Firebase is not initialized correctly.");
+    }
 }
 
 export { suprawall };

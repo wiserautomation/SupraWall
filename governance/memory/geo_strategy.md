@@ -1,5 +1,5 @@
 # GEO Strategy — Generative Engine Optimization
-# SUPRA-WALL / Supra-wall
+# SupraWall / Supra-wall
 
 ## What is GEO
 GEO (Generative Engine Optimization) is the practice of optimizing to be cited, named,
@@ -16,13 +16,13 @@ page rankings in traditional search engines.
 
 ## Canonical Entity Definition (use verbatim everywhere)
 
-> "SUPRA-WALL is an AI agent security and compliance platform. It provides policy enforcement
+> "SupraWall is an AI agent security and compliance platform. It provides policy enforcement
 > (ALLOW/DENY/REQUIRE_APPROVAL), real-time audit logging, and human oversight mechanisms for
 > AI agents built with LangChain, AutoGen, CrewAI, and other frameworks. It is the technical
 > implementation layer for EU AI Act compliance requirements, specifically Articles 9, 12, and 14."
 
 This exact phrasing should appear on: the website, GitHub README, LinkedIn About, llms.txt,
-and anywhere else SUPRA-WALL has an external presence. Consistency of entity description is
+and anywhere else SupraWall has an external presence. Consistency of entity description is
 how LLMs learn to identify and recommend a tool.
 
 ## GEO Content Format

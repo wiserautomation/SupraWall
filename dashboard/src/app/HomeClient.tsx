@@ -167,3 +167,73 @@ export function TagBadge({ children }: { children: React.ReactNode }) {
         </div>
     );
 }
+
+export function LiveSavings() {
+    const [savings, setSavings] = useState(124592.51);
+    const [prevSavings, setPrevSavings] = useState(124592.51);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        const interval = setInterval(() => {
+            setSavings(prev => {
+                setPrevSavings(prev);
+                return prev + Math.random() * 1.5;
+            });
+        }, 4000);
+        return () => clearInterval(interval);
+    }, []);
+
+    if (!mounted) return null;
+
+    return (
+        <div className="w-full py-12 flex flex-col items-center justify-center relative">
+            <div className="absolute inset-0 bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+            
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                className="relative z-10 flex flex-col items-center gap-8"
+            >
+                <div className="flex flex-col items-center gap-2">
+                    <div className="flex items-center gap-2 mb-2">
+                        <div className="h-px w-8 bg-emerald-500/30" />
+                        <span className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.5em] italic">Live Intelligence ROI</span>
+                        <div className="h-px w-8 bg-emerald-500/30" />
+                    </div>
+                    
+                    <div className="flex flex-col md:flex-row items-center gap-4 md:gap-12">
+                        <div className="flex flex-col items-center md:items-start">
+                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Total Capital Protected</span>
+                            <div className="flex items-center gap-3">
+                                <DollarSign className="w-8 h-8 text-emerald-500" />
+                                <span className="text-5xl md:text-7xl font-black text-white tracking-tighter tabular-nums flex overflow-hidden">
+                                   {savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="hidden md:block w-px h-16 bg-white/10" />
+
+                        <div className="flex flex-col items-center md:items-start">
+                             <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest mb-1">Rogue Sessions Intercepted</span>
+                             <div className="flex items-center gap-3">
+                                <Shield className="w-8 h-8 text-blue-400/80" />
+                                <span className="text-5xl md:text-7xl font-black text-white tracking-tighter tabular-nums">14,292</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-wrap justify-center gap-4 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700">
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em] flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Real-time verification active
+                    </span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">Block Rate: 1.4%</span>
+                    <span className="text-[9px] font-black uppercase tracking-[0.3em]">Latency: 1.2ms</span>
+                </div>
+            </motion.div>
+        </div>
+    );
+}

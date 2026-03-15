@@ -190,7 +190,7 @@ export default async function CertificatePage({
                             <p style={{ fontSize: 10, color: "#9ca3af", marginBottom: 2 }}>Certificate ID</p>
                             <p style={{ fontSize: 11, fontWeight: 600, color: "#6b7280", fontFamily: "monospace" }}>{cert.certId}</p>
                             <p style={{ fontSize: 10, color: "#9ca3af", marginTop: 6 }}>
-                                Verify at: supra-wall.com/share/compliance/{cert.userId}
+                                Verify at: suprawall.ai/share/compliance/{cert.userId}
                             </p>
                         </div>
                         <div style={{ textAlign: "right" }}>
@@ -208,7 +208,7 @@ export default async function CertificatePage({
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="2.5"><polyline points="20 6 9 17 4 12" /></svg>
                                 <span style={{ fontSize: 11, fontWeight: 600, color: "#059669" }}>VERIFIED</span>
                             </div>
-                            <p style={{ fontSize: 10, color: "#9ca3af", marginTop: 6 }}>supra-wall.com</p>
+                            <p style={{ fontSize: 10, color: "#9ca3af", marginTop: 6 }}>suprawall.ai</p>
                         </div>
                     </div>
                 </div>

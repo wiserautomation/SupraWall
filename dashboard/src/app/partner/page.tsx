@@ -80,7 +80,7 @@ export default function PartnerPage() {
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-3">
                         <a
-                            href="mailto:partners@supra-wall.com?subject=Partner Program Inquiry"
+                            href="mailto:partners@suprawall.ai?subject=Partner Program Inquiry"
                             className="px-8 py-3.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-semibold transition-colors"
                         >
                             Apply to Partner Program →
@@ -153,10 +153,10 @@ export default function PartnerPage() {
                         August 2026 is the EU AI Act enforcement deadline. Your clients are looking for technical solutions right now.
                     </p>
                     <a
-                        href="mailto:partners@supra-wall.com?subject=Partner Program Inquiry&body=I'm interested in the Supra-wall white-label partner program. My firm: [name]. Type of clients: [description]. Expected volume: [estimate]."
+                        href="mailto:partners@suprawall.ai?subject=Partner Program Inquiry&body=I'm interested in the Supra-wall white-label partner program. My firm: [name]. Type of clients: [description]. Expected volume: [estimate]."
                         className="inline-flex items-center gap-2 px-8 py-4 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-semibold text-lg transition-colors"
                     >
-                        Apply Now — partners@supra-wall.com
+                        Apply Now — partners@suprawall.ai
                     </a>
                 </div>
             </div>

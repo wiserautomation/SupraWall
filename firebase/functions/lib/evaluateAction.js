@@ -279,7 +279,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                             });
                         }
                         catch (err) {
-                            console.error("[SUPRA-WALL] Slack notification failed:", err);
+                            console.error("[SupraWall] Slack notification failed:", err);
                         }
                     }
                     // ── Trigger Email Alert ──
@@ -294,7 +294,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                             });
                         }
                         catch (err) {
-                            console.error("[SUPRA-WALL] Email alert failed:", err);
+                            console.error("[SupraWall] Email alert failed:", err);
                         }
                     }
                 }
@@ -329,8 +329,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
         }
     }
     catch (e) {
-        console.error("SUPRA-WALL evaluateAction error:", e);
-        res.status(500).json({ error: "Internal SUPRA-WALL error.", decision: "DENY" });
+        console.error("SupraWall evaluateAction error:", e);
+        res.status(500).json({ error: "Internal SupraWall error.", decision: "DENY" });
     }
 });
 // ── Connect Helpers ────────────────────────────────────────────────────────
@@ -405,7 +405,7 @@ async function sendSlackNotification(url, data) {
                 type: "header",
                 text: {
                     type: "plain_text",
-                    text: "🛡️ SUPRA-WALL: Action Approval Required",
+                    text: "🛡️ SupraWall: Action Approval Required",
                     emoji: true
                 }
             },
@@ -444,12 +444,12 @@ async function sendSlackNotification(url, data) {
                     elements: [
                         {
                             type: "image",
-                            image_url: "https://supra-wall.com/icon-small.png",
+                            image_url: "https://suprawall.ai/icon-small.png",
                             alt_text: "Supra-wall"
                         },
                         {
                             type: "mrkdwn",
-                            text: "🛡️ Protected by <https://supra-wall.com?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
+                            text: "🛡️ Protected by <https://suprawall.ai?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
                         }
                     ]
                 }] : [])
@@ -465,7 +465,7 @@ async function sendSlackNotification(url, data) {
     }
 }
 async function sendEmailNotification(email, data) {
-    console.log(`[SUPRA-WALL] 📧 Sending email alert to ${email} for request ${data.requestId}`);
+    console.log(`[SupraWall] 📧 Sending email alert to ${email} for request ${data.requestId}`);
     // In production, use @sendgrid/mail or resend here.
     // This demonstrates the integration hook.
 }

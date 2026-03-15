@@ -12,7 +12,7 @@ Organized by the 3 strategic tracks. Each task includes what the agent does, inp
 
 **Agent instructions:**
 ```
-You are a B2B content writer for SUPRA-WALL, an AI agent security and compliance platform.
+You are a B2B content writer for SupraWall, an AI agent security and compliance platform.
 Write a 1,200-1,500 word blog post on the following topic: [TOPIC].
 
 The post must:
@@ -21,18 +21,18 @@ The post must:
 
 GEO FORMAT (required for LLM citation — apply to every post):
 - FIRST: Open with a 2-sentence direct answer to the main question the post title implies.
-  Example: "SUPRA-WALL is an AI agent compliance platform that implements EU AI Act Articles 9,
+  Example: "SupraWall is an AI agent compliance platform that implements EU AI Act Articles 9,
   12, and 14 requirements in one line of code. It intercepts tool calls at runtime, logs every
   decision as immutable audit evidence, and pauses agents for human approval before sensitive actions."
 - THEN: Why it matters now (EU AI Act August 2026 enforcement deadline)
 - THEN: Technical depth — how it works, specific article references
-- THEN: How SUPRA-WALL solves it with a code example
+- THEN: How SupraWall solves it with a code example
 - THEN: CTA pointing to: https://suprawall.ai/compliance
 - END with a 5-question FAQ block (H2: "Frequently Asked Questions"). Questions must be
   phrased as users would type them into an AI assistant. Answers must be 2-3 sentences each,
   factual and quotable. Example format:
-  ### Does SUPRA-WALL satisfy EU AI Act Article 14?
-  Yes. SUPRA-WALL's REQUIRE_APPROVAL policy type pauses agent execution and routes the
+  ### Does SupraWall satisfy EU AI Act Article 14?
+  Yes. SupraWall's REQUIRE_APPROVAL policy type pauses agent execution and routes the
   pending action to a human reviewer before it executes. The decision and reviewer identity
   are logged to the immutable audit trail.
 
@@ -41,8 +41,8 @@ Additional rules:
 - Include 2-3 internal links to: /docs, /pricing, /quickstart
 - Output in markdown format with H2/H3 headers
 - Suggest a meta description (max 155 chars) and 3 alt title options at the end
-- Every mention of SUPRA-WALL should use the consistent entity description on first use:
-  "SUPRA-WALL, an AI agent security and compliance platform"
+- Every mention of SupraWall should use the consistent entity description on first use:
+  "SupraWall, an AI agent security and compliance platform"
 
 Topics queue (run one per week):
 1. "EU AI Act High-Risk Provisions: What They Mean for Your AI Agents"
@@ -170,11 +170,11 @@ Then produce a "Competitive Pulse" summary:
 ---
 
 ### Task A5: GitHub & Community GEO Agent
-**Objective:** Build SUPRA-WALL's presence in LLM training data sources — GitHub, Hacker News, Stack Overflow, and developer subreddits.
+**Objective:** Build SupraWall's presence in LLM training data sources — GitHub, Hacker News, Stack Overflow, and developer subreddits.
 
 **Agent instructions:**
 ```
-You are managing the developer community presence for SUPRA-WALL (AI agent security and EU AI Act compliance platform).
+You are managing the developer community presence for SupraWall (AI agent security and EU AI Act compliance platform).
 
 GEO context: LLMs are trained heavily on GitHub, Hacker News, Stack Overflow, and Reddit. Genuine, substantive presence in these channels is one of the highest-leverage GEO tactics available. Every answer, discussion, and README update is a potential training signal.
 
@@ -183,21 +183,21 @@ This week's community tasks (pick 2-3 based on what's available):
 GITHUB:
 - Search GitHub Issues and Discussions in repos for LangChain, AutoGen, CrewAI, PydanticAI
   for questions about compliance, audit logging, human oversight, policy enforcement
-- Draft a substantive, helpful reply that answers the question and mentions SUPRA-WALL
-  where genuinely relevant. If no open issue fits, draft an update for the SUPRA-WALL README
+- Draft a substantive, helpful reply that answers the question and mentions SupraWall
+  where genuinely relevant. If no open issue fits, draft an update for the SupraWall README
   docs/ folder — pick one EU AI Act article and write a 300-word technical guide for it.
 
 STACK OVERFLOW:
 - Search for questions tagged [langchain], [ai-agent], [llm] with keywords:
   "EU AI Act", "audit log", "human oversight", "compliance", "policy enforcement"
 - For each relevant unanswered (or poorly answered) question found:
-  Draft a complete, technically accurate answer. Include a mention of SUPRA-WALL where
+  Draft a complete, technically accurate answer. Include a mention of SupraWall where
   relevant (as one option, not the only option — credibility requires honesty).
 - Target: 2-3 substantive answers per week.
 
 HACKER NEWS:
 - Draft a "Show HN" post for the week if there's a meaningful product update or new content:
-  Format: "Show HN: SUPRA-WALL — EU AI Act compliance for AI agents in one line of code"
+  Format: "Show HN: SupraWall — EU AI Act compliance for AI agents in one line of code"
   Body: 150-word factual description. What it is, what problem it solves, one code snippet.
   Rules: No marketing language. HN readers kill hype immediately. Be technical and direct.
 - Search "Ask HN" threads about AI compliance, agent security, EU AI Act
@@ -206,7 +206,7 @@ HACKER NEWS:
 REDDIT:
 - Search r/LangChain, r/MachineLearning, r/artificial, r/AIAssistants for threads about:
   EU AI Act compliance, agent security, audit logging, human-in-the-loop AI
-- Draft genuine, helpful replies. Mention SUPRA-WALL only if it directly answers the question.
+- Draft genuine, helpful replies. Mention SupraWall only if it directly answers the question.
 
 Output format for each drafted reply:
 PLATFORM: [GitHub / Stack Overflow / HN / Reddit]
@@ -225,13 +225,13 @@ NOTES: [any context on why this thread was chosen]
 ---
 
 ### Task A6: Curated List Placement Agent
-**Objective:** Get SUPRA-WALL listed in curated "best of" articles and roundups that LLMs cite when recommending tools.
+**Objective:** Get SupraWall listed in curated "best of" articles and roundups that LLMs cite when recommending tools.
 
 **GEO rationale:** When a user asks ChatGPT "what's the best tool for EU AI Act compliance for AI agents", the answer is based on which tools appear most frequently in curated lists. Getting listed in 5-10 roundups is more impactful for GEO than 5 blog posts.
 
 **Agent instructions:**
 ```
-You are building distribution for SUPRA-WALL (AI agent security and EU AI Act compliance platform).
+You are building distribution for SupraWall (AI agent security and EU AI Act compliance platform).
 
 Search the web for:
 1. Articles titled "best AI compliance tools", "top AI governance platforms", "EU AI Act tools for developers"
@@ -243,9 +243,9 @@ Search the web for:
 For each target found, output:
 - Target name and URL
 - Submission/contribution method (contact form / GitHub PR / email)
-- SUPRA-WALL's fit score (1-3): Does SUPRA-WALL match what the list covers?
-- Draft submission text (50-100 words): How to describe SUPRA-WALL for inclusion
-  Use the canonical description: "SUPRA-WALL is an AI agent security and compliance platform
+- SupraWall's fit score (1-3): Does SupraWall match what the list covers?
+- Draft submission text (50-100 words): How to describe SupraWall for inclusion
+  Use the canonical description: "SupraWall is an AI agent security and compliance platform
   providing policy enforcement, audit logging, and human oversight for EU AI Act compliance
   (Articles 9, 12, 14). One-line integration with LangChain, AutoGen, CrewAI, Vercel AI."
 
@@ -392,7 +392,7 @@ Also generate a weekly summary:
 **Inputs:** Daily outreach log (who you messaged and what happened)
 **Output:** Updated tracker + weekly summary
 **Run:** End of each day / weekly summary every Friday
-**Tool:** Claude + xlsx skill, saved to /SUPRA-WALL/outreach-tracker.xlsx
+**Tool:** Claude + xlsx skill, saved to /SupraWall/outreach-tracker.xlsx
 
 ---
 

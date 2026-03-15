@@ -1,15 +1,15 @@
-import { SUPRA-WALLConfig, Adapter, Agent } from "./types";
+import { SupraWallConfig, Adapter, Agent } from "./types";
 import { PostgresAdapter } from "./adapters/postgres";
 import { MySQLAdapter } from "./adapters/mysql";
 import { MongoAdapter } from "./adapters/mongodb";
 import { SupabaseAdapter } from "./adapters/supabase";
 import { FirebaseAdapter } from "./adapters/firebase";
 
-class SUPRA-WALL {
-    private configOptions: SUPRA-WALLConfig | null = null;
+class SupraWall {
+    private configOptions: SupraWallConfig | null = null;
     private adapter: Adapter | null = null;
 
-    config(config: SUPRA-WALLConfig) {
+    config(config: SupraWallConfig) {
         this.configOptions = config;
 
         switch (config.adapter) {
@@ -51,7 +51,7 @@ class SUPRA-WALL {
 
     get agents() {
         if (!this.adapter) {
-            throw new Error("SUPRA-WALL is not configured. Call suprawall.config() first.");
+            throw new Error("SupraWall is not configured. Call suprawall.config() first.");
         }
         return {
             create: async (agent: Agent) => this.adapter!.createAgent(agent),
@@ -63,5 +63,5 @@ class SUPRA-WALL {
     }
 }
 
-export const suprawall = new SUPRA-WALL();
+export const suprawall = new SupraWall();
 export * from "./types";

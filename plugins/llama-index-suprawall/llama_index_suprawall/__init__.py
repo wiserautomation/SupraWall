@@ -2,19 +2,19 @@ import os
 import requests
 from typing import Optional, List, Any
 
-class suprawallOptions:
+class SupraWallOptions:
     def __init__(self, api_key: Optional[str] = None):
         self.api_key = api_key or os.environ.get("SUPRAWALL_API_KEY")
         if not self.api_key:
             raise ValueError("SUPRAWALL_API_KEY is required")
         self.api_url = os.environ.get("suprawall_API_URL", "https://api.suprawall.io/v1/evaluate")
 
-class suprawallLlamaIndex:
+class SupraWallLlamaIndex:
     """Wrapper to secure LlamaIndex tools."""
     
     @classmethod
-    def wrap_tools(cls, tools: List[Any], options: Optional[suprawallOptions] = None) -> List[Any]:
-        opts = options or suprawallOptions()
+    def wrap_tools(cls, tools: List[Any], options: Optional[SupraWallOptions] = None) -> List[Any]:
+        opts = options or SupraWallOptions()
         
         secured_tools = []
         for tool in tools:
@@ -46,12 +46,12 @@ class suprawallLlamaIndex:
             
         return secured_tools
 
-class suprawallAgent:
+class SupraWallAgent:
     """Convenience class for ReActAgent wrapped by suprawall."""
     
     @classmethod
     def from_llm(cls, llm: Any, tools: List[Any], api_key: Optional[str] = None, **kwargs):
         from llama_index.core.agent import ReActAgent
-        opts = suprawallOptions(api_key=api_key)
-        secured_tools = suprawallLlamaIndex.wrap_tools(tools, opts)
+        opts = SupraWallOptions(api_key=api_key)
+        secured_tools = SupraWallLlamaIndex.wrap_tools(tools, opts)
         return ReActAgent.from_tools(secured_tools, llm=llm, **kwargs)

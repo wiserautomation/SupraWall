@@ -1,9 +1,9 @@
 {
     "id": "suprawall-security",
     "version": "1.0.0",
-    "name": "SUPRA-WALL Security",
+    "name": "SupraWall Security",
     "description": "Deterministic control plane for AI agents. Intercepts tool calls and enforces zero-trust execution policies.",
-    "author": "SUPRA-WALL",
+    "author": "SupraWall",
     "homepage": "https://www.suprawall.ai",
     "repository": "https://github.com/suprawall/cowork-plugin",
     "icon": "icon.png",

@@ -31,9 +31,9 @@ Get your free API key at https://suprawall.ai/
 
 ### Any agent (generic)
 ```python
-from suprawall import with_agent_gate, SUPRA-WALLOptions
+from suprawall import with_suprawall, SupraWallOptions
 
-secured = with_agent_gate(my_agent, SUPRA-WALLOptions(
+secured = with_suprawall(my_agent, SupraWallOptions(
     api_key="ag_your_key_here"
 ))
 result = secured.run("delete_file", {"path": "/etc/passwd"})
@@ -41,11 +41,11 @@ result = secured.run("delete_file", {"path": "/etc/passwd"})
 
 ### LangChain
 ```python
-from suprawall import SUPRA-WALLLangChainCallback, SUPRA-WALLOptions
+from suprawall import SupraWallLangChainCallback, SupraWallOptions
 from langchain.agents import AgentExecutor
 
-callback = SUPRA-WALLLangChainCallback(
-    SUPRA-WALLOptions(api_key="ag_your_key_here")
+callback = SupraWallLangChainCallback(
+    SupraWallOptions(api_key="ag_your_key_here")
 )
 agent_executor = AgentExecutor(
     agent=agent,
@@ -56,10 +56,10 @@ agent_executor = AgentExecutor(
 
 ### OpenAI Agents SDK
 ```python
-from suprawall import wrap_openai_agent, SUPRA-WALLOptions
+from suprawall import wrap_openai_agent, SupraWallOptions
 from agents import Agent, Runner
 
-secured = wrap_openai_agent(agent, SUPRA-WALLOptions(
+secured = wrap_openai_agent(agent, SupraWallOptions(
     api_key="ag_your_key_here"
 ))
 result = await Runner.run(secured, "Send email to all users")
@@ -67,9 +67,9 @@ result = await Runner.run(secured, "Send email to all users")
 
 ### MCP middleware
 ```python
-from suprawall import SUPRA-WALLMiddleware, SUPRA-WALLOptions
+from suprawall import SupraWallMiddleware, SupraWallOptions
 
-gate = SUPRA-WALLMiddleware(SUPRA-WALLOptions(api_key="ag_your_key_here"))
+gate = SupraWallMiddleware(SupraWallOptions(api_key="ag_your_key_here"))
 
 # Inline check
 result = gate.check("send_email", args, lambda: send_email(args))
@@ -83,10 +83,10 @@ def delete_user(user_id: str):
 ## Fail-open vs Fail-closed
 ```python
 # Development (default)
-SUPRA-WALLOptions(api_key="ag_xxx", on_network_error="fail-open")
+SupraWallOptions(api_key="ag_xxx", on_network_error="fail-open")
 
 # Production (recommended)
-SUPRA-WALLOptions(api_key="ag_xxx", on_network_error="fail-closed")
+SupraWallOptions(api_key="ag_xxx", on_network_error="fail-closed")
 ```
 
 ## Policy decisions

@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
-import { SwarmVisualization, TechTabs, ClawbotDemo, TagBadge, AnimatedBox } from "./HomeClient";
+import { SwarmVisualization, TechTabs, ClawbotDemo, TagBadge, AnimatedBox, LiveSavings } from "./HomeClient";
 
 export const metadata: Metadata = {
     title: "SupraWall | The Deterministic Security Layer for AI Agents",
@@ -147,6 +147,13 @@ export default function LandingPage() {
                             <FileText className="w-5 h-5 flex-shrink-0 animate-pulse" />
                             <p className="text-xs font-black uppercase tracking-widest"><span className="text-white">EU AI ACT</span> — Mandates logging and human oversight</p>
                         </div>
+                    </div>
+                </section>
+
+                {/* 💰 LIVE SAVINGS WIDGET */}
+                <section className="bg-black border-b border-white/5">
+                    <div className="max-w-7xl mx-auto px-6">
+                        <LiveSavings />
                     </div>
                 </section>
 

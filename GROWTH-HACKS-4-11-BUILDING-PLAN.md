@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         articlesCompliant: metrics.articles, // ["Article 9", "Article 12", "Article 14"]
         totalAuditEvents: metrics.totalEvents,
         agentCount: agents.size,
-        verificationUrl: `https://supra-wall.com/share/compliance/${userId}`,
+        verificationUrl: `https://suprawall.ai/share/compliance/${userId}`,
     };
 
     // 5. Render PDF
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     return new NextResponse(pdfBuffer, {
         headers: {
             "Content-Type": "application/pdf",
-            "Content-Disposition": `attachment; filename="supra-wall-compliance-${certificateData.certId}.pdf"`,
+            "Content-Disposition": `attachment; filename="suprawall.aipliance-${certificateData.certId}.pdf"`,
         },
     });
 }
@@ -129,7 +129,7 @@ Design spec:
 - Compliance score (e.g., 94/100)
 - Certificate ID + issue date
 - QR code linking to `/share/compliance/{orgId}`
-- Footer: "Verify this certificate at supra-wall.com/share/compliance/{certId}"
+- Footer: "Verify this certificate at suprawall.ai/share/compliance/{certId}"
 - Supra-wall branding throughout (this is the whole point)
 
 #### Step 3: Public Verification Page
@@ -154,7 +154,7 @@ export default async function VerificationPage({ params }) {
     const { orgId } = params;
     // Fetch certificate data from Firestore (read-only, no auth required)
     // Display: org name, compliance status, articles covered, last audit date
-    // CTA: "Secure your agents too → supra-wall.com?ref=certificate-verify"
+    // CTA: "Secure your agents too → suprawall.ai?ref=certificate-verify"
 }
 ```
 
@@ -206,7 +206,7 @@ Dynamic SVG badge showing EU AI Act compliance status. Developers add it to thei
 ### Architecture
 
 ```
-GitHub README renders: ![badge](https://badge.supra-wall.com/compliance/{agentId})
+GitHub README renders: ![badge](https://badge.suprawall.ai/compliance/{agentId})
     → Edge function: GET /compliance/{agentId}
         → Checks agent's compliance status from Firestore/cache
         → Returns SVG badge (green/yellow/red)
@@ -315,7 +315,7 @@ function generateBadgeSVG(label: string, status: string, color: string): string 
 Add a "Get Badge" section per agent:
 
 ```tsx
-const badgeMarkdown = `[![EU AI Act Compliant](https://supra-wall.com/api/badge/${agent.id})](https://supra-wall.com?ref=github-badge)`;
+const badgeMarkdown = `[![EU AI Act Compliant](https://suprawall.ai/api/badge/${agent.id})](https://suprawall.ai?ref=github-badge)`;
 
 <div className="space-y-2">
     <h4>GitHub Badge</h4>
@@ -427,7 +427,7 @@ export function analyzeAgentCode(code: string, framework: string): Violation[] {
             severity: "critical",
             title: "No audit logging detected",
             description: "EU AI Act Article 12 requires that high-risk AI systems log all significant events during operation. Your agent has no visible logging mechanism.",
-            fix: `// Add Supra-wall — automatic audit logging for every tool call\nimport { protect } from "agentgate";\nconst secured = protect(agent, { apiKey: "ag_..." });`
+            fix: `// Add Supra-wall — automatic audit logging for every tool call\nimport { protect } from "suprawall";\nconst secured = protect(agent, { apiKey: "ag_..." });`
         });
     }
 
@@ -588,7 +588,7 @@ if your agent handles any high-risk decisions. Here's how to add it:
 
 **Option 2: Automatic logging with a security layer**
 ```python
-from agentgate import protect
+from suprawall import protect
 secured = protect(agent, api_key="ag_...")
 # Every tool call is now automatically logged with full audit trail
 ```
@@ -596,7 +596,7 @@ secured = protect(agent, api_key="ag_...")
 The second option also gives you human oversight gates (Article 14) and
 rate limiting (Article 9) out of the box. Full disclosure: I work on this tool.
 
-[Link to docs: supra-wall.com/docs]
+[Link to docs: suprawall.ai/docs]
 ```
 
 #### Step 3: Review Queue
@@ -701,7 +701,7 @@ Contribute a first-class `@langchain/supra-wall` integration to LangChain's offi
 ```typescript
 // @langchain/supra-wall
 import { CallbackHandler } from "@langchain/core/callbacks";
-import { protect } from "agentgate";
+import { protect } from "suprawall";
 
 export class SupraWallCallbackHandler extends CallbackHandler {
     name = "supra-wall";
@@ -735,7 +735,7 @@ Create a comprehensive integration guide that could serve as a PR to `langchain-
 - Why: EU AI Act Article 14 requires human oversight for AI systems
 - How: One-line integration
 - Examples: Blocking destructive tools, requiring approval for emails, audit logging
-- Link: supra-wall.com/integrations/langchain
+- Link: suprawall.ai/integrations/langchain
 
 #### Step 3: Submit PR
 
@@ -769,10 +769,10 @@ Embeddable countdown timer: "X days until EU AI Act enforcement." Any blog, news
 ### Architecture
 
 ```
-<script src="https://supra-wall.com/widget/countdown.js"></script>
+<script src="https://suprawall.ai/widget/countdown.js"></script>
 <div data-suprawall-countdown></div>
     → Renders: "⏰ 142 days until EU AI Act enforcement"
-    → Links to: supra-wall.com/eu-ai-act?ref=countdown-widget
+    → Links to: suprawall.ai/eu-ai-act?ref=countdown-widget
     → Styles: Dark/light theme, inline/block display
 ```
 
@@ -784,7 +784,7 @@ Embeddable countdown timer: "X days until EU AI Act enforcement." Any blog, news
 
 ```typescript
 const ENFORCEMENT_DATE = new Date("2026-08-02T00:00:00Z");
-const BASE_URL = "https://supra-wall.com";
+const BASE_URL = "https://suprawall.ai";
 
 function initCountdown() {
     const containers = document.querySelectorAll("[data-suprawall-countdown]");
@@ -850,7 +850,7 @@ In the dashboard or on the marketing site, provide copy-paste embed codes:
 
 ```html
 <!-- Badge style -->
-<script src="https://supra-wall.com/widget/countdown.js" defer></script>
+<script src="https://suprawall.ai/widget/countdown.js" defer></script>
 <div data-suprawall-countdown data-theme="dark" data-style="badge"></div>
 
 <!-- Banner style -->
@@ -861,7 +861,7 @@ In the dashboard or on the marketing site, provide copy-paste embed codes:
 
 Host the script on the Vercel CDN with aggressive caching:
 ```
-supra-wall.com/widget/countdown.js
+suprawall.ai/widget/countdown.js
 → Cache-Control: public, max-age=86400
 → Minified + gzipped: ~2KB
 ```

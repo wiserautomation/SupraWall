@@ -43,13 +43,13 @@ export class SupraWallCallbackHandler extends BaseCallbackHandler {
         this.apiKey = options?.apiKey || process.env.SUPRAWALL_API_KEY || "";
         if (!this.apiKey) {
             throw new Error(
-                "[Supra-wall] SUPRAWALL_API_KEY is required. Get yours at supra-wall.com"
+                "[Supra-wall] SUPRAWALL_API_KEY is required. Get yours at suprawall.ai"
             );
         }
         this.apiUrl =
             options?.apiUrl ||
             process.env.SUPRAWALL_API_URL ||
-            "https://api.supra-wall.com/v1/evaluate";
+            "https://api.suprawall.ai/v1/evaluate";
         this.agentId = options?.agentId || "langchain_agent";
         this.blockOnApproval = options?.blockOnApproval !== false;
     }
@@ -120,4 +120,4 @@ export function secureChain<T extends { withConfig: (config: { callbacks: unknow
 }
 
 // Legacy export
-export { SupraWallCallbackHandler as suprawallCallbackHandler };
+export { SupraWallCallbackHandler as SupraWallCallbackHandler };

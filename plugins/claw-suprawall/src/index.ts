@@ -3,7 +3,7 @@
  * Provides native interception for autonomous browser agents.
  */
 
-import { protect, suprawallOptions } from "suprawall";
+import { protect, SupraWallOptions } from "suprawall";
 
 /**
  * Secure an OpenClaw agent instance.
@@ -18,7 +18,7 @@ import { protect, suprawallOptions } from "suprawall";
  * 
  * await secured.execute("Click 'Delete Account'"); // 🛡️ Intercepted
  */
-export function secureClaw(agent: any, options: suprawallOptions) {
+export function secureClaw(agent: any, options: SupraWallOptions) {
     if (!agent.browser) {
         console.warn("🛡️ suprawall: Provided agent does not appear to be an OpenClaw instance (missing 'browser').");
     }

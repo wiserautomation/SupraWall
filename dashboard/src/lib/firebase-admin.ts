@@ -2,37 +2,46 @@
 import admin from 'firebase-admin';
 
 function getFirebaseAdmin() {
-    if (!admin.apps.length) {
-        let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+    if (admin.apps.length) return admin.apps[0];
 
-        // Robust formatting for potentially corrupted environment variables
+    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+    if (privateKey) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
         const begin = "-----BEGIN PRIVATE KEY-----";
         const end = "-----END PRIVATE KEY-----";
-        if (privateKey) {
-            privateKey = privateKey.replace(/\\n/g, '\n');
-            let base64 = privateKey.replace(begin, "").replace(end, "");
-            base64 = base64.replace(/[^A-Za-z0-9+/=]/g, ""); // Keep only valid base64
-            const wrapped = base64.match(/.{1,64}/g)?.join('\n') || '';
-            privateKey = `${begin}\n${wrapped}\n${end}\n`;
-        }
+        let base64 = privateKey.replace(begin, "").replace(end, "");
+        base64 = base64.replace(/[^A-Za-z0-9+/=]/g, "");
+        const wrapped = base64.match(/.{1,64}/g)?.join('\n') || '';
+        privateKey = `${begin}\n${wrapped}\n${end}\n`;
+    }
 
-        admin.initializeApp({
+    const projectId = (process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'suprawall-1b9e9')?.trim();
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
+
+    if (projectId && clientEmail && privateKey) {
+        return admin.initializeApp({
             credential: admin.credential.cert({
-                projectId: process.env.FIREBASE_PROJECT_ID?.replace(/\\n/g, '')?.trim()!,
-                clientEmail: process.env.FIREBASE_CLIENT_EMAIL?.replace(/\\n/g, '')?.trim()!,
-                privateKey: privateKey,
+                projectId,
+                clientEmail,
+                privateKey,
             }),
         });
+    } else {
+        console.warn("Firebase Admin environment variables are missing. Using default credentials with project ID:", projectId);
+        // If we are in Vercel or local with GOOGLE_APPLICATION_CREDENTIALS, this works.
+        // Otherwise it will still fail, but at least we tried.
+        return admin.initializeApp({ projectId });
     }
-    return admin;
 }
 
 export function getAdminDb() {
-    return getFirebaseAdmin().firestore();
+    const app = getFirebaseAdmin();
+    return app.firestore();
 }
 
 export function getAdminAuth() {
-    return getFirebaseAdmin().auth();
+    const app = getFirebaseAdmin();
+    return app.auth();
 }
 
 // Convenience aliases — safe to use inside route handlers (force-dynamic routes)

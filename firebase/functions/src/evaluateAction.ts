@@ -1,4 +1,4 @@
-import { onRequest } from "firebase-functions/v2/https";
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { GoogleGenAI } from "@google/genai";
@@ -184,13 +184,27 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
-            const userId = agentDoc.data().userId;
             const agentData = agentDoc.data();
 
-            // Fetch Organization for branding and notification settings
-            const orgSnap = await db.collection("organizations").doc(userId).get();
-            const orgData = orgSnap.data();
-            const showBranding = orgData?.plan !== "growth" && orgData?.plan !== "enterprise";
+            // 2. Resolve Owner/Org and check status
+            const userId = agentData.userId;
+            if (!userId) {
+                throw new HttpsError(
+                    "failed-precondition",
+                    "Agent document is missing a valid owner (userId)."
+                );
+            }
+
+            const userSnap = await db.collection("users").doc(userId).get();
+            if (!userSnap.exists) {
+                throw new HttpsError(
+                    "not-found",
+                    "The organization/user owning this agent no longer exists."
+                );
+            }
+
+            const userData = userSnap.data()!;
+            const showBranding = userData?.plan !== "growth" && userData?.plan !== "enterprise";
             const branding = showBranding ? {
                 enabled: true,
                 text: "🛡️ Secured by SupraWall — AI agent security & EU AI Act compliance",
@@ -331,8 +345,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     requestId = newReq.id;
 
                     // ── Trigger Slack Notification ──
-                    const slackUrl = orgData?.slackWebhookUrl;
-                    const contactEmail = orgData?.contactEmail || orgData?.email;
+                    const slackUrl = userData?.slackWebhookUrl;
+                    const contactEmail = userData?.contactEmail || userData?.email;
 
                     if (slackUrl) {
                         try {

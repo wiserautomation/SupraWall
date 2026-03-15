@@ -1,13 +1,13 @@
 """
-SUPRA-WALL integration for OpenAI Agents SDK.
+SupraWall integration for OpenAI Agents SDK.
 """
 
 from typing import Any
-from .gate import SUPRA-WALLOptions
+from .gate import SupraWallOptions
 
-def wrap_openai_agent(agent: Any, options: SUPRA-WALLOptions) -> Any:
+def wrap_openai_agent(agent: Any, options: SupraWallOptions) -> Any:
     """
-    Wraps an OpenAI agent with SUPRA-WALL security enforcement.
+    Wraps an OpenAI agent with SupraWall security enforcement.
     (Implementation pending)
     """
     raise NotImplementedError("wrap_openai_agent is not yet implemented.")

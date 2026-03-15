@@ -47,7 +47,7 @@ export class BudgetExceededError extends Error {
 
     constructor(limitUsd: number, actualUsd: number) {
         super(
-            `[SUPRA_WALL] Budget cap of ${formatCost(limitUsd)} exceeded ` +
+            `[SupraWall] Budget cap of ${formatCost(limitUsd)} exceeded ` +
             `(session spend: ${formatCost(actualUsd)}). Agent halted.`
         );
         this.name = "BudgetExceededError";
@@ -82,7 +82,7 @@ export class BudgetTracker {
         if (this.alertUsd && !this.alertFired && this.sessionCost >= this.alertUsd) {
             this.alertFired = true;
             this.logger.warn(
-                `[SUPRA_WALL] Budget alert: session spend ${formatCost(this.sessionCost)} ` +
+                `[SupraWall] Budget alert: session spend ${formatCost(this.sessionCost)} ` +
                 `>= alert threshold ${formatCost(this.alertUsd)}.`
             );
         }
@@ -105,7 +105,7 @@ export class BudgetTracker {
     }
 }
 
-export interface SUPRA_WALLResponse {
+export interface SupraWallResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
     estimated_cost_usd?: number;
@@ -121,21 +121,21 @@ export interface SUPRA_WALLResponse {
     };
 }
 
-export interface SUPRA_WALLOptions {
+export interface SupraWallOptions {
     /**
-     * Your SUPRA_WALL API key.
+     * Your SupraWall API key.
      * Get one free at https://suprawall.ai/
      * Format: ag_xxxxxxxxxxxxxxxx
      */
     apiKey: string;
     /**
-     * Override the SUPRA_WALL evaluation endpoint.
-     * Defaults to the hosted SUPRA_WALL cloud function.
+     * Override the SupraWall evaluation endpoint.
+     * Defaults to the hosted SupraWall cloud function.
      * Set this for self-hosted deployments.
      */
     cloudFunctionUrl?: string;
     /**
-     * What to do when SUPRA_WALL is unreachable.
+     * What to do when SupraWall is unreachable.
      * "fail-open"   → allow the action and log a warning (default, good for dev)
      * "fail-closed" → block the action (recommended for production)
      */
@@ -196,26 +196,26 @@ export interface AgentInstance {
 }
 
 /**
- * Wraps any AI agent with SUPRA_WALL security enforcement.
+ * Wraps any AI agent with SupraWall security enforcement.
  *
  * Every tool call is intercepted and evaluated against your policies
  * before execution. Zero infrastructure required — just an API key.
  *
  * @example
  * // Works with LangChain, OpenAI Agents SDK, CrewAI, AutoGen, raw MCP
- * import { withSUPRA_WALL } from "suprawall";
+ * import { withSupraWall } from "suprawall";
  *
- * const secured = withSUPRA_WALL(myAgent, { apiKey: "ag_your_key" });
+ * const secured = withSupraWall(myAgent, { apiKey: "ag_your_key" });
  * await secured.executeTool("send_email", { to: "ceo@company.com" }); // checked
  *
  * @param agentInstance - Any agent object with an `executeTool` method
- * @param options - SUPRA_WALL configuration (only `apiKey` is required)
- * @returns The same agent instance, now protected by SUPRA_WALL
+ * @param options - SupraWall configuration (only `apiKey` is required)
+ * @returns The same agent instance, now protected by SupraWall
  */
 /**
  * Appends the Supra-wall branding footer to the content.
  */
-function appendBranding(content: string, branding: SUPRA_WALLResponse["branding"]): string {
+function appendBranding(content: string, branding: SupraWallResponse["branding"]): string {
     if (!branding || !branding.enabled) return content;
     const { text, url } = branding;
     // For now, we only support simple text appending. 
@@ -229,9 +229,9 @@ function appendBranding(content: string, branding: SUPRA_WALLResponse["branding"
 async function internalEvaluate(
     toolName: string,
     args: any,
-    options: SUPRA_WALLOptions,
+    options: SupraWallOptions,
     metadata: { model?: string; inputTokens?: number; outputTokens?: number } = {}
-): Promise<{ decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string; error?: string; resolvedArguments?: any; injectedSecrets?: string[]; vaultInjected?: boolean; branding?: SUPRA_WALLResponse["branding"] }> {
+): Promise<{ decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string; error?: string; resolvedArguments?: any; injectedSecrets?: string[]; vaultInjected?: boolean; branding?: SupraWallResponse["branding"] }> {
     const {
         apiKey,
         cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL,
@@ -251,7 +251,7 @@ async function internalEvaluate(
     if (maxCostUsd !== undefined) {
         const current = _sessionCosts.get(sessionId) ?? 0;
         if (budgetAlertUsd && current >= budgetAlertUsd) {
-            logger.warn(`[SUPRA_WALL] 💰 Budget alert: ${formatCost(current)} used for session ${sessionId}`);
+            logger.warn(`[SupraWall] 💰 Budget alert: ${formatCost(current)} used for session ${sessionId}`);
         }
         if (current >= maxCostUsd) {
             return {
@@ -309,19 +309,19 @@ async function internalEvaluate(
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-SUPRA_WALL-SDK": `js-${SDK_VERSION}`,
+                "X-SupraWall-SDK": `js-${SDK_VERSION}`,
             },
             body: JSON.stringify(payload),
         });
 
         if (!response.ok) {
             if (response.status === 403) {
-                return { decision: "DENY", reason: "Action blocked by SUPRA_WALL security policy." };
+                return { decision: "DENY", reason: "Action blocked by SupraWall security policy." };
             }
-            throw new Error(`SUPRA_WALL server error: ${response.status}`);
+            throw new Error(`SupraWall server error: ${response.status}`);
         }
 
-        const data = (await response.json()) as SUPRA_WALLResponse;
+        const data = (await response.json()) as SupraWallResponse;
 
         // Record cost tracking
         const current = _sessionCosts.get(sessionId) ?? 0;
@@ -344,11 +344,11 @@ async function internalEvaluate(
             branding: data.branding,
         };
     } catch (e: any) {
-        if (e instanceof Error && e.message.includes("[SUPRA_WALL]")) throw e;
+        if (e instanceof Error && e.message.includes("[SupraWall]")) throw e;
 
-        logger.error("[SUPRA_WALL] Network error reaching control plane.", e);
+        logger.error("[SupraWall] Network error reaching control plane.", e);
         if (onNetworkError === "fail-closed") {
-            return { decision: "DENY", reason: "SUPRA_WALL unreachable. Action blocked (fail-closed mode)." };
+            return { decision: "DENY", reason: "SupraWall unreachable. Action blocked (fail-closed mode)." };
         }
         return { decision: "ALLOW" };
     }
@@ -366,7 +366,7 @@ function deriveScrubUrl(cloudFunctionUrl: string, vaultScrubUrl?: string): strin
 async function scrubAfterExecution(
     toolResult: any,
     injectedSecrets: string[],
-    options: SUPRA_WALLOptions
+    options: SupraWallOptions
 ): Promise<any> {
     const scrubUrl = deriveScrubUrl(
         options.cloudFunctionUrl || DEFAULT_CLOUD_FUNCTION_URL,
@@ -391,15 +391,15 @@ async function scrubAfterExecution(
     }
 }
 
-export function withSUPRA_WALL<T extends AgentInstance>(
+export function withSupraWall<T extends AgentInstance>(
     agentInstance: T,
-    options: SUPRA_WALLOptions
+    options: SupraWallOptions
 ): T {
     const { apiKey, logger = console } = options;
 
     if (!apiKey || !apiKey.startsWith("ag_")) {
         throw new Error(
-            `[SUPRA_WALL] Invalid API key: "${apiKey}".\n` +
+            `[SupraWall] Invalid API key: "${apiKey}".\n` +
             `  Get your free key at https://suprawall.ai/\n` +
             `  Expected format: ag_xxxxxxxxxxxxxxxx`
         );
@@ -425,8 +425,8 @@ export function withSUPRA_WALL<T extends AgentInstance>(
             return toolResult;
         }
 
-        logger.warn(`[SUPRA_WALL] ${result.decision}: ${result.reason ?? ""}`);
-        return `ERROR: ${result.reason ?? "Action blocked by SUPRA_WALL."}`;
+        logger.warn(`[SupraWall] ${result.decision}: ${result.reason ?? ""}`);
+        return `ERROR: ${result.reason ?? "Action blocked by SupraWall."}`;
     };
 
     return agentInstance;
@@ -435,7 +435,7 @@ export function withSUPRA_WALL<T extends AgentInstance>(
 /**
  * MCP-native middleware for Model Context Protocol servers.
  */
-export function createSUPRA_WALLMiddleware(options: SUPRA_WALLOptions) {
+export function createSupraWallMiddleware(options: SupraWallOptions) {
     const {
         apiKey,
         logger = console,
@@ -464,7 +464,7 @@ export function createSUPRA_WALLMiddleware(options: SUPRA_WALLOptions) {
         }
 
         return {
-            error: `Blocked by SUPRA_WALL. ${result.reason ?? ""}`.trim()
+            error: `Blocked by SupraWall. ${result.reason ?? ""}`.trim()
         };
     };
 }
@@ -481,7 +481,7 @@ export function createSUPRA_WALLMiddleware(options: SUPRA_WALLOptions) {
  * import { protect } from "suprawall";
  * const secured = protect(myAgent, { apiKey: "ag_..." });
  */
-export function protect(agentOrTools: any, options: SUPRA_WALLOptions): any {
+export function protect(agentOrTools: any, options: SupraWallOptions): any {
     if (!agentOrTools) return agentOrTools;
 
     // 1. Detect Vercel AI SDK Tools (Object where values have 'execute' or 'parameters')
@@ -508,23 +508,23 @@ export function protect(agentOrTools: any, options: SUPRA_WALLOptions): any {
 
     // 4. Fallback: Generic executeTool wrapper
     if (typeof agentOrTools.executeTool === 'function') {
-        return withSUPRA_WALL(agentOrTools, options);
+        return withSupraWall(agentOrTools, options);
     }
 
     return agentOrTools;
 }
 
-function wrapOpenClaw(agent: any, options: SUPRA_WALLOptions) {
+function wrapOpenClaw(agent: any, options: SupraWallOptions) {
     const { apiKey, cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL } = options;
 
     const interceptAction = async (toolName: string, args: any, originalFn: Function) => {
         const result = await internalEvaluate(toolName, args, options);
 
         if (result.decision === "DENY") {
-            throw new Error(`[SUPRA_WALL] Policy Denied: ${toolName}. ${result.reason ?? ""}`);
+            throw new Error(`[SupraWall] Policy Denied: ${toolName}. ${result.reason ?? ""}`);
         }
         if (result.decision === "REQUIRE_APPROVAL") {
-            throw new Error(`[SUPRA_WALL] Action '${toolName}' requires human approval.`);
+            throw new Error(`[SupraWall] Action '${toolName}' requires human approval.`);
         }
 
         let actionResult = await originalFn();
@@ -557,7 +557,7 @@ function wrapOpenClaw(agent: any, options: SUPRA_WALLOptions) {
     return agent;
 }
 
-function wrapVercelTools(tools: Record<string, any>, options: SUPRA_WALLOptions) {
+function wrapVercelTools(tools: Record<string, any>, options: SupraWallOptions) {
     const { apiKey, cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL } = options;
     const securedTools: Record<string, any> = {};
 
@@ -568,10 +568,10 @@ function wrapVercelTools(tools: Record<string, any>, options: SUPRA_WALLOptions)
                 const result = await internalEvaluate(toolName, args, options);
 
                 if (result.decision === "DENY") {
-                    throw new Error(`[SUPRA_WALL] Policy Violation: Tool '${toolName}' is denied. ${result.reason ?? ""}`);
+                    throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' is denied. ${result.reason ?? ""}`);
                 }
                 if (result.decision === "REQUIRE_APPROVAL") {
-                    throw new Error(`[SUPRA_WALL] Tool '${toolName}' requires human approval.`);
+                    throw new Error(`[SupraWall] Tool '${toolName}' requires human approval.`);
                 }
 
                 const executionArgs = result.vaultInjected ? result.resolvedArguments : args;
@@ -592,15 +592,15 @@ function wrapVercelTools(tools: Record<string, any>, options: SUPRA_WALLOptions)
     return securedTools;
 }
 
-function wrapLangChain(runnable: any, options: SUPRA_WALLOptions) {
+function wrapLangChain(runnable: any, options: SupraWallOptions) {
     const handler = {
-        name: "SUPRA_WALLCallbackHandler",
+        name: "SupraWallCallbackHandler",
         handleToolStart: async (tool: any, input: string) => {
             const toolName = tool.name || "unknown";
             const result = await internalEvaluate(toolName, input, options);
 
-            if (result.decision === "DENY") throw new Error(`[SUPRA_WALL] Denied: ${result.reason ?? ""}`);
-            if (result.decision === "REQUIRE_APPROVAL") throw new Error(`[SUPRA_WALL] Approval Required.`);
+            if (result.decision === "DENY") throw new Error(`[SupraWall] Denied: ${result.reason ?? ""}`);
+            if (result.decision === "REQUIRE_APPROVAL") throw new Error(`[SupraWall] Approval Required.`);
         }
     };
 
@@ -628,7 +628,7 @@ export interface AgentIdentityConfig {
      */
     name: string;
     /**
-     * The SUPRA_WALL API key for the owning organization.
+     * The SupraWall API key for the owning organization.
      * Used to authenticate the registration request.
      */
     apiKey: string;
@@ -646,7 +646,7 @@ export interface AgentIdentityConfig {
     scopeLimits?: Record<string, any>;
     /**
      * Override the registration endpoint URL.
-     * Defaults to the hosted SUPRA_WALL API.
+     * Defaults to the hosted SupraWall API.
      */
     registrationUrl?: string;
 }
@@ -666,7 +666,7 @@ export interface AgentCredentials {
  *
  * AgentIdentity enables the Principle of Least Privilege for AI agents.
  * Register your agent once, receive scoped credentials, and use them
- * with any SUPRA_WALL wrapper (withSUPRA_WALL, protect, createSUPRA_WALLMiddleware).
+ * with any SupraWall wrapper (withSupraWall, protect, createSupraWallMiddleware).
  *
  * @example
  * ```ts
@@ -708,7 +708,7 @@ export class AgentIdentity {
 
         if (!name || !apiKey || !scopes || scopes.length === 0) {
             throw new Error(
-                '[SUPRA_WALL] AgentIdentity.register() requires: name, apiKey, and at least one scope.\n' +
+                '[SupraWall] AgentIdentity.register() requires: name, apiKey, and at least one scope.\n' +
                 '  Example: AgentIdentity.register({ name: "my-agent", apiKey: "ag_...", scopes: ["crm:read"] })'
             );
         }
@@ -720,7 +720,7 @@ export class AgentIdentity {
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${apiKey}`,
-                'X-SUPRA_WALL-SDK': `js-${SDK_VERSION}`,
+                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
             },
             body: JSON.stringify({
                 name,
@@ -733,7 +733,7 @@ export class AgentIdentity {
         if (!response.ok) {
             const errorBody = await response.json().catch(() => ({})) as { error?: string };
             throw new Error(
-                `[SUPRA_WALL] Agent registration failed (${response.status}): ` +
+                `[SupraWall] Agent registration failed (${response.status}): ` +
                 `${errorBody.error || response.statusText}`
             );
         }
@@ -743,10 +743,10 @@ export class AgentIdentity {
     }
 
     /**
-     * Get SUPRA_WALLOptions configured for this agent identity.
-     * Merge these into your withSUPRA_WALL / protect options.
+     * Get SupraWallOptions configured for this agent identity.
+     * Merge these into your withSupraWall / protect options.
      */
-    toOptions(overrides?: Partial<SUPRA_WALLOptions>): SUPRA_WALLOptions {
+    toOptions(overrides?: Partial<SupraWallOptions>): SupraWallOptions {
         return {
             apiKey: this.credentials.apiKey,
             agentRole: this.credentials.name,

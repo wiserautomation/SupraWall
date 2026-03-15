@@ -342,7 +342,7 @@ router.get("/report", async (req: Request, res: Response) => {
         doc.moveTo(50, footerY).lineTo(W - 50, footerY).strokeColor("#e5e7eb").stroke();
         doc.fontSize(8).font("Helvetica").fillColor(FAINT)
             .text(
-                "Signed: This report was generated automatically by SUPRA-WALL. Records are stored in tamper-evident append-only logs.",
+                "Signed: This report was generated automatically by SupraWall. Records are stored in tamper-evident append-only logs.",
                 50, footerY + 8,
                 { align: "center", width: W - 100 }
             );

@@ -14,7 +14,7 @@ export interface Adapter {
     listAgents(filter?: { userId?: string }): Promise<Agent[]>;
 }
 
-export interface SUPRA-WALLConfig {
+export interface SupraWallConfig {
     adapter: "postgres" | "mysql" | "mongo" | "supabase" | "sqlite" | "firebase";
     connectionString?: string;
     projectId?: string; // For supabase/firebase

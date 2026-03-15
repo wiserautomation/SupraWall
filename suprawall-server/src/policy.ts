@@ -12,55 +12,68 @@ export interface EvaluationRequest {
 
 export const evaluatePolicy = async (req: Request, res: Response) => {
     try {
-        const { agentId, toolName, arguments: args } = req.body as EvaluationRequest;
-        const tenantId = req.body.tenantId || "default-tenant";
+        const authReq = req as any;
+        const agent = authReq.agent;
+        
+        const { toolName, arguments: args } = req.body as EvaluationRequest;
+        const agentId = agent?.id || req.body.agentId;
+        const tenantId = agent?.tenantId || req.body.tenantId || "default-tenant";
 
         if (!agentId || !toolName) {
             return res.status(400).json({ error: "Missing agentId or toolName" });
         }
 
+        // 1. Gatekeeper: Scope Verification
+        if (agent) {
+            const scopes = agent.scopes || [];
+            const isAllowedByScope = scopes.includes("*:*") || 
+                                     scopes.includes(toolName) || 
+                                     (toolName.includes(":") && scopes.includes(`${toolName.split(":")[0]}:*`));
+            
+            if (!isAllowedByScope) {
+                // Log the unauthorized scope attempt
+                await pool.query(
+                    "INSERT INTO auditlogs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                     JSON.stringify({ reason: "Unauthorized scope", requiredScope: toolName, agentScopes: scopes })]
+                );
+
+                return res.status(403).json({ 
+                    decision: "DENY", 
+                    reason: `Unauthorized: Agent does not have scope for tool '${toolName}'.` 
+                });
+            }
+        }
+
+        // 2. Policy Engine: Check complex rules in Postgres
         const result = await pool.query(
-            "SELECT * FROM policies WHERE toolname = $1 OR toolname IS NULL OR toolname = ''",
-            [toolName]
+            "SELECT * FROM policies WHERE (tenantid = $1 OR tenantid = 'global') AND (toolname = $2 OR toolname IS NULL OR toolname = '' OR toolname = '*')",
+            [tenantId, toolName]
         );
         const policies = result.rows;
 
         let decision = "ALLOW";
         let matchedRule = "default";
 
+        // Check DENY policies
         const denyRules = policies.filter((p) => p.ruletype === "DENY");
         for (const rule of denyRules) {
-            try {
-                const pattern = rule.toolname || ".*";
-                const regex = new RegExp(pattern);
-                if (regex.test(toolName)) {
-                    decision = "DENY";
-                    matchedRule = rule.name;
-                    break;
-                }
-            } catch (e) {
-                console.warn("Invalid regex in policy:", rule.name);
-            }
+            decision = "DENY";
+            matchedRule = rule.name;
+            break;
         }
 
+        // Check REQUIRE_APPROVAL policies
         if (decision !== "DENY") {
             const approvalRules = policies.filter((p) => p.ruletype === "REQUIRE_APPROVAL");
             for (const rule of approvalRules) {
-                try {
-                    const pattern = rule.toolname || ".*";
-                    const regex = new RegExp(pattern);
-                    if (regex.test(toolName)) {
-                        decision = "REQUIRE_APPROVAL";
-                        matchedRule = rule.name;
-                        break;
-                    }
-                } catch (e) {
-                    console.warn("Invalid regex in policy:", rule.name);
-                }
+                decision = "REQUIRE_APPROVAL";
+                matchedRule = rule.name;
+                break;
             }
         }
 
-        // Vault token detection and injection
+        // 3. Vault: Secret Resolution
         let resolvedArgs = args;
         let vaultResult: VaultResolutionResult | null = null;
         let hasVaultTokens = false;
@@ -91,16 +104,19 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             resolvedArgs = vaultResult.resolvedArgs;
         }
 
+        // 4. Audit Logging
         await pool.query(
             "INSERT INTO auditlogs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
             [tenantId, agentId, toolName,
              JSON.stringify(args || {}),
              decision,
              decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
-             hasVaultTokens ? JSON.stringify({
-                 vaultSecretsInjected: vaultResult?.injectedSecrets || [],
-                 vaultTokensDetected: true,
-             }) : null
+             JSON.stringify({
+                 matchedRule,
+                 agentName: agent?.name,
+                 vaultInjected: hasVaultTokens,
+                 vaultSecrets: vaultResult?.injectedSecrets || [],
+             })
             ]
         );
 

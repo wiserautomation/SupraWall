@@ -63,7 +63,7 @@ GET /v1/compliance/report?agentId=<id>&from=<ISO date>&to=<ISO date>
 4. Returns the PDF as a binary response with headers:
    ```
    Content-Type: application/pdf
-   Content-Disposition: attachment; filename="supra-wall-compliance-report-<YYYY-MM-DD>.pdf"
+   Content-Disposition: attachment; filename="suprawall.aipliance-report-<YYYY-MM-DD>.pdf"
    ```
 
 **PDF structure — build exactly this layout:**

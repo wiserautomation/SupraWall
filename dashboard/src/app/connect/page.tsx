@@ -3,12 +3,11 @@
 import { usePlatform } from "@/hooks/useConnect";
 import { useConnectAnalytics } from "@/hooks/useConnect";
 import { StatCard } from "@/components/connect/StatCard";
-import { EmptyState } from "@/components/connect/EmptyState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-    Shield, BrickWall, Key, Users, Activity, Zap, AlertTriangle, DollarSign
+    Shield, BrickWall, Key, Users, Activity, Zap, AlertTriangle, DollarSign, ArrowRight
 } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
@@ -22,41 +21,47 @@ export default function ConnectPage() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600" />
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="flex flex-col items-center gap-4">
+                    <Shield className="w-8 h-8 text-emerald-500 animate-pulse" />
+                    <p className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-500 animate-pulse">Scanning Platform...</p>
+                </div>
             </div>
         );
     }
 
-    // ── No platform yet — show setup screen ──────────────────────────────────
     if (!platform) {
         return (
-            <div className="max-w-lg mx-auto mt-20 px-4">
-                <div className="text-center mb-8">
-                    <div className="inline-flex p-3 bg-emerald-50 rounded-full mb-4">
-                        <BrickWall className="w-8 h-8 text-emerald-600" />
+            <div className="max-w-xl mx-auto py-12 px-4">
+                <div className="text-center mb-10">
+                    <div className="inline-flex p-4 bg-emerald-500/10 rounded-2xl mb-6 relative">
+                        <BrickWall className="w-10 h-10 text-emerald-400" />
+                        <div className="absolute inset-0 bg-emerald-500/20 blur-xl opacity-50 -z-10" />
                     </div>
-                    <h1 className="text-2xl font-bold text-gray-900">Set up SupraWall Connect</h1>
-                    <p className="text-gray-500 mt-2">
-                        Issue security keys to your customers. Govern all their agents
-                        from one place.
+                    <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">SupraWall Connect</h1>
+                    <p className="text-neutral-500 mt-3 text-sm font-medium leading-relaxed max-w-md mx-auto">
+                        Connect lets you generate API and project keys to protect your agents with SupraWall. 
+                        Issue security keys to your customers and govern all their agents from one place.
                     </p>
                 </div>
 
-                <div className="bg-white border border-gray-200 rounded-xl p-6 space-y-4">
-                    <div>
-                        <Label htmlFor="platform-name">Platform name</Label>
+                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+                    
+                    <div className="space-y-2">
+                        <Label htmlFor="platform-name" className="text-[10px] uppercase tracking-[0.2em] font-black text-emerald-500/80">Platform Name</Label>
                         <Input
                             id="platform-name"
-                            placeholder="e.g. Acme Corp"
+                            placeholder="e.g. Acme Corp Intelligence"
                             value={platformName}
                             onChange={(e) => setPlatformName(e.target.value)}
-                            className="mt-1"
+                            className="bg-black/50 border-white/[0.08] h-12 focus:border-emerald-500/50 transition-all text-white"
                         />
                     </div>
-                    {error && <p className="text-sm text-red-600">{error}</p>}
+                    {error && <p className="text-[11px] text-rose-500 bg-rose-500/10 p-3 rounded-lg border border-rose-500/20">{error}</p>}
+                    
                     <Button
-                        className="w-full"
+                        className="w-full h-12 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-[11px] transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)] hover:shadow-[0_0_30px_rgba(16,185,129,0.3)] border-none"
                         disabled={creating || !platformName.trim()}
                         onClick={async () => {
                             setCreating(true);
@@ -70,29 +75,26 @@ export default function ConnectPage() {
                             }
                         }}
                     >
-                        {creating ? "Creating..." : "Create Platform"}
+                        {creating ? "Initializing Identity..." : "Initialize Connect Platform"}
                     </Button>
                 </div>
 
-                <div className="mt-6 grid grid-cols-3 gap-3 text-center text-xs text-gray-500">
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                        <Key className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
-                        Issue sub-keys per customer
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                        <BrickWall className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
-                        Enforce policies across all agents
-                    </div>
-                    <div className="p-3 bg-gray-50 rounded-lg">
-                        <Activity className="w-4 h-4 mx-auto mb-1 text-emerald-500" />
-                        Full audit log per customer
-                    </div>
+                <div className="mt-10 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        { icon: Key, label: "Issue sub-keys per customer" },
+                        { icon: BrickWall, label: "Enforce policies across all" },
+                        { icon: Activity, label: "Full forensic audit logs" }
+                    ].map((feature, i) => (
+                        <div key={i} className="flex flex-col items-center text-center p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl group hover:bg-white/[0.04] transition-all">
+                            <feature.icon className="w-5 h-5 mb-3 text-emerald-500/40 group-hover:text-emerald-500/80 transition-colors" />
+                            <span className="text-[9px] font-black uppercase tracking-wider text-neutral-500 group-hover:text-neutral-300">{feature.label}</span>
+                        </div>
+                    ))}
                 </div>
             </div>
         );
     }
 
-    // ── Platform exists — show overview dashboard ─────────────────────────────
     const allowCount = analytics?.byDecision?.ALLOW ?? 0;
     const denyCount = analytics?.byDecision?.DENY ?? 0;
     const approvalCount = analytics?.byDecision?.REQUIRE_APPROVAL ?? 0;
@@ -102,137 +104,160 @@ export default function ConnectPage() {
         : 0;
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
-
+        <div className="space-y-10 animate-in fade-in duration-700">
             {/* Header */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">
-                        SupraWall Connect
-                    </h1>
-                    <p className="text-gray-500 text-sm mt-1">
-                        Platform: <span className="font-medium text-gray-700">{platform.name}</span>
-                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full
-              text-xs font-medium bg-emerald-100 text-emerald-700 border border-emerald-200">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-3xl font-black text-white uppercase tracking-tighter italic">
+                            SupraWall Connect
+                        </h1>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[8px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             {platform.plan}
                         </span>
+                    </div>
+                    <p className="text-neutral-500 text-xs font-medium uppercase tracking-widest">
+                        System Identifier: <span className="text-neutral-200">{platform.name}</span>
                     </p>
                 </div>
-                <Link href="/connect/keys">
-                    <Button>
-                        <Key className="w-4 h-4 mr-2" />
-                        Issue Sub-Key
-                    </Button>
-                </Link>
+                <div className="flex gap-3">
+                    <Link href="/connect/keys">
+                        <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-6 h-11 uppercase tracking-widest text-[10px]">
+                            <Key className="w-3.5 h-3.5 mr-2" />
+                            Issue Sub-Key
+                        </Button>
+                    </Link>
+                </div>
+            </div>
+
+            {/* Explainer Banner */}
+            <div className="bg-emerald-500/[0.03] border border-emerald-500/10 p-6 rounded-2xl flex items-center gap-6 relative overflow-hidden group">
+                <div className="absolute inset-0 bg-emerald-500/[0.01] group-hover:bg-emerald-500/[0.03] transition-colors" />
+                <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                    <Zap className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-1">Developer Notice</h4>
+                    <p className="text-[11px] text-neutral-400 uppercase tracking-wider leading-relaxed">
+                        Connect lets you generate API and project keys to protect your agents with SupraWall. 
+                        Every sub-key inherits your master security policies by default.
+                    </p>
+                </div>
             </div>
 
             {/* Stat cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard
                     icon={Users}
                     title="Active Customers"
                     value={platform.totalSubKeys}
-                    subtitle="with sub-keys issued"
+                    subtitle="Sub-keys issued"
                 />
                 <StatCard
                     icon={Activity}
-                    title="Total Agent Calls"
+                    title="Agent Invocations"
                     value={totalEvents.toLocaleString()}
-                    subtitle="last 7 days"
+                    subtitle="Last 7 diurnal cycles"
                 />
                 <StatCard
                     icon={DollarSign}
-                    title="Cost Prevented"
+                    title="Redundant Spend Prevented"
                     value={analytics?.costPreventedUsd ? `$${analytics.costPreventedUsd.toFixed(2)}` : "$0.00"}
-                    subtitle="from blocked redundant calls"
+                    subtitle="Halted loop calls"
                 />
                 <StatCard
                     icon={AlertTriangle}
-                    title="Block Rate"
+                    title="Protection Rate"
                     value={`${blockRate}%`}
-                    subtitle={`${denyCount + approvalCount} blocked actions`}
+                    subtitle={`${denyCount + approvalCount} filtered actions`}
                 />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Top tools */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h2 className="text-sm font-semibold text-gray-700 mb-4">Top Tools Called</h2>
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Top Capabilities Invoked</h2>
+                        <div className="h-1 flex-1 mx-4 bg-white/[0.04] rounded-full" />
+                    </div>
+                    
                     {(analytics?.topTools ?? []).length === 0 ? (
-                        <p className="text-sm text-gray-400 text-center py-4">No data yet.</p>
+                        <div className="text-center py-12">
+                            <Activity className="w-8 h-8 text-neutral-800 mx-auto mb-3" />
+                            <p className="text-[10px] text-neutral-700 uppercase tracking-widest font-black">No Telemetry Recorded</p>
+                        </div>
                     ) : (
-                        <ol className="space-y-2">
+                        <div className="space-y-3">
                             {analytics!.topTools.map((t, i) => (
-                                <li key={i} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-400 w-4">{i + 1}.</span>
-                                        <code className="text-xs bg-gray-100 px-2 py-0.5 rounded font-mono">
+                                <div key={i} className="flex justify-between items-center bg-white/[0.03] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[10px] text-neutral-600 font-bold w-4">0{i + 1}</span>
+                                        <code className="text-[11px] text-emerald-400 font-mono tracking-tight bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 group-hover:border-emerald-500/30 transition-all">
                                             {t.toolName}
                                         </code>
                                     </div>
-                                    <span className="text-xs font-medium text-gray-600">
+                                    <span className="text-xs font-bold text-white tabular-nums">
                                         {t.calls.toLocaleString()}
                                     </span>
-                                </li>
+                                </div>
                             ))}
-                        </ol>
+                        </div>
                     )}
                 </div>
 
                 {/* Top customers */}
-                <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h2 className="text-sm font-semibold text-gray-700 mb-4">Most Active Customers</h2>
+                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Most Active Identifiers</h2>
+                        <div className="h-1 flex-1 mx-4 bg-white/[0.04] rounded-full" />
+                    </div>
+                    
                     {(analytics?.topCustomers ?? []).length === 0 ? (
-                        <p className="text-sm text-gray-400 text-center py-4">No data yet.</p>
+                        <div className="text-center py-12">
+                            <Users className="w-8 h-8 text-neutral-800 mx-auto mb-3" />
+                            <p className="text-[10px] text-neutral-700 uppercase tracking-widest font-black">No Active Sub-Keys</p>
+                        </div>
                     ) : (
-                        <ol className="space-y-2">
+                        <div className="space-y-3">
                             {analytics!.topCustomers.map((c, i) => (
-                                <li key={c.customerId} className="flex justify-between items-center bg-gray-50 p-3 rounded-lg">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-xs text-gray-400 w-4">{i + 1}.</span>
-                                        <span className="text-xs text-gray-700 font-medium truncate max-w-[140px]">
+                                <div key={c.customerId} className="flex justify-between items-center bg-white/[0.03] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-400 uppercase">
+                                            {c.customerId[0]}
+                                        </div>
+                                        <span className="text-[11px] text-neutral-300 font-bold tracking-tight truncate max-w-[200px]">
                                             {c.customerId}
                                         </span>
                                     </div>
-                                    <span className="text-xs font-medium text-gray-600">
+                                    <span className="text-[11px] font-bold text-neutral-500 uppercase tracking-tighter tabular-nums">
                                         {c.calls.toLocaleString()} calls
                                     </span>
-                                </li>
+                                </div>
                             ))}
-                        </ol>
+                        </div>
                     )}
                 </div>
             </div>
 
-            {/* Quick nav */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Link href="/connect/keys">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
-            hover:shadow-sm transition-all cursor-pointer group">
-                        <Key className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
-                        <p className="text-sm font-semibold text-gray-800">Manage Sub-Keys</p>
-                        <p className="text-xs text-gray-400 mt-0.5">Issue, revoke, configure</p>
-                    </div>
-                </Link>
-                <Link href="/connect/analytics">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
-            hover:shadow-sm transition-all cursor-pointer group">
-                        <Activity className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
-                        <p className="text-sm font-semibold text-gray-800">Analytics</p>
-                        <p className="text-xs text-gray-400 mt-0.5">Decisions, latency, trends</p>
-                    </div>
-                </Link>
-                <Link href="/connect/events">
-                    <div className="bg-white border border-gray-200 rounded-xl p-5 hover:border-emerald-300
-            hover:shadow-sm transition-all cursor-pointer group">
-                        <BrickWall className="w-5 h-5 text-emerald-500 mb-2 group-hover:text-emerald-700" />
-                        <p className="text-sm font-semibold text-gray-800">Audit Log</p>
-                        <p className="text-xs text-gray-400 mt-0.5">Every agent action, searchable</p>
-                    </div>
-                </Link>
+            {/* Quick Actions */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                {[
+                    { href: "/connect/keys", icon: Key, title: "Manage Sub-Keys", desc: "Issue and rotate customer keys" },
+                    { href: "/connect/analytics", icon: Activity, title: "Deep Analytics", desc: "Review decision latency and trends" },
+                    { href: "/connect/events", icon: BrickWall, title: "Compliance Logs", desc: "Searchable forensic action trails" }
+                ].map((action, i) => (
+                    <Link key={i} href={action.href}>
+                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
+                                <ArrowRight className="w-4 h-4 text-emerald-500" />
+                            </div>
+                            <action.icon className="w-6 h-6 text-emerald-500/50 mb-3 group-hover:text-emerald-400 transition-all group-hover:scale-110" />
+                            <p className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-1">{action.title}</p>
+                            <p className="text-[10px] text-neutral-600 uppercase tracking-wider font-medium font-sans">{action.desc}</p>
+                        </div>
+                    </Link>
+                ))}
             </div>
-
         </div>
     );
 }

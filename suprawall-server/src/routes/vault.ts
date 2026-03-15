@@ -8,7 +8,7 @@ const SECRET_NAME_PATTERN = /^[A-Z][A-Z0-9_]{2,63}$/;
 // POST /v1/vault/secrets — Create a secret
 router.post("/secrets", async (req: Request, res: Response) => {
     try {
-        const { tenantId, secretName, secretValue, description, expiresAt } = req.body;
+        const { tenantId, secretName, secretValue, description, expiresAt, assignedAgents } = req.body;
 
         if (!tenantId || !secretName || !secretValue) {
             return res.status(400).json({ error: "Missing required fields: tenantId, secretName, secretValue" });
@@ -23,10 +23,10 @@ router.post("/secrets", async (req: Request, res: Response) => {
         }
 
         const result = await pool.query(
-            `INSERT INTO vault_secrets (tenant_id, secret_name, encrypted_value, description, expires_at)
-             VALUES ($1, $2, pgp_sym_encrypt($3, $4), $5, $6)
-             RETURNING id, secret_name, description, expires_at, created_at`,
-            [tenantId, secretName, secretValue, process.env.VAULT_ENCRYPTION_KEY, description || null, expiresAt || null]
+            `INSERT INTO vault_secrets (tenant_id, secret_name, encrypted_value, description, expires_at, assigned_agents)
+             VALUES ($1, $2, pgp_sym_encrypt($3, $4), $5, $6, $7)
+             RETURNING id, secret_name, description, expires_at, created_at, assigned_agents`,
+            [tenantId, secretName, secretValue, process.env.VAULT_ENCRYPTION_KEY, description || null, expiresAt || null, assignedAgents || []]
         );
 
         res.status(201).json(result.rows[0]);
@@ -49,7 +49,7 @@ router.get("/secrets", async (req: Request, res: Response) => {
         }
 
         const result = await pool.query(
-            `SELECT id, tenant_id, secret_name, description, expires_at, last_rotated_at, created_at
+            `SELECT id, tenant_id, secret_name, description, expires_at, last_rotated_at, created_at, assigned_agents
              FROM vault_secrets WHERE tenant_id = $1
              ORDER BY created_at DESC`,
             [tenantId]

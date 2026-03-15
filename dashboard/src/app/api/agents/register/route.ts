@@ -44,7 +44,10 @@ export async function POST(request: NextRequest) {
         }
 
         const userDoc = userQuery.docs[0];
-        const userId = userDoc.id; // Correctly resolve the owner from the key
+        const userId = userDoc.id; 
+        const userData = userDoc.data();
+
+        console.log(`[SupraWall API] Registering agent "${name}" for user ${userId} (${userData.email || 'no-email'})`);
 
         // --- 2. Validation ---
         if (!name || typeof name !== 'string' || name.trim().length < 1) {

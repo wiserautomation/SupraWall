@@ -786,7 +786,7 @@ const VAULT_TOKEN_PATTERN = /\$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+/;
 
 ### Step 4.2: Modify the evaluation call flow
 
-Find the existing function that calls the `/v1/evaluate` endpoint (it's in the `withSUPRA-WALL()` or middleware wrapper). Modify the flow:
+Find the existing function that calls the `/v1/evaluate` endpoint (it's in the `withSupraWall()` or middleware wrapper). Modify the flow:
 
 ```typescript
 // BEFORE (simplified existing flow):
@@ -891,7 +891,7 @@ import re
 VAULT_TOKEN_PATTERN = re.compile(r"\$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+")
 ```
 
-### Step 5.2: Modify the evaluation flow in `with_agent_gate` / `SUPRA-WALLMiddleware`
+### Step 5.2: Modify the evaluation flow in `with_agent_gate` / `SupraWallMiddleware`
 
 Apply the same logic as the TypeScript SDK:
 
@@ -950,7 +950,7 @@ async def _scrub_response(self, secret_names: list, tool_response):
 
 **File:** `/suprawall-python/suprawall/langchain.py`
 
-The `SUPRA-WALLLangChainCallback` class hooks into LangChain's `on_tool_start` / `on_tool_end` callbacks. Modify:
+The `SupraWallLangChainCallback` class hooks into LangChain's `on_tool_start` / `on_tool_end` callbacks. Modify:
 
 ```python
 # In on_tool_start:

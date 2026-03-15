@@ -2,7 +2,7 @@
 suprawall.cost — Token-to-USD cost estimation utility.
 
 Provides per-model cost tables and helpers used by the budget cap and
-cost-tracking features of SUPRA-WALL.
+cost-tracking features of SupraWall.
 """
 
 from typing import Optional

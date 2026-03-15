@@ -3,7 +3,7 @@ import requests
 from typing import Any, Dict, List, Optional
 from langchain_core.callbacks import BaseCallbackHandler
 
-class suprawallCallbackHandler(BaseCallbackHandler):
+class SupraWallCallbackHandler(BaseCallbackHandler):
     """Callback handler to enforce suprawall policies in LangChain."""
     
     def __init__(self, api_key: Optional[str] = None):
@@ -29,10 +29,10 @@ class suprawallCallbackHandler(BaseCallbackHandler):
         else:
             raise Exception("suprawall Unreachable: Failing closed.")
 
-class suprawallToolkit:
+class SupraWallToolkit:
     """Convenience class to inject suprawall into LangChain agents."""
     def __init__(self, api_key: Optional[str] = None):
-        self.callback = suprawallCallbackHandler(api_key=api_key)
+        self.callback = SupraWallCallbackHandler(api_key=api_key)
 
     def get_callbacks(self):
         return [self.callback]

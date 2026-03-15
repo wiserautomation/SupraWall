@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock } from "lucide-react";
-import { auth } from "@/lib/firebase";
+import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock, Users } from "lucide-react";
+import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '') + '/api';
 
 type Tab = "secrets" | "rules" | "log";
 
@@ -17,6 +18,7 @@ interface VaultSecret {
     expires_at: string | null;
     last_rotated_at: string;
     created_at: string;
+    assigned_agents: string[];
 }
 
 interface VaultRule {
@@ -63,6 +65,7 @@ export default function VaultPage() {
     const [tab, setTab] = useState<Tab>("secrets");
     const [secrets, setSecrets] = useState<VaultSecret[]>([]);
     const [rules, setRules] = useState<VaultRule[]>([]);
+    const [agents, setAgents] = useState<any[]>([]);
     const [log, setLog] = useState<VaultLogEntry[]>([]);
     const [loading, setLoading] = useState(false);
     const [showCreateSecret, setShowCreateSecret] = useState(false);
@@ -75,6 +78,7 @@ export default function VaultPage() {
     const [newSecretValue, setNewSecretValue] = useState("");
     const [newSecretDesc, setNewSecretDesc] = useState("");
     const [newSecretExpiry, setNewSecretExpiry] = useState("");
+    const [newSecretAgents, setNewSecretAgents] = useState<string[]>([]);
     const [newRuleAgent, setNewRuleAgent] = useState("");
     const [newRuleSecret, setNewRuleSecret] = useState("");
     const [newRuleTools, setNewRuleTools] = useState("");
@@ -103,9 +107,18 @@ export default function VaultPage() {
 
     useEffect(() => {
         if (!user) return;
+        
+        // Fetch agents for selection
+        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const unsub = onSnapshot(q, (snap) => {
+            setAgents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+
         if (tab === "secrets") fetchSecrets();
         else if (tab === "rules") { fetchRules(); fetchSecrets(); }
         else if (tab === "log") fetchLog();
+
+        return () => unsub();
     }, [tab, user]);
 
     const copyToken = (secretName: string) => {
@@ -128,12 +141,14 @@ export default function VaultPage() {
                     secretValue: newSecretValue,
                     description: newSecretDesc || undefined,
                     expiresAt: newSecretExpiry || undefined,
+                    assignedAgents: newSecretAgents,
                 }),
             });
             const data = await res.json();
             if (!res.ok) { setError(data.error); return; }
             setShowCreateSecret(false);
             setNewSecretName(""); setNewSecretValue(""); setNewSecretDesc(""); setNewSecretExpiry("");
+            setNewSecretAgents([]);
             await fetchSecrets();
         } finally {
             setLoading(false);
@@ -259,7 +274,7 @@ export default function VaultPage() {
                                 <thead className="bg-white/5 text-neutral-400 text-xs uppercase tracking-wider">
                                     <tr>
                                         <th className="px-4 py-3 text-left">Secret Name</th>
-                                        <th className="px-4 py-3 text-left">Description</th>
+                                        <th className="px-4 py-3 text-left">Assigned Agents</th>
                                         <th className="px-4 py-3 text-left">Expires</th>
                                         <th className="px-4 py-3 text-left">Last Rotated</th>
                                         <th className="px-4 py-3 text-right">Actions</th>
@@ -273,8 +288,21 @@ export default function VaultPage() {
                                                     <Lock className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                                                     <span className="font-mono text-white text-xs">{s.secret_name}</span>
                                                 </div>
+                                                {s.description && <div className="text-[10px] text-neutral-500 mt-0.5 ml-5">{s.description}</div>}
                                             </td>
-                                            <td className="px-4 py-3 text-neutral-400">{s.description || "—"}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex flex-wrap gap-1">
+                                                    {s.assigned_agents?.length > 0 ? (
+                                                        s.assigned_agents.map(aid => (
+                                                            <span key={aid} className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 text-[10px] font-mono">
+                                                                {agents.find(a => a.id === aid)?.name || aid.slice(0, 8)}
+                                                            </span>
+                                                        ))
+                                                    ) : (
+                                                        <span className="text-neutral-600 italic text-[10px]">Unrestricted (Global)</span>
+                                                    )}
+                                                </div>
+                                            </td>
                                             <td className="px-4 py-3 text-neutral-400">
                                                 {s.expires_at ? new Date(s.expires_at).toLocaleDateString() : "Never"}
                                             </td>
@@ -341,7 +369,9 @@ export default function VaultPage() {
                                 <tbody className="divide-y divide-white/5">
                                     {rules.map(r => (
                                         <tr key={r.id} className="hover:bg-white/[0.02]">
-                                            <td className="px-4 py-3 font-mono text-xs text-white">{r.agent_id}</td>
+                                            <td className="px-4 py-3 font-mono text-xs text-white">
+                                                {agents.find(a => a.id === r.agent_id)?.name || r.agent_id}
+                                            </td>
                                             <td className="px-4 py-3 font-mono text-xs text-emerald-300">{r.secret_name}</td>
                                             <td className="px-4 py-3 text-neutral-400 text-xs">
                                                 {r.allowed_tools.length > 0 ? r.allowed_tools.join(", ") : "All tools"}
@@ -449,6 +479,29 @@ export default function VaultPage() {
                                 />
                             </div>
                             <div>
+                                <label className="text-xs text-neutral-400 mb-2 block">Scoped Agents (Leave empty for Global access)</label>
+                                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto pr-2 pb-1 scrollbar-hide">
+                                    {agents.map(a => (
+                                        <button
+                                            key={a.id}
+                                            onClick={() => {
+                                                setNewSecretAgents(prev => 
+                                                    prev.includes(a.id) ? prev.filter(id => id !== a.id) : [...prev, a.id]
+                                                );
+                                            }}
+                                            className={`flex items-center gap-2 px-2 py-1.5 rounded border transition-all text-left ${
+                                                newSecretAgents.includes(a.id)
+                                                    ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                                                    : "bg-white/5 border-white/10 text-neutral-500 hover:border-white/20"
+                                            }`}
+                                        >
+                                            <Users className={`w-3 h-3 ${newSecretAgents.includes(a.id) ? "text-emerald-400" : "text-neutral-600"}`} />
+                                            <span className="text-[10px] font-mono truncate">{a.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div>
                                 <label className="text-xs text-neutral-400 mb-1 block">Expires At (optional)</label>
                                 <input
                                     type="datetime-local"
@@ -545,10 +598,12 @@ export default function VaultPage() {
                         )}
                         <div className="space-y-3">
                             <div>
-                                <label className="text-xs text-neutral-400 mb-1 block">Agent ID <span className="text-red-400">*</span></label>
-                                <input value={newRuleAgent} onChange={e => setNewRuleAgent(e.target.value)}
-                                    placeholder="agent_payments"
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-neutral-600 focus:outline-none focus:border-emerald-500" />
+                                <label className="text-xs text-neutral-400 mb-1 block">Agent <span className="text-red-400">*</span></label>
+                                <select value={newRuleAgent} onChange={e => setNewRuleAgent(e.target.value)}
+                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500">
+                                    <option value="">Select agent…</option>
+                                    {agents.map(a => <option key={a.id} value={a.id}>{a.name} ({a.id.slice(0, 8)})</option>)}
+                                </select>
                             </div>
                             <div>
                                 <label className="text-xs text-neutral-400 mb-1 block">Secret <span className="text-red-400">*</span></label>

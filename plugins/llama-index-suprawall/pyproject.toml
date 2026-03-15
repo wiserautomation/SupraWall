@@ -5,8 +5,8 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "llama-index-suprawall"
 version = "0.1.0"
-description = "Official SUPRA-WALL security integration for LlamaIndex"
-authors = ["SUPRA-WALL <hello@suprawall.io>"]
+description = "Official SupraWall security integration for LlamaIndex"
+authors = ["SupraWall <hello@suprawall.io>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

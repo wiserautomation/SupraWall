@@ -22,11 +22,11 @@ Standard LLMs can suffer from "hallucinated intent" where they execute harmful c
 
 ## 📄 Compliance & Safety
 - **Public Repository**: [github.com/supra-wall/cowork-plugin](https://github.com/supra-wall/cowork-plugin)
-- **Privacy Policy**: [supra-wall.com/privacy](https://www.supra-wall.com/privacy)
-- **Security Policy**: [supra-wall.com/security](https://www.supra-wall.com/security)
+- **Privacy Policy**: [suprawall.ai/privacy](https://www.suprawall.ai/privacy)
+- **Security Policy**: [suprawall.ai/security](https://www.suprawall.ai/security)
 
 ## 🛡️ Fail-Safe Protocol
 This plugin follows a **fail-safe** (closed) protocol. If the SupraWall API is unreachable, the intercepted tool call is automatically BLOCKED to ensure unvalidated execution never occurs.
 
 ---
-Get your free API key and read full docs at [supra-wall.com](https://www.supra-wall.com).
+Get your free API key and read full docs at [suprawall.ai](https://www.suprawall.ai).

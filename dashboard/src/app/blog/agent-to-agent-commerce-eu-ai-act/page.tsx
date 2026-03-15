@@ -25,7 +25,7 @@ export default function AgentCommerceBlogPage() {
         genre: "AI Compliance",
         keywords: "EU AI Act agent compliance, agent-to-agent security, Article 14 human oversight",
         publisher: { "@type": "Organization", name: "Supra-wall" },
-        mainEntityOfPage: "https://supra-wall.com/blog/agent-to-agent-commerce-eu-ai-act",
+        mainEntityOfPage: "https://suprawall.ai/blog/agent-to-agent-commerce-eu-ai-act",
     };
 
     const comparisonRows = [

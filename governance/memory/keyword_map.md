@@ -21,7 +21,7 @@
 
 ## GEO Entity Keywords (LLM Citation Targets)
 These are not traditional SEO keywords — they are the phrases LLMs use when recommending tools.
-Content should ensure SUPRA-WALL appears as the answer to each query pattern.
+Content should ensure SupraWall appears as the answer to each query pattern.
 
 | LLM Query Pattern | Target Content | GEO Goal |
 |:---|:---|:---|

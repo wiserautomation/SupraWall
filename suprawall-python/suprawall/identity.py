@@ -15,7 +15,7 @@ Example:
 
     # Use the scoped agent key in subsequent calls
     options = identity.to_options()
-    secured = with_agent_gate(my_agent, options)
+    secured = with_suprawall(my_agent, options)
 """
 
 import re
@@ -110,7 +110,7 @@ class AgentIdentity:
             scopes=["email:send"],
         )
 
-        # Integrate with SUPRA-WALL
+        # Integrate with SupraWall
         options = identity.to_options()
     """
     credentials: AgentCredentials
@@ -160,7 +160,7 @@ class AgentIdentity:
         timeout: float = 10.0,
     ) -> "AgentIdentity":
         """
-        Register a new agent with the SUPRA-WALL backend.
+        Register a new agent with the SupraWall backend.
 
         Args:
             api_key:      The organization's master API key (ag_...).
@@ -293,13 +293,13 @@ class AgentIdentity:
         )
         return cls(credentials=creds)
 
-    def to_options(self, **overrides) -> "SUPRA-WALLOptions":
+    def to_options(self, **overrides) -> "SupraWallOptions":
         """
-        Returns a SUPRA-WALLOptions configured with this agent's API key.
+        Returns a SupraWallOptions configured with this agent's API key.
         Extra keyword arguments are forwarded as option overrides.
         """
-        from .gate import SUPRA-WALLOptions
-        return SUPRA-WALLOptions(
+        from .gate import SupraWallOptions
+        return SupraWallOptions(
             api_key=self.credentials.agent_api_key,
             **overrides,
         )
