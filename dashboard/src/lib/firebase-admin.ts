@@ -1,8 +1,8 @@
 
 import admin from 'firebase-admin';
 
-function getFirebaseAdmin() {
-    if (admin.apps.length) return admin.apps[0];
+function getFirebaseAdmin(): admin.app.App {
+    if (admin.apps.length > 0 && admin.apps[0] !== null) return admin.apps[0] as admin.app.App;
 
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
     if (privateKey) {

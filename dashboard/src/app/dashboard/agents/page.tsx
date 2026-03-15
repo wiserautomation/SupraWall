@@ -166,6 +166,7 @@ export default function AgentsPage() {
         // Fetch Vault Secrets
         const fetchSecrets = async () => {
             try {
+                if (!user?.uid) return;
                 const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || '') + '/api'}/v1/vault/secrets?tenantId=${user.uid}`);
                 if (res.ok) {
                     const allSecrets = await res.json() as VaultSecret[];
