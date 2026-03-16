@@ -1,3 +1,5 @@
+"use client";
+import { useState, useEffect } from "react";
 import { collection, query, where, getDocs, addDoc, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";

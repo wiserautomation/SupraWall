@@ -17,6 +17,7 @@ export interface Agent {
   max_iterations?: number;
   loopDetection?: boolean;
   loop_detection?: boolean;
+  createdAt?: any;
 }
 
 export type RuleType = 'ALLOW' | 'DENY' | 'REQUIRE_APPROVAL';
