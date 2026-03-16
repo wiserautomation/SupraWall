@@ -11,57 +11,15 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase only if the config is present
 const isClient = typeof window !== "undefined";
 const hasConfig = !!firebaseConfig.apiKey;
 
-// Lazy initialization to prevent SSR issues
-let _app: FirebaseApp | null = null;
-let _auth: Auth | null = null;
-let _db: Firestore | null = null;
+// Initialize Firebase
+const app = (isClient || !hasConfig) 
+    ? (getApps().length ? getApp() : initializeApp(hasConfig ? firebaseConfig : { apiKey: "mock", projectId: "mock" }))
+    : ({} as FirebaseApp);
 
-function getFirebaseApp(): FirebaseApp {
-    if (!isClient) {
-        // Return a dummy app for SSR to prevent crashes
-        return { name: "[DEFAULT]-mock", options: {}, automaticDataCollectionEnabled: false } as FirebaseApp;
-    }
-    
-    if (!_app) {
-        if (!hasConfig) {
-            console.warn("Firebase config missing. Using mock app.");
-            _app = initializeApp({ apiKey: "mock-key", projectId: "mock-project" });
-        } else {
-            _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
-        }
-    }
-    return _app;
-}
+const auth = isClient ? getAuth(app) : ({} as Auth);
+const db = isClient ? getFirestore(app) : ({} as Firestore);
 
-// Proxies allow us to export these as objects while delaying initialization until first access.
-// This preserves the current import syntax across the codebase while fixing the SSR leak.
-
-export const app = new Proxy({} as FirebaseApp, {
-    get: (target, prop) => {
-        return (getFirebaseApp() as any)[prop];
-    }
-});
-
-export const auth = new Proxy({} as Auth, {
-    get: (target, prop) => {
-        if (!_auth && isClient) {
-            _auth = getAuth(getFirebaseApp());
-        }
-        return (_auth as any || {})[prop];
-    }
-});
-
-export const db = new Proxy({} as Firestore, {
-    get: (target, prop) => {
-        if (!_db && isClient) {
-            _db = getFirestore(getFirebaseApp());
-        }
-        return (_db as any || {})[prop];
-    }
-});
-
-export { firebaseConfig };
+export { app, auth, db, firebaseConfig };

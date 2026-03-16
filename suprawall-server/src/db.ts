@@ -12,19 +12,7 @@ console.log(`[DB] Using Connection: ${maskedUrl}`);
 
 let dbUrl = rawUrl.trim();
 
-// Transform direct Supabase URLs for Vercel IPv6 compatibility if not using pooler
-if (process.env.VERCEL && dbUrl.includes(".supabase.co") && !dbUrl.includes("pooler.supabase.com")) {
-    try {
-        const projectRef = dbUrl.split(".")[1];
-        dbUrl = dbUrl
-            .replace(`db.${projectRef}.supabase.co`, "aws-0-eu-west-1.pooler.supabase.com")
-            .replace(":5432", ":6543")
-            .replace(/(postgresql?:\/\/)([^:]+)(:)/, `$1$2.${projectRef}$3`);
-        console.log(`[DB] Supavisor Workaround -> Project: ${projectRef}`);
-    } catch (e) {
-        console.error("[DB] Workaround error:", e);
-    }
-}
+
 
 export const pool = new Pool({
     connectionString: dbUrl,
