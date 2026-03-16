@@ -65,5 +65,21 @@ service cloud.firestore {
     match /rate_limit_counters/{counterId} {
       allow read, write: if false; // Cloud Functions only
     }
+
+    // ── Vault ────────────────────────────────────────────────────────────
+    match /vault_secrets/{secretId} {
+      allow read: if request.auth != null && (resource.data.tenantId == request.auth.uid || isAdmin());
+      allow write: if false; // Managed by vaultApi Cloud Function
+    }
+
+    match /vault_rules/{ruleId} {
+      allow read: if request.auth != null && (resource.data.tenantId == request.auth.uid || isAdmin());
+      allow write: if false; // Managed by vaultApi Cloud Function
+    }
+
+    match /vault_access_log/{logId} {
+      allow read: if request.auth != null && (resource.data.tenantId == request.auth.uid || isAdmin());
+      allow write: if false; // Managed by Cloud Function
+    }
   }
 }

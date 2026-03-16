@@ -52,18 +52,20 @@ export default function OverviewPage() {
     const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const API_BASE = "https://suprawall-server.vercel.app";
 
+    const generateApiKey = () => {
+        const bytes = new Uint8Array(24);
+        window.crypto.getRandomValues(bytes);
+        return "ag_" + btoa(String.fromCharCode(...Array.from(bytes)))
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=+$/, "");
+    };
+
     const fetchData = async () => {
         if (!user) return;
         try {
-            // 1. Fetch Agents
-            const agentsRes = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
-            if (agentsRes.ok) {
-                const list = await agentsRes.json();
-                setAgents(list);
-            }
-
-            // 2. Fetch Stats
-            const statsRes = await fetch(`${API_BASE}/v1/stats?tenantId=default-tenant`);
+            // 1. Fetch Stats
+            const statsRes = await fetch(`${API_BASE}/v1/stats?tenantId=${user.uid}`);
             if (statsRes.ok) {
                 const s = await statsRes.json();
                 setStats({
@@ -76,8 +78,8 @@ export default function OverviewPage() {
                 setPendingApprovalsCount(s.pendingApprovalsCount);
             }
 
-            // 3. Fetch Recent Logs
-            const logsRes = await fetch(`${API_BASE}/v1/audit-logs?tenantId=default-tenant&limit=10`);
+            // 2. Fetch Recent Logs
+            const logsRes = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=10`);
             if (logsRes.ok) {
                 const logs = await logsRes.json();
                 setRecentLogs(logs);
@@ -91,13 +93,36 @@ export default function OverviewPage() {
 
     useEffect(() => {
         if (!user) return;
+        
+        // Stats and logs polling
         fetchData();
-        const interval = setInterval(fetchData, 10000); // Poll every 10 seconds
-        return () => clearInterval(interval);
+        const interval = setInterval(fetchData, 10000);
+
+        // Real-time Agents from Firestore
+        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const agentList = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            })) as Agent[];
+            setAgents(agentList.sort((a, b) => {
+                const dateA = a.createdAt?.toDate?.() || new Date(0);
+                const dateB = b.createdAt?.toDate?.() || new Date(0);
+                return dateB - dateA;
+            }));
+            setLoading(false);
+        });
+
+        return () => {
+            clearInterval(interval);
+            unsubscribe();
+        };
     }, [user]);
 
     const handleCreateAgent = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!user) return;
+        
         setNameError("");
         if (!newAgentName.trim()) {
             setNameError("Agent name is required");
@@ -107,30 +132,27 @@ export default function OverviewPage() {
         const trimmedName = newAgentName.trim();
         setIsSubmitting(true);
         try {
-            const res = await fetch(`${API_BASE}/v1/agents`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    tenantId: "default-tenant",
-                    name: trimmedName,
-                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-                })
+            const apiKey = generateApiKey();
+            await addDoc(collection(db, "agents"), {
+                name: trimmedName,
+                userId: user.uid,
+                status: 'active',
+                apiKey,
+                totalCalls: 0,
+                totalSpendUsd: 0,
+                createdAt: serverTimestamp(),
+                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
             });
             
-            if (res.ok) {
-                const agent = await res.json();
-                setNewlyCreatedKey(agent.apikey);
-                setNewAgentName("");
-                setSelectedScopes([]);
-                setIsCreateModalOpen(false);
-                setIsSuccessModalOpen(true);
-                fetchData(); // Refresh list
-            } else {
-                setNameError("Failed to create agent");
-            }
+            setNewlyCreatedKey(apiKey);
+            setNewAgentName("");
+            setSelectedScopes([]);
+            setIsCreateModalOpen(false);
+            setIsSuccessModalOpen(true);
+            // No need to manually calls fetchData for agents as onSnapshot handles it
         } catch (e) {
             console.error(e);
-            setNameError("Connection error");
+            setNameError("Failed to create agent");
         } finally {
             setIsSubmitting(false);
         }
@@ -139,23 +161,22 @@ export default function OverviewPage() {
     const createAgent = () => handleCreateAgent({ preventDefault: () => {} } as React.FormEvent);
 
     const performAgentCreation = async (name: string, scopes: string[]) => {
+        if (!user) return;
         setIsSubmitting(true);
         try {
-            const res = await fetch(`${API_BASE}/v1/agents`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    tenantId: "default-tenant",
-                    name,
-                    scopes: scopes.length > 0 ? scopes : ["*:*"]
-                })
+            const apiKey = generateApiKey();
+            await addDoc(collection(db, "agents"), {
+                name,
+                userId: user.uid,
+                status: 'active',
+                apiKey,
+                totalCalls: 0,
+                totalSpendUsd: 0,
+                createdAt: serverTimestamp(),
+                scopes: scopes.length > 0 ? scopes : ["*:*"]
             });
-            if (res.ok) {
-                const agent = await res.json();
-                setNewlyCreatedKey(agent.apikey);
-                setIsSuccessModalOpen(true);
-                fetchData();
-            }
+            setNewlyCreatedKey(apiKey);
+            setIsSuccessModalOpen(true);
         } catch (e) {
             console.error(e);
         } finally {
@@ -178,7 +199,7 @@ export default function OverviewPage() {
         }
     };
 
-    const displayApiKey = (agent: any) => agent.apikey || "ag_****************";
+    const displayApiKey = (agent: any) => agent.apiKey || "ag_****************";
 
     const getNodeCode = (agent: any) => `import { protect } from '@suprawall/langchain';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
@@ -188,7 +209,7 @@ const agent = createReactAgent({ llm, tools });
 
 // 2. Wrap it with SupraWall (Zero-Config)
 const secured = protect(agent, {
-  apiKey: "${agent.apikey || 'YOUR_API_KEY'}",
+  apiKey: "${agent.apiKey || 'YOUR_API_KEY'}",
   riskThreshold: 70 // Optional: block actions >= 70 risk score
 });
 
@@ -200,13 +221,13 @@ from langgraph.prebuilt import create_react_agent
 
 # 🛡️ Secure any LangGraph agent with one wrapper
 agent = create_react_agent(llm, tools)
-secured = protect(agent, api_key="${agent.apikey || 'YOUR_API_KEY'}")
+secured = protect(agent, api_key="${agent.apiKey || 'YOUR_API_KEY'}")
 
 # That's it. Tool usage is now governed.
 secured.invoke({"messages": [...]})`;
 
     const getCurlCode = (agent: any) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
-  -H "Authorization: Bearer ${agent.apikey || 'YOUR_API_KEY'}" \\
+  -H "Authorization: Bearer ${agent.apiKey || 'YOUR_API_KEY'}" \\
   -H "Content-Type: application/json" \\
   -d '{
     "toolName": "bash_tool",
@@ -556,7 +577,11 @@ secured.invoke({"messages": [...]})`;
                                             <span className="text-[10px] font-black uppercase text-white tracking-tight">{log.toolName}</span>
                                         </div>
                                         <span className="text-[9px] text-neutral-600 font-mono">
-                                            {log.timestamp ? format(log.timestamp.toDate(), 'HH:mm:ss') : "pending"}
+                                            {log.timestamp ? 
+                                                (typeof log.timestamp.toDate === 'function' ? 
+                                                    format(log.timestamp.toDate(), 'HH:mm:ss') : 
+                                                    format(new Date(log.timestamp), 'HH:mm:ss')) 
+                                                : "pending"}
                                         </span>
                                     </div>
                                     <div className="bg-white/[0.03] p-2 rounded border border-white/[0.05] overflow-hidden">

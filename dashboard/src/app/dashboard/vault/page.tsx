@@ -7,13 +7,14 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = "https://suprawall-server.vercel.app";
+const API_BASE = "/api/vault";
 
 type Tab = "secrets" | "rules" | "log";
 
 interface VaultSecret {
     id: string;
     secret_name: string;
+    secret_type: "api_key" | "credentials" | "oauth" | "custom";
     description: string | null;
     expires_at: string | null;
     last_rotated_at: string;
@@ -60,7 +61,6 @@ function timeAgo(dateStr: string): string {
 
 export default function VaultPage() {
     const [user] = useAuthState(auth);
-    const tenantId = "default-tenant";
 
     const [tab, setTab] = useState<Tab>("secrets");
     const [secrets, setSecrets] = useState<VaultSecret[]>([]);
@@ -75,7 +75,10 @@ export default function VaultPage() {
 
     // Form state
     const [newSecretName, setNewSecretName] = useState("");
+    const [newSecretType, setNewSecretType] = useState<VaultSecret["secret_type"]>("api_key");
     const [newSecretValue, setNewSecretValue] = useState("");
+    const [templateFields, setTemplateFields] = useState<Record<string, string>>({});
+    const [customFields, setCustomFields] = useState<{key: string, value: string}[]>([]);
     const [newSecretDesc, setNewSecretDesc] = useState("");
     const [newSecretExpiry, setNewSecretExpiry] = useState("");
     const [newSecretAgents, setNewSecretAgents] = useState<string[]>([]);
@@ -87,21 +90,33 @@ export default function VaultPage() {
     const [rotateValue, setRotateValue] = useState("");
     const [error, setError] = useState<string | null>(null);
 
+    const getAuthHeaders = async (): Promise<Record<string, string>> => {
+        if (!user) return {};
+        const token = await user.getIdToken();
+        return {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+        };
+    };
+
     const fetchSecrets = async () => {
         if (!user) return;
-        const res = await fetch(`${API_BASE}/v1/vault/secrets?tenantId=${tenantId}`);
+        const headers = await getAuthHeaders();
+        const res = await fetch(`${API_BASE}/secrets?tenantId=${user.uid}`, { headers });
         if (res.ok) setSecrets(await res.json());
     };
 
     const fetchRules = async () => {
         if (!user) return;
-        const res = await fetch(`${API_BASE}/v1/vault/rules?tenantId=${tenantId}`);
+        const headers = await getAuthHeaders();
+        const res = await fetch(`${API_BASE}/rules?tenantId=${user.uid}`, { headers });
         if (res.ok) setRules(await res.json());
     };
 
     const fetchLog = async () => {
         if (!user) return;
-        const res = await fetch(`${API_BASE}/v1/vault/log?tenantId=${tenantId}&limit=50`);
+        const headers = await getAuthHeaders();
+        const res = await fetch(`${API_BASE}/log?tenantId=${user.uid}&limit=50`, { headers });
         if (res.ok) setLog(await res.json());
     };
 
@@ -132,13 +147,34 @@ export default function VaultPage() {
         setError(null);
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/v1/vault/secrets`, {
+            let finalValue = newSecretValue;
+            
+            if (newSecretType === "credentials") {
+                finalValue = JSON.stringify({
+                    username: templateFields.username || "",
+                    password: templateFields.password || ""
+                });
+            } else if (newSecretType === "oauth") {
+                finalValue = JSON.stringify({
+                    access_token: templateFields.access_token || "",
+                    refresh_token: templateFields.refresh_token || "",
+                    expires_at: templateFields.oauth_expiry || ""
+                });
+            } else if (newSecretType === "custom") {
+                const obj: Record<string, string> = {};
+                customFields.forEach(f => { if (f.key) obj[f.key] = f.value; });
+                finalValue = JSON.stringify(obj);
+            }
+
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_BASE}/secrets`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({
-                    tenantId: tenantId,
+                    tenantId: user?.uid,
                     secretName: newSecretName,
-                    secretValue: newSecretValue,
+                    secretValue: finalValue,
+                    secretType: newSecretType,
                     description: newSecretDesc || undefined,
                     expiresAt: newSecretExpiry || undefined,
                     assignedAgents: newSecretAgents,
@@ -157,7 +193,11 @@ export default function VaultPage() {
 
     const handleDeleteSecret = async (id: string) => {
         if (!confirm("Delete this secret? All associated access rules will also be removed.")) return;
-        await fetch(`${API_BASE}/v1/vault/secrets/${id}?tenantId=${tenantId}`, { method: "DELETE" });
+        const headers = await getAuthHeaders();
+        await fetch(`${API_BASE}/secrets/${id}?tenantId=${user?.uid}`, { 
+            method: "DELETE",
+            headers
+        });
         await fetchSecrets();
     };
 
@@ -165,10 +205,11 @@ export default function VaultPage() {
         setError(null);
         setLoading(true);
         try {
-            const res = await fetch(`${API_BASE}/v1/vault/secrets/${id}/rotate`, {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_BASE}/secrets/${id}/rotate`, {
                 method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tenantId: tenantId, newValue: rotateValue }),
+                headers,
+                body: JSON.stringify({ tenantId: user?.uid, newValue: rotateValue }),
             });
             const data = await res.json();
             if (!res.ok) { setError(data.error); return; }
@@ -186,11 +227,12 @@ export default function VaultPage() {
         try {
             const secret = secrets.find(s => s.secret_name === newRuleSecret);
             if (!secret) { setError("Select a valid secret"); return; }
+            const headers = await getAuthHeaders();
             const res = await fetch(`${API_BASE}/v1/vault/rules`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers,
                 body: JSON.stringify({
-                    tenantId: tenantId,
+                    tenantId: user?.uid,
                     agentId: newRuleAgent,
                     secretId: secret.id,
                     allowedTools: newRuleTools.split(",").map(t => t.trim()).filter(Boolean),
@@ -209,7 +251,11 @@ export default function VaultPage() {
     };
 
     const handleDeleteRule = async (id: string) => {
-        await fetch(`${API_BASE}/v1/vault/rules/${id}?tenantId=${tenantId}`, { method: "DELETE" });
+        const headers = await getAuthHeaders();
+        await fetch(`${API_BASE}/v1/vault/rules/${id}?tenantId=${user?.uid}`, { 
+            method: "DELETE",
+            headers
+        });
         await fetchRules();
     };
 
@@ -274,6 +320,7 @@ export default function VaultPage() {
                                 <thead className="bg-white/5 text-neutral-400 text-xs uppercase tracking-wider">
                                     <tr>
                                         <th className="px-4 py-3 text-left">Secret Name</th>
+                                        <th className="px-4 py-3 text-left">Type</th>
                                         <th className="px-4 py-3 text-left">Assigned Agents</th>
                                         <th className="px-4 py-3 text-left">Expires</th>
                                         <th className="px-4 py-3 text-left">Last Rotated</th>
@@ -289,6 +336,11 @@ export default function VaultPage() {
                                                     <span className="font-mono text-white text-xs">{s.secret_name}</span>
                                                 </div>
                                                 {s.description && <div className="text-[10px] text-neutral-500 mt-0.5 ml-5">{s.description}</div>}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <span className="px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[9px] font-bold uppercase tracking-wider text-neutral-400">
+                                                    {s.secret_type?.replace("_", " ") || "API KEY"}
+                                                </span>
                                             </td>
                                             <td className="px-4 py-3">
                                                 <div className="flex flex-wrap gap-1">
@@ -447,87 +499,207 @@ export default function VaultPage() {
                             </div>
                         )}
 
-                        <div className="space-y-3">
-                            <div>
-                                <label className="text-xs text-neutral-400 mb-1 block">Secret Name <span className="text-red-400">*</span></label>
-                                <input
-                                    value={newSecretName}
-                                    onChange={e => setNewSecretName(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
-                                    placeholder="STRIPE_PROD_KEY"
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-neutral-600 focus:outline-none focus:border-emerald-500"
-                                />
-                                <p className="text-xs text-neutral-500 mt-1">UPPER_SNAKE_CASE only</p>
+                        <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 scrollbar-none">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs text-neutral-400 mb-1 block">Secret Name <span className="text-red-400">*</span></label>
+                                    <input
+                                        value={newSecretName}
+                                        onChange={e => setNewSecretName(e.target.value.toUpperCase().replace(/[^A-Z0-9_]/g, ""))}
+                                        placeholder="GITHUB_TOKEN"
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-neutral-600 focus:outline-none focus:border-emerald-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-neutral-400 mb-1 block">Template / Type</label>
+                                    <select
+                                        value={newSecretType}
+                                        onChange={e => setNewSecretType(e.target.value as any)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                    >
+                                        <option value="api_key">API Key (Single Field)</option>
+                                        <option value="credentials">Credentials (User/Pass)</option>
+                                        <option value="oauth">OAuth Token</option>
+                                        <option value="custom">Custom JSON Object</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label className="text-xs text-neutral-400 mb-1 block">Secret Value <span className="text-red-400">*</span></label>
-                                <input
-                                    type="password"
-                                    value={newSecretValue}
-                                    onChange={e => setNewSecretValue(e.target.value)}
-                                    placeholder="sk_live_..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono placeholder-neutral-600 focus:outline-none focus:border-emerald-500"
-                                />
-                                <p className="text-xs text-neutral-500 mt-1">Encrypted at rest — never visible again</p>
+
+                            {/* Dynamic Fields based on Type */}
+                            <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                                {newSecretType === "api_key" && (
+                                    <div>
+                                        <label className="text-xs text-neutral-400 mb-1 block">Secret Value / Key <span className="text-red-400">*</span></label>
+                                        <input
+                                            type="password"
+                                            value={newSecretValue}
+                                            onChange={e => setNewSecretValue(e.target.value)}
+                                            placeholder="Paste value here..."
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                                        />
+                                    </div>
+                                )}
+
+                                {newSecretType === "credentials" && (
+                                    <div className="grid grid-cols-1 gap-3">
+                                        <div>
+                                            <label className="text-xs text-neutral-400 mb-1 block">Username</label>
+                                            <input
+                                                value={templateFields.username || ""}
+                                                onChange={e => setTemplateFields({...templateFields, username: e.target.value})}
+                                                placeholder="admin"
+                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-neutral-400 mb-1 block">Password / Secret</label>
+                                            <input
+                                                type="password"
+                                                value={templateFields.password || ""}
+                                                onChange={e => setTemplateFields({...templateFields, password: e.target.value})}
+                                                placeholder="••••••••"
+                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
+                                {newSecretType === "oauth" && (
+                                    <div className="space-y-3">
+                                        <div>
+                                            <label className="text-xs text-neutral-400 mb-1 block">Access Token</label>
+                                            <input
+                                                type="password"
+                                                value={templateFields.access_token || ""}
+                                                onChange={e => setTemplateFields({...templateFields, access_token: e.target.value})}
+                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                                            />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <div>
+                                                <label className="text-xs text-neutral-400 mb-1 block">Refresh Token</label>
+                                                <input
+                                                    type="password"
+                                                    value={templateFields.refresh_token || ""}
+                                                    onChange={e => setTemplateFields({...templateFields, refresh_token: e.target.value})}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="text-xs text-neutral-400 mb-1 block">Expires (optional)</label>
+                                                <input
+                                                    value={templateFields.oauth_expiry || ""}
+                                                    onChange={e => setTemplateFields({...templateFields, oauth_expiry: e.target.value})}
+                                                    placeholder="3600"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {newSecretType === "custom" && (
+                                    <div className="space-y-2">
+                                        {customFields.map((f, i) => (
+                                            <div key={i} className="flex gap-2">
+                                                <input
+                                                    placeholder="Field Name"
+                                                    value={f.key}
+                                                    onChange={e => {
+                                                        const next = [...customFields];
+                                                        next[i].key = e.target.value;
+                                                        setCustomFields(next);
+                                                    }}
+                                                    className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                                />
+                                                <input
+                                                    type={f.key.toLowerCase().includes("key") || f.key.toLowerCase().includes("pass") ? "password" : "text"}
+                                                    placeholder="Value"
+                                                    value={f.value}
+                                                    onChange={e => {
+                                                        const next = [...customFields];
+                                                        next[i].value = e.target.value;
+                                                        setCustomFields(next);
+                                                    }}
+                                                    className="flex-[2] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                                />
+                                                <button onClick={() => setCustomFields(customFields.filter((_, idx) => idx !== i))} className="text-red-400 p-1">
+                                                    <Trash2 className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button
+                                            onClick={() => setCustomFields([...customFields, {key: "", value: ""}])}
+                                            className="text-[10px] text-emerald-400 font-bold uppercase hover:bg-emerald-500/10 px-2 py-1 rounded transition-colors"
+                                        >
+                                            + Add Field
+                                        </button>
+                                    </div>
+                                )}
                             </div>
+
                             <div>
                                 <label className="text-xs text-neutral-400 mb-1 block">Description</label>
                                 <input
                                     value={newSecretDesc}
                                     onChange={e => setNewSecretDesc(e.target.value)}
-                                    placeholder="Production Stripe API key"
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-neutral-600 focus:outline-none focus:border-emerald-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-xs text-neutral-400 mb-2 block">Scoped Agents (Leave empty for Global access)</label>
-                                <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto pr-2 pb-1 scrollbar-hide">
-                                    {agents.map(a => (
-                                        <button
-                                            key={a.id}
-                                            onClick={() => {
-                                                setNewSecretAgents(prev => 
-                                                    prev.includes(a.id) ? prev.filter(id => id !== a.id) : [...prev, a.id]
-                                                );
-                                            }}
-                                            className={`flex items-center gap-2 px-2 py-1.5 rounded border transition-all text-left ${
-                                                newSecretAgents.includes(a.id)
-                                                    ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
-                                                    : "bg-white/5 border-white/10 text-neutral-500 hover:border-white/20"
-                                            }`}
-                                        >
-                                            <Users className={`w-3 h-3 ${newSecretAgents.includes(a.id) ? "text-emerald-400" : "text-neutral-600"}`} />
-                                            <span className="text-[10px] font-mono truncate">{a.name}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="text-xs text-neutral-400 mb-1 block">Expires At (optional)</label>
-                                <input
-                                    type="datetime-local"
-                                    value={newSecretExpiry}
-                                    onChange={e => setNewSecretExpiry(e.target.value)}
+                                    placeholder="Purpose of this secret..."
                                     className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
                                 />
                             </div>
 
-                            {newSecretName && (
-                                <div className="rounded-lg bg-black/40 border border-white/10 p-3">
-                                    <p className="text-xs text-neutral-400 mb-1">Agent token (safe to share):</p>
-                                    <div className="flex items-center gap-2">
-                                        <code className="text-xs text-emerald-300 font-mono flex-1 break-all">
-                                            $SUPRAWALL_VAULT_{newSecretName}
-                                        </code>
-                                        <button
-                                            onClick={() => copyToken(newSecretName)}
-                                            className="text-neutral-400 hover:text-white"
-                                        >
-                                            {copied === newSecretName ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
-                                        </button>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="text-xs text-neutral-400 mb-1 block">Expires At</label>
+                                    <input
+                                        type="datetime-local"
+                                        value={newSecretExpiry}
+                                        onChange={e => setNewSecretExpiry(e.target.value)}
+                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-neutral-400 mb-1 block">Scoped Agents</label>
+                                    <div className="flex flex-wrap gap-1 p-2 rounded-lg bg-black/20 border border-white/5 min-h-[40px]">
+                                        {agents.map(a => (
+                                            <button
+                                                key={a.id}
+                                                onClick={() => {
+                                                    setNewSecretAgents(prev => 
+                                                        prev.includes(a.id) ? prev.filter(id => id !== a.id) : [...prev, a.id]
+                                                    );
+                                                }}
+                                                className={`px-1.5 py-0.5 rounded text-[9px] font-mono border transition-all ${
+                                                    newSecretAgents.includes(a.id)
+                                                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                                                        : "bg-white/5 border-white/10 text-neutral-600"
+                                                }`}
+                                            >
+                                                {a.name}
+                                            </button>
+                                        ))}
+                                        {agents.length === 0 && <span className="text-[9px] text-neutral-600">No agents found</span>}
                                     </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
+
+                        {newSecretName && (
+                            <div className="rounded-lg bg-black/40 border border-white/10 p-3">
+                                <p className="text-xs text-neutral-400 mb-1">Agent token (safe to share):</p>
+                                <div className="flex items-center gap-2">
+                                    <code className="text-xs text-emerald-300 font-mono flex-1 break-all">
+                                        $SUPRAWALL_VAULT_{newSecretName}
+                                    </code>
+                                    <button
+                                        onClick={() => copyToken(newSecretName)}
+                                        className="text-neutral-400 hover:text-white"
+                                    >
+                                        {copied === newSecretName ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="flex gap-3 pt-2">
                             <button

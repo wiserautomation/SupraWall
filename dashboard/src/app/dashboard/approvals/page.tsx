@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { auth } from "@/lib/firebase";
+import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
+import { collection, query, where, onSnapshot, serverTimestamp } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
     Check, 
@@ -31,7 +32,6 @@ interface ApprovalRequest {
     metadata?: any;
 }
 
-const API_BASE = "http://localhost:3000"; // Assuming 3000 for now, should use env
 
 export default function ApprovalsPage() {
     const [user] = useAuthState(auth);
@@ -39,40 +39,46 @@ export default function ApprovalsPage() {
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
 
-    const fetchRequests = async () => {
-        try {
-            const res = await fetch(`${API_BASE}/v1/approvals/pending/default-tenant`);
-            if (res.ok) {
-                const data = await res.json();
-                setRequests(data);
-            }
-        } catch (error) {
-            console.error("Error fetching approvals:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
         if (!user) return;
-        fetchRequests();
-        
-        // Poll every 5 seconds for "realtime" feel
-        const interval = setInterval(fetchRequests, 5000);
-        return () => clearInterval(interval);
+        setLoading(true);
+
+        const q = query(
+            collection(db, "approvalRequests"),
+            where("userId", "==", user.uid),
+            where("status", "==", "pending")
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            const list = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                // Handle various property naming conventions if needed
+                agentid: doc.data().agentId || doc.data().agentid,
+                toolname: doc.data().toolName || doc.data().toolname,
+                createdat: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdat
+            })) as ApprovalRequest[];
+            
+            setRequests(list);
+            setLoading(false);
+        }, (error) => {
+            console.error("Approval sync failed:", error);
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
     }, [user]);
 
     const handleAction = async (id: string, decision: "approved" | "denied") => {
         setProcessingId(id);
         try {
-            const res = await fetch(`${API_BASE}/v1/approvals/respond`, {
+            const res = await fetch(`/api/approvals/${id}/respond`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    id,
                     decision,
-                    comment: decision === "approved" ? "Approved via Dashboard" : "Denied via Dashboard",
-                    userId: user?.email || user?.uid
+                    reviewNote: decision === "approved" ? "Approved via Dashboard" : "Denied via Dashboard",
+                    reviewedBy: user?.email || user?.uid
                 })
             });
 

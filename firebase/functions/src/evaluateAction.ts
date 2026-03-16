@@ -4,6 +4,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { GoogleGenAI } from "@google/genai";
 import * as crypto from "crypto";
 import { Resend } from "resend";
+import { decryptSecret, logVaultAccess } from "./vault";
 
 if (!admin.apps.length) {
     admin.initializeApp();
@@ -346,8 +347,22 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             // 4. Cost estimation (moved up)
             const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
 
+            // ── Vault token injection ──
+            let processedArgsForLog = argsString;
+            let vaultInjected: string[] = [];
+            let vaultRequiresApproval = false;
+
+            if (argsString.includes('$SUPRAWALL_VAULT_')) {
+                const vaultResult = await injectVaultTokens(args, agentId, userId, toolName);
+                // We keep the args for logging AS-IS (tokens), but the action might be blocked if it requires approval
+                vaultInjected = vaultResult.injectedSecrets;
+                vaultRequiresApproval = vaultResult.requiresApproval;
+                // Note: We don't overwrite the original 'args' yet because if it requires approval, 
+                // we want the approval request to show the tokens, not the secrets.
+            }
+
             // ── 5. Handle Approval Flow ──
-            if (finalDecision === "REQUIRE_APPROVAL") {
+            if (finalDecision === "REQUIRE_APPROVAL" || vaultRequiresApproval) {
                 // Check if an identical pending request already exists for this agent
                 const existingReq = await db.collection("approvalRequests")
                     .where("agentId", "==", agentId)
@@ -366,13 +381,14 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                         agentId,
                         agentName: agentData.name || "Unknown Agent",
                         toolName,
-                        arguments: argsString,
+                        arguments: argsString, // Show tokens in approval UI
                         sessionId,
                         agentRole,
                         status: "pending",
                         createdAt: FieldValue.serverTimestamp(),
                         expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 24 * 60 * 60 * 1000)), // 24h
-                        estimatedCostUsd: estimatedCost
+                        estimatedCostUsd: estimatedCost,
+                        requiresVaultInjection: vaultRequiresApproval
                     });
                     requestId = newReq.id;
 
@@ -413,14 +429,21 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
                 await logAudit(userId, agentId, toolName, argsString, intendedDecision, estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoopDetectedByClient, isDryRun);
                 res.json({ 
-                    decision: finalDecision, 
+                    decision: "REQUIRE_APPROVAL", 
                     intended_decision: intendedDecision,
                     is_dry_run: isDryRun,
-                    reason: "This action requires human approval.", 
+                    reason: vaultRequiresApproval ? "One or more vault secrets require manual approval." : "This action requires human approval.", 
                     requestId, 
                     branding 
                 });
                 return;
+            }
+
+            // ── Final Vault Injection (only if approved/allowed) ──
+            let finalArgs = args;
+            if (vaultInjected.length > 0) {
+                 const vaultResult = await injectVaultTokens(args, agentId, userId, toolName);
+                 finalArgs = vaultResult.injectedArgs;
             }
 
             // 6. Update usage counters (non-blocking)
@@ -449,14 +472,17 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             Promise.all(updates).catch(e => console.error("Audit/Usage update failed:", e));
 
             // 6. Return the decision
-            res.status(200).json({
+            const rawResponse = {
                 decision: finalDecision,
                 intended_decision: intendedDecision,
                 is_dry_run: isDryRun,
                 estimated_cost_usd: estimatedCost,
                 is_loop: isLoopDetectedByClient,
+                vault_tokens_injected: vaultInjected,
                 branding
-            });
+            };
+
+            res.status(200).json(scrubVaultSecrets(rawResponse, vaultInjected));
             return;
         }
 
@@ -468,6 +494,126 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 });
 
 // ── Connect Helpers ────────────────────────────────────────────────────────
+
+async function injectVaultTokens(
+  args: any,
+  agentId: string,
+  tenantId: string,
+  toolName: string
+): Promise<{ injectedArgs: any; injectedSecrets: string[]; requiresApproval: boolean }> {
+  const argsString = typeof args === 'string' ? args : JSON.stringify(args);
+  
+  // Find all $SUPRAWALL_VAULT_XXX tokens in the args
+  const tokenPattern = /\$SUPRAWALL_VAULT_([A-Z0-9_]+)/g;
+  const matches = [...argsString.matchAll(tokenPattern)];
+  
+  if (matches.length === 0) {
+    return { injectedArgs: args, injectedSecrets: [], requiresApproval: false };
+  }
+  
+  let injectedString = argsString;
+  const injectedSecrets: string[] = [];
+  let requiresApproval = false;
+
+  for (const match of matches) {
+    const secretName = match[1];
+    const fullToken = match[0];
+
+    // 1. Find the secret in vault_secrets
+    const secretSnap = await db.collection('vault_secrets')
+      .where('tenantId', '==', tenantId)
+      .where('secret_name', '==', secretName)
+      .limit(1)
+      .get();
+
+    if (secretSnap.empty) {
+      logVaultAccess(tenantId, agentId, secretName, toolName, 'NOT_FOUND');
+      continue;
+    }
+
+    const secret = secretSnap.docs[0].data();
+
+    // 2. Check expiry
+    if (secret.expires_at && new Date(secret.expires_at) < new Date()) {
+      logVaultAccess(tenantId, agentId, secretName, toolName, 'EXPIRED');
+      injectedString = injectedString.replace(fullToken, '[VAULT_SECRET_EXPIRED]');
+      continue;
+    }
+
+    // 3. Check agent is allowed (assigned_agents empty = all agents of this tenant)
+    if (secret.assigned_agents?.length > 0 && !secret.assigned_agents.includes(agentId)) {
+      logVaultAccess(tenantId, agentId, secretName, toolName, 'DENIED');
+      injectedString = injectedString.replace(fullToken, '[VAULT_ACCESS_DENIED]');
+      continue;
+    }
+
+    // 4. Find matching vault_rule for this agent+secret
+    const ruleSnap = await db.collection('vault_rules')
+      .where('tenantId', '==', tenantId)
+      .where('agent_id', '==', agentId)
+      .where('secret_name', '==', secretName)
+      .limit(1)
+      .get();
+
+    if (!ruleSnap.empty) {
+      const rule = ruleSnap.docs[0].data() as any;
+      
+      // 4a. Check allowed_tools
+      if (rule.allowed_tools?.length > 0 && !rule.allowed_tools.includes(toolName)) {
+        logVaultAccess(tenantId, agentId, secretName, toolName, 'DENIED');
+        injectedString = injectedString.replace(fullToken, '[VAULT_TOOL_NOT_ALLOWED]');
+        continue;
+      }
+
+      // 4b. Check rate limit (uses per hour)
+      if (rule.max_uses_per_hour > 0) {
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+        const recentUses = await db.collection('vault_access_log')
+          .where('tenantId', '==', tenantId)
+          .where('agent_id', '==', agentId)
+          .where('secret_name', '==', secretName)
+          .where('action', '==', 'INJECTED')
+          .where('created_at', '>=', oneHourAgo)
+          .count()
+          .get();
+        
+        if (recentUses.data().count >= rule.max_uses_per_hour) {
+          logVaultAccess(tenantId, agentId, secretName, toolName, 'RATE_LIMITED');
+          injectedString = injectedString.replace(fullToken, '[VAULT_RATE_LIMITED]');
+          continue;
+        }
+      }
+
+      // 4c. Check if approval is required
+      if (rule.requires_approval) {
+        requiresApproval = true;
+      }
+    }
+
+    // 5. Decrypt and inject
+    try {
+        const realValue = decryptSecret(secret.encrypted_value);
+        injectedString = injectedString.replace(fullToken, realValue);
+        injectedSecrets.push(secretName);
+        logVaultAccess(tenantId, agentId, secretName, toolName, 'INJECTED');
+    } catch (e) {
+        console.error("[VAULT] Decryption Error:", e);
+        logVaultAccess(tenantId, agentId, secretName, toolName, 'NOT_FOUND');
+        injectedString = injectedString.replace(fullToken, '[VAULT_DECRYPTION_ERROR]');
+    }
+  }
+
+  // Parse back to original type
+  const injectedArgs = typeof args === 'string' ? injectedString : JSON.parse(injectedString);
+  return { injectedArgs, injectedSecrets, requiresApproval };
+}
+
+function scrubVaultSecrets(response: any, injectedSecrets: string[]): any {
+  if (injectedSecrets.length > 0) {
+    return { ...response, vault_injected: injectedSecrets.map(s => `$SUPRAWALL_VAULT_${s}`) };
+  }
+  return response;
+}
 
 function evaluateAgentAction(
     toolName: string,

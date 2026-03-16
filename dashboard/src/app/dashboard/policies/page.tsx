@@ -1,7 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { collection, query, where, getDocs, addDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, addDoc, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -12,7 +9,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity } from "lucide-react";
 import { Agent, Policy, RuleType } from "@/types/database";
-import { doc, updateDoc } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -45,79 +41,57 @@ export default function PoliciesPage() {
     const [aiPrompt, setAiPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
 
-    const fetchData = async () => {
+    useEffect(() => {
         if (!user) return;
         setLoading(true);
-        try {
-            // Fetch Agents from API
-            const agentsRes = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
-            if (agentsRes.ok) {
-                const agentsList = await agentsRes.json();
-                setAgents(agentsList);
-            }
 
-            // Fetch Policies from API
-            const policiesRes = await fetch(`${API_BASE}/v1/policies?tenantId=default-tenant`);
-            if (policiesRes.ok) {
-                const allPolicies = await policiesRes.json();
-                setPolicies(allPolicies);
-            }
-        } catch (e) {
-            console.error(e);
-        }
-        setLoading(false);
-    };
+        // 1. Real-time Agents
+        const qAgents = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const unsubscribeAgents = onSnapshot(qAgents, (snapshot) => {
+            const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Agent[];
+            setAgents(list);
+            setLoading(false);
+        });
 
-    const fetchAgentConfig = async (agentId: string) => {
-        const agent = agents.find(a => a.id === agentId);
-        if (agent) {
-            setMaxCostUsd(agent.max_cost_usd?.toString() || "");
-            setBudgetAlertUsd(agent.budget_alert_usd?.toString() || "");
-            setMaxIterations(agent.max_iterations?.toString() || "");
-            setLoopDetection(agent.loop_detection || false);
-        }
-    };
+        // 2. Real-time Policies
+        // We filter by userId if the field exists, or we could filter by agentId in [ids]
+        // But for consistency with how we just saw 'tenantId' used in the API, we'll assume userId is on the policy too.
+        const qPolicies = query(collection(db, "policies"), where("userId", "==", user.uid));
+        const unsubscribePolicies = onSnapshot(qPolicies, (snapshot) => {
+            const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Policy[];
+            setPolicies(list);
+        });
 
-    useEffect(() => {
-        if (selectedAgentId) {
-            fetchAgentConfig(selectedAgentId);
-        }
-    }, [selectedAgentId, agents]);
-
-    useEffect(() => {
-        fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        return () => {
+            unsubscribeAgents();
+            unsubscribePolicies();
+        };
     }, [user]);
 
     const handleCreatePolicy = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!selectedAgentId || !toolName || !condition) return;
+        if (!user || !selectedAgentId || !toolName || !condition) return;
 
         try {
-            const res = await fetch(`${API_BASE}/v1/policies`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    tenantId: "default-tenant",
-                    name: `${toolName} Rule`,
-                    toolName,
-                    ruleType,
-                    description,
-                    condition,
-                    priority: parseInt(priority) || 100,
-                    isDryRun
-                })
+            await addDoc(collection(db, "policies"), {
+                userId: user.uid,
+                agentId: selectedAgentId,
+                name: `${toolName} Rule`,
+                toolName,
+                ruleType,
+                description,
+                condition,
+                priority: parseInt(priority) || 100,
+                isDryRun,
+                createdAt: serverTimestamp()
             });
 
-            if (res.ok) {
-                setToolName("");
-                setCondition("");
-                setPriority("100");
-                setIsDryRun(false);
-                setDescription("");
-                sendGAEvent('event', 'create_policy', { tool_name: toolName, rule_type: ruleType });
-                fetchData();
-            }
+            setToolName("");
+            setCondition("");
+            setPriority("100");
+            setIsDryRun(false);
+            setDescription("");
+            sendGAEvent('event', 'create_policy', { tool_name: toolName, rule_type: ruleType });
         } catch (e) {
             console.error("Error creating policy", e);
         }
@@ -127,21 +101,14 @@ export default function PoliciesPage() {
         if (!selectedAgentId) return;
         setIsSavingConfig(true);
         try {
-            const res = await fetch(`${API_BASE}/v1/agents/${selectedAgentId}`, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    max_cost_usd: maxCostUsd ? parseFloat(maxCostUsd) : null,
-                    budget_alert_usd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
-                    max_iterations: maxIterations ? parseInt(maxIterations) : null,
-                    loop_detection: loopDetection
-                })
+            await updateDoc(doc(db, "agents", selectedAgentId), {
+                max_cost_usd: maxCostUsd ? parseFloat(maxCostUsd) : null,
+                budget_alert_usd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
+                max_iterations: maxIterations ? parseInt(maxIterations) : null,
+                loop_detection: loopDetection,
+                updatedAt: serverTimestamp()
             });
-            
-            if (res.ok) {
-                fetchData();
-                sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
-            }
+            sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
         } catch (e) {
             console.error("Error updating agent config", e);
         }

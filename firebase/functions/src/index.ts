@@ -23,3 +23,6 @@ export {
 } from "./connect";
 // Monthly usage reset and log cleanup (billing)
 export { resetMonthlyUsage, cleanupOldLogs } from "./billing";
+
+// Vault API for secret management
+export { vaultApi } from "./vault";
