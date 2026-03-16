@@ -17,6 +17,7 @@ export default function SettingsPage() {
     const [savedSlack, setSavedSlack] = useState(false);
     const [savedMaster, setSavedMaster] = useState(false);
     const [testSent, setTestSent] = useState(false);
+    const [emailTestSent, setEmailTestSent] = useState(false);
     const [copiedKey, setCopiedKey] = useState(false);
 
     // Form States
@@ -25,36 +26,58 @@ export default function SettingsPage() {
     const [webhookUrl, setWebhookUrl] = useState("");
     const [webhookSecret, setWebhookSecret] = useState("");
     const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
+    const [notificationEmail, setNotificationEmail] = useState("");
     const [masterApiKey, setMasterApiKey] = useState("");
+
+    const API_BASE = "https://suprawall-server.vercel.app";
 
     // Initialize/Sync settings
     useEffect(() => {
         if (!user) return;
 
-        const unsubscribe = onSnapshot(doc(db, "users", user.uid), (snapshot) => {
-            if (snapshot.exists()) {
-                const data = snapshot.data();
-                setDbType(data.dbType || "firebase");
-                setDbString(data.dbString || "");
-                setWebhookUrl(data.webhookUrl || "");
-                setWebhookSecret(data.webhookSecret || "");
-                setSlackWebhookUrl(data.slackWebhookUrl || "");
-                setMasterApiKey(data.masterApiKey || "");
+        const fetchSettings = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/v1/tenants/${user.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setDbType(data.db_type || "firebase");
+                    setDbString(data.db_string || "");
+                    setWebhookUrl(data.webhook_url || "");
+                    setWebhookSecret(data.webhook_secret || "");
+                    setSlackWebhookUrl(data.slack_webhook_url || "");
+                    setNotificationEmail(data.notification_email || "");
+                    setMasterApiKey(data.master_api_key || "");
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
-        });
+        };
 
-        return () => unsubscribe();
+        fetchSettings();
     }, [user]);
 
     const handleSaveGeneral = async (field: string, value: any, setStatus: (v: boolean) => void) => {
         if (!user) return;
         setSaving(true);
         try {
-            await setDoc(doc(db, "users", user.uid), {
-                [field]: value,
-                updatedAt: new Date().toISOString()
-            }, { merge: true });
+            // Map camelCase to snake_case for the database
+            const fieldMap: any = {
+                masterApiKey: "master_api_key",
+                dbType: "db_type",
+                webhookUrl: "webhook_url",
+                slackWebhookUrl: "slack_webhook_url",
+                notificationEmail: "notification_email",
+                webhookSecret: "webhook_secret"
+            };
+            const dbField = fieldMap[field] || field;
+
+            await fetch(`${API_BASE}/v1/tenants/${user.uid}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ [dbField]: value })
+            });
             setStatus(true);
             setTimeout(() => setStatus(false), 2000);
         } catch (error) {
@@ -81,6 +104,11 @@ export default function SettingsPage() {
     const handleSaveSlack = (e: React.FormEvent) => {
         e.preventDefault();
         handleSaveGeneral("slackWebhookUrl", slackWebhookUrl, setSavedSlack);
+    };
+    const [savedEmail, setSavedEmail] = useState(false);
+    const handleSaveEmail = (e: React.FormEvent) => {
+        e.preventDefault();
+        handleSaveGeneral("notificationEmail", notificationEmail, setSavedEmail);
     };
 
     const handleGenerateSecret = () => {
@@ -244,6 +272,63 @@ export default function SettingsPage() {
                             >
                                 {savedSlack ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                 {savedSlack ? "Saved" : "Connect Slack"}
+                            </Button>
+                        </div>
+                    </form>
+                </motion.div>
+            </section>
+
+            {/* EMAIL NOTIFICATIONS */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
+                        <Webhook className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Email Alerts</h2>
+                        <p className="text-sm text-neutral-400">Security breach reports and weekly compliance summaries.</p>
+                    </div>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
+                >
+                    <form onSubmit={handleSaveEmail} className="space-y-6">
+                        <div className="space-y-3">
+                            <label className="text-sm font-semibold text-neutral-300">Notification Email Address</label>
+                            <input
+                                type="email"
+                                placeholder="security-alerts@yourcompany.com"
+                                value={notificationEmail}
+                                onChange={(e) => setNotificationEmail(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                            />
+                            <p className="text-xs text-neutral-500 italic">Emails are routed via Resend for zero-delay delivery.</p>
+                        </div>
+
+                        <div className="flex justify-end pt-4 border-t border-white/5 gap-3">
+                            <Button
+                                type="button"
+                                onClick={() => {
+                                    setEmailTestSent(true);
+                                    setTimeout(() => setEmailTestSent(false), 3000);
+                                }}
+                                disabled={!notificationEmail}
+                                variant="outline"
+                                className={`py-2.5 px-6 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50`}
+                            >
+                                {emailTestSent ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
+                                {emailTestSent ? "Sent" : "Test Email"}
+                            </Button>
+                            <Button
+                                type="submit"
+                                className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedEmail ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-blue-600 hover:bg-blue-500 text-white"}`}
+                            >
+                                {savedEmail ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                                {savedEmail ? "Saved" : "Save Email"}
                             </Button>
                         </div>
                     </form>

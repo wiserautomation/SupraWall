@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { GoogleGenAI } from "@google/genai";
 import * as crypto from "crypto";
+import { Resend } from "resend";
 
 if (!admin.apps.length) {
     admin.initializeApp();
@@ -10,9 +11,13 @@ if (!admin.apps.length) {
 const db = admin.firestore();
 
 interface PolicyRule {
-    toolPattern: string;  // glob or exact, e.g. "delete_*", "send_email"
+    toolPattern: string;  // glob or regex
+    condition?: string;   // regex for arguments
+    matchType: "regex" | "glob";
     action: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
-    conditions?: Record<string, any>;
+    priority: number;
+    reason?: string;
+    isDryRun?: boolean;
 }
 
 interface RateLimitConfig {
@@ -25,6 +30,7 @@ interface EvaluateResponse {
     reason?: string;
     estimated_cost_usd?: number;
     is_loop?: boolean;
+    isDryRun?: boolean;
 }
 
 export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
@@ -103,12 +109,18 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 return;
             }
 
-            // Policy evaluation
-            const decision = evaluatePolicies(toolName, args, effectiveRules);
+            // Policy evaluation 
+            const decision = evaluateAgentAction(toolName, args, effectiveRules.map(r => ({
+                ...r,
+                matchType: r.matchType || "glob",
+                priority: r.priority || 100
+            })));
 
             // Cost estimation
             const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
             const latencyMs = Date.now() - startTime;
+
+            const effectiveDecision = decision.isDryRun ? "ALLOW" : decision.decision;
 
             // Update usage counters and write audit log (non-blocking)
             const updates: Promise<any>[] = [
@@ -123,7 +135,9 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     customerId,
                     toolName,
                     args: sanitizeArgs(args),
-                    decision: decision.decision,
+                    decision: decision.decision, // log the intended decision
+                    effectiveDecision,          // log the actual effect
+                    isDryRun: decision.isDryRun ?? false,
                     reason: decision.reason ?? null,
                     latencyMs,
                     costUsd: estimatedCost,
@@ -133,14 +147,13 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 // ── Global Stats Update (for ROI Counter) ──
                 db.collection("global_stats").doc("aggregate").update({
                     totalInteractions: FieldValue.increment(1),
-                    totalDollarsSaved: decision.decision === "DENY" ? FieldValue.increment(2.50) : FieldValue.increment(0),
-                    rogueActionsBlocked: decision.decision === "DENY" ? FieldValue.increment(1) : FieldValue.increment(0),
+                    totalDollarsSaved: effectiveDecision === "DENY" ? FieldValue.increment(2.50) : FieldValue.increment(0),
+                    rogueActionsBlocked: effectiveDecision === "DENY" ? FieldValue.increment(1) : FieldValue.increment(0),
                 }).catch(() => {
-                    // Fallback to set if doc doesn't exist
                     db.collection("global_stats").doc("aggregate").set({
                         totalInteractions: 1,
-                        totalDollarsSaved: decision.decision === "DENY" ? 2.50 : 0,
-                        rogueActionsBlocked: decision.decision === "DENY" ? 1 : 0
+                        totalDollarsSaved: effectiveDecision === "DENY" ? 2.50 : 0,
+                        rogueActionsBlocked: effectiveDecision === "DENY" ? 1 : 0
                     }, { merge: true });
                 })
             ];
@@ -151,18 +164,16 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     db.collection("organizations").doc(ownerId).update({
                         operationsThisMonth: FieldValue.increment(1),
                         lastUsedAt: FieldValue.serverTimestamp(),
-                    }).catch(err => {
-                        // If document doesn't exist yet, we might need to set it, 
-                        // but usually it's created on first login/stripe sync.
-                        console.warn(`Failed to update organization ${ownerId}:`, err.message);
-                    })
+                    }).catch(err => console.warn(`Failed to update organization ${ownerId}:`, err.message))
                 );
             }
 
             Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
 
             res.status(200).json({ 
-                ...decision, 
+                decision: effectiveDecision,
+                intended_decision: decision.decision,
+                is_dry_run: decision.isDryRun,
                 estimated_cost_usd: estimatedCost,
                 branding
             });
@@ -173,16 +184,37 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
         if (apiKey.startsWith("ag_") || !apiKey.startsWith("agc_")) {
             const argsString = typeof args === 'string' ? args : JSON.stringify(args);
 
-            // 1. Find the agent by apiKey
-            const agentsSnapshot = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
+            // 1. Find the agent by apiKey (supporting both legacy cleartext and new hashed keys)
+            const prefix = apiKey.substring(0, 7); // ag_xxxx
+            const agentsSnapshot = await db.collection("agents").where("apiKeyPrefix", "==", prefix).get();
 
-            if (agentsSnapshot.empty) {
-                await logAudit("unknown", toolName, argsString, "DENY", 0, "Invalid API Key", sessionId, agentRole);
+            let agentDoc = null;
+            let foundKey = false;
+
+            const inputHash = crypto.createHash("sha256").update(apiKey).digest("hex");
+
+            for (const doc of agentsSnapshot.docs) {
+                const data = doc.data();
+                // Check new hashed key first
+                if (data.apiKeyHash && data.apiKeyHash === inputHash) {
+                    agentDoc = doc;
+                    foundKey = true;
+                    break;
+                }
+                // Fallback: Check legacy cleartext key
+                if (data.apiKey === apiKey) {
+                    agentDoc = doc;
+                    foundKey = true;
+                    break;
+                }
+            }
+
+            if (!foundKey || !agentDoc) {
+                const argsString = typeof args === 'string' ? args : JSON.stringify(args);
+                await logAudit(null as any, "unknown", toolName, argsString, "DENY", 0, "Invalid API Key", sessionId, agentRole);
                 res.status(403).json({ decision: "DENY", reason: "Invalid API Key" });
                 return;
             }
-
-            const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
             const agentData = agentDoc.data();
 
@@ -214,7 +246,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             // ── 1.5 Agent Status Check ──
             if (agentData.status && agentData.status !== 'active') {
-                await logAudit(agentId, toolName, argsString, "DENY", 0, `Agent is ${agentData.status}`, sessionId, agentRole);
+                await logAudit(userId, agentId, toolName, argsString, "DENY", 0, `Agent is ${agentData.status}`, sessionId, agentRole);
                 res.status(403).json({ decision: "DENY", reason: `Agent is ${agentData.status}. Contact your administrator.` });
                 return;
             }
@@ -235,7 +267,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
                 if (!hasScope) {
                     const reason = `Agent lacks scope for tool '${toolName}'. Granted scopes: [${agentScopes.join(', ')}]`;
-                    await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                    await logAudit(userId, agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
                     res.status(403).json({ decision: "DENY", reason });
                     return;
                 }
@@ -279,7 +311,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                             const count = recentCalls.data().count;
                             if (count >= maxCalls) {
                                 const reason = `Scope limit exceeded for '${scopeKey}': ${count}/${maxCalls} calls per ${tw.label}. Try again later.`;
-                                await logAudit(agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
+                                await logAudit(userId, agentId, toolName, argsString, "DENY", 0, reason, sessionId, agentRole);
                                 res.status(429).json({ decision: "DENY", reason });
                                 return;
                             }
@@ -288,28 +320,28 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 }
             }
 
-            // 2. Query policies for this agent and toolName
+            // 2. Query policies for this agent (we fetch all and evaluate unified)
             const policiesSnapshot = await db.collection("policies")
                 .where("agentId", "==", agentId)
-                .where("toolName", "==", toolName)
                 .get();
 
-            let finalDecision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL" = "ALLOW";
+            const agentPolicies: PolicyRule[] = policiesSnapshot.docs.map(d => {
+                const p = d.data();
+                return {
+                    toolPattern: p.toolName, // existing ag_ policies have toolName exactly
+                    condition: p.condition,  // existing ag_ policies have condition as regex
+                    matchType: "glob",       // existing ag_ toolNames are exact (glob handles this)
+                    action: p.ruleType,      // ruleType -> action
+                    priority: p.priority || 100,
+                    reason: p.reason,
+                    isDryRun: p.isDryRun || false
+                };
+            });
 
-            // 3. Evaluate policies against regex conditions
-            for (const doc of policiesSnapshot.docs) {
-                const policy = doc.data();
-                const conditionRegex = new RegExp(policy.condition);
-
-                if (conditionRegex.test(argsString)) {
-                    finalDecision = policy.ruleType;
-
-                    // If DENY is encountered, we can stop evaluating
-                    if (finalDecision === "DENY") {
-                        break;
-                    }
-                }
-            }
+            const decision = evaluateAgentAction(toolName, args, agentPolicies);
+            const finalDecision = decision.isDryRun ? "ALLOW" : decision.decision;
+            const intendedDecision = decision.decision;
+            const isDryRun = decision.isDryRun || false;
 
             // 4. Cost estimation (moved up)
             const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
@@ -379,14 +411,21 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     }
                 }
 
-                await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole);
-                res.json({ decision: "REQUIRE_APPROVAL", reason: "This action requires human approval.", requestId, branding });
+                await logAudit(userId, agentId, toolName, argsString, intendedDecision, estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoopDetectedByClient, isDryRun);
+                res.json({ 
+                    decision: finalDecision, 
+                    intended_decision: intendedDecision,
+                    is_dry_run: isDryRun,
+                    reason: "This action requires human approval.", 
+                    requestId, 
+                    branding 
+                });
                 return;
             }
 
             // 6. Update usage counters (non-blocking)
             const updates: Promise<any>[] = [
-                logAudit(agentId, toolName, argsString, finalDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient)
+                logAudit(userId, agentId, toolName, argsString, intendedDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient, isDryRun)
             ];
 
             if (userId) {
@@ -412,6 +451,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             // 6. Return the decision
             res.status(200).json({
                 decision: finalDecision,
+                intended_decision: intendedDecision,
+                is_dry_run: isDryRun,
                 estimated_cost_usd: estimatedCost,
                 is_loop: isLoopDetectedByClient,
                 branding
@@ -428,17 +469,66 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
 // ── Connect Helpers ────────────────────────────────────────────────────────
 
-function evaluatePolicies(
+function evaluateAgentAction(
     toolName: string,
     args: any,
     rules: PolicyRule[]
 ): EvaluateResponse {
-    for (const rule of rules) {
-        if (matchesPattern(toolName, rule.toolPattern)) {
-            return { decision: rule.action, reason: rule.conditions?.reason };
+    const argsString = typeof args === 'string' ? args : JSON.stringify(args);
+    
+    // Sort rules by priority (lower is first)
+    const sortedRules = [...rules].sort((a, b) => a.priority - b.priority);
+
+    let dryRunMatch: EvaluateResponse | null = null;
+
+    for (const rule of sortedRules) {
+        // 1. Tool Match
+        let toolMatch = false;
+        if (rule.matchType === "regex") {
+            try {
+                toolMatch = new RegExp(rule.toolPattern).test(toolName);
+            } catch (e) {
+                console.error(`Invalid regex in toolPattern: ${rule.toolPattern}`, e);
+            }
+        } else {
+            toolMatch = matchesPattern(toolName, rule.toolPattern);
+        }
+
+        if (!toolMatch) continue;
+
+        // 2. Condition (Args) Match
+        if (rule.condition) {
+            try {
+                const conditionMatch = new RegExp(rule.condition).test(argsString);
+                if (!conditionMatch) continue;
+            } catch (e) {
+                console.error(`Invalid regex in condition: ${rule.condition}`, e);
+                continue;
+            }
+        }
+
+        // If we got here, the rule matches
+        if (rule.isDryRun) {
+            // If it's a dry run, we save the first hit but keep searching for an ACTUAL rule
+            if (!dryRunMatch) {
+                dryRunMatch = { decision: rule.action, reason: rule.reason, isDryRun: true };
+            }
+            continue;
+        } else {
+            // Not a dry run: this is our winner
+            return { 
+                decision: rule.action, 
+                reason: rule.reason,
+                isDryRun: false
+            };
         }
     }
-    // Default: ALLOW if no rule matches
+    
+    // No non-dry-run rules matched.
+    if (dryRunMatch) {
+        return dryRunMatch;
+    }
+
     return { decision: "ALLOW" };
 }
 
@@ -579,9 +669,38 @@ async function sendSlackNotification(url: string, data: { requestId: string, age
 }
 
 async function sendEmailNotification(email: string, data: { requestId: string, agentName: string, toolName: string, arguments: string, estimatedCost: number }) {
-    console.log(`[SupraWall] 📧 Sending email alert to ${email} for request ${data.requestId}`);
-    // In production, use @sendgrid/mail or resend here.
-    // This demonstrates the integration hook.
+    const resend = new Resend(process.env.RESEND_API_KEY);
+    const dashboardUrl = "https://www.supra-wall.com/dashboard/approvals";
+
+    await resend.emails.send({
+        from: "SupraWall Alerts <alerts@supra-wall.com>",
+        to: email,
+        subject: `🛡️ Action Approval Required: ${data.agentName}`,
+        html: `
+            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+                <h2 style="color: #10b981; margin-top: 0;">SupraWall Security Alert</h2>
+                <p>An action performed by <strong>${data.agentName}</strong> requires your manual approval.</p>
+                
+                <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                    <p style="margin: 0; font-size: 14px; color: #6b7280;">Tool Name</p>
+                    <p style="margin: 5px 0 15px 0; font-weight: bold;">${data.toolName}</p>
+                    
+                    <p style="margin: 0; font-size: 14px; color: #6b7280;">Estimated Cost</p>
+                    <p style="margin: 5px 0 15px 0; font-weight: bold;">$${data.estimatedCost.toFixed(4)}</p>
+                    
+                    <p style="margin: 0; font-size: 14px; color: #6b7280;">Arguments</p>
+                    <pre style="background: #fff; padding: 10px; border: 1px solid #e5e7eb; border-radius: 4px; font-size: 12px; overflow-x: auto;">${data.arguments.slice(0, 1000)}${data.arguments.length > 1000 ? '...' : ''}</pre>
+                </div>
+                
+                <a href="${dashboardUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-bottom: 20px;">Review Action</a>
+                
+                <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+                <p style="font-size: 12px; color: #9ca3af; text-align: center;">
+                    🛡️ Protected by SupraWall — AI agent security & EU AI Act compliance
+                </p>
+            </div>
+        `
+    });
 }
 
 function sanitizeArgs(args: any): any {
@@ -652,63 +771,70 @@ function computeRiskScore(toolName: string, args: string, decision: string, cost
 }
 
 // ── Forensic Audit Logger (Tamper-Proof Hash Chain) ─────────────────────
-let _lastHash: string = 'GENESIS'; // In-memory cache of last hash for chain linking
-let _sequenceCounter: number = 0;
-
-async function logAudit(agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null, isLoop: boolean = false) {
+async function logAudit(userId: string, agentId: string, toolName: string, args: string, decision: string, costUsd: number = 0, reason: string | null = null, sessionId: string | null = null, agentRole: string | null = null, isLoop: boolean = false, isDryRun: boolean = false) {
     try {
         // 1. Compute risk score
         const { score: riskScore, factors: riskFactors } = computeRiskScore(toolName, args, decision, costUsd, isLoop);
+        if (isDryRun) riskFactors.push("ACTION ALLOWED BY DRY-RUN MODE");
 
-        // 2. Get previous hash for chain integrity
-        // Fetch the latest log to get its hash (or use in-memory cache for perf)
-        if (_lastHash === 'GENESIS') {
-            const lastLogSnap = await db.collection("audit_logs")
-                .orderBy("sequenceNumber", "desc")
-                .limit(1)
-                .get();
-            if (!lastLogSnap.empty) {
-                _lastHash = lastLogSnap.docs[0].data().integrityHash || 'GENESIS';
-                _sequenceCounter = (lastLogSnap.docs[0].data().sequenceNumber || 0);
+        // 2. Perform transaction-based forensic logging
+        const forensicStateRef = db.collection("system").doc("forensic_state");
+
+        await db.runTransaction(async (transaction) => {
+            const forensicStateDoc = await transaction.get(forensicStateRef);
+            let prevHash = 'GENESIS';
+            let sequenceNumber = 0;
+
+            if (forensicStateDoc.exists) {
+                const data = forensicStateDoc.data()!;
+                prevHash = data.lastHash || 'GENESIS';
+                sequenceNumber = data.sequenceCounter || 0;
             }
-        }
-        _sequenceCounter++;
 
-        // 3. Build the canonical payload for hashing
-        const canonicalPayload = JSON.stringify({
-            seq: _sequenceCounter,
-            prev: _lastHash,
-            agentId, toolName, args, decision, reason, sessionId, agentRole, costUsd, isLoop, riskScore
+            sequenceNumber++;
+
+            // 3. Compute canonical representation for hashing
+            const canonicalPayload = JSON.stringify({
+                seq: sequenceNumber,
+                prev: prevHash,
+                userId, agentId, toolName, args, decision, reason, sessionId, agentRole, costUsd, isLoop, riskScore
+            });
+
+            // 4. Compute SHA-256 integrity hash
+            const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
+
+            // 5. Update the global forensic state
+            transaction.set(forensicStateRef, {
+                lastHash: integrityHash,
+                sequenceCounter: sequenceNumber,
+                updatedAt: FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            // 6. Write the forensic log entry
+            const logRef = db.collection("audit_logs").doc();
+            transaction.set(logRef, {
+                userId,
+                agentId,
+                toolName,
+                arguments: args,
+                decision,
+                reason,
+                sessionId,
+                agentRole,
+                cost_usd: costUsd,
+                is_loop: isLoop,
+                is_dry_run: isDryRun,
+                // Forensic fields
+                integrityHash,
+                previousHash: prevHash,
+                sequenceNumber: sequenceNumber,
+                riskScore,
+                riskFactors,
+                timestamp: FieldValue.serverTimestamp()
+            });
         });
-
-        // 4. Compute SHA-256 integrity hash
-        const integrityHash = crypto.createHash('sha256').update(canonicalPayload).digest('hex');
-
-        // 5. Write the forensic log entry
-        await db.collection("audit_logs").add({
-            agentId,
-            toolName,
-            arguments: args,
-            decision,
-            reason,
-            sessionId,
-            agentRole,
-            cost_usd: costUsd,
-            is_loop: isLoop,
-            // Forensic fields
-            integrityHash,
-            previousHash: _lastHash,
-            sequenceNumber: _sequenceCounter,
-            riskScore,
-            riskFactors,
-            timestamp: FieldValue.serverTimestamp()
-        });
-
-        // 6. Update chain state
-        _lastHash = integrityHash;
-
-    } catch (error) {
-        console.error("Failed to log forensic audit event:", error);
+    } catch (e) {
+        console.error("Forensic log failure:", e);
     }
 }
 

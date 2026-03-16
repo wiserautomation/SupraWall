@@ -34,37 +34,52 @@ export default function MonitoringPage() {
     const [isLive, setIsLive] = useState(true);
     const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
-    // Fetch agents first to filter logs
+    const API_BASE = "https://suprawall-server.vercel.app";
+
+    const fetchAgents = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
+            if (res.ok) {
+                const list = await res.json();
+                setAgents(list);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    const fetchLogs = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=default-tenant&limit=50`);
+            if (res.ok) {
+                const data = await res.json();
+                setLogs(data);
+                setLoading(false);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     useEffect(() => {
         if (!user) return;
-        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-        const unsub = onSnapshot(q, (snap) => {
-            const list = snap.docs.map(d => ({ id: d.id, ...d.data() } as Agent));
-            setAgents(list);
-        });
-        return () => unsub();
+        fetchAgents();
     }, [user]);
 
-    // Live Log Stream
     useEffect(() => {
-        if (!user || agents.length === 0 || !isLive) return;
+        if (!user || !isLive) return;
 
-        const agentIds = agents.map(a => a.id).slice(0, 10);
-        const q = query(
-            collection(db, "audit_logs"),
-            where("agentId", "in", agentIds),
-            orderBy("timestamp", "desc"),
-            limit(50)
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const newLogs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuditLog));
-            setLogs(newLogs);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [user, agents, isLive]);
+        fetchLogs();
+        const interval = setInterval(fetchLogs, 5000); // Poll every 5 seconds
+        return () => clearInterval(interval);
+    }, [user, isLive]);
+    
+    // Helper to format date if it's a string from Postgres
+    const formatDate = (dateValue: any) => {
+        if (!dateValue) return "Just now";
+        const date = new Date(dateValue);
+        return format(date, 'HH:mm:ss.SSS');
+    };
 
     const sessions = Array.from(new Set(logs.map(l => l.sessionId || "Global"))).sort();
     const filteredLogs = selectedSession
@@ -77,9 +92,9 @@ export default function MonitoringPage() {
         // Export CSV for current visible logs
         const headers = ["TIMESTAMP", "AGENT", "ACTION", "DECISION", "COST", "ARGS"];
         const rows = filteredLogs.map(l => [
-            l.timestamp?.toDate?.().toISOString() || "Now",
-            l.agentId,
-            l.toolName,
+            l.timestamp ? new Date(l.timestamp).toISOString() : "Now",
+            l.agentid || l.agentId,
+            l.toolname || l.toolName,
             l.decision,
             l.cost_usd || 0,
             `"${l.arguments?.toString().replace(/"/g, '""')}"`

@@ -42,6 +42,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
         { name: "Agents", href: "/dashboard/agents", icon: Users },
         { name: "Monitoring", href: "/dashboard/monitoring", icon: Activity },
+        { name: "Threat Intel", href: "/dashboard/threats", icon: Shield },
         { name: "Integrations", href: "/dashboard/integrations", icon: Zap },
         { name: "Policies", href: "/dashboard/policies", icon: Shield },
         { name: "Compliance", href: "/dashboard/compliance", icon: ShieldCheck },
@@ -49,6 +50,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         { name: "Approvals", href: "/dashboard/approvals", icon: UserCheck },
         { name: "Team", href: "/dashboard/team", icon: Users },
         { name: "Audit Logs", href: "/dashboard/audit", icon: Activity },
+        { name: "Simulation", href: "/dashboard/simulation", icon: Zap },
         { name: "Settings", href: "/dashboard/settings", icon: Settings },
     ];
 

@@ -72,7 +72,13 @@ export const initDb = async () => {
             tenantid VARCHAR(255) NOT NULL,
             name VARCHAR(255) NOT NULL,
             apikeyhash VARCHAR(255),
+            scopes TEXT[] DEFAULT '{}',
             status VARCHAR(50) DEFAULT 'active',
+            slack_webhook VARCHAR(255),
+            max_cost_usd FLOAT,
+            budget_alert_usd FLOAT,
+            max_iterations INTEGER,
+            loop_detection BOOLEAN DEFAULT FALSE,
             createdat TIMESTAMP DEFAULT NOW()
         );
 
@@ -132,6 +138,44 @@ export const initDb = async () => {
             window_start TIMESTAMP NOT NULL,
             use_count INT DEFAULT 1,
             PRIMARY KEY(tenant_id, agent_id, secret_name, window_start)
+        );
+
+        -- Threat Intel: individual events
+        CREATE TABLE IF NOT EXISTS threat_events (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            agentid VARCHAR(255),
+            event_type VARCHAR(100) NOT NULL,
+            severity VARCHAR(50) DEFAULT 'medium',
+            details JSONB,
+            createdat TIMESTAMP DEFAULT NOW()
+        );
+
+        -- Threat Intel: aggregated scores
+        CREATE TABLE IF NOT EXISTS threat_summaries (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            entity_id VARCHAR(255) NOT NULL, 
+            entity_type VARCHAR(50) NOT NULL,
+            threat_score FLOAT DEFAULT 0,
+            total_events INTEGER DEFAULT 0,
+            last_updated TIMESTAMP DEFAULT NOW(),
+            UNIQUE(tenantid, entity_id, entity_type)
+        );
+
+        -- Human-in-the-Loop: Approval Queue
+        CREATE TABLE IF NOT EXISTS approval_requests (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            tenantid VARCHAR(255) NOT NULL,
+            agentid VARCHAR(255) NOT NULL,
+            toolname VARCHAR(255) NOT NULL,
+            parameters JSONB,
+            status VARCHAR(50) DEFAULT 'pending', -- pending, approved, denied, expired
+            decision_by VARCHAR(255),
+            decision_at TIMESTAMP,
+            decision_comment TEXT,
+            metadata JSONB,
+            createdat TIMESTAMP DEFAULT NOW()
         );
     `;
     await pool.query(query);

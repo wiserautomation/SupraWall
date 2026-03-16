@@ -64,6 +64,13 @@ export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunc
     }
 };
 
+export const getAgentById = async (agentId: string) => {
+    if (!db) return null;
+    const doc = await db.collection("agents").doc(agentId).get();
+    if (!doc.exists) return null;
+    return { id: doc.id, ...doc.data() } as any;
+};
+
 export const verifyScope = (req: AuthenticatedRequest, toolName: string): boolean => {
     const scopes = req.agent?.scopes || [];
     

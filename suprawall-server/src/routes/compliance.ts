@@ -11,9 +11,9 @@ router.get("/status", async (_req: Request, res: Response) => {
     try {
         const [approvalResult, auditResult, denyResult, oldestResult] = await Promise.all([
             pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'REQUIRE_APPROVAL'"),
-            pool.query("SELECT COUNT(*) FROM auditlogs"),
+            pool.query("SELECT COUNT(*) FROM audit_logs"),
             pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'DENY'"),
-            pool.query("SELECT MIN(createdat) AS oldest FROM auditlogs"),
+            pool.query("SELECT MIN(timestamp) AS oldest FROM audit_logs"),
         ]);
 
         const approvalPolicies = parseInt(approvalResult.rows[0].count, 10);
@@ -96,12 +96,12 @@ router.get("/report", async (req: Request, res: Response) => {
 
         // Fetch audit logs
         const auditParams: (Date | string)[] = [from, to];
-        let auditSql = "SELECT * FROM auditlogs WHERE createdat >= $1 AND createdat <= $2";
+        let auditSql = "SELECT * FROM audit_logs WHERE timestamp >= $1 AND timestamp <= $2";
         if (agentId) {
             auditSql += " AND agentid = $3";
             auditParams.push(agentId as string);
         }
-        auditSql += " ORDER BY createdat DESC";
+        auditSql += " ORDER BY timestamp DESC";
 
         // Fetch policies
         const policyParams: string[] = [];

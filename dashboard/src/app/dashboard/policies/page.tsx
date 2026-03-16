@@ -16,6 +16,8 @@ import { doc, updateDoc } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
+const API_BASE = "https://suprawall-server.vercel.app";
+
 export default function PoliciesPage() {
     const [user] = useAuthState(auth);
     const [agents, setAgents] = useState<Agent[]>([]);
@@ -27,6 +29,9 @@ export default function PoliciesPage() {
     const [toolName, setToolName] = useState("");
     const [condition, setCondition] = useState("");
     const [ruleType, setRuleType] = useState<RuleType>("DENY");
+    const [priority, setPriority] = useState<string>("100");
+    const [isDryRun, setIsDryRun] = useState(false);
+    const [description, setDescription] = useState("");
 
     // Agent Config State
     const [maxCostUsd, setMaxCostUsd] = useState<string>("");
@@ -44,18 +49,19 @@ export default function PoliciesPage() {
         if (!user) return;
         setLoading(true);
         try {
-            const qAgents = query(collection(db, "agents"), where("userId", "==", user.uid));
-            const agentsSnap = await getDocs(qAgents);
-            const agentsList = agentsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
-            setAgents(agentsList);
+            // Fetch Agents from API
+            const agentsRes = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
+            if (agentsRes.ok) {
+                const agentsList = await agentsRes.json();
+                setAgents(agentsList);
+            }
 
-            const qPolicies = query(collection(db, "policies"));
-            const policiesSnap = await getDocs(qPolicies);
-            const allPolicies = policiesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Policy));
-
-            const userAgentIds = new Set(agentsList.map(a => a.id));
-            const userPolicies = allPolicies.filter(p => userAgentIds.has(p.agentId));
-            setPolicies(userPolicies);
+            // Fetch Policies from API
+            const policiesRes = await fetch(`${API_BASE}/v1/policies?tenantId=default-tenant`);
+            if (policiesRes.ok) {
+                const allPolicies = await policiesRes.json();
+                setPolicies(allPolicies);
+            }
         } catch (e) {
             console.error(e);
         }
@@ -65,10 +71,10 @@ export default function PoliciesPage() {
     const fetchAgentConfig = async (agentId: string) => {
         const agent = agents.find(a => a.id === agentId);
         if (agent) {
-            setMaxCostUsd(agent.maxCostUsd?.toString() || "");
-            setBudgetAlertUsd(agent.budgetAlertUsd?.toString() || "");
-            setMaxIterations(agent.maxIterations?.toString() || "");
-            setLoopDetection(agent.loopDetection || false);
+            setMaxCostUsd(agent.max_cost_usd?.toString() || "");
+            setBudgetAlertUsd(agent.budget_alert_usd?.toString() || "");
+            setMaxIterations(agent.max_iterations?.toString() || "");
+            setLoopDetection(agent.loop_detection || false);
         }
     };
 
@@ -88,17 +94,30 @@ export default function PoliciesPage() {
         if (!selectedAgentId || !toolName || !condition) return;
 
         try {
-            const newPolicy: Policy = {
-                agentId: selectedAgentId,
-                toolName,
-                condition,
-                ruleType
-            };
-            await addDoc(collection(db, "policies"), newPolicy);
-            setToolName("");
-            setCondition("");
-            sendGAEvent('event', 'create_policy', { tool_name: toolName, rule_type: ruleType });
-            fetchData();
+            const res = await fetch(`${API_BASE}/v1/policies`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenantId: "default-tenant",
+                    name: `${toolName} Rule`,
+                    toolName,
+                    ruleType,
+                    description,
+                    condition,
+                    priority: parseInt(priority) || 100,
+                    isDryRun
+                })
+            });
+
+            if (res.ok) {
+                setToolName("");
+                setCondition("");
+                setPriority("100");
+                setIsDryRun(false);
+                setDescription("");
+                sendGAEvent('event', 'create_policy', { tool_name: toolName, rule_type: ruleType });
+                fetchData();
+            }
         } catch (e) {
             console.error("Error creating policy", e);
         }
@@ -108,15 +127,21 @@ export default function PoliciesPage() {
         if (!selectedAgentId) return;
         setIsSavingConfig(true);
         try {
-            const agentRef = doc(db, "agents", selectedAgentId);
-            await updateDoc(agentRef, {
-                maxCostUsd: maxCostUsd ? parseFloat(maxCostUsd) : null,
-                budgetAlertUsd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
-                maxIterations: maxIterations ? parseInt(maxIterations) : null,
-                loopDetection
+            const res = await fetch(`${API_BASE}/v1/agents/${selectedAgentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    max_cost_usd: maxCostUsd ? parseFloat(maxCostUsd) : null,
+                    budget_alert_usd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
+                    max_iterations: maxIterations ? parseInt(maxIterations) : null,
+                    loop_detection: loopDetection
+                })
             });
-            fetchData();
-            sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
+            
+            if (res.ok) {
+                fetchData();
+                sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
+            }
         } catch (e) {
             console.error("Error updating agent config", e);
         }
@@ -257,7 +282,7 @@ export default function PoliciesPage() {
                                 />
                                 <p className="text-xs text-emerald-400/80 italic mt-1">Generated by AI. Please review before saving.</p>
                             </div>
-                            <div className="space-y-2">
+                             <div className="space-y-2">
                                 <label className="text-sm font-medium text-neutral-400">Rule Type</label>
                                 <Select value={ruleType} onValueChange={(v: RuleType) => setRuleType(v)}>
                                     <SelectTrigger className="w-full bg-neutral-900 border-white/10 text-white focus:ring-1 focus:ring-emerald-500 hover:border-white/20 transition-colors">
@@ -269,6 +294,37 @@ export default function PoliciesPage() {
                                         <SelectItem value="REQUIRE_APPROVAL" className="text-yellow-400 hover:bg-white/5">REQUIRE_APPROVAL</SelectItem>
                                     </SelectContent>
                                 </Select>
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-medium text-neutral-400">Priority (Low=High)</label>
+                                    <Input
+                                        type="number"
+                                        value={priority}
+                                        onChange={e => setPriority(e.target.value)}
+                                        className="bg-neutral-900 border-white/10 text-white"
+                                    />
+                                </div>
+                                <div className="space-y-2 flex flex-col justify-end">
+                                    <div 
+                                        onClick={() => setIsDryRun(!isDryRun)}
+                                        className="flex items-center gap-3 p-2 bg-white/[0.02] border border-white/[0.05] rounded-lg cursor-pointer hover:bg-white/[0.04] transition-colors"
+                                    >
+                                        <div className={`w-10 h-5 rounded-full p-1 transition-colors ${isDryRun ? "bg-amber-600" : "bg-neutral-800"}`}>
+                                            <motion.div animate={{ x: isDryRun ? 20 : 0 }} className="w-3 h-3 bg-white rounded-full shadow-sm" />
+                                        </div>
+                                        <span className="text-xs font-medium text-neutral-300">Dry Run</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-medium text-neutral-400">Notes (Optional)</label>
+                                <Input
+                                    value={description}
+                                    onChange={e => setDescription(e.target.value)}
+                                    placeholder="e.g., Compliance requirement X"
+                                    className="bg-neutral-900 border-white/10 text-white italic text-xs"
+                                />
                             </div>
                             <motion.div whileHover={(!selectedAgentId || !toolName || !condition) ? {} : { scale: 1.02 }} whileTap={(!selectedAgentId || !toolName || !condition) ? {} : { scale: 0.98 }}>
                                 <Button type="submit" disabled={!selectedAgentId || !toolName || !condition} className="w-full bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all font-medium mt-4 disabled:opacity-50 disabled:shadow-none">
@@ -390,21 +446,31 @@ export default function PoliciesPage() {
                                             <TableHead className="text-neutral-400 font-medium px-6 py-4">Agent</TableHead>
                                             <TableHead className="text-neutral-400 font-medium py-4">Tool</TableHead>
                                             <TableHead className="text-neutral-400 font-medium py-4">Condition</TableHead>
+                                            <TableHead className="text-neutral-400 font-medium py-4">Priority</TableHead>
                                             <TableHead className="text-neutral-400 font-medium py-4">Decision</TableHead>
+                                            <TableHead className="text-neutral-400 font-medium py-4">Mode</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {policies.map((p) => (
                                             <TableRow key={p.id} className="border-white/[0.02] hover:bg-white/[0.02] transition-colors group/row">
-                                                <TableCell className="font-medium text-white px-6 py-4">{getAgentName(p.agentId)}</TableCell>
-                                                <TableCell className="text-neutral-300 font-mono text-sm py-4">{p.toolName}</TableCell>
+                                                <TableCell className="font-medium text-white px-6 py-4">{getAgentName(p.agentid || p.agentId)}</TableCell>
+                                                <TableCell className="text-neutral-300 font-mono text-sm py-4">{p.toolname || p.toolName}</TableCell>
                                                 <TableCell className="font-mono text-xs max-w-[200px] truncate text-emerald-400 py-4 group-hover/row:text-emerald-300 transition-colors">
                                                     <span className="bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{p.condition}</span>
                                                 </TableCell>
+                                                <TableCell className="py-4 text-xs font-mono text-neutral-400">{p.priority || 100}</TableCell>
                                                 <TableCell className="py-4">
-                                                    <span className={`px-2.5 py-1 rounded-md text-xs font-semibold border ${getRuleBadgeColor(p.ruleType)}`}>
-                                                        {p.ruleType}
+                                                    <span className={`px-2.5 py-1 rounded-md text-xs font-semibold border ${getRuleBadgeColor(p.ruletype || p.ruleType)}`}>
+                                                        {p.ruletype || p.ruleType}
                                                     </span>
+                                                </TableCell>
+                                                <TableCell className="py-4 text-xs">
+                                                    {(p.isdryrun !== undefined ? p.isdryrun : p.isDryRun) ? (
+                                                        <span className="text-amber-500 font-black italic tracking-tighter uppercase">Dry Run</span>
+                                                    ) : (
+                                                        <span className="text-neutral-600 font-black italic tracking-tighter uppercase">Enforced</span>
+                                                    )}
                                                 </TableCell>
                                             </TableRow>
                                         ))}

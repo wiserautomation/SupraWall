@@ -1,357 +1,262 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp, orderBy } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { motion, AnimatePresence } from "framer-motion";
-import { ShieldCheck, UserCheck, X, Clock, Eye, Check, AlertCircle, Terminal, MessageSquare, ArrowRight, Shield, Activity, Fingerprint } from "lucide-react";
+import { 
+    Check, 
+    X, 
+    Shield, 
+    Clock, 
+    Terminal, 
+    UserCheck, 
+    AlertCircle, 
+    ArrowRight,
+    Loader2,
+    Lock
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { format } from "date-fns";
-import { ApprovalRequest } from "@/types/database";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatDistanceToNow } from "date-fns";
+
+interface ApprovalRequest {
+    id: string;
+    agentid: string;
+    toolname: string;
+    parameters: any;
+    status: "pending" | "approved" | "denied";
+    createdat: string;
+    metadata?: any;
+}
+
+const API_BASE = "http://localhost:3000"; // Assuming 3000 for now, should use env
 
 export default function ApprovalsPage() {
     const [user] = useAuthState(auth);
     const [requests, setRequests] = useState<ApprovalRequest[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedRequest, setSelectedRequest] = useState<ApprovalRequest | null>(null);
-    const [isProcessing, setIsProcessing] = useState<string | null>(null);
-    const [plan, setPlan] = useState<string>("starter");
+    const [processingId, setProcessingId] = useState<string | null>(null);
 
-    useEffect(() => {
-        if (!user) return;
-        const orgRef = doc(db, "organizations", user.uid);
-        const unsubscribe = onSnapshot(orgRef, (snap) => {
-            if (snap.exists()) {
-                setPlan(snap.data()?.plan || "starter");
-            }
-        });
-        return () => unsubscribe();
-    }, [user]);
-
-    useEffect(() => {
-        if (!user) return;
-
-        const q = query(
-            collection(db, "approvalRequests"),
-            where("userId", "==", user.uid),
-            orderBy("createdAt", "desc")
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const list = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            } as ApprovalRequest));
-            setRequests(list);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [user]);
-
-    const handleDecision = async (id: string, decision: 'approved' | 'denied', note?: string) => {
-        setIsProcessing(id);
+    const fetchRequests = async () => {
         try {
-            const reqRef = doc(db, "approvalRequests", id);
-            await updateDoc(reqRef, {
-                status: decision,
-                reviewedBy: user?.email || user?.uid,
-                reviewNote: note || "",
-                respondedAt: serverTimestamp()
-            });
-            setSelectedRequest(null);
+            const res = await fetch(`${API_BASE}/v1/approvals/pending/default-tenant`);
+            if (res.ok) {
+                const data = await res.json();
+                setRequests(data);
+            }
         } catch (error) {
-            console.error("Failed to update approval:", error);
+            console.error("Error fetching approvals:", error);
         } finally {
-            setIsProcessing(null);
+            setLoading(false);
         }
     };
 
-    const pendingRequests = requests.filter(r => r.status === 'pending');
-    const historyRequests = requests.filter(r => r.status !== 'pending');
+    useEffect(() => {
+        if (!user) return;
+        fetchRequests();
+        
+        // Poll every 5 seconds for "realtime" feel
+        const interval = setInterval(fetchRequests, 5000);
+        return () => clearInterval(interval);
+    }, [user]);
+
+    const handleAction = async (id: string, decision: "approved" | "denied") => {
+        setProcessingId(id);
+        try {
+            const res = await fetch(`${API_BASE}/v1/approvals/respond`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id,
+                    decision,
+                    comment: decision === "approved" ? "Approved via Dashboard" : "Denied via Dashboard",
+                    userId: user?.email || user?.uid
+                })
+            });
+
+            if (res.ok) {
+                // Optimistically remove from list
+                setRequests(prev => prev.filter(r => r.id !== id));
+            }
+        } catch (error) {
+            console.error("Error updating approval status:", error);
+        } finally {
+            setProcessingId(null);
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white p-8">
-            <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="max-w-7xl mx-auto space-y-12"
-            >
-                {/* Header Section */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2 mb-1">
-                            <div className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                            <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Human-in-the-Loop</span>
-                        </div>
-                        <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic">
-                            Governance <span className="text-emerald-500">Approvals</span>
-                        </h1>
-                        <p className="text-neutral-500 text-lg font-medium max-w-2xl">
-                            Real-time intervention for sensitive tool execution. Secure your swarm with human oversight.
-                        </p>
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-8 max-w-5xl mx-auto"
+        >
+            {/* Header */}
+            <div className="flex justify-between items-end mb-8 border-b border-white/[0.05] pb-8">
+                <div className="space-y-2">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-blue-500/20 bg-blue-500/5 mb-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        <span className="text-[9px] font-black tracking-[0.2em] text-blue-400 uppercase">Human-in-the-Loop</span>
                     </div>
+                    <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Approval Queue</h1>
+                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">High-risk actions awaiting human intervention.</p>
+                </div>
+                <div className="text-right">
+                    <p className="text-3xl font-black text-white italic">{requests.length}</p>
+                    <p className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">Pending Decisions</p>
+                </div>
+            </div>
 
-                    <div className="flex gap-4">
-                        <Card className="bg-white/[0.03] border-white/[0.05] backdrop-blur-xl px-6 py-3 flex items-center gap-4">
-                            <div className="text-right">
-                                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Pending</p>
-                                <p className="text-3xl font-black text-white leading-none">{pendingRequests.length}</p>
-                            </div>
-                            <div className="h-8 w-px bg-white/10" />
-                            <Shield className="w-8 h-8 text-emerald-500/50" />
-                        </Card>
+            {loading ? (
+                <div className="flex flex-col items-center justify-center py-24 gap-4">
+                    <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                    <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Scanning the wire...</p>
+                </div>
+            ) : requests.length === 0 ? (
+                <div className="bg-black/40 backdrop-blur-3xl border border-white/[0.05] rounded-3xl p-20 text-center space-y-4">
+                    <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.1)]">
+                        <UserCheck className="w-8 h-8 text-emerald-500" />
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">Queue Clear</h3>
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mt-2">All agents operating within safety thresholds.</p>
                     </div>
                 </div>
-
-                {/* Main Content Areas */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-
-                    {/* Left: Pending Actions List */}
-                    <div className="lg:col-span-2 space-y-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400 flex items-center gap-2">
-                                <Activity className="w-4 h-4 text-emerald-500" />
-                                Live Intervention Queue
-                            </h2>
-                            {pendingRequests.length > 0 && (
-                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20">
-                                    Needs Review
-                                </Badge>
-                            )}
-                        </div>
-
-                        <AnimatePresence mode="popLayout">
-                            {pendingRequests.length === 0 ? (
-                                <motion.div
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    className="bg-white/[0.02] border border-dashed border-white/10 rounded-3xl p-20 flex flex-col items-center justify-center text-center space-y-4"
-                                >
-                                    <div className="p-4 bg-white/5 rounded-full">
-                                        <ShieldCheck className="w-10 h-10 text-neutral-700" />
-                                    </div>
-                                    <div>
-                                        <h3 className="text-white font-bold text-xl tracking-tight">System Fully Governed</h3>
-                                        <p className="text-neutral-500 text-sm">All agent actions are currently complying with static policies.</p>
-                                    </div>
-                                </motion.div>
-                            ) : (
-                                <div className="space-y-4">
-                                    {pendingRequests.map((req, idx) => (
-                                        <motion.div
-                                            key={req.id}
-                                            initial={{ opacity: 0, x: -20 }}
-                                            animate={{ opacity: 1, x: 0 }}
-                                            transition={{ delay: idx * 0.1 }}
-                                            className="group relative bg-[#0a0a0a] border border-white/[0.05] hover:border-emerald-500/30 rounded-2xl p-6 transition-all shadow-2xl overflow-hidden"
-                                        >
-                                            <div className="absolute top-0 right-0 p-3">
-                                                <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">Pending</Badge>
-                                            </div>
-
-                                            <div className="flex items-start gap-5">
-                                                <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
-                                                    <Terminal className="w-6 h-6 text-emerald-500" />
-                                                </div>
-                                                <div className="flex-1 space-y-3">
+            ) : (
+                <div className="space-y-4">
+                    <AnimatePresence mode="popLayout">
+                        {requests.map((req) => (
+                            <motion.div
+                                key={req.id}
+                                layout
+                                initial={{ opacity: 0, scale: 0.98 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, x: -20 }}
+                                className="group relative"
+                            >
+                                <Card className="bg-black/60 backdrop-blur-xl border-white/[0.05] hover:border-blue-500/30 transition-all duration-500 overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-500/40 group-hover:bg-blue-500 transition-colors" />
+                                    <CardContent className="p-6">
+                                        <div className="flex flex-col md:flex-row gap-6 justify-between">
+                                            <div className="space-y-4 flex-grow">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                                        <Terminal className="w-4 h-4 text-blue-400" />
+                                                    </div>
                                                     <div>
-                                                        <h3 className="text-white font-black text-xl tracking-tight flex items-center gap-2">
-                                                            {req.toolName}
-                                                            <ArrowRight className="w-4 h-4 text-neutral-700" />
-                                                            <span className="text-emerald-500/80">{req.agentName || "Agent"}</span>
-                                                        </h3>
-                                                        <p className="text-neutral-500 text-xs font-medium uppercase tracking-widest mt-1">
-                                                            Requested {req.createdAt ? format(req.createdAt.toDate(), 'HH:mm:ss') : 'just now'} • Session: {req.sessionId?.slice(0, 8) || 'N/A'}
+                                                        <div className="flex items-center gap-2">
+                                                            <h3 className="font-black text-white uppercase tracking-tight text-sm">{req.toolname}</h3>
+                                                            <Badge variant="outline" className="text-[8px] bg-white/5 border-white/10 uppercase tracking-widest px-1.5 py-0">Pending</Badge>
+                                                        </div>
+                                                        <p className="text-[9px] font-black text-neutral-500 uppercase tracking-widest mt-0.5 flex items-center gap-1">
+                                                            <Clock className="w-3 h-3" />
+                                                            {formatDistanceToNow(new Date(req.createdat), { addSuffix: true })}
                                                         </p>
                                                     </div>
+                                                </div>
 
-                                                    <div className="bg-black/50 rounded-xl p-4 font-mono text-xs text-neutral-400 border border-white/[0.03] max-h-32 overflow-hidden relative">
-                                                        {req.arguments}
-                                                        <div className="absolute bottom-0 left-0 w-full h-10 bg-gradient-to-t from-[#0a0a0a] to-transparent" />
-                                                    </div>
-
-                                                    <div className="flex items-center gap-3 pt-2">
-                                                        <Button
-                                                            onClick={() => setSelectedRequest(req)}
-                                                            variant="outline"
-                                                            className="bg-white/5 border-white/10 hover:bg-white/10 text-white gap-2"
-                                                        >
-                                                            <Eye className="w-4 h-4" /> Inspect
-                                                        </Button>
-                                                        <div className="flex-1" />
-                                                        <Button
-                                                            onClick={() => handleDecision(req.id!, 'denied')}
-                                                            variant="ghost"
-                                                            className="text-red-500 hover:text-red-400 hover:bg-red-500/10 font-bold"
-                                                            disabled={isProcessing === req.id}
-                                                        >
-                                                            <X className="w-4 h-4 mr-2" /> Deny
-                                                        </Button>
-                                                        <Button
-                                                            onClick={() => handleDecision(req.id!, 'approved')}
-                                                            className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold shadow-[0_0_20px_rgba(16,185,129,0.3)] shadow-emerald-500/20 transition-all hover:scale-105"
-                                                            disabled={isProcessing === req.id}
-                                                        >
-                                                            <Check className="w-4 h-4 mr-2" /> Approve
-                                                        </Button>
+                                                <div className="space-y-2">
+                                                    <p className="text-[9px] font-black text-neutral-600 uppercase tracking-widest">Execution Context</p>
+                                                    <div className="bg-black/40 border border-white/5 rounded-xl p-4 font-mono text-xs overflow-x-auto">
+                                                        <pre className="text-neutral-300">
+                                                            {JSON.stringify(req.parameters, null, 2)}
+                                                        </pre>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </motion.div>
-                                    ))}
-                                </div>
-                            )}
-                        </AnimatePresence>
-                    </div>
 
-                    {/* Right: History & Insights */}
-                    <div className="space-y-6">
-                        <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-400 flex items-center gap-2 mb-4">
-                            <Clock className="w-4 h-4 text-neutral-500" />
-                            Recent Decisions
-                        </h2>
-
-                        <div className="bg-white/[0.02] border border-white/[0.05] rounded-3xl overflow-hidden divide-y divide-white/[0.05]">
-                            {historyRequests.length === 0 ? (
-                                <div className="p-10 text-center text-neutral-600 text-xs italic">
-                                    No historical decisions in this cycle.
-                                </div>
-                            ) : (
-                                historyRequests.slice(0, 10).map((req) => (
-                                    <div key={req.id} className="p-5 flex items-start gap-4 hover:bg-white/[0.02] transition-colors">
-                                        <div className={`p-2 rounded-lg ${req.status === 'approved' ? 'bg-emerald-500/10' : 'bg-red-500/10'}`}>
-                                            {req.status === 'approved' ? <UserCheck className="w-4 h-4 text-emerald-500" /> : <X className="w-4 h-4 text-red-500" />}
-                                        </div>
-                                        <div className="flex-1">
-                                            <div className="flex justify-between">
-                                                <p className="font-bold text-sm text-white">{req.toolName}</p>
-                                                <p className="text-[10px] text-neutral-600">{req.respondedAt ? format(req.respondedAt.toDate(), 'MM/dd HH:mm') : ''}</p>
+                                                <div className="flex items-center gap-4">
+                                                    <div className="space-y-1">
+                                                        <p className="text-[9px] font-black text-neutral-600 uppercase tracking-widest flex items-center gap-1">
+                                                            <Shield className="w-3 h-3" />
+                                                            Origin Agent
+                                                        </p>
+                                                        <span className="px-2 py-0.5 bg-white/5 border border-white/10 rounded text-[9px] font-mono text-neutral-400">{req.agentid}</span>
+                                                    </div>
+                                                </div>
+                                                
+                                                {req.metadata?.matchedRule && (
+                                                    <div className="flex items-start gap-2 p-3 bg-amber-500/5 border border-amber-500/10 rounded-xl">
+                                                        <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+                                                        <p className="text-xs text-amber-200/80">
+                                                            <span className="font-bold uppercase text-[9px] tracking-widest block mb-1">Trigger Reason:</span>
+                                                            Policy Match: {req.metadata.matchedRule}
+                                                        </p>
+                                                    </div>
+                                                )}
                                             </div>
-                                            <p className="text-[10px] uppercase font-bold tracking-tighter text-neutral-500 mt-0.5">{req.agentName}</p>
+
+                                            <div className="flex md:flex-col gap-2 justify-end">
+                                                <Button 
+                                                    onClick={() => handleAction(req.id, "denied")} 
+                                                    disabled={processingId === req.id}
+                                                    variant="outline" 
+                                                    className="border-rose-500/20 bg-rose-500/5 text-rose-400 hover:bg-rose-500 hover:text-white transition-all font-black uppercase tracking-wider text-[10px] h-12 flex-grow md:w-32"
+                                                >
+                                                    {processingId === req.id ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <X className="w-3 h-3 mr-2" />}
+                                                    Reject
+                                                </Button>
+                                                <Button 
+                                                    onClick={() => handleAction(req.id, "approved")}
+                                                    disabled={processingId === req.id}
+                                                    className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all font-black uppercase tracking-wider text-[10px] h-12 flex-grow md:w-32"
+                                                >
+                                                    {processingId === req.id ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <Check className="w-3 h-3 mr-2" />}
+                                                    Approve
+                                                </Button>
+                                            </div>
                                         </div>
+                                    </CardContent>
+                                    
+                                    {/* Security Watermark */}
+                                    <div className="absolute -bottom-4 -right-4 opacity-[0.03] pointer-events-none">
+                                        <Shield className="w-32 h-32 text-white" />
                                     </div>
-                                ))
-                            )}
-                        </div>
-
-                        <Card className="bg-emerald-950/20 border-emerald-500/20 p-6 rounded-3xl space-y-4">
-                            <div className="flex items-center gap-3">
-                                <ShieldCheck className="w-6 h-6 text-emerald-500" />
-                                <h3 className="font-black text-emerald-500 uppercase italic tracking-wider">Governance Tip</h3>
-                            </div>
-                            <p className="text-sm text-neutral-400 leading-relaxed">
-                                Use <span className="text-white font-bold">conditional policies</span> to automate approvals for low-risk actions, while keeping human oversight for deletions and financial transactions.
-                            </p>
-                        </Card>
-                    </div>
+                                </Card>
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
-            </motion.div>
-
-            {/* Footer Branding (Free/Starter only) */}
-            {plan === "starter" && (
-                <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.8 }}
-                    className="mt-20 border-t border-white/5 bg-black/40 py-8 text-center"
-                >
-                    <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row items-center justify-center gap-2 md:gap-4 text-xs font-medium text-neutral-500">
-                        <div className="flex items-center gap-2">
-                            <Shield className="w-3 h-3 text-emerald-500" />
-                            <span>Protected by <a href="https://suprawall.ai?ref=dashboard-approvals" target="_blank" rel="noopener noreferrer" className="text-emerald-400 hover:text-emerald-300 transition-colors font-bold">SupraWall</a></span>
-                        </div>
-                        <span className="hidden md:inline text-neutral-800">|</span>
-                        <span>Enterprise AI security & compliance infrastructure</span>
-                        <span className="hidden md:inline text-neutral-800">|</span>
-                        <a href="/pricing" className="text-neutral-400 hover:text-white transition-colors flex items-center gap-1">
-                            Remove this branding <ArrowRight className="w-3 h-3" />
-                        </a>
-                    </div>
-                </motion.div>
             )}
 
-            {/* Inspect Dialog */}
-            <Dialog open={!!selectedRequest} onOpenChange={() => setSelectedRequest(null)}>
-                <DialogContent className="max-w-3xl bg-[#0a0a0a] border border-white/10 text-white rounded-3xl shadow-3xl">
-                    <DialogHeader>
-                        <DialogTitle className="text-3xl font-black uppercase italic italic tracking-tighter flex items-center gap-3">
-                            <Fingerprint className="w-8 h-8 text-emerald-500" />
-                            Tool Call <span className="text-emerald-500">Inspector</span>
-                        </DialogTitle>
-                        <DialogDescription className="text-neutral-500 font-medium">
-                            Review the full context before authorizing execution.
-                        </DialogDescription>
-                    </DialogHeader>
-
-                    {selectedRequest && (
-                        <div className="space-y-6 py-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/[0.05]">
-                                    <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Agent Identity</p>
-                                    <p className="text-white font-bold">{selectedRequest.agentName}</p>
-                                    <p className="text-xs text-neutral-600 font-mono mt-1">{selectedRequest.agentId}</p>
-                                </div>
-                                <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/[0.05]">
-                                    <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-1">Tool Target</p>
-                                    <p className="text-white font-bold underline decoration-emerald-500/50">{selectedRequest.toolName}</p>
-                                    <p className="text-xs text-neutral-600 font-mono mt-1">v1.2.0-stable</p>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-2">
-                                    <MessageSquare className="w-3 h-3 text-emerald-500" /> Payload (Arguments)
-                                </label>
-                                <div className="bg-black/80 rounded-2xl p-6 border border-white/10 max-h-96 overflow-auto custom-scrollbar">
-                                    <pre className="text-emerald-500 font-mono text-sm leading-relaxed">
-                                        {JSON.stringify(JSON.parse(selectedRequest.arguments), null, 2)}
-                                    </pre>
-                                </div>
-                            </div>
-
-                            <div className="flex justify-end gap-3 pt-4">
-                                <Button
-                                    onClick={() => handleDecision(selectedRequest.id!, 'denied')}
-                                    variant="outline"
-                                    className="border-red-500/20 hover:bg-red-500/10 text-red-500 font-bold px-8 rounded-xl"
-                                    disabled={isProcessing === selectedRequest.id}
-                                >
-                                    Block Execution
-                                </Button>
-                                <Button
-                                    onClick={() => handleDecision(selectedRequest.id!, 'approved')}
-                                    className="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-10 rounded-xl transition-all shadow-xl shadow-emerald-600/20"
-                                    disabled={isProcessing === selectedRequest.id}
-                                >
-                                    Authorize Tool Call
-                                </Button>
-                            </div>
+            {/* Governance Legend */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12 border-t border-white/[0.05]">
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
+                            <Check className="w-4 h-4 text-emerald-500" />
                         </div>
-                    )}
-                </DialogContent>
-            </Dialog>
-
-            <style jsx global>{`
-                .custom-scrollbar::-webkit-scrollbar {
-                    width: 6px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-track {
-                    background: transparent;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb {
-                    background: #333;
-                    border-radius: 10px;
-                }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-                    background: #555;
-                }
-            `}</style>
-        </div>
+                        <p className="text-[10px] font-black text-white uppercase tracking-widest">Approve</p>
+                    </div>
+                    <p className="text-[9px] text-neutral-500 leading-relaxed uppercase tracking-wider">
+                        Action proceeds with currently defined arguments. Agent resumes immediately.
+                    </p>
+                </div>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
+                            <X className="w-4 h-4 text-rose-500" />
+                        </div>
+                        <p className="text-[10px] font-black text-white uppercase tracking-widest">Deny</p>
+                    </div>
+                    <p className="text-[9px] text-neutral-500 leading-relaxed uppercase tracking-wider">
+                        Interrupts agent execution flow. Agent receives a security block error.
+                    </p>
+                </div>
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center border border-purple-500/20">
+                            <Lock className="w-4 h-4 text-purple-500" />
+                        </div>
+                        <p className="text-[10px] font-black text-white uppercase tracking-widest">Vault Integration</p>
+                    </div>
+                    <p className="text-[9px] text-neutral-500 leading-relaxed uppercase tracking-wider">
+                        Approvals may bypass scrubbing if explicitly requested by policy override.
+                    </p>
+                </div>
+            </div>
+        </motion.div>
     );
 }

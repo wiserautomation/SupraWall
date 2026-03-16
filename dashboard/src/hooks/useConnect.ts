@@ -19,7 +19,7 @@ const getFunctionsInstance = () => {
     return functions;
 };
 
-const functions = getFunctionsInstance();
+
 
 export function usePlatform() {
     const [platform, setPlatform] = useState<Platform | null>(null);
@@ -30,7 +30,7 @@ export function usePlatform() {
         setLoading(true);
         setError(null);
         try {
-            const fn = httpsCallable(functions!, "getPlatform");
+            const fn = httpsCallable(getFunctionsInstance()!, "getPlatform");
             const result = await fn({});
             setPlatform(result.data as Platform);
         } catch (e: any) {
@@ -47,7 +47,7 @@ export function usePlatform() {
     useEffect(() => { fetchPlatform(); }, [fetchPlatform]);
 
     const createPlatform = async (name: string) => {
-        const fn = httpsCallable(functions!, "createPlatform");
+        const fn = httpsCallable(getFunctionsInstance()!, "createPlatform");
         const result = await fn({ name });
         await fetchPlatform();
         return result.data;
@@ -58,7 +58,7 @@ export function usePlatform() {
         rules: PolicyRule[],
         rateLimit: RateLimitConfig
     ) => {
-        const fn = httpsCallable(functions!, "updateBasePolicies");
+        const fn = httpsCallable(getFunctionsInstance()!, "updateBasePolicies");
         await fn({ platformId, rules, rateLimit });
         await fetchPlatform();
     };
@@ -72,11 +72,11 @@ export function useConnectKeys(platformId: string | undefined) {
     const [error, setError] = useState<string | null>(null);
 
     const fetchKeys = useCallback(async () => {
-        if (!platformId || !functions) return;
+        if (!platformId || !getFunctionsInstance()) return;
         setLoading(true);
         setError(null);
         try {
-            const fn = httpsCallable(functions!, "listConnectKeys");
+            const fn = httpsCallable(getFunctionsInstance()!, "listConnectKeys");
             const result = await fn({ platformId });
             setKeys((result.data as any).keys);
         } catch (e: any) {
@@ -95,14 +95,14 @@ export function useConnectKeys(platformId: string | undefined) {
         policyOverrides?: PolicyRule[];
         rateLimitOverride?: RateLimitConfig;
     }) => {
-        const fn = httpsCallable(functions!, "issueConnectKey");
+        const fn = httpsCallable(getFunctionsInstance()!, "issueConnectKey");
         const result = await fn(params);
         await fetchKeys();
         return (result.data as any).subKeyId as string;
     };
 
     const revokeKey = async (subKeyId: string) => {
-        const fn = httpsCallable(functions!, "revokeConnectKey");
+        const fn = httpsCallable(getFunctionsInstance()!, "revokeConnectKey");
         await fn({ subKeyId });
         await fetchKeys();
     };
@@ -116,9 +116,9 @@ export function useConnectAnalytics(platformId: string | undefined, days = 7) {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!platformId || !functions) return;
+        if (!platformId || !getFunctionsInstance()) return;
         setLoading(true);
-        const fn = httpsCallable(functions!, "getConnectAnalytics");
+        const fn = httpsCallable(getFunctionsInstance()!, "getConnectAnalytics");
         fn({ platformId, limitDays: days })
             .then((r) => setAnalytics(r.data as ConnectAnalytics))
             .catch((e) => setError(e?.message ?? "Failed to load analytics."))
@@ -138,9 +138,9 @@ export function useConnectEvents(platformId: string | undefined, filters?: {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!platformId || !functions) return;
+        if (!platformId || !getFunctionsInstance()) return;
         setLoading(true);
-        const fn = httpsCallable(functions!, "getConnectEvents");
+        const fn = httpsCallable(getFunctionsInstance()!, "getConnectEvents");
         fn({ platformId, ...filters })
             .then((r) => setEvents((r.data as any).events))
             .catch((e) => setError(e?.message ?? "Failed to load events."))

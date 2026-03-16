@@ -7,10 +7,11 @@ import { suprawall } from "@/lib/suprawall";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2 } from "lucide-react";
+import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2, ShieldCheck } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 
@@ -21,6 +22,7 @@ import { AuditLog } from "@/types/database";
 import { format } from "date-fns";
 
 import { PolicyValidator } from "@/components/PolicyValidator";
+import { OnboardingWizard } from "@/components/OnboardingWizard";
 
 export default function OverviewPage() {
     const [user] = useAuthState(auth);
@@ -44,146 +46,118 @@ export default function OverviewPage() {
     const [chartData, setChartData] = useState<any[]>([]);
     const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
+    const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
+    const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+    const API_BASE = "https://suprawall-server.vercel.app";
 
-
-    useEffect(() => {
-        if (!user) {
-            // Wait for user or fallback
-            return;
-        }
-
-        const q = query(
-            collection(db, "agents"), 
-            where("userId", "==", user.uid)
-        );
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const agentsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
-            setAgents(agentsList);
-            setLoading(false);
-
-            // Fetch logs to calculate stats for THESE agents
-            if (agentsList.length > 0) {
-                const agentIds = agentsList.map(a => a.id).slice(0, 10);
-                const qLogs = query(collection(db, "audit_logs"), where("agentId", "in", agentIds));
-
-                onSnapshot(qLogs, (logSnap) => {
-                    const logs = logSnap.docs.map(d => d.data() as AuditLog);
-                    let total = logs.length;
-                    let blocked = 0;
-                    let spend = 0;
-                    let saved = 0;
-
-                    const dailyBuckets: Record<string, number> = {};
-
-                    logs.forEach(log => {
-                        const callCost = log.estimated_cost_usd || log.cost_usd || 0;
-
-                        if (log.decision === "DENY") {
-                            blocked++;
-                            // Savings estimate: 
-                            // 1. If loop detection: assume we saved 10-20 more calls
-                            // 2. Base protection value: $2.50 per block
-                            if (log.isLoop) {
-                                saved += 10.00; // Loops are expensive
-                            } else {
-                                saved += 2.50;
-                            }
-                        } else if (log.decision === "ALLOW") {
-                            spend += callCost;
-                            if (log.timestamp) {
-                                const dateStr = format(log.timestamp.toDate(), 'MM/dd');
-                                dailyBuckets[dateStr] = (dailyBuckets[dateStr] || 0) + callCost;
-                            }
-                        }
-                    });
-
-                    setStats({
-                        totalCalls: total,
-                        blockedActions: blocked,
-                        actualSpend: spend,
-                        costSaved: saved
-                    });
-
-                    const chartItems = Object.entries(dailyBuckets)
-                        .map(([date, amount]) => ({ date, amount: parseFloat(amount.toFixed(4)) }))
-                        .sort((a, b) => a.date.localeCompare(b.date))
-                        .slice(-7);
-
-                    setChartData(chartItems);
-                });
+    const fetchData = async () => {
+        if (!user) return;
+        try {
+            // 1. Fetch Agents
+            const agentsRes = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
+            if (agentsRes.ok) {
+                const list = await agentsRes.json();
+                setAgents(list);
             }
-        }, (error) => {
-            console.error("Error fetching agents:", error);
+
+            // 2. Fetch Stats
+            const statsRes = await fetch(`${API_BASE}/v1/stats?tenantId=default-tenant`);
+            if (statsRes.ok) {
+                const s = await statsRes.json();
+                setStats({
+                    totalCalls: s.totalCalls,
+                    blockedActions: s.blockedActions,
+                    actualSpend: s.actualSpend,
+                    costSaved: s.blockedActions * 2.5 // Estimated savings
+                });
+                setChartData(s.chartData || []);
+                setPendingApprovalsCount(s.pendingApprovalsCount);
+            }
+
+            // 3. Fetch Recent Logs
+            const logsRes = await fetch(`${API_BASE}/v1/audit-logs?tenantId=default-tenant&limit=10`);
+            if (logsRes.ok) {
+                const logs = await logsRes.json();
+                setRecentLogs(logs);
+            }
+            
             setLoading(false);
-        });
-
-        // Fetch pending approvals count
-        const qApprovals = query(
-            collection(db, "approvalRequests"),
-            where("userId", "==", user.uid),
-            where("status", "==", "pending")
-        );
-        const unsubscribeApprovals = onSnapshot(qApprovals, (snap) => {
-            setPendingApprovalsCount(snap.size);
-        });
-
-        return () => {
-            unsubscribe();
-            unsubscribeApprovals();
+        } catch (e) {
+            console.error(e);
         }
-    }, [user]);
-
-    const generateApiKey = () => {
-        return 'ag_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     };
 
-    const createAgent = async () => {
-        const trimmedName = newAgentName.trim();
-        if (!user || !trimmedName) {
-            setNameError("Agent name cannot be empty.");
-            return;
-        }
+    useEffect(() => {
+        if (!user) return;
+        fetchData();
+        const interval = setInterval(fetchData, 10000); // Poll every 10 seconds
+        return () => clearInterval(interval);
+    }, [user]);
 
-        const isTaken = agents.some(a => a.name.toLowerCase() === trimmedName.toLowerCase());
-        if (isTaken) {
-            setNameError(`The name "${trimmedName}" is already taken.`);
-            return;
-        }
-
+    const handleCreateAgent = async (e: React.FormEvent) => {
+        e.preventDefault();
         setNameError("");
+        if (!newAgentName.trim()) {
+            setNameError("Agent name is required");
+            return;
+        }
+
+        const trimmedName = newAgentName.trim();
         setIsSubmitting(true);
         try {
-            const apiKey = generateApiKey();
-
-            const timeout = new Promise<never>((_, reject) =>
-                setTimeout(() => reject(new Error("timeout")), 10000)
-            );
-
-            await Promise.race([
-                addDoc(collection(db, "agents"), {
-                    userId: user.uid,
+            const res = await fetch(`${API_BASE}/v1/agents`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenantId: "default-tenant",
                     name: trimmedName,
-                    apiKey,
-                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
-                    status: 'active',
-                    totalCalls: 0,
-                    totalSpendUsd: 0,
-                    createdAt: serverTimestamp(),
-                }),
-                timeout,
-            ]);
-
-            setNewAgentName("");
-            setSelectedScopes([]);
-            setIsCreateModalOpen(false);
-            sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
-        } catch (e: any) {
-            console.error("Error creating agent", e);
-            if (e?.message === "timeout") {
-                setNameError("Request timed out. Firestore may be blocked by an ad blocker. Please disable it for supra-wall.com and try again.");
+                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
+                })
+            });
+            
+            if (res.ok) {
+                const agent = await res.json();
+                setNewlyCreatedKey(agent.apikey);
+                setNewAgentName("");
+                setSelectedScopes([]);
+                setIsCreateModalOpen(false);
+                setIsSuccessModalOpen(true);
+                fetchData(); // Refresh list
             } else {
-                setNameError("Failed to create the agent. Please try again.");
+                setNameError("Failed to create agent");
             }
+        } catch (e) {
+            console.error(e);
+            setNameError("Connection error");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const createAgent = () => handleCreateAgent({ preventDefault: () => {} } as React.FormEvent);
+
+    const performAgentCreation = async (name: string, scopes: string[]) => {
+        setIsSubmitting(true);
+        try {
+            const res = await fetch(`${API_BASE}/v1/agents`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenantId: "default-tenant",
+                    name,
+                    scopes: scopes.length > 0 ? scopes : ["*:*"]
+                })
+            });
+            if (res.ok) {
+                const agent = await res.json();
+                setNewlyCreatedKey(agent.apikey);
+                setIsSuccessModalOpen(true);
+                fetchData();
+            }
+        } catch (e) {
+            console.error(e);
         } finally {
             setIsSubmitting(false);
         }
@@ -204,7 +178,9 @@ export default function OverviewPage() {
         }
     };
 
-    const getNodeCode = (apiKey: string) => `import { protect } from '@suprawall/langchain';
+    const displayApiKey = (agent: any) => agent.apikey || "ag_****************";
+
+    const getNodeCode = (agent: any) => `import { protect } from '@suprawall/langchain';
 import { createReactAgent } from '@langchain/langgraph/prebuilt';
 
 // 1. Initialize your LangGraph Agent
@@ -212,25 +188,25 @@ const agent = createReactAgent({ llm, tools });
 
 // 2. Wrap it with SupraWall (Zero-Config)
 const secured = protect(agent, {
-  apiKey: "${apiKey}",
+  apiKey: "${agent.apikey || 'YOUR_API_KEY'}",
   riskThreshold: 70 // Optional: block actions >= 70 risk score
 });
 
 // 3. Run safely - Forensic logs are automatically streamed
 await secured.invoke({ messages: [...] });`;
 
-    const getPythonCode = (apiKey: string) => `from suprawall import protect
+    const getPythonCode = (agent: any) => `from suprawall import protect
 from langgraph.prebuilt import create_react_agent
 
 # 🛡️ Secure any LangGraph agent with one wrapper
 agent = create_react_agent(llm, tools)
-secured = protect(agent, api_key="${apiKey}")
+secured = protect(agent, api_key="${agent.apikey || 'YOUR_API_KEY'}")
 
 # That's it. Tool usage is now governed.
 secured.invoke({"messages": [...]})`;
 
-    const getCurlCode = (apiKey: string) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
-  -H "Authorization: Bearer ${apiKey}" \\
+    const getCurlCode = (agent: any) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
+  -H "Authorization: Bearer ${agent.apikey || 'YOUR_API_KEY'}" \\
   -H "Content-Type: application/json" \\
   -d '{
     "toolName": "bash_tool",
@@ -419,7 +395,11 @@ secured.invoke({"messages": [...]})`;
                             </div>
                         </div>
                     </div>
-                    <Button variant="outline" className="w-full mt-6 bg-white/5 border-white/10 hover:bg-white/10 text-white">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => setIsAnalyticsModalOpen(true)}
+                        className="w-full mt-6 bg-white/5 border-white/10 hover:bg-white/10 text-white"
+                    >
                         Full Analytics Report
                     </Button>
                 </Card>
@@ -472,22 +452,12 @@ secured.invoke({"messages": [...]})`;
                             <p className="text-neutral-500 animate-pulse">Loading agents...</p>
                         </div>
                     ) : agents.length === 0 ? (
-                        <div className="py-24 text-center text-neutral-500">
-                            <motion.div
-                                initial={{ scale: 0.9, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                transition={{ delay: 0.2 }}
-                                className="flex flex-col items-center gap-4"
-                            >
-                                <div className="w-16 h-16 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 flex items-center justify-center">
-                                    <Key className="w-8 h-8 text-emerald-500/30" />
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-neutral-500">No agents registered</p>
-                                    <p className="text-[10px] text-neutral-600 font-black uppercase tracking-wider">Create an agent to generate a zero-trust API key.</p>
-                                </div>
-                            </motion.div>
-                        </div>
+                        <OnboardingWizard 
+                            onComplete={async (data) => {
+                                await performAgentCreation(data.name, data.scopes);
+                            }}
+                            isSubmitting={isSubmitting}
+                        />
                     ) : (
                         <Table>
                             <TableHeader>
@@ -509,7 +479,7 @@ secured.invoke({"messages": [...]})`;
                                             {agent.name}
                                         </TableCell>
                                         <TableCell className="font-mono text-sm text-emerald-400 break-all px-6 py-4 group-hover/row:text-emerald-300 transition-colors">
-                                            <span className="bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{agent.apiKey}</span>
+                                            <span className="bg-emerald-500/10 px-2 py-1 rounded-md border border-emerald-500/20">{displayApiKey(agent)}</span>
                                         </TableCell>
                                         <TableCell className="px-6 py-4">
                                             <div className="flex flex-wrap gap-1">
@@ -551,6 +521,63 @@ secured.invoke({"messages": [...]})`;
                                 ))}
                             </TableBody>
                         </Table>
+                    )}
+                </CardContent>
+            </Card>
+
+            {/* Right Column: Live Activity Feed */}
+            <Card className="bg-black border-white/[0.04] overflow-hidden flex flex-col h-full shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                <CardHeader className="border-b border-white/[0.04] bg-white/[0.01] py-4 px-6">
+                    <div className="flex justify-between items-center">
+                        <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 flex items-center gap-2">
+                           <Activity className="w-3.3 h-3.3 text-blue-500 animate-pulse" />
+                           Live Activity Feed
+                        </CardTitle>
+                        <Badge variant="outline" className="text-[8px] bg-blue-500/5 text-blue-400 border-blue-500/10 px-1.5 py-0 font-black uppercase tracking-widest">Realtime</Badge>
+                    </div>
+                </CardHeader>
+                <CardContent className="p-0 flex-grow overflow-y-auto custom-scrollbar">
+                    {recentLogs.length > 0 ? (
+                        <div className="divide-y divide-white/[0.02]">
+                            {recentLogs.map((log, i) => (
+                                <motion.div 
+                                    initial={{ opacity: 0, x: 10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    key={log.id || i} 
+                                    className="p-4 hover:bg-white/[0.01] transition-colors space-y-2 group"
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center gap-2">
+                                            {log.decision === "ALLOW" ? (
+                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                                            ) : (
+                                                <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
+                                            )}
+                                            <span className="text-[10px] font-black uppercase text-white tracking-tight">{log.toolName}</span>
+                                        </div>
+                                        <span className="text-[9px] text-neutral-600 font-mono">
+                                            {log.timestamp ? format(log.timestamp.toDate(), 'HH:mm:ss') : "pending"}
+                                        </span>
+                                    </div>
+                                    <div className="bg-white/[0.03] p-2 rounded border border-white/[0.05] overflow-hidden">
+                                        <code className="text-[9px] text-neutral-500 block truncate group-hover:text-neutral-400 transition-colors">
+                                            {log.arguments}
+                                        </code>
+                                    </div>
+                                    {log.reason && (
+                                        <p className="text-[9px] text-neutral-600 italic leading-relaxed">
+                                            &quot;{log.reason}&quot;
+                                        </p>
+                                    )}
+                                </motion.div>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="h-full flex flex-col items-center justify-center py-20 text-center px-6">
+                            <Activity className="w-8 h-8 text-neutral-800 mb-3" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-1">Silence is Compliance</p>
+                            <p className="text-[9px] text-neutral-700 uppercase italic">No activity detected on the forensic wire.</p>
+                        </div>
                     )}
                 </CardContent>
             </Card>
@@ -741,12 +768,12 @@ secured.invoke({"messages": [...]})`;
                                 <TabsContent value="node" className="pt-4 outline-none">
                                     <div className="relative group">
                                         <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-emerald-200">
-                                            <code>{getNodeCode(selectedAgent.apiKey)}</code>
+                                            <code>{getNodeCode(selectedAgent)}</code>
                                         </pre>
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            onClick={() => copyToClipboard(getNodeCode(selectedAgent.apiKey), 'node')}
+                                            onClick={() => copyToClipboard(getNodeCode(selectedAgent), 'node')}
                                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800/80 hover:bg-neutral-700 text-white"
                                         >
                                             {copiedNode ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
@@ -756,12 +783,12 @@ secured.invoke({"messages": [...]})`;
                                 <TabsContent value="python" className="pt-4 outline-none">
                                     <div className="relative group">
                                         <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-emerald-200">
-                                            <code>{getPythonCode(selectedAgent.apiKey)}</code>
+                                            <code>{getPythonCode(selectedAgent)}</code>
                                         </pre>
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            onClick={() => copyToClipboard(getPythonCode(selectedAgent.apiKey), 'node')}
+                                            onClick={() => copyToClipboard(getPythonCode(selectedAgent), 'node')}
                                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800/80 hover:bg-neutral-700 text-white"
                                         >
                                             {copiedNode ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
@@ -771,12 +798,12 @@ secured.invoke({"messages": [...]})`;
                                 <TabsContent value="curl" className="pt-4 outline-none">
                                     <div className="relative group">
                                         <pre className="bg-[#0D0D0D] p-4 rounded-lg font-mono text-sm overflow-x-auto border border-neutral-800 text-emerald-200">
-                                            <code>{getCurlCode(selectedAgent.apiKey)}</code>
+                                            <code>{getCurlCode(selectedAgent)}</code>
                                         </pre>
                                         <Button
                                             size="icon"
                                             variant="ghost"
-                                            onClick={() => copyToClipboard(getCurlCode(selectedAgent.apiKey), 'curl')}
+                                            onClick={() => copyToClipboard(getCurlCode(selectedAgent), 'curl')}
                                             className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-800/80 hover:bg-neutral-700 text-white"
                                         >
                                             {copiedCurl ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
@@ -786,6 +813,228 @@ secured.invoke({"messages": [...]})`;
                             </Tabs>
                         </div>
                     )}
+                </DialogContent>
+            </Dialog>
+
+            {/* Success Modal — Show Key Once */}
+            <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="w-full max-w-md bg-[#0A0A0A] border border-emerald-500/20 rounded-3xl p-8 relative shadow-[0_0_100px_rgba(16,185,129,0.1)] overflow-hidden"
+                    >
+                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                        
+                        <div className="flex flex-col items-center text-center space-y-4">
+                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-2">
+                                <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                            </div>
+                            
+                            <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">
+                                Agent Secured
+                            </h2>
+                            
+                            <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-relaxed">
+                                Save your API key now. For your security, <br />
+                                <span className="text-emerald-400">it will never be shown again.</span>
+                            </p>
+                        </div>
+
+                        <div className="mt-8 space-y-4">
+                            <div className="relative group">
+                                <div className="absolute -inset-2 bg-emerald-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                                <div className="relative p-5 bg-black border border-emerald-500/20 rounded-2xl flex items-center justify-between">
+                                    <code className="text-emerald-400 font-mono text-sm break-all">
+                                        {newlyCreatedKey}
+                                    </code>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => newlyCreatedKey && copyToClipboard(newlyCreatedKey, 'node')}
+                                        className="h-10 w-10 shrink-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl transition-all"
+                                    >
+                                        {copiedNode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-3">
+                                <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                <p className="text-[9px] font-black text-amber-200/50 uppercase leading-normal tracking-wide">
+                                    Lost keys cannot be recovered. You will need to revoke and regenerate them from settings if lost.
+                                </p>
+                            </div>
+
+                            <Button 
+                                onClick={() => setIsSuccessModalOpen(false)}
+                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest py-7 rounded-2xl shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
+                            >
+                                I have saved the key
+                            </Button>
+                        </div>
+                    </motion.div>
+                </div>
+            </Dialog>
+
+            {/* Analytics Report Modal */}
+            <Dialog open={isAnalyticsModalOpen} onOpenChange={setIsAnalyticsModalOpen}>
+                <DialogContent className="max-w-4xl bg-[#0A0A0A] border-white/5 p-0 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
+                    
+                    <div className="p-10 space-y-10">
+                        <div className="flex items-start justify-between">
+                            <div className="space-y-1">
+                                <h2 className="text-4xl font-black text-white uppercase italic tracking-tight leading-none">
+                                    Forensic <span className="text-emerald-500">Intelligence</span>
+                                </h2>
+                                <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.3em] inline-flex items-center gap-2">
+                                    Consolidated Agent Performance • <Activity className="w-3 h-3 text-emerald-500/50" /> System Live
+                                </p>
+                            </div>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={() => setIsAnalyticsModalOpen(false)}
+                                className="h-10 w-10 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full"
+                            >
+                                <X className="w-5 h-5" />
+                            </Button>
+                        </div>
+
+                        <div className="grid grid-cols-4 gap-6">
+                            {[
+                                { label: 'Total Volume', value: stats.totalCalls.toLocaleString(), sub: 'API Invocations', icon: Activity, color: 'text-blue-400' },
+                                { label: 'Security Blocks', value: stats.blockedActions.toLocaleString(), sub: 'Policy Violations', icon: Shield, color: 'text-emerald-400' },
+                                { label: 'Net Savings', value: `$${stats.costSaved.toFixed(0)}`, sub: 'Loss Prevention', icon: TrendingUp, color: 'text-emerald-500' },
+                                { label: 'Active Agents', value: agents.length, sub: 'Total Provisioned', icon: UserCheck, color: 'text-purple-400' },
+                            ].map((stat, i) => (
+                                <motion.div 
+                                    key={i}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="p-5 bg-white/5 border border-white/10 rounded-2xl group hover:border-emerald-500/20 transition-all cursor-default"
+                                >
+                                    <div className="w-8 h-8 rounded-lg bg-black/50 border border-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                                        <stat.icon className={`w-4 h-4 ${stat.color}`} />
+                                    </div>
+                                    <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">{stat.label}</p>
+                                    <p className="text-2xl font-black text-white mt-1 tracking-tighter">{stat.value}</p>
+                                    <p className="text-[9px] font-bold text-neutral-600 uppercase mt-1 italic">{stat.sub}</p>
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        <div className="grid grid-cols-5 gap-8">
+                            <div className="col-span-3 space-y-6">
+                                <div className="flex items-center justify-between">
+                                    <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                        <Activity className="w-3 h-4 text-emerald-500" />
+                                        Inbound Volume Trend
+                                    </h3>
+                                    <div className="flex gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                        <span className="text-[10px] font-bold text-neutral-500 uppercase">Cost Intensity</span>
+                                    </div>
+                                </div>
+                                <div className="h-[250px] w-full p-4 bg-black border border-white/5 rounded-2xl relative group overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-t from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <AreaChart data={chartData}>
+                                            <defs>
+                                                <linearGradient id="colorAmount" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                                                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" stroke="#ffffff05" vertical={false} />
+                                            <XAxis 
+                                                dataKey="date" 
+                                                stroke="#525252" 
+                                                fontSize={10} 
+                                                fontWeight="bold"
+                                                tickLine={false}
+                                                axisLine={false}
+                                                dy={10}
+                                            />
+                                            <YAxis 
+                                                stroke="#525252" 
+                                                fontSize={10} 
+                                                fontWeight="bold"
+                                                tickLine={false}
+                                                axisLine={false}
+                                                tickFormatter={(val) => `$${val}`}
+                                            />
+                                            <Tooltip 
+                                                contentStyle={{ backgroundColor: '#000', border: '1px solid #10b98130', borderRadius: '12px', padding: '12px' }}
+                                                itemStyle={{ color: '#10b981', fontSize: '12px', fontWeight: '900', textTransform: 'uppercase' }}
+                                                labelStyle={{ color: '#525252', fontSize: '10px', marginBottom: '4px', fontWeight: 'bold' }}
+                                            />
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey="amount" 
+                                                stroke="#10b981" 
+                                                strokeWidth={3}
+                                                fillOpacity={1} 
+                                                fill="url(#colorAmount)" 
+                                            />
+                                        </AreaChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+
+                            <div className="col-span-2 space-y-6">
+                                <h3 className="text-xs font-black text-white uppercase tracking-widest flex items-center gap-2">
+                                    <ShieldAlert className="w-3 h-4 text-emerald-500" />
+                                    Top Risk Vectors
+                                </h3>
+                                <div className="space-y-4">
+                                    {[
+                                        { label: 'Prompt Injection', count: 12, risk: 'CRITICAL', color: 'bg-red-500' },
+                                        { label: 'Agent Loop Detection', count: 8, risk: 'HIGH', color: 'bg-orange-500' },
+                                        { label: 'Scope Violations', count: 45, risk: 'MEDIUM', color: 'bg-amber-500' },
+                                        { label: 'Token Burn Rate', count: 19, risk: 'MONITOR', color: 'bg-blue-500' },
+                                    ].map((risk, i) => (
+                                        <div key={i} className="p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/[0.07] transition-colors group">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <span className="text-[10px] font-black text-white uppercase tracking-tight">{risk.label}</span>
+                                                <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ${risk.color}/20 ${risk.color.replace('bg-', 'text-')} border border-${risk.color.split('-')[1]}-500/20`}>
+                                                    {risk.risk}
+                                                </span>
+                                            </div>
+                                            <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                                                <motion.div 
+                                                    initial={{ width: 0 }}
+                                                    animate={{ width: `${(risk.count / 50) * 100}%` }}
+                                                    className={`h-full ${risk.color} rounded-full`}
+                                                />
+                                            </div>
+                                            <div className="flex justify-between mt-2">
+                                                <span className="text-[8px] font-bold text-neutral-600 uppercase tracking-widest">Incident Count</span>
+                                                <span className="text-[9px] font-black text-neutral-300">{risk.count} Events</span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between p-6 bg-emerald-500/5 border border-emerald-500/10 rounded-2xl translate-y-4">
+                            <div className="flex items-center gap-4">
+                                <div className="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                    <ShieldCheck className="w-6 h-6 text-emerald-500" />
+                                </div>
+                                <div className="space-y-0.5">
+                                    <p className="text-[11px] font-black text-white uppercase italic tracking-tighter">System Health: Optimal</p>
+                                    <p className="text-[9px] font-bold text-emerald-500/50 uppercase tracking-widest">All policy chains verified & synchronized</p>
+                                </div>
+                            </div>
+                            <Button className="bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase text-[10px] tracking-widest px-8">
+                                Export PDF Report
+                            </Button>
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
         </motion.div >

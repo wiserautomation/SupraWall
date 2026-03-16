@@ -188,6 +188,11 @@ export interface SupraWallOptions {
      * Tenant ID to include with vault requests.
      */
     tenantId?: string;
+    /**
+     * Optional delegation chain of agent IDs.
+     * Used for verifying identity in multi-agent workflows.
+     */
+    delegationChain?: string[];
 }
 
 export interface AgentInstance {
@@ -302,7 +307,8 @@ async function internalEvaluate(
             model: metadata.model,
             inputTokens: metadata.inputTokens,
             outputTokens: metadata.outputTokens,
-            isLoop: isLoopDetected
+            isLoop: isLoopDetected,
+            delegationChain: options.delegationChain
         };
 
         const response = await fetch(cloudFunctionUrl, {
@@ -321,7 +327,7 @@ async function internalEvaluate(
             throw new Error(`SupraWall server error: ${response.status}`);
         }
 
-        const data = (await response.json()) as SupraWallResponse;
+        const data = (await response.json()) as SupraWallResponse & { approvalId?: string };
 
         // Record cost tracking
         const current = _sessionCosts.get(sessionId) ?? 0;
@@ -332,6 +338,51 @@ async function internalEvaluate(
             return {
                 decision: "DENY",
                 reason: `Loop detected: Tool '${toolName}' called ${loopThreshold}x consecutively with identical args.`
+            };
+        }
+
+        // --- 4. Handle Human-in-the-loop (Polling) ---
+        if (data.decision === "REQUIRE_APPROVAL" && data.approvalId) {
+            logger.log(`[SupraWall] ⏳ Action '${toolName}' requires manual approval. Polling for decision...`);
+            
+            const pollUrl = `${cloudFunctionUrl.replace("/v1/evaluate", "/v1/approvals/status")}/${data.approvalId}`;
+            const maxPolls = 150; // 5 minutes (2s * 150)
+            let polls = 0;
+
+            while (polls < maxPolls) {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                polls++;
+
+                try {
+                    const pollRes = await fetch(pollUrl);
+                    if (pollRes.ok) {
+                        const statusData = (await pollRes.json()) as { status: string; decision_comment?: string };
+                        if (statusData.status === "approved") {
+                            logger.log(`[SupraWall] ✅ Action '${toolName}' approved by human.`);
+                            return {
+                                decision: "ALLOW",
+                                reason: statusData.decision_comment || "Approved by human",
+                                resolvedArguments: data.resolvedArguments,
+                                injectedSecrets: data.injectedSecrets,
+                                vaultInjected: data.vaultInjected,
+                                branding: data.branding,
+                            };
+                        } else if (statusData.status === "denied") {
+                            logger.warn(`[SupraWall] ❌ Action '${toolName}' denied by human.`);
+                            return {
+                                decision: "DENY",
+                                reason: statusData.decision_comment || "Denied by human",
+                            };
+                        }
+                    }
+                } catch (pollErr) {
+                    logger.error("[SupraWall] Polling error", pollErr);
+                }
+            }
+
+            return {
+                decision: "DENY",
+                reason: "Approval request timed out after 5 minutes."
             };
         }
 

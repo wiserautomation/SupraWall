@@ -10,9 +10,13 @@ export interface Agent {
   lastActiveAt?: any;
   // --- Budget & Safety Config ---
   maxCostUsd?: number;
+  max_cost_usd?: number;
   budgetAlertUsd?: number;
+  budget_alert_usd?: number;
   maxIterations?: number;
+  max_iterations?: number;
   loopDetection?: boolean;
+  loop_detection?: boolean;
 }
 
 export type RuleType = 'ALLOW' | 'DENY' | 'REQUIRE_APPROVAL';
@@ -20,32 +24,41 @@ export type RuleType = 'ALLOW' | 'DENY' | 'REQUIRE_APPROVAL';
 export interface Policy {
   id?: string;
   agentId: string;
+  agentid?: string;
   toolName: string;
-  condition: string; // used for regex
+  toolname?: string;
+  condition: string; 
   ruleType: RuleType;
+  ruletype?: RuleType;
+  priority: number;   
+  isDryRun: boolean; 
+  isdryrun?: boolean;
+  description?: string;
 }
 
 export interface AuditLog {
   id?: string;
   agentId: string;
+  agentid?: string;
   toolName: string;
-  arguments: string; // stringified JSON
+  toolname?: string;
+  arguments: string; 
   decision: string;
   reason?: string;
   sessionId?: string;
   agentRole?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  timestamp: any; // Firestore timestamp
+  timestamp: any; 
   cost_usd?: number;
   estimated_cost_usd?: number;
   isLoop?: boolean;
   isIterationLimit?: boolean;
   // --- Phase 3: Forensic Fields ---
-  integrityHash?: string;      // SHA-256 hash of this entry (tamper detection)
-  previousHash?: string;       // Hash of the previous entry (hash chain)
-  sequenceNumber?: number;     // Monotonic sequence for ordering
-  riskScore?: number;          // 0–100 automated risk assessment
-  riskFactors?: string[];      // Explainability: why this score
+  integrityHash?: string;      
+  previousHash?: string;       
+  sequenceNumber?: number;     
+  riskScore?: number;          
+  riskFactors?: string[];      
 }
 
 export type ForensicVerificationStatus = 'verified' | 'tampered' | 'unchecked';

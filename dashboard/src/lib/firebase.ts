@@ -11,42 +11,57 @@ const firebaseConfig = {
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-if (typeof window !== "undefined") {
-    console.log("Firebase Config Check:", {
-        hasApiKey: !!firebaseConfig.apiKey,
-        hasProjectId: !!firebaseConfig.projectId,
-        env: process.env.NODE_ENV
-    });
-}
-
 // Initialize Firebase only if the config is present
-// Initialize Firebase
 const isClient = typeof window !== "undefined";
 const hasConfig = !!firebaseConfig.apiKey;
 
-export const app: FirebaseApp = 
-    (isClient && hasConfig)
-        ? (getApps().length ? getApp() : initializeApp(firebaseConfig))
-        : initializeApp({ 
-            apiKey: "mock-key", 
-            authDomain: "mock.firebaseapp.com",
-            projectId: "mock-project",
-            storageBucket: "mock.appspot.com",
-            messagingSenderId: "123",
-            appId: "1:123:web:mock"
-        });
+// Lazy initialization to prevent SSR issues
+let _app: FirebaseApp | null = null;
+let _auth: Auth | null = null;
+let _db: Firestore | null = null;
 
-if (isClient && hasConfig) {
-    console.log("Firebase initialized successfully on the client.");
-} else if (isClient) {
-    console.warn("Firebase configuration missing or incomplete. Using fallback/mock initialization.");
+function getFirebaseApp(): FirebaseApp {
+    if (!isClient) {
+        // Return a dummy app for SSR to prevent crashes
+        return { name: "[DEFAULT]-mock", options: {}, automaticDataCollectionEnabled: false } as FirebaseApp;
+    }
+    
+    if (!_app) {
+        if (!hasConfig) {
+            console.warn("Firebase config missing. Using mock app.");
+            _app = initializeApp({ apiKey: "mock-key", projectId: "mock-project" });
+        } else {
+            _app = getApps().length ? getApp() : initializeApp(firebaseConfig);
+        }
+    }
+    return _app;
 }
 
-const auth: Auth = getAuth(app);
-const db: Firestore = getFirestore(app);
+// Proxies allow us to export these as objects while delaying initialization until first access.
+// This preserves the current import syntax across the codebase while fixing the SSR leak.
 
-// Offline persistence intentionally disabled — it can cache stale Firestore
-// project connections when the project ID changes, causing ERR_BLOCKED_BY_CLIENT.
-// If you need offline support in future, re-enable with IndexedDbPersistence.
+export const app = new Proxy({} as FirebaseApp, {
+    get: (target, prop) => {
+        return (getFirebaseApp() as any)[prop];
+    }
+});
 
-export { auth, db };
+export const auth = new Proxy({} as Auth, {
+    get: (target, prop) => {
+        if (!_auth && isClient) {
+            _auth = getAuth(getFirebaseApp());
+        }
+        return (_auth as any || {})[prop];
+    }
+});
+
+export const db = new Proxy({} as Firestore, {
+    get: (target, prop) => {
+        if (!_db && isClient) {
+            _db = getFirestore(getFirebaseApp());
+        }
+        return (_db as any || {})[prop];
+    }
+});
+
+export { firebaseConfig };

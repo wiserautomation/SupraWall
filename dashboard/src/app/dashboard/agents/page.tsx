@@ -386,14 +386,13 @@ export default function AgentsPage() {
                                 </tr>
                             ) : (
                                 filteredAgents.map((agent) => (
-                                    <tr 
-                                        key={agent.id} 
-                                        className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
-                                        onClick={() => {
-                                            setSelectedAgent(agent);
-                                            setIsDrawerOpen(true);
-                                        }}
-                                    >
+                                        <tr 
+                                            key={agent.id} 
+                                            className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
+                                            onClick={() => {
+                                                window.location.href = `/dashboard/agents/${agent.id}`;
+                                            }}
+                                        >
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col gap-1.5">
                                                 <span className="text-white font-bold tracking-tight text-base group-hover:text-blue-400 transition-colors">

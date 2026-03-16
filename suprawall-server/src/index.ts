@@ -5,6 +5,13 @@ import { initDb, pool } from "./db";
 import { evaluatePolicy, scrubToolResponse } from "./policy";
 import complianceRouter from "./routes/compliance";
 import vaultRouter from "./routes/vault";
+import threatRouter from "./routes/threat";
+import policiesRouter from "./routes/policies";
+import approvalsRouter from "./routes/approvals";
+import agentsRouter from "./routes/agents";
+import auditLogsRouter from "./routes/audit_logs";
+import tenantsRouter from "./routes/tenants";
+import statsRouter from "./routes/stats";
 import { gatekeeperAuth } from "./auth";
 
 dotenv.config();
@@ -36,6 +43,27 @@ app.use("/v1/compliance", complianceRouter);
 
 // Vault Routes
 app.use("/v1/vault", vaultRouter);
+
+// Threat Intel Routes
+app.use("/v1/threat", threatRouter);
+
+// Policies Routes
+app.use("/v1/policies", policiesRouter);
+
+// Approvals Routes
+app.use("/v1/approvals", approvalsRouter);
+
+// Agents Routes
+app.use("/v1/agents", agentsRouter);
+
+// Audit Logs Routes
+app.use("/v1/audit-logs", auditLogsRouter);
+
+// Tenants Routes
+app.use("/v1/tenants", tenantsRouter);
+
+// Stats Routes
+app.use("/v1/stats", statsRouter);
 
 // Export the app for Vercel
 export default app;

@@ -7,7 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = (process.env.NEXT_PUBLIC_API_URL || '') + '/api';
+const API_BASE = "https://suprawall-server.vercel.app";
 
 type Tab = "secrets" | "rules" | "log";
 
@@ -60,7 +60,7 @@ function timeAgo(dateStr: string): string {
 
 export default function VaultPage() {
     const [user] = useAuthState(auth);
-    const tenantId = user?.uid || "default-tenant";
+    const tenantId = "default-tenant";
 
     const [tab, setTab] = useState<Tab>("secrets");
     const [secrets, setSecrets] = useState<VaultSecret[]>([]);

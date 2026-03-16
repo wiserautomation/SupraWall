@@ -26,7 +26,8 @@
     "express": "^5.2.1",
     "firebase-admin": "^13.7.0",
     "pdfkit": "^0.17.2",
-    "pg": "^8.18.0"
+    "pg": "^8.18.0",
+    "undici": "^7.24.4"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

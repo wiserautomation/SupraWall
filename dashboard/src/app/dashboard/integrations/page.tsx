@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Grid, Power, ShieldCheck, Cpu } from "lucide-react";
+import { Grid, Power, ShieldCheck, Cpu, Zap } from "lucide-react";
 import Link from "next/link";
 
 export default function IntegrationsDashboardPage() {
@@ -40,6 +40,14 @@ export default function IntegrationsDashboardPage() {
 }
 
 const frameworks = [
+    {
+        name: "SupraWall Connect",
+        desc: "Universal sub-key generator for secure, one-click framework integration.",
+        icon: Zap,
+        color: "bg-emerald-500",
+        textColor: "text-emerald-400",
+        href: "/dashboard/integrations/connect"
+    },
     {
         name: "LangChain",
         desc: "Secure LangGraph and LCEL chains with native @secure decorators.",
