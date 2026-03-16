@@ -101,6 +101,7 @@ export default function AgentsPage() {
     const [agentPolicies, setAgentPolicies] = useState<Policy[]>([]);
     const [agentSecrets, setAgentSecrets] = useState<VaultSecret[]>([]);
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -214,6 +215,7 @@ export default function AgentsPage() {
     const handleCreateAgent = async () => {
         if (!user || !newAgentName) return;
         
+        setIsSubmitting(true);
         const apiKey = generateApiKey();
         
         try {
@@ -225,7 +227,7 @@ export default function AgentsPage() {
                 totalCalls: 0,
                 totalSpendUsd: 0,
                 createdAt: serverTimestamp(),
-                scopes: selectedScopes
+                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
             });
             
             setGeneratedKey(apiKey);
@@ -233,6 +235,8 @@ export default function AgentsPage() {
             setSelectedScopes(["*:*"]);
         } catch (error) {
             console.error("Error creating agent:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -504,7 +508,7 @@ export default function AgentsPage() {
                     </DialogHeader>
 
                     {!generatedKey ? (
-                        <div className="space-y-4 py-4">
+                        <div className="space-y-6 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 ml-1">
                                     Agent Name
@@ -517,39 +521,68 @@ export default function AgentsPage() {
                                     className="bg-white/[0.03] border-white/10 h-12 rounded-xl text-white focus:ring-emerald-500/50 focus:border-emerald-500/50"
                                 />
                             </div>
-                            <div className="space-y-3">
+
+                            <div className="space-y-4">
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 ml-1">
                                     Authorization Scopes
                                 </Label>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {SCOPE_PRESETS.map((preset) => (
-                                        <Badge 
-                                            key={preset.value}
-                                            variant={selectedScopes.includes(preset.value) ? "secondary" : "outline"}
-                                            className={`cursor-pointer hover:bg-emerald-500/20 transition-all border-white/10 ${selectedScopes.includes(preset.value) ? "bg-emerald-500 text-black border-transparent" : "text-neutral-400"}`}
-                                            onClick={() => {
-                                                if (selectedScopes.includes(preset.value)) {
-                                                    setSelectedScopes(selectedScopes.filter(s => s !== preset.value));
-                                                } else {
-                                                    setSelectedScopes([...selectedScopes, preset.value]);
-                                                }
-                                            }}
+                                <p className="text-[11px] text-neutral-500 px-1 italic">Restrict what this agent can access. Leave empty for full access (*:*).</p>
+                                
+                                <div className="grid grid-cols-2 gap-2">
+                                    {[
+                                        { scope: 'crm:read', label: 'CRM Read' },
+                                        { scope: 'crm:write', label: 'CRM Write' },
+                                        { scope: 'email:send', label: 'Email Send' },
+                                        { scope: 'email:read', label: 'Email Read' },
+                                        { scope: 'database:read', label: 'Database Read' },
+                                        { scope: 'database:write', label: 'Database Write' },
+                                        { scope: 'files:read', label: 'Files Read' },
+                                        { scope: 'files:write', label: 'Files Write' },
+                                        { scope: 'browser:navigate', label: 'Browser Navigate' },
+                                        { scope: 'api:call', label: 'API Call' },
+                                    ].map(({ scope, label }) => (
+                                        <label
+                                            key={scope}
+                                            className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-[11px] ${selectedScopes.includes(scope)
+                                                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                                                : 'bg-white/[0.03] border-white/5 text-neutral-400 hover:border-white/10'
+                                                }`}
                                         >
-                                            {preset.label}
-                                        </Badge>
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedScopes.includes(scope)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setSelectedScopes([...selectedScopes, scope]);
+                                                    } else {
+                                                        setSelectedScopes(selectedScopes.filter(s => s !== scope));
+                                                    }
+                                                }}
+                                                className="sr-only"
+                                            />
+                                            <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${selectedScopes.includes(scope)
+                                                ? 'bg-emerald-500 border-emerald-400'
+                                                : 'border-white/20'
+                                                }`}>
+                                                {selectedScopes.includes(scope) && <CheckCircle2 className="w-2.5 h-2.5 text-black" />}
+                                            </div>
+                                            <span className="font-mono tracking-tight">{label}</span>
+                                        </label>
                                     ))}
                                 </div>
+
                                 <div className="flex gap-2">
                                     <Input 
                                         placeholder="Add custom scope (e.g. tools:*)"
                                         value={customScope}
                                         onChange={(e) => setCustomScope(e.target.value)}
-                                        className="bg-white/[0.03] border-white/10 h-10 rounded-xl text-white text-xs"
+                                        className="bg-white/[0.03] border-white/10 h-10 rounded-xl text-white text-xs font-mono"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' && customScope) {
                                                 e.preventDefault();
-                                                if (!selectedScopes.includes(customScope)) {
-                                                    setSelectedScopes([...selectedScopes, customScope]);
+                                                const scopeToAdd = customScope.includes(':') ? customScope : `custom:${customScope}`;
+                                                if (!selectedScopes.includes(scopeToAdd)) {
+                                                    setSelectedScopes([...selectedScopes, scopeToAdd]);
                                                 }
                                                 setCustomScope("");
                                             }
@@ -560,19 +593,23 @@ export default function AgentsPage() {
                                         variant="outline"
                                         size="sm"
                                         onClick={() => {
-                                            if (customScope && !selectedScopes.includes(customScope)) {
-                                                setSelectedScopes([...selectedScopes, customScope]);
+                                            if (customScope) {
+                                                const scopeToAdd = customScope.includes(':') ? customScope : `custom:${customScope}`;
+                                                if (!selectedScopes.includes(scopeToAdd)) {
+                                                    setSelectedScopes([...selectedScopes, scopeToAdd]);
+                                                }
                                                 setCustomScope("");
                                             }
                                         }}
-                                        className="border-white/10 h-10 px-3 hover:bg-white/5"
+                                        className="border-white/10 h-10 px-4 hover:bg-white/5 font-black uppercase text-[10px] tracking-widest"
                                     >
                                         Add
                                     </Button>
                                 </div>
-                                <div className="flex flex-wrap gap-1.5 mt-2 max-h-24 overflow-y-auto">
+
+                                <div className="flex flex-wrap gap-1.5 mt-2">
                                     {selectedScopes.map(scope => (
-                                        <Badge key={scope} variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-1 pr-1 border">
+                                        <Badge key={scope} variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-1 pr-1 border text-[10px] font-mono">
                                             {scope}
                                             <X 
                                                 className="w-3 h-3 cursor-pointer hover:text-white" 
@@ -582,6 +619,20 @@ export default function AgentsPage() {
                                     ))}
                                 </div>
                             </div>
+
+                            <Button 
+                                onClick={() => handleCreateAgent()}
+                                disabled={!newAgentName || isSubmitting}
+                                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_10px_30px_rgba(16,185,129,0.2)] disabled:opacity-50 disabled:cursor-not-allowed group"
+                            >
+                                {isSubmitting ? (
+                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                ) : (
+                                    <span className="flex items-center gap-2">
+                                        Generate Identity <ShieldCheck className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                    </span>
+                                )}
+                            </Button>
                         </div>
                     ) : (
                         <div className="space-y-6 py-4">

@@ -11,8 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2, ShieldCheck } from "lucide-react";
+import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2, ShieldCheck, RefreshCw, ArrowRight } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -49,7 +51,6 @@ export default function OverviewPage() {
     const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
     const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
     const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
-    const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
     const API_BASE = "https://suprawall-server.vercel.app";
 
     const generateApiKey = () => {
@@ -147,9 +148,7 @@ export default function OverviewPage() {
             setNewlyCreatedKey(apiKey);
             setNewAgentName("");
             setSelectedScopes([]);
-            setIsCreateModalOpen(false);
-            setIsSuccessModalOpen(true);
-            // No need to manually calls fetchData for agents as onSnapshot handles it
+            // Keep modal open, but success flag will show the key
         } catch (e) {
             console.error(e);
             setNameError("Failed to create agent");
@@ -176,7 +175,7 @@ export default function OverviewPage() {
                 scopes: scopes.length > 0 ? scopes : ["*:*"]
             });
             setNewlyCreatedKey(apiKey);
-            setIsSuccessModalOpen(true);
+            setIsCreateModalOpen(true);
         } catch (e) {
             console.error(e);
         } finally {
@@ -611,160 +610,159 @@ secured.invoke({"messages": [...]})`;
             <Dialog open={isCreateModalOpen} onOpenChange={(open) => {
                 setIsCreateModalOpen(open);
                 if (!open) {
+                    setNewlyCreatedKey(null);
                     setNewAgentName("");
                     setNameError("");
                     setSelectedScopes([]);
                     setCustomScope("");
                 }
             }}>
-                <DialogContent className="sm:max-w-md bg-black border-emerald-500/20 text-white shadow-[0_0_60px_rgba(16,185,129,0.08)]">
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-                    <DialogHeader>
-                        <DialogTitle className="text-lg font-black uppercase italic tracking-tighter text-white flex items-center gap-2">
-                            <Shield className="w-4 h-4 text-emerald-500" />
-                            Register New Agent
-                        </DialogTitle>
-                        <DialogDescription className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.15em]">
-                            Name your agent to generate a zero-trust API key.
-                        </DialogDescription>
-                    </DialogHeader>
-                    <div className="space-y-5 py-4">
-                        <div className="space-y-2">
-                            <label htmlFor="name" className="text-sm font-medium text-neutral-300">
-                                Agent Name
-                            </label>
-                            <input
-                                id="name"
-                                value={newAgentName}
-                                onChange={(e) => {
-                                    setNewAgentName(e.target.value);
-                                    if (nameError) setNameError("");
-                                }}
-                                placeholder="e.g. Browser Assistant"
-                                className={`w-full bg-neutral-800 border ${nameError ? "border-red-500" : "border-neutral-700"} rounded-md px-3 py-2 text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:ring-2 focus:ring-emerald-500`}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') createAgent();
-                                }}
-                                autoFocus
-                            />
-                            {nameError && (
-                                <p className="text-red-400 text-xs mt-1.5 font-medium">{nameError}</p>
-                            )}
-                        </div>
-
-                        {/* Scope Selection */}
-                        <div className="space-y-3">
-                            <div className="flex items-center gap-2">
-                                <Shield className="w-4 h-4 text-blue-400" />
-                                <label className="text-sm font-medium text-neutral-300">Agent Scopes</label>
-                                <span className="text-[10px] text-neutral-500 bg-neutral-800 px-2 py-0.5 rounded-full">optional</span>
-                            </div>
-                            <p className="text-xs text-neutral-500">Restrict what this agent can access. Leave empty for full access.</p>
-                            <div className="grid grid-cols-2 gap-2">
-                                {[
-                                    { scope: 'crm:read', label: 'CRM Read' },
-                                    { scope: 'crm:write', label: 'CRM Write' },
-                                    { scope: 'email:send', label: 'Email Send' },
-                                    { scope: 'email:read', label: 'Email Read' },
-                                    { scope: 'database:read', label: 'Database Read' },
-                                    { scope: 'database:write', label: 'Database Write' },
-                                    { scope: 'files:read', label: 'Files Read' },
-                                    { scope: 'files:write', label: 'Files Write' },
-                                    { scope: 'browser:navigate', label: 'Browser Navigate' },
-                                    { scope: 'api:call', label: 'API Call' },
-                                ].map(({ scope, label }) => (
-                                    <label
-                                        key={scope}
-                                        className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-xs ${selectedScopes.includes(scope)
-                                            ? 'bg-blue-500/10 border-blue-500/30 text-blue-300'
-                                            : 'bg-neutral-800/50 border-neutral-700/50 text-neutral-400 hover:border-neutral-600'
-                                            }`}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedScopes.includes(scope)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedScopes([...selectedScopes, scope]);
-                                                } else {
-                                                    setSelectedScopes(selectedScopes.filter(s => s !== scope));
-                                                }
-                                            }}
-                                            className="sr-only"
-                                        />
-                                        <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${selectedScopes.includes(scope)
-                                            ? 'bg-blue-500 border-blue-400'
-                                            : 'border-neutral-600'
-                                            }`}>
-                                            {selectedScopes.includes(scope) && <Check className="w-2.5 h-2.5 text-white" />}
-                                        </div>
-                                        <span className="font-mono">{label}</span>
-                                    </label>
-                                ))}
+                <DialogContent className="sm:max-w-md bg-black border-white/5 text-white shadow-2xl p-0 overflow-hidden rounded-3xl">
+                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                    
+                    {!newlyCreatedKey ? (
+                        <div className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter text-center sm:text-left">
+                                    Register AI Identity
+                                </h2>
+                                <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest text-center sm:text-left leading-relaxed">
+                                    Define the core boundaries for your autonomous entity.
+                                </p>
                             </div>
 
-                            {/* Custom scope input */}
-                            <div className="flex gap-2">
-                                <input
-                                    value={customScope}
-                                    onChange={(e) => setCustomScope(e.target.value)}
-                                    placeholder="custom:scope"
-                                    className="flex-1 bg-neutral-800 border border-neutral-700 rounded-md px-3 py-1.5 text-xs text-white font-mono placeholder:text-neutral-600 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && customScope.includes(':')) {
-                                            e.preventDefault();
-                                            if (!selectedScopes.includes(customScope)) {
-                                                setSelectedScopes([...selectedScopes, customScope]);
-                                            }
-                                            setCustomScope('');
-                                        }
-                                    }}
-                                />
+                            <form onSubmit={handleCreateAgent} className="space-y-6">
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 ml-1">
+                                        Agent Designation
+                                    </Label>
+                                    <Input
+                                        placeholder="e.g. Sales-Automation-Bot"
+                                        value={newAgentName}
+                                        onChange={(e) => {
+                                            setNewAgentName(e.target.value);
+                                            if (nameError) setNameError("");
+                                        }}
+                                        className={`bg-white/[0.03] border-white/10 h-12 rounded-xl text-white placeholder:text-neutral-700 focus:ring-emerald-500/50 focus:border-emerald-500/50 ${nameError ? 'border-rose-500/50' : ''}`}
+                                    />
+                                    {nameError && (
+                                        <p className="text-rose-500 text-[10px] mt-1 ml-1 font-bold uppercase tracking-wider">{nameError}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 ml-1 block mb-3">
+                                        Governance Scopes
+                                    </Label>
+                                    <div className="grid grid-cols-2 gap-2 max-h-[220px] overflow-y-auto pr-2 custom-scrollbar p-1">
+                                        {[
+                                            { scope: 'crm:read', label: 'CRM Read' },
+                                            { scope: 'crm:write', label: 'CRM Write' },
+                                            { scope: 'email:send', label: 'Email Send' },
+                                            { scope: 'email:read', label: 'Email Read' },
+                                            { scope: 'database:read', label: 'Database Read' },
+                                            { scope: 'database:write', label: 'Database Write' },
+                                            { scope: 'files:read', label: 'Files Read' },
+                                            { scope: 'files:write', label: 'Files Write' },
+                                            { scope: 'browser:navigate', label: 'Browser Navigate' },
+                                            { scope: 'api:call', label: 'API Call' },
+                                        ].map(({ scope, label }) => (
+                                            <label
+                                                key={scope}
+                                                className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-[11px] ${selectedScopes.includes(scope)
+                                                    ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
+                                                    : 'bg-white/[0.03] border-white/5 text-neutral-400 hover:border-white/10'
+                                                    }`}
+                                            >
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedScopes.includes(scope)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedScopes([...selectedScopes, scope]);
+                                                        } else {
+                                                            setSelectedScopes(selectedScopes.filter(s => s !== scope));
+                                                        }
+                                                    }}
+                                                    className="sr-only"
+                                                />
+                                                <div className={`w-3.5 h-3.5 rounded border flex items-center justify-center ${selectedScopes.includes(scope)
+                                                    ? 'bg-emerald-500 border-emerald-400 font-bold'
+                                                    : 'border-white/20'
+                                                    }`}>
+                                                    {selectedScopes.includes(scope) && <Check className="w-2.5 h-2.5 text-black stroke-[4px]" />}
+                                                </div>
+                                                <span className="font-mono tracking-tight">{label}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                    <p className="text-[9px] text-neutral-600 mt-2 px-1 italic">Selecting a scope enforces mandatory verification for that specific action.</p>
+                                </div>
+
                                 <Button
-                                    type="button"
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={!customScope.includes(':')}
-                                    onClick={() => {
-                                        if (customScope.includes(':') && !selectedScopes.includes(customScope)) {
-                                            setSelectedScopes([...selectedScopes, customScope]);
-                                            setCustomScope('');
-                                        }
-                                    }}
-                                    className="bg-neutral-800 border-neutral-700 text-neutral-300 hover:bg-neutral-700 text-xs"
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_10px_30px_rgba(16,185,129,0.2)] disabled:opacity-50 disabled:cursor-not-allowed group"
                                 >
-                                    Add
+                                    {isSubmitting ? (
+                                        <RefreshCw className="w-5 h-5 animate-spin" />
+                                    ) : (
+                                        <span className="flex items-center gap-2">
+                                            Authorize Identity <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        </span>
+                                    )}
+                                </Button>
+                            </form>
+                        </div>
+                    ) : (
+                        <div className="p-8 space-y-6">
+                            <div className="flex flex-col items-center text-center space-y-4">
+                                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-2">
+                                    <ShieldCheck className="w-8 h-8 text-emerald-500" />
+                                </div>
+                                <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">
+                                    Agent Secured
+                                </h2>
+                                <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-relaxed">
+                                    Save your API key now. For your security, <br />
+                                    <span className="text-emerald-400">it will never be shown again.</span>
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                <div className="relative group p-5 bg-black border border-emerald-500/20 rounded-2xl flex items-center justify-between">
+                                    <code className="text-emerald-400 font-mono text-sm break-all pr-4">
+                                        {newlyCreatedKey}
+                                    </code>
+                                    <Button 
+                                        size="icon" 
+                                        variant="ghost" 
+                                        onClick={() => newlyCreatedKey && copyToClipboard(newlyCreatedKey, 'node')}
+                                        className="h-10 w-10 shrink-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl"
+                                    >
+                                        {copiedNode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                                    </Button>
+                                </div>
+
+                                <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-3">
+                                    <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                    <p className="text-[9px] font-black text-amber-200/50 uppercase leading-normal tracking-wide">
+                                        Lost keys cannot be recovered. You will need to revoke and regenerate them if lost.
+                                    </p>
+                                </div>
+
+                                <Button 
+                                    onClick={() => {
+                                        setNewlyCreatedKey(null);
+                                        setIsCreateModalOpen(false);
+                                    }}
+                                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest h-14 rounded-xl shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
+                                >
+                                    Access Granted
                                 </Button>
                             </div>
-
-                            {/* Selected scopes pills */}
-                            {selectedScopes.length > 0 && (
-                                <div className="flex flex-wrap gap-1.5 pt-1">
-                                    {selectedScopes.map(scope => (
-                                        <span key={scope} className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                            <Lock className="w-2.5 h-2.5" />
-                                            {scope}
-                                            <button
-                                                onClick={() => setSelectedScopes(selectedScopes.filter(s => s !== scope))}
-                                                className="ml-0.5 hover:text-red-400 transition-colors"
-                                            >
-                                                <X className="w-2.5 h-2.5" />
-                                            </button>
-                                        </span>
-                                    ))}
-                                </div>
-                            )}
                         </div>
-                    </div>
-                    <div className="flex justify-end gap-3">
-                        <Button onClick={() => setIsCreateModalOpen(false)} variant="outline" className="bg-transparent border-neutral-700 text-neutral-300 hover:bg-neutral-800 hover:text-white" disabled={isSubmitting}>
-                            Cancel
-                        </Button>
-                        <Button onClick={createAgent} className="bg-emerald-600 hover:bg-emerald-500 text-white border-transparent" disabled={isSubmitting}>
-                            {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                            {isSubmitting ? "Creating..." : "Create Agent"}
-                        </Button>
-                    </div>
+                    )}
                 </DialogContent>
             </Dialog>
 
@@ -839,67 +837,6 @@ secured.invoke({"messages": [...]})`;
                         </div>
                     )}
                 </DialogContent>
-            </Dialog>
-
-            {/* Success Modal — Show Key Once */}
-            <Dialog open={isSuccessModalOpen} onOpenChange={setIsSuccessModalOpen}>
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className="w-full max-w-md bg-[#0A0A0A] border border-emerald-500/20 rounded-3xl p-8 relative shadow-[0_0_100px_rgba(16,185,129,0.1)] overflow-hidden"
-                    >
-                        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-                        
-                        <div className="flex flex-col items-center text-center space-y-4">
-                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-2">
-                                <ShieldCheck className="w-8 h-8 text-emerald-500" />
-                            </div>
-                            
-                            <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">
-                                Agent Secured
-                            </h2>
-                            
-                            <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-relaxed">
-                                Save your API key now. For your security, <br />
-                                <span className="text-emerald-400">it will never be shown again.</span>
-                            </p>
-                        </div>
-
-                        <div className="mt-8 space-y-4">
-                            <div className="relative group">
-                                <div className="absolute -inset-2 bg-emerald-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                                <div className="relative p-5 bg-black border border-emerald-500/20 rounded-2xl flex items-center justify-between">
-                                    <code className="text-emerald-400 font-mono text-sm break-all">
-                                        {newlyCreatedKey}
-                                    </code>
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
-                                        onClick={() => newlyCreatedKey && copyToClipboard(newlyCreatedKey, 'node')}
-                                        className="h-10 w-10 shrink-0 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-xl transition-all"
-                                    >
-                                        {copiedNode ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                                    </Button>
-                                </div>
-                            </div>
-
-                            <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl flex items-start gap-3">
-                                <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                                <p className="text-[9px] font-black text-amber-200/50 uppercase leading-normal tracking-wide">
-                                    Lost keys cannot be recovered. You will need to revoke and regenerate them from settings if lost.
-                                </p>
-                            </div>
-
-                            <Button 
-                                onClick={() => setIsSuccessModalOpen(false)}
-                                className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest py-7 rounded-2xl shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
-                            >
-                                I have saved the key
-                            </Button>
-                        </div>
-                    </motion.div>
-                </div>
             </Dialog>
 
             {/* Analytics Report Modal */}
@@ -1062,6 +999,6 @@ secured.invoke({"messages": [...]})`;
                     </div>
                 </DialogContent>
             </Dialog>
-        </motion.div >
+        </motion.div>
     );
 }

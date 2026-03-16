@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS approval_requests (
     status TEXT DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED
     decision_by TEXT,
     decision_at TIMESTAMP WITH TIME ZONE,
+    decision_comment TEXT,
     metadata TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -64,6 +65,9 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     agentid TEXT NOT NULL,
     toolname TEXT NOT NULL,
     arguments TEXT,
+    riskscore INTEGER,
+    parameters JSONB,
+    metadata JSONB,
     decision TEXT NOT NULL,
     reason TEXT,
     sessionid TEXT,

@@ -357,7 +357,8 @@ async function internalEvaluate(
                     const pollRes = await fetch(pollUrl);
                     if (pollRes.ok) {
                         const statusData = (await pollRes.json()) as { status: string; decision_comment?: string };
-                        if (statusData.status === "approved") {
+                        const status = statusData.status.toUpperCase();
+                        if (status === "APPROVED") {
                             logger.log(`[SupraWall] ✅ Action '${toolName}' approved by human.`);
                             return {
                                 decision: "ALLOW",
@@ -367,7 +368,7 @@ async function internalEvaluate(
                                 vaultInjected: data.vaultInjected,
                                 branding: data.branding,
                             };
-                        } else if (statusData.status === "denied") {
+                        } else if (status === "DENIED" || status === "REJECTED") {
                             logger.warn(`[SupraWall] ❌ Action '${toolName}' denied by human.`);
                             return {
                                 decision: "DENY",

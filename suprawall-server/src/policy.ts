@@ -173,7 +173,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 matchedRule = `vault:${vaultResult.errors.map(e => e.reason).join(",")}`;
 
                 await pool.query(
-                    "INSERT INTO auditlogs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
                     [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95,
                      JSON.stringify({ vaultErrors: vaultResult.errors })]
                 );
@@ -190,7 +190,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
 
         // 4. Audit Logging
         await pool.query(
-            "INSERT INTO auditlogs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
             [tenantId, agentId, toolName,
              JSON.stringify(args || {}),
              decision,

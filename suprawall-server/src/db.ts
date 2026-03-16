@@ -14,9 +14,13 @@ let dbUrl = rawUrl.trim();
 
 
 
+const sslConfig = process.env.NODE_ENV === 'production' 
+    ? { rejectUnauthorized: false } 
+    : false;
+
 export const pool = new Pool({
     connectionString: dbUrl,
-    ssl: { rejectUnauthorized: false },
+    ssl: sslConfig,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000, 

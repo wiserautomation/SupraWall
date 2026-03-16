@@ -49,6 +49,8 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
     const outputTokens = body.outputTokens || 0;
     const clientReportedCost = body.costUsd || null;
     const isLoopDetectedByClient = body.isLoop || false;
+    const logOnly = body.logOnly || false;
+    const forceApproval = body.forceApproval || false;
 
     const startTime = Date.now();
 
@@ -211,7 +213,6 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             }
 
             if (!foundKey || !agentDoc) {
-                const argsString = typeof args === 'string' ? args : JSON.stringify(args);
                 await logAudit(null as any, "unknown", toolName, argsString, "DENY", 0, "Invalid API Key", sessionId, agentRole);
                 res.status(403).json({ decision: "DENY", reason: "Invalid API Key" });
                 return;
@@ -339,6 +340,22 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                 };
             });
 
+            const currentArgsString = typeof args === 'string' ? args : JSON.stringify(args);
+                
+            // ── 3. Handle logOnly and forceApproval flags (MCP Support) ──
+            if (logOnly) {
+                await logAudit(userId, agentId, toolName, currentArgsString, "ALLOW", 0, "MCP: Manual log entry", sessionId, agentRole, isLoopDetectedByClient, false);
+                res.status(200).json({ decision: "ALLOW", reason: "Logged successfully", branding });
+                return;
+            }
+
+            if (forceApproval) {
+                // Skip evaluation, go to approval
+                const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
+                await handleApprovalFlow(res, userId, agentId, agentData, toolName, currentArgsString, sessionId, agentRole, estimatedCost, userData, branding, false, isLoopDetectedByClient, false, body.reason || "Manual approval request via MCP");
+                return;
+            }
+
             const decision = evaluateAgentAction(toolName, args, agentPolicies);
             const finalDecision = decision.isDryRun ? "ALLOW" : decision.decision;
             const intendedDecision = decision.decision;
@@ -348,11 +365,10 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
             const estimatedCost = clientReportedCost ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
 
             // ── Vault token injection ──
-            let processedArgsForLog = argsString;
             let vaultInjected: string[] = [];
             let vaultRequiresApproval = false;
 
-            if (argsString.includes('$SUPRAWALL_VAULT_')) {
+            if (currentArgsString.includes('$SUPRAWALL_VAULT_')) {
                 const vaultResult = await injectVaultTokens(args, agentId, userId, toolName);
                 // We keep the args for logging AS-IS (tokens), but the action might be blocked if it requires approval
                 vaultInjected = vaultResult.injectedSecrets;
@@ -363,92 +379,13 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
 
             // ── 5. Handle Approval Flow ──
             if (finalDecision === "REQUIRE_APPROVAL" || vaultRequiresApproval) {
-                // Check if an identical pending request already exists for this agent
-                const existingReq = await db.collection("approvalRequests")
-                    .where("agentId", "==", agentId)
-                    .where("toolName", "==", toolName)
-                    .where("arguments", "==", argsString)
-                    .where("status", "==", "pending")
-                    .limit(1)
-                    .get();
-
-                let requestId: string;
-                if (!existingReq.empty) {
-                    requestId = existingReq.docs[0].id;
-                } else {
-                    const newReq = await db.collection("approvalRequests").add({
-                        userId, // shared with the organization owner
-                        agentId,
-                        agentName: agentData.name || "Unknown Agent",
-                        toolName,
-                        arguments: argsString, // Show tokens in approval UI
-                        sessionId,
-                        agentRole,
-                        status: "pending",
-                        createdAt: FieldValue.serverTimestamp(),
-                        expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 24 * 60 * 60 * 1000)), // 24h
-                        estimatedCostUsd: estimatedCost,
-                        requiresVaultInjection: vaultRequiresApproval
-                    });
-                    requestId = newReq.id;
-
-                    // ── Trigger Slack Notification ──
-                    const slackUrl = userData?.slackWebhookUrl;
-                    const contactEmail = userData?.contactEmail || userData?.email;
-
-                    if (slackUrl) {
-                        try {
-                            await sendSlackNotification(slackUrl, {
-                                requestId,
-                                agentName: agentData.name || "Unknown Agent",
-                                toolName,
-                                arguments: argsString,
-                                estimatedCost,
-                                showBranding
-                            });
-                        } catch (err) {
-                            console.error("[SupraWall] Slack notification failed:", err);
-                        }
-                    }
-
-                    // ── Trigger Email Alert ──
-                    if (contactEmail && userData?.emailAlertsEnabled !== false) {
-                        try {
-                            await sendEmailNotification(contactEmail, {
-                                requestId,
-                                agentName: agentData.name || "Unknown Agent",
-                                toolName,
-                                arguments: argsString,
-                                estimatedCost
-                            });
-                        } catch (err) {
-                            console.error("[SupraWall] Email alert failed:", err);
-                        }
-                    }
-                }
-
-                await logAudit(userId, agentId, toolName, argsString, intendedDecision, estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoopDetectedByClient, isDryRun);
-                res.json({ 
-                    decision: "REQUIRE_APPROVAL", 
-                    intended_decision: intendedDecision,
-                    is_dry_run: isDryRun,
-                    reason: vaultRequiresApproval ? "One or more vault secrets require manual approval." : "This action requires human approval.", 
-                    requestId, 
-                    branding 
-                });
+                await handleApprovalFlow(res, userId, agentId, agentData, toolName, currentArgsString, sessionId, agentRole, estimatedCost, userData, branding, vaultRequiresApproval, isLoopDetectedByClient, isDryRun);
                 return;
-            }
-
-            // ── Final Vault Injection (only if approved/allowed) ──
-            let finalArgs = args;
-            if (vaultInjected.length > 0) {
-                 const vaultResult = await injectVaultTokens(args, agentId, userId, toolName);
-                 finalArgs = vaultResult.injectedArgs;
             }
 
             // 6. Update usage counters (non-blocking)
             const updates: Promise<any>[] = [
-                logAudit(userId, agentId, toolName, argsString, intendedDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient, isDryRun)
+                logAudit(userId, agentId, toolName, currentArgsString, intendedDecision, estimatedCost, null, sessionId, agentRole, isLoopDetectedByClient, isDryRun)
             ];
 
             if (userId) {
@@ -492,6 +429,96 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
         res.status(500).json({ error: "Internal SupraWall error.", decision: "DENY" });
     }
 });
+
+async function handleApprovalFlow(
+    res: any,
+    userId: string,
+    agentId: string,
+    agentData: any,
+    toolName: string,
+    argsString: string,
+    sessionId: string | null,
+    agentRole: string | null,
+    estimatedCost: number,
+    userData: any,
+    branding: any,
+    vaultRequiresApproval: boolean,
+    isLoop: boolean,
+    isDryRun: boolean,
+    forcedReason?: string
+) {
+    const existingReq = await db.collection("approvalRequests")
+        .where("agentId", "==", agentId)
+        .where("toolName", "==", toolName)
+        .where("arguments", "==", argsString)
+        .where("status", "==", "pending")
+        .limit(1)
+        .get();
+
+    let requestId: string;
+    if (!existingReq.empty) {
+        requestId = existingReq.docs[0].id;
+    } else {
+        const newReq = await db.collection("approvalRequests").add({
+            userId,
+            agentId,
+            agentName: agentData.name || "Unknown Agent",
+            toolName,
+            arguments: argsString,
+            sessionId,
+            agentRole,
+            status: "pending",
+            createdAt: FieldValue.serverTimestamp(),
+            expiresAt: admin.firestore.Timestamp.fromDate(new Date(Date.now() + 24 * 60 * 60 * 1000)),
+            estimatedCostUsd: estimatedCost,
+            requiresVaultInjection: vaultRequiresApproval,
+            reason: forcedReason || null
+        });
+        requestId = newReq.id;
+
+        const slackUrl = userData?.slackWebhookUrl;
+        const contactEmail = userData?.contactEmail || userData?.email;
+
+        if (slackUrl) {
+            try {
+                await sendSlackNotification(slackUrl, {
+                    requestId,
+                    agentName: agentData.name || "Unknown Agent",
+                    toolName,
+                    arguments: argsString,
+                    estimatedCost,
+                    showBranding: !!branding.enabled
+                });
+            } catch (err) {
+                console.error("[SupraWall] Slack notification failed:", err);
+            }
+        }
+
+        if (contactEmail && userData?.emailAlertsEnabled !== false) {
+            try {
+                await sendEmailNotification(contactEmail, {
+                    requestId,
+                    agentName: agentData.name || "Unknown Agent",
+                    toolName,
+                    arguments: argsString,
+                    estimatedCost
+                });
+            } catch (err) {
+                console.error("[SupraWall] Email alert failed:", err);
+            }
+        }
+    }
+
+    await logAudit(userId, agentId, toolName, argsString, "REQUIRE_APPROVAL", estimatedCost, forcedReason || "Awaiting human approval", sessionId, agentRole, isLoop, isDryRun);
+    res.json({
+        decision: "REQUIRE_APPROVAL",
+        intended_decision: "REQUIRE_APPROVAL",
+        is_dry_run: isDryRun,
+        reason: forcedReason || (vaultRequiresApproval ? "One or more vault secrets require manual approval." : "This action requires human approval."),
+        requestId,
+        branding
+    });
+}
 
 // ── Connect Helpers ────────────────────────────────────────────────────────
 
