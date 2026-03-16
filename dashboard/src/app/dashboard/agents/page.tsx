@@ -19,13 +19,15 @@ import {
     BarChart3,
     History,
     Settings2,
-    ShieldCheck
+    ShieldCheck,
+    ArrowRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
 import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { 
     Dialog, 
     DialogContent, 
@@ -53,6 +55,54 @@ const SCOPE_PRESETS = [
     { label: "Finance Only", value: "finance:*" },
     { label: "Identity Only", value: "identity:*" },
 ];
+
+const LaserSuccess = () => (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[9999]">
+        {[...Array(24)].map((_, i) => (
+            <motion.div
+                key={i}
+                initial={{ 
+                    top: Math.random() * 100 + "%", 
+                    left: "-10%", 
+                    rotate: (Math.random() - 0.5) * 45,
+                    width: 0,
+                    opacity: 0,
+                    scaleY: 0.5
+                }}
+                animate={{ 
+                    left: ["-10%", "110%"],
+                    width: ["0%", "100%", "0%"],
+                    opacity: [0, 1, 1, 0],
+                    scaleY: [0.5, 2, 0.5]
+                }}
+                transition={{ 
+                    duration: 0.6, 
+                    delay: i * 0.06,
+                    ease: "easeOut"
+                }}
+                className="absolute h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981]"
+                style={{ filter: 'blur(0.5px)' }}
+            />
+        ))}
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.3, 0] }}
+            transition={{ duration: 1.2 }}
+            className="absolute inset-0 bg-emerald-500/10"
+        />
+        <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1.05, 1.1] }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0 flex items-center justify-center"
+        >
+            <div className="text-center space-y-2">
+                <ShieldCheck className="w-16 h-16 text-emerald-400 mx-auto drop-shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                <p className="text-emerald-400 font-black uppercase tracking-[0.3em] text-xs">Identity Authorized</p>
+            </div>
+        </motion.div>
+    </div>
+);
 
 interface Agent {
     id: string;
@@ -102,6 +152,8 @@ export default function AgentsPage() {
     const [agentSecrets, setAgentSecrets] = useState<VaultSecret[]>([]);
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (!user) return;
@@ -233,6 +285,14 @@ export default function AgentsPage() {
             setGeneratedKey(apiKey);
             setNewAgentName("");
             setSelectedScopes(["*:*"]);
+            setShowSuccess(true);
+            // Auto-close and navigate after laser animation
+            setTimeout(() => {
+                setShowSuccess(false);
+                setIsCreateModalOpen(false);
+                setGeneratedKey(null);
+                router.push('/dashboard');
+            }, 2500);
         } catch (error) {
             console.error("Error creating agent:", error);
         } finally {
@@ -498,13 +558,14 @@ export default function AgentsPage() {
             {/* Create Agent Modal */}
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                 <DialogContent className="bg-neutral-950 border-white/[0.05] shadow-2xl space-y-6 sm:max-w-[450px]">
-                    <DialogHeader>
+                    <DialogHeader className="relative">
                         <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">
                             Register AI Identity
                         </DialogTitle>
                         <DialogDescription className="text-neutral-500 text-xs font-medium uppercase tracking-widest">
                             Authorize a new autonomous entity in your ecosystem.
                         </DialogDescription>
+                        {showSuccess && <LaserSuccess />}
                     </DialogHeader>
 
                     {!generatedKey ? (
@@ -669,20 +730,18 @@ export default function AgentsPage() {
                     )}
 
                     <DialogFooter>
-                        {!generatedKey ? (
+                        {generatedKey && (
                             <Button
-                                onClick={handleCreateAgent}
-                                disabled={!newAgentName}
-                                className="w-full bg-emerald-500 hover:bg-emerald-600 text-black font-black uppercase tracking-widest text-[11px] h-12 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.2)]"
+                                onClick={() => {
+                                    setIsCreateModalOpen(false);
+                                    setGeneratedKey(null);
+                                    router.push("/dashboard");
+                                }}
+                                className="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest text-[11px] h-14 rounded-xl transition-all shadow-[0_0_30px_rgba(16,185,129,0.3)] border-b-4 border-emerald-700 active:border-b-0 active:translate-y-1 group"
                             >
-                                Generate Identity
-                            </Button>
-                        ) : (
-                            <Button
-                                onClick={() => setIsCreateModalOpen(false)}
-                                className="w-full bg-white/5 hover:bg-white/10 text-white font-black uppercase tracking-widest text-[11px] h-12 rounded-xl transition-all border border-white/10"
-                            >
-                                Done
+                                <span className="flex items-center gap-2">
+                                    Go to Command Center <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </span>
                             </Button>
                         )}
                     </DialogFooter>

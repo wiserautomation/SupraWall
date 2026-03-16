@@ -12,6 +12,7 @@ import { Agent } from "@/types/database";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlusCircle, Key, Copy, Check, Terminal, Coins, ShieldAlert, Activity, TrendingUp, DollarSign, Shield, Lock, X, UserCheck, Loader2, ShieldCheck, RefreshCw, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,8 +27,58 @@ import { format } from "date-fns";
 import { PolicyValidator } from "@/components/PolicyValidator";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
 
+const LaserSuccess = () => (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[9999]">
+        {[...Array(24)].map((_, i) => (
+            <motion.div
+                key={i}
+                initial={{ 
+                    top: Math.random() * 100 + "%", 
+                    left: "-10%", 
+                    rotate: (Math.random() - 0.5) * 45,
+                    width: 0,
+                    opacity: 0,
+                    scaleY: 0.5
+                }}
+                animate={{ 
+                    left: ["-10%", "110%"],
+                    width: ["0%", "100%", "0%"],
+                    opacity: [0, 1, 1, 0],
+                    scaleY: [0.5, 2, 0.5]
+                }}
+                transition={{ 
+                    duration: 0.6, 
+                    delay: i * 0.06,
+                    ease: "easeOut"
+                }}
+                className="absolute h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981]"
+                style={{ filter: 'blur(0.5px)' }}
+            />
+        ))}
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.3, 0] }}
+            transition={{ duration: 1.2 }}
+            className="absolute inset-0 bg-emerald-500/10"
+        />
+        <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1.05, 1.1] }}
+            transition={{ duration: 1.5 }}
+            className="absolute inset-0 flex items-center justify-center"
+        >
+            <div className="text-center space-y-2">
+                <ShieldCheck className="w-16 h-16 text-emerald-400 mx-auto drop-shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                <p className="text-emerald-400 font-black uppercase tracking-[0.3em] text-xs">Identity Authorized</p>
+            </div>
+        </motion.div>
+    </div>
+);
+
+
 export default function OverviewPage() {
     const [user] = useAuthState(auth);
+    const router = useRouter();
     const [agents, setAgents] = useState<Agent[]>([]);
     const [isValidatorOpen, setIsValidatorOpen] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -51,6 +102,7 @@ export default function OverviewPage() {
     const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
     const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
     const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+    const [showSuccess, setShowSuccess] = useState(false);
     const API_BASE = "https://suprawall-server.vercel.app";
 
     const generateApiKey = () => {
@@ -148,7 +200,14 @@ export default function OverviewPage() {
             setNewlyCreatedKey(apiKey);
             setNewAgentName("");
             setSelectedScopes([]);
-            // Keep modal open, but success flag will show the key
+            setShowSuccess(true);
+            // Auto-close and navigate after laser animation
+            setTimeout(() => {
+                setShowSuccess(false);
+                setIsCreateModalOpen(false);
+                setNewlyCreatedKey(null);
+                router.push('/dashboard/agents');
+            }, 2500);
         } catch (e) {
             console.error(e);
             setNameError("Failed to create agent");
@@ -176,6 +235,13 @@ export default function OverviewPage() {
             });
             setNewlyCreatedKey(apiKey);
             setIsCreateModalOpen(true);
+            setShowSuccess(true);
+            setTimeout(() => {
+                setShowSuccess(false);
+                setIsCreateModalOpen(false);
+                setNewlyCreatedKey(null);
+                router.push('/dashboard/agents');
+            }, 2500);
         } catch (e) {
             console.error(e);
         } finally {
@@ -619,6 +685,7 @@ secured.invoke({"messages": [...]})`;
             }}>
                 <DialogContent className="sm:max-w-md bg-black border-white/5 text-white shadow-2xl p-0 overflow-hidden rounded-3xl">
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
+                    {showSuccess && <LaserSuccess />}
                     
                     {!newlyCreatedKey ? (
                         <div className="p-8 space-y-6">
@@ -755,10 +822,13 @@ secured.invoke({"messages": [...]})`;
                                     onClick={() => {
                                         setNewlyCreatedKey(null);
                                         setIsCreateModalOpen(false);
+                                        router.push('/dashboard/agents');
                                     }}
-                                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest h-14 rounded-xl shadow-[0_10px_30px_rgba(5,150,105,0.2)]"
+                                    className="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest h-14 rounded-xl shadow-[0_10px_30px_rgba(5,150,105,0.2)] group"
                                 >
-                                    Access Granted
+                                    <span className="flex items-center gap-2">
+                                        Go to Agent Dashboard <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                    </span>
                                 </Button>
                             </div>
                         </div>
