@@ -364,7 +364,7 @@ export const evaluateAction = onRequest({ cors: true }, async (req, res) => {
                     }
 
                     // ── Trigger Email Alert ──
-                    if (contactEmail && orgData?.emailAlertsEnabled !== false) {
+                    if (contactEmail && userData?.emailAlertsEnabled !== false) {
                         try {
                             await sendEmailNotification(contactEmail, {
                                 requestId,
@@ -507,7 +507,7 @@ function estimateActionCost(args: any, toolName: string, model: string = "gpt-4o
 }
 
 async function sendSlackNotification(url: string, data: { requestId: string, agentName: string, toolName: string, arguments: string, estimatedCost: number, showBranding?: boolean }) {
-    const dashboardUrl = "https://agent-gate.vercel.app/approvals";
+    const dashboardUrl = "https://www.supra-wall.com/dashboard/approvals";
 
     // Slack Block Kit message for a premium look
     const payload = {

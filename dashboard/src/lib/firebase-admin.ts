@@ -15,7 +15,9 @@ function getFirebaseAdmin(): admin.app.App {
         privateKey = `${begin}\n${wrapped}\n${end}\n`;
     }
 
-    const projectId = (process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'suprawall-1b9e9')?.trim();
+    // ⚠️ IMPORTANT: The Firebase project ID is 'agentguard-1b9e9'. 
+    // DO NOT change this to 'suprawall-1b9e9' as that project does not exist.
+    const projectId = (process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'agentguard-1b9e9')?.trim();
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
 
     if (projectId && clientEmail && privateKey) {

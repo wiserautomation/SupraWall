@@ -50,6 +50,13 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             const platformSnap = await db.collection("platforms").doc(platformId).get();
             const platformData = platformSnap.data();
             const ownerId = platformData === null || platformData === void 0 ? void 0 : platformData.ownerId;
+            const showBranding = (platformData === null || platformData === void 0 ? void 0 : platformData.plan) !== "growth" && (platformData === null || platformData === void 0 ? void 0 : platformData.plan) !== "enterprise";
+            const branding = showBranding ? {
+                enabled: true,
+                text: "🛡️ Secured by SupraWall — AI agent security & EU AI Act compliance",
+                url: "https://SupraWall.ai?ref=agent-output",
+                format: "text"
+            } : { enabled: false };
             // Load platform base policies
             const basePolicySnap = await db
                 .collection("platforms")
@@ -71,7 +78,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             // Rate limit check
             const rateLimitResult = await checkRateLimit(apiKey, effectiveRateLimit);
             if (!rateLimitResult.allowed) {
-                res.status(429).json({ decision: "DENY", reason: "Rate limit exceeded." });
+                res.status(429).json({ decision: "DENY", reason: "Rate limit exceeded.", branding });
                 return;
             }
             // Policy evaluation
@@ -124,8 +131,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     console.warn(`Failed to update organization ${ownerId}:`, err.message);
                 }));
             }
-            Promise.all(updates).catch((e) => console.error("suprawall: Non-critical write failed:", e));
-            res.status(200).json(Object.assign(Object.assign({}, decision), { estimated_cost_usd: estimatedCost }));
+            Promise.all(updates).catch((e) => console.error("SupraWall: Non-critical write failed:", e));
+            res.status(200).json(Object.assign(Object.assign({}, decision), { estimated_cost_usd: estimatedCost, branding }));
             return;
         }
         // ── Route: Regular single-tenant key (ag_) ─────────────────────────────
@@ -140,8 +147,24 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             }
             const agentDoc = agentsSnapshot.docs[0];
             const agentId = agentDoc.id;
-            const userId = agentDoc.data().userId;
             const agentData = agentDoc.data();
+            // 2. Resolve Owner/Org and check status
+            const userId = agentData.userId;
+            if (!userId) {
+                throw new https_1.HttpsError("failed-precondition", "Agent document is missing a valid owner (userId).");
+            }
+            const userSnap = await db.collection("users").doc(userId).get();
+            if (!userSnap.exists) {
+                throw new https_1.HttpsError("not-found", "The organization/user owning this agent no longer exists.");
+            }
+            const userData = userSnap.data();
+            const showBranding = (userData === null || userData === void 0 ? void 0 : userData.plan) !== "growth" && (userData === null || userData === void 0 ? void 0 : userData.plan) !== "enterprise";
+            const branding = showBranding ? {
+                enabled: true,
+                text: "🛡️ Secured by SupraWall — AI agent security & EU AI Act compliance",
+                url: "https://SupraWall.ai?ref=agent-output",
+                format: "text"
+            } : { enabled: false };
             // ── 1.5 Agent Status Check ──
             if (agentData.status && agentData.status !== 'active') {
                 await logAudit(agentId, toolName, argsString, "DENY", 0, `Agent is ${agentData.status}`, sessionId, agentRole);
@@ -262,13 +285,10 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     });
                     requestId = newReq.id;
                     // ── Trigger Slack Notification ──
-                    const orgSnap = await db.collection("organizations").doc(userId).get();
-                    const orgData = orgSnap.data();
-                    const slackUrl = orgData === null || orgData === void 0 ? void 0 : orgData.slackWebhookUrl;
-                    const contactEmail = (orgData === null || orgData === void 0 ? void 0 : orgData.contactEmail) || (orgData === null || orgData === void 0 ? void 0 : orgData.email);
+                    const slackUrl = userData === null || userData === void 0 ? void 0 : userData.slackWebhookUrl;
+                    const contactEmail = (userData === null || userData === void 0 ? void 0 : userData.contactEmail) || (userData === null || userData === void 0 ? void 0 : userData.email);
                     if (slackUrl) {
                         try {
-                            const showBranding = (orgData === null || orgData === void 0 ? void 0 : orgData.plan) !== "growth" && (orgData === null || orgData === void 0 ? void 0 : orgData.plan) !== "enterprise";
                             await sendSlackNotification(slackUrl, {
                                 requestId,
                                 agentName: agentData.name || "Unknown Agent",
@@ -283,7 +303,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                         }
                     }
                     // ── Trigger Email Alert ──
-                    if (contactEmail && (orgData === null || orgData === void 0 ? void 0 : orgData.emailAlertsEnabled) !== false) {
+                    if (contactEmail && (userData === null || userData === void 0 ? void 0 : userData.emailAlertsEnabled) !== false) {
                         try {
                             await sendEmailNotification(contactEmail, {
                                 requestId,
@@ -299,7 +319,7 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
                     }
                 }
                 await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole);
-                res.json({ decision: "REQUIRE_APPROVAL", reason: "This action requires human approval.", requestId });
+                res.json({ decision: "REQUIRE_APPROVAL", reason: "This action requires human approval.", requestId, branding });
                 return;
             }
             // 6. Update usage counters (non-blocking)
@@ -323,7 +343,8 @@ exports.evaluateAction = (0, https_1.onRequest)({ cors: true }, async (req, res)
             res.status(200).json({
                 decision: finalDecision,
                 estimated_cost_usd: estimatedCost,
-                is_loop: isLoopDetectedByClient
+                is_loop: isLoopDetectedByClient,
+                branding
             });
             return;
         }
@@ -397,7 +418,7 @@ function estimateActionCost(args, toolName, model = "gpt-4o-mini", inTokens = 0,
     return parseFloat((tokens * costPerToken).toFixed(8));
 }
 async function sendSlackNotification(url, data) {
-    const dashboardUrl = "https://agent-gate.vercel.app/approvals";
+    const dashboardUrl = "https://www.supra-wall.com/dashboard/approvals";
     // Slack Block Kit message for a premium look
     const payload = {
         blocks: [
@@ -444,12 +465,12 @@ async function sendSlackNotification(url, data) {
                     elements: [
                         {
                             type: "image",
-                            image_url: "https://suprawall.ai/icon-small.png",
-                            alt_text: "Supra-wall"
+                            image_url: "https://SupraWall.ai/icon-small.png",
+                            alt_text: "SupraWall"
                         },
                         {
                             type: "mrkdwn",
-                            text: "🛡️ Protected by <https://suprawall.ai?ref=slack-approval|*Supra-wall*> — AI agent security & EU AI Act compliance"
+                            text: "🛡️ Protected by <https://SupraWall.ai?ref=slack-approval|*SupraWall*> — AI agent security & EU AI Act compliance"
                         }
                     ]
                 }] : [])
