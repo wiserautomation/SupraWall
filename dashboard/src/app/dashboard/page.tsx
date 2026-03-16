@@ -154,24 +154,36 @@ export default function OverviewPage() {
         setIsSubmitting(true);
         try {
             const apiKey = generateApiKey();
-            await addDoc(collection(db, "agents"), {
-                userId: user.uid,
-                name: trimmedName,
-                apiKey,
-                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
-                status: 'active',
-                totalCalls: 0,
-                totalSpendUsd: 0,
-                createdAt: serverTimestamp(),
-            });
+
+            const timeout = new Promise<never>((_, reject) =>
+                setTimeout(() => reject(new Error("timeout")), 10000)
+            );
+
+            await Promise.race([
+                addDoc(collection(db, "agents"), {
+                    userId: user.uid,
+                    name: trimmedName,
+                    apiKey,
+                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
+                    status: 'active',
+                    totalCalls: 0,
+                    totalSpendUsd: 0,
+                    createdAt: serverTimestamp(),
+                }),
+                timeout,
+            ]);
 
             setNewAgentName("");
             setSelectedScopes([]);
             setIsCreateModalOpen(false);
             sendGAEvent('event', 'create_agent', { agent_name: trimmedName });
-        } catch (e) {
+        } catch (e: any) {
             console.error("Error creating agent", e);
-            setNameError("Failed to create the agent. Please try again.");
+            if (e?.message === "timeout") {
+                setNameError("Request timed out. Firestore may be blocked by an ad blocker. Please disable it for supra-wall.com and try again.");
+            } else {
+                setNameError("Failed to create the agent. Please try again.");
+            }
         } finally {
             setIsSubmitting(false);
         }

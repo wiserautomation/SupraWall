@@ -45,7 +45,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Copy, Plus, Key as KeyIcon, Trash2 } from "lucide-react";
+import { Copy, Plus, Key as KeyIcon, Trash2, Ban, PauseCircle, Code, Server, Play, RefreshCw, Layers } from "lucide-react";
 
 const SCOPE_PRESETS = [
     { label: "Full Access", value: "*:*" },
@@ -100,6 +100,7 @@ export default function AgentsPage() {
     const [isRotatingKey, setIsRotatingKey] = useState(false);
     const [agentPolicies, setAgentPolicies] = useState<Policy[]>([]);
     const [agentSecrets, setAgentSecrets] = useState<VaultSecret[]>([]);
+    const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
 
     useEffect(() => {
         if (!user) return;
@@ -151,7 +152,7 @@ export default function AgentsPage() {
                 const dateA = a.timestamp?.toDate?.() || new Date(0);
                 const dateB = b.timestamp?.toDate?.() || new Date(0);
                 return dateB - dateA;
-            }).slice(0, 5));
+            }).slice(0, 50));
         });
 
         // Fetch Policies
@@ -640,262 +641,377 @@ export default function AgentsPage() {
 
             {/* Agent Detail Sheet */}
             <Sheet open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <SheetContent side="right" className="w-full sm:max-w-xl bg-neutral-950 border-white/10 p-0 overflow-hidden flex flex-col">
-                    {selectedAgent && (
-                        <>
-                            <div className="p-8 pb-4">
-                                <SheetHeader className="space-y-1">
-                                    <div className="flex items-center gap-3 mb-2">
-                                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center">
-                                            <Terminal className="w-6 h-6 text-indigo-400" />
-                                        </div>
-                                        <div className="flex-1">
-                                            {isEditing ? (
-                                                <Input 
-                                                    value={editName}
-                                                    onChange={(e) => setEditName(e.target.value)}
-                                                    className="bg-white/5 border-white/10 text-xl font-black text-white p-2 h-auto"
-                                                />
-                                            ) : (
-                                                <SheetTitle className="text-2xl font-black text-white tracking-tight">
-                                                    {selectedAgent.name}
-                                                </SheetTitle>
-                                            )}
-                                            <SheetDescription className="text-neutral-500 font-mono text-[10px] uppercase tracking-widest mt-0.5">
-                                                AGENT_ID: {selectedAgent.id}
-                                            </SheetDescription>
-                                        </div>
-                                        {isEditing && (
-                                            <Button size="sm" onClick={handleUpdateAgent} className="bg-emerald-500 text-black font-bold uppercase text-[10px]">
-                                                Save
-                                            </Button>
-                                        )}
-                                    </div>
-                                </SheetHeader>
-                            </div>
+                <SheetContent side="right" className="w-full sm:max-w-3xl bg-neutral-950 border-white/10 p-0 overflow-hidden flex flex-col">
+                    {selectedAgent && (() => {
+                        const interceptionCount = auditLogs.filter(l => l.decision === 'DENY').length;
+                        const validLogsCount = auditLogs.filter(l => l.decision !== 'PAUSED').length || 1;
+                        const interceptionRate = ((interceptionCount / validLogsCount) * 100).toFixed(1);
+                        const loopDetections = auditLogs.filter(l => l.isLoop).length;
+                        const maxBudget = 10.00; // Arbitrary cap for presentation
+                        const currentSpend = selectedAgent.totalSpendUsd || 0;
+                        const spendProgress = Math.min((currentSpend / maxBudget) * 100, 100);
+                        const agentUri = `agent://${selectedAgent.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.acme.suprawall.com`;
+                        const hasPendingApproval = auditLogs.some(l => l.decision === 'PAUSED');
 
-                            <div className="flex-1 overflow-y-auto p-8 pt-0 space-y-8">
-                                {/* Quick Stats */}
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1">
-                                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Total Calls</span>
-                                        <div className="text-xl font-black text-white">{selectedAgent.totalCalls || 0}</div>
-                                    </div>
-                                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-1">
-                                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Total Spend</span>
-                                        <div className="text-xl font-black text-emerald-400">${(selectedAgent.totalSpendUsd || 0).toFixed(3)}</div>
-                                    </div>
-                                </div>
+                        const snippetCode = {
+                            python: `import suprawall\n\nagent = suprawall.Agent(\n  identity="${agentUri}",\n  api_key="ag_xxxxxxxxxxx"\n)\n\nagent.start()`,
+                            ts: `import { SupraWall } from '@suprawall/sdk';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "ag_xxxxxxxxxxx"\n});\n\nawait agent.connect();`,
+                            go: `import "github.com/suprawall/sdk-go"\n\nagent := suprawall.NewAgent(&suprawall.Config{\n    Identity: "${agentUri}",\n    APIKey:   "ag_xxxxxxxxxxx",\n})\nagent.Run()`
+                        };
 
-                                {/* Scopes Section */}
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">
-                                            Authorization Scopes
-                                        </Label>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="sm" 
-                                            onClick={() => setIsEditing(!isEditing)}
-                                            className={`h-6 text-[10px] ${isEditing ? 'text-amber-400' : 'text-indigo-400'} hover:bg-white/5`}
-                                        >
-                                            <Settings2 className="w-3 h-3 mr-1" /> {isEditing ? "Editing..." : "Edit Scopes"}
-                                        </Button>
-                                    </div>
-                                    <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                                        {isEditing ? (
-                                            <>
-                                                <div className="flex gap-2 mb-3">
-                                                    <Input 
-                                                        placeholder="Add custom scope..."
-                                                        value={customScope}
-                                                        onChange={(e) => setCustomScope(e.target.value)}
-                                                        className="bg-white/5 border-white/10 h-9 text-xs"
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter' && customScope) {
-                                                                if (!editScopes.includes(customScope)) {
-                                                                    setEditScopes([...editScopes, customScope]);
-                                                                }
-                                                                setCustomScope("");
-                                                            }
-                                                        }}
-                                                    />
-                                                    <Button size="sm" variant="outline" onClick={() => {
-                                                        if (customScope && !editScopes.includes(customScope)) {
-                                                            setEditScopes([...editScopes, customScope]);
-                                                            setCustomScope("");
-                                                        }
-                                                    }}>Add</Button>
-                                                </div>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {editScopes.map(scope => (
-                                                        <Badge key={scope} variant="secondary" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 gap-1 border">
-                                                            {scope}
-                                                            <X className="w-3 h-3 cursor-pointer" onClick={() => setEditScopes(editScopes.filter(s => s !== scope))} />
-                                                        </Badge>
-                                                    ))}
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <div className="flex flex-wrap gap-2">
-                                                {selectedAgent.scopes?.map(scope => (
-                                                    <Badge key={scope} variant="outline" className="bg-white/5 border-white/10 text-neutral-400 font-mono py-1 px-2">
-                                                        {scope}
-                                                    </Badge>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* Security Posture: Policies & Secrets */}
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">
-                                        Security Posture
-                                    </Label>
-                                    <div className="grid grid-cols-1 gap-3">
-                                        <div className="p-4 rounded-2xl bg-indigo-500/5 border border-indigo-500/10 space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <ShieldCheck className="w-4 h-4 text-indigo-400" />
-                                                    <span className="text-xs font-bold text-white">Active Policies</span>
-                                                </div>
-                                                <Badge className="bg-indigo-500/20 text-indigo-400 border-indigo-500/20">{agentPolicies.length}</Badge>
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5">
-                                                {agentPolicies.length > 0 ? agentPolicies.map(p => (
-                                                    <Badge key={p.id} variant="outline" className="text-[9px] bg-black/20 border-white/5 text-neutral-400 py-0 h-5">
-                                                        {p.toolName} ({p.ruleType})
-                                                    </Badge>
-                                                )) : (
-                                                    <span className="text-[10px] text-neutral-600 italic">No restrictive policies active</span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 space-y-3">
-                                            <div className="flex items-center justify-between">
-                                                <div className="flex items-center gap-2">
-                                                    <Lock className="w-4 h-4 text-emerald-400" />
-                                                    <span className="text-xs font-bold text-white">Vault Access</span>
-                                                </div>
-                                                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/20">{agentSecrets.length}</Badge>
-                                            </div>
-                                            <div className="flex flex-wrap gap-1.5">
-                                                {agentSecrets.length > 0 ? agentSecrets.map(s => (
-                                                    <Badge key={s.id} variant="outline" className="text-[9px] bg-black/20 border-white/5 text-neutral-400 py-0 h-5">
-                                                        {s.secret_name}
-                                                    </Badge>
-                                                )) : (
-                                                    <span className="text-[10px] text-neutral-600 italic">No credentials linked in Vault</span>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* API Key Section */}
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">
-                                        Authentication
-                                    </Label>
-                                    <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between gap-4">
-                                        <div className="flex items-center gap-3">
-                                            <KeyIcon className={`w-4 h-4 ${isRotatingKey ? 'animate-spin' : 'text-emerald-400'}`} />
-                                            <code className="text-xs text-neutral-500 font-mono">
-                                                {isRotatingKey ? "GENERATING..." : "••••••••••••••••••••••••"}
-                                            </code>
-                                        </div>
-                                        <Button 
-                                            size="sm" 
-                                            variant="outline" 
-                                            onClick={handleRotateKey}
-                                            disabled={isRotatingKey}
-                                            className="h-8 border-rose-500/20 text-[10px] font-black uppercase text-rose-500 hover:bg-rose-500/10"
-                                        >
-                                            Rotate Key
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                {/* Audit Log / Timeline */}
-                                <div className="space-y-4">
-                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">
-                                        Recent Activity (Real-time Audit)
-                                    </Label>
-                                    <div className="space-y-3">
-                                        {auditLogs.length === 0 ? (
-                                            <div className="text-center py-8 text-neutral-600 italic text-xs">
-                                                No activity recorded for this identity yet.
-                                            </div>
-                                        ) : (
-                                            auditLogs.map((log) => (
-                                                <div key={log.id} className="flex gap-4 p-3 rounded-xl hover:bg-white/[0.02] transition-colors border border-transparent hover:border-white/5 group">
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 border ${
-                                                        log.decision === 'ALLOW' ? 'bg-emerald-500/5 border-emerald-500/10' : 'bg-rose-500/5 border-rose-500/10'
+                        return (
+                            <>
+                                <div className="p-8 pb-4 border-b border-white/5 bg-black/20">
+                                    <SheetHeader className="space-y-1">
+                                        <div className="flex items-start justify-between">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex flex-col items-center justify-center relative shadow-[0_0_15px_rgba(99,102,241,0.15)]">
+                                                    <Terminal className="w-6 h-6 text-indigo-400" />
+                                                    <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-neutral-950 flex items-center justify-center ${
+                                                        selectedAgent.status === 'active' ? 'bg-emerald-500' : 'bg-amber-500'
                                                     }`}>
-                                                        {log.decision === 'ALLOW' ? 
-                                                            <ShieldCheck className="w-5 h-5 text-emerald-400/50 group-hover:text-emerald-400 transition-colors" /> : 
-                                                            <Shield className="w-5 h-5 text-rose-400/50 group-hover:text-rose-400 transition-colors" />
-                                                        }
+                                                        {selectedAgent.status === 'active' && <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />}
                                                     </div>
-                                                    <div className="flex-1 space-y-1">
-                                                        <div className="flex items-center justify-between">
-                                                            <span className="text-xs font-bold text-neutral-300">
-                                                                {log.toolName}
-                                                            </span>
-                                                            <span className="text-[10px] text-neutral-600 font-mono uppercase">
-                                                                {log.timestamp?.toDate?.().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center justify-between">
-                                                            <p className="text-[11px] text-neutral-500 line-clamp-1 italic">
-                                                                {log.decision === 'DENY' ? log.reason : `Executed successfully ($${(log.cost_usd || 0).toFixed(4)})`}
-                                                            </p>
-                                                            {log.riskScore > 20 && (
-                                                                <Badge className="bg-amber-500/10 text-amber-500 text-[8px] h-4">RISK: {log.riskScore}</Badge>
+                                                </div>
+                                                <div>
+                                                    {isEditing ? (
+                                                        <Input 
+                                                            value={editName}
+                                                            onChange={(e) => setEditName(e.target.value)}
+                                                            className="bg-white/5 border-white/10 text-2xl font-black text-white p-2 h-auto"
+                                                        />
+                                                    ) : (
+                                                        <SheetTitle className="text-3xl font-black text-white tracking-tight flex items-center gap-3">
+                                                            {selectedAgent.name}
+                                                            {selectedAgent.status === 'active' ? (
+                                                                <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] tracking-widest font-bold uppercase transition-colors hover:bg-emerald-500/20">Active</Badge>
+                                                            ) : (
+                                                                <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px] tracking-widest font-bold uppercase transition-colors hover:bg-amber-500/20">Suspended</Badge>
                                                             )}
+                                                        </SheetTitle>
+                                                    )}
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <Badge variant="outline" className="text-[10px] font-mono tracking-widest uppercase text-neutral-500 bg-white/5 border-white/5">
+                                                            ID: {selectedAgent.id}
+                                                        </Badge>
+                                                        {isEditing && (
+                                                            <Button size="sm" onClick={handleUpdateAgent} className="h-6 bg-emerald-500 text-black font-bold uppercase text-[10px] hover:bg-emerald-400">
+                                                                Save
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </SheetHeader>
+                                </div>
+
+                                <div className="flex-1 overflow-y-auto p-8 space-y-12">
+                                    {/* Human-in-the-loop Notification */}
+                                    {hasPendingApproval && (
+                                        <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex items-start gap-4 shadow-[0_0_20px_rgba(245,158,11,0.1)]">
+                                            <div className="p-2 bg-amber-500/20 rounded-lg shrink-0 mt-0.5">
+                                                <PauseCircle className="w-5 h-5 text-amber-400 animate-pulse" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <h4 className="text-amber-400 font-bold tracking-tight">Human Approval Required</h4>
+                                                <p className="text-xs text-neutral-300">This agent has paused an action that violates its policy thresholds. It is currently waiting for human intervention.</p>
+                                                <Link href="/dashboard/forensics" className="text-[10px] uppercase tracking-widest text-amber-300 font-black inline-flex items-center gap-1 hover:text-white transition-colors mt-2">
+                                                    Review paused actions <ExternalLink className="w-3 h-3" />
+                                                </Link>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* --- 1. Identity & Integration --- */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                                            <Layers className="w-4 h-4 text-blue-400" />
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Identity & Integration</h3>
+                                        </div>
+                                        
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            {/* Left Col */}
+                                            <div className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Agent URI</Label>
+                                                    <div className="flex bg-black/40 border border-white/5 rounded-xl h-10 items-center px-3 group transition-colors hover:border-white/10">
+                                                        <code className="text-[11px] text-blue-300 font-mono w-full truncate">{agentUri}</code>
+                                                        <button onClick={() => copyToClipboard(agentUri)} className="shrink-0 p-1 rounded-md text-neutral-500 hover:text-white hover:bg-white/10 transition">
+                                                            <Copy className="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">API Key</Label>
+                                                    <div className="flex items-center justify-between bg-black/40 border border-white/5 rounded-xl h-10 px-3 group transition-colors hover:border-white/10">
+                                                        <div className="flex items-center gap-2">
+                                                            <KeyIcon className={`w-3.5 h-3.5 ${isRotatingKey ? 'animate-spin' : 'text-emerald-400'}`} />
+                                                            <code className="text-[11px] text-neutral-500 font-mono">
+                                                                {isRotatingKey ? "GENERATING..." : "••••••••••••••••••••••••"}
+                                                            </code>
+                                                        </div>
+                                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <Button size="sm" variant="ghost" onClick={handleRotateKey} disabled={isRotatingKey} className="h-6 px-2 border border-rose-500/20 text-[9px] font-black uppercase text-rose-500 hover:bg-rose-500/10">Rotate</Button>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            ))
-                                        )}
+                                                <div className="space-y-2">
+                                                    <div className="flex items-center justify-between">
+                                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Scopes</Label>
+                                                        <Button variant="ghost" size="sm" onClick={() => setIsEditing(!isEditing)} className="h-5 text-[9px] uppercase px-2 bg-white/5 hover:bg-white/10">{isEditing ? "Editing..." : "Edit"}</Button>
+                                                    </div>
+                                                    {isEditing ? (
+                                                        <div className="p-3 bg-white/5 rounded-lg border border-white/10 space-y-2">
+                                                            <div className="flex gap-2">
+                                                                <Input placeholder="Add custom scope" value={customScope} onChange={(e) => setCustomScope(e.target.value)} className="h-7 text-[10px] bg-black/40" />
+                                                                <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => { if(customScope) { setEditScopes([...editScopes, customScope]); setCustomScope(""); }}}>Add</Button>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-1">
+                                                                {editScopes.map(scope => (
+                                                                    <Badge key={scope} variant="outline" className="text-[9px] font-mono group cursor-pointer">{scope} <X className="w-2.5 h-2.5 ml-1 opacity-50 group-hover:opacity-100" onClick={()=>setEditScopes(editScopes.filter(s=>s!==scope))}/></Badge>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex flex-wrap gap-1">
+                                                            {selectedAgent.scopes?.map(scope => (
+                                                                <Badge key={scope} variant="outline" className="bg-black/40 border-white/10 text-neutral-400 font-mono py-0.5 px-2 text-[10px]">{scope}</Badge>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                            {/* Right Col */}
+                                            <div className="space-y-2 flex flex-col">
+                                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Quick Integration</Label>
+                                                <div className="flex-1 bg-black/40 border border-white/5 rounded-xl overflow-hidden flex flex-col shadow-inner">
+                                                    <div className="flex border-b border-white/5 bg-white/[0.02]">
+                                                        {(['python', 'ts', 'go'] as const).map(t => (
+                                                            <button 
+                                                                key={t}
+                                                                onClick={() => setIntegrationTab(t)}
+                                                                className={`flex-1 py-1.5 text-[10px] font-black uppercase text-center transition-colors ${integrationTab === t ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-400/5' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                                            >
+                                                                {t === 'python' ? 'Python' : t === 'ts' ? 'TypeScript' : 'Go'}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                    <div className="p-3 flex-1 relative group">
+                                                        <pre className="text-[10px] font-mono text-neutral-300 leading-relaxed whitespace-pre-wrap">{snippetCode[integrationTab]}</pre>
+                                                        <button onClick={() => copyToClipboard(snippetCode[integrationTab])} className="absolute top-2 right-2 p-1.5 bg-white/10 rounded border border-white/10 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-white/20">
+                                                            <Copy className="w-3 h-3" />
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <Link href="/dashboard/forensics" className="block">
-                                        <Button variant="ghost" className="w-full text-[11px] font-black uppercase tracking-widest text-neutral-600 hover:text-white">
-                                            Deep Forensic Analysis
-                                        </Button>
-                                    </Link>
-                                </div>
-                            </div>
 
-                            {/* Footer Actions */}
-                            <div className="p-8 pt-4 border-t border-white/5 bg-white/[0.01] flex items-center justify-between">
-                                <Button 
-                                    variant="outline" 
-                                    className={`h-11 rounded-xl px-6 border-white/10 font-bold transition-all ${
-                                        selectedAgent.status === 'active' 
-                                            ? 'text-amber-400 hover:bg-amber-500/10 hover:border-amber-500/20' 
-                                            : 'text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/20'
-                                    }`}
-                                    onClick={() => toggleStatus(selectedAgent)}
-                                >
-                                    {selectedAgent.status === 'active' ? (
-                                        <><Lock className="w-4 h-4 mr-2" /> Pause Agent</>
-                                    ) : (
-                                        <><Unlock className="w-4 h-4 mr-2" /> Resume Agent</>
-                                    )}
-                                </Button>
-                                <Button 
-                                    variant="ghost" 
-                                    className="h-11 rounded-xl px-6 text-rose-500 font-bold hover:bg-rose-500/10"
-                                    onClick={() => deleteAgent(selectedAgent.id)}
-                                >
-                                    Revoke Access
-                                </Button>
-                            </div>
-                        </>
-                    )}
+                                    {/* --- 2. Telemetry & Health Metrics --- */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                                            <Activity className="w-4 h-4 text-emerald-400" />
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Telemetry & Health Metrics</h3>
+                                        </div>
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between">
+                                                <div className="flex gap-2 items-center text-neutral-500 mb-2">
+                                                    <Terminal className="w-3.5 h-3.5" />
+                                                    <span className="text-[9px] uppercase tracking-widest font-black">Total Calls</span>
+                                                </div>
+                                                <div className="text-2xl font-black text-white">{selectedAgent.totalCalls || 0}</div>
+                                            </div>
+                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between">
+                                                <div className="flex gap-2 items-center text-neutral-500 mb-2">
+                                                    <Shield className="w-3.5 h-3.5 text-rose-400/50" />
+                                                    <span className="text-[9px] uppercase tracking-widest font-black">Interception</span>
+                                                </div>
+                                                <div className="flex items-baseline gap-1">
+                                                    <div className="text-2xl font-black text-rose-400">{interceptionRate}%</div>
+                                                    <div className="text-[10px] text-neutral-500">blocked</div>
+                                                </div>
+                                            </div>
+                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between col-span-2 md:col-span-2 group relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
+                                                <div className="flex justify-between items-start mb-2 relative z-10">
+                                                    <div className="flex gap-2 items-center text-neutral-500">
+                                                        <DollarSign className="w-3.5 h-3.5 text-amber-500" />
+                                                        <span className="text-[9px] uppercase tracking-widest font-black">Budget Cap</span>
+                                                    </div>
+                                                    <div className="text-[10px] font-mono text-neutral-400 bg-black/40 px-1.5 py-0.5 rounded border border-white/5">${currentSpend.toFixed(3)} / ${maxBudget.toFixed(2)}</div>
+                                                </div>
+                                                <div className="relative z-10 space-y-1.5">
+                                                    <div className="flex items-end gap-1.5">
+                                                        <div className="text-2xl font-black text-amber-400 tracking-tighter">${currentSpend.toFixed(3)}</div>
+                                                        <div className="text-xs text-neutral-500 mb-1 font-bold">SPENT</div>
+                                                    </div>
+                                                    <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden shadow-inner flex">
+                                                        <div className="h-full bg-gradient-to-r from-amber-500/50 to-rose-500/80 transition-all duration-1000" style={{ width: `${spendProgress}%` }} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* Loop Detections Row Extension */}
+                                            <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between col-span-2 md:col-span-4">
+                                                <div className="flex gap-3 items-center">
+                                                    <div className="p-2 bg-indigo-500/10 rounded-lg">
+                                                        <RefreshCw className="w-4 h-4 text-indigo-400" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-[10px] uppercase tracking-widest font-black text-neutral-400">Circuit Breaker: Loop Detections</div>
+                                                        <div className="text-[11px] text-neutral-500 mt-0.5">Times the agent was halted from repeating identical flawed API requests.</div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-xl font-black text-indigo-400 bg-indigo-500/10 px-4 py-1.5 rounded-xl border border-indigo-500/20">{loopDetections}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* --- 3. Access Control & Perimeter --- */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-2 border-b border-white/10 pb-2">
+                                            <ShieldCheck className="w-4 h-4 text-amber-500" />
+                                            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Access Control & Perimeter</h3>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="border border-white/5 bg-white/[0.01] rounded-2xl p-5 space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <Lock className="w-4 h-4 text-emerald-400" />
+                                                        <span className="text-xs font-bold text-white tracking-widest uppercase">Linked Vault Secrets</span>
+                                                    </div>
+                                                    <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">{agentSecrets.length}</Badge>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {agentSecrets.length > 0 ? agentSecrets.map(s => (
+                                                        <div key={s.id} className="flex justify-between items-center bg-black/40 p-2 rounded-lg border border-white/5">
+                                                            <span className="text-[11px] font-mono text-emerald-300">{s.secret_name}</span>
+                                                            <span className="text-[9px] text-neutral-500">Accessible</span>
+                                                        </div>
+                                                    )) : (
+                                                        <div className="text-center p-4 border border-dashed border-white/10 rounded-xl bg-black/20 text-neutral-600 text-[10px] uppercase font-bold tracking-widest">
+                                                            No secrets linked
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            <div className="border border-white/5 bg-white/[0.01] rounded-2xl p-5 space-y-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <Ban className="w-4 h-4 text-rose-400" />
+                                                        <span className="text-xs font-bold text-white tracking-widest uppercase">Active Policies</span>
+                                                    </div>
+                                                    <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/20">{agentPolicies.length}</Badge>
+                                                </div>
+                                                <div className="space-y-2">
+                                                    {agentPolicies.length > 0 ? agentPolicies.map(p => (
+                                                        <div key={p.id} className="flex flex-col bg-black/40 p-2 rounded-lg border border-white/5 gap-1">
+                                                            <div className="flex justify-between items-center">
+                                                                <span className="text-[10px] font-mono font-bold text-rose-300 truncate pr-2">{p.toolName}</span>
+                                                                <Badge variant="outline" className="text-[8px] h-4 leading-none bg-rose-500/10 text-rose-400 border-rose-500/20 uppercase tracking-widest">{p.ruleType}</Badge>
+                                                            </div>
+                                                            <span className="text-[9px] text-neutral-500 truncate">{p.condition}</span>
+                                                        </div>
+                                                    )) : (
+                                                        <div className="text-center p-4 border border-dashed border-white/10 rounded-xl bg-black/20 text-neutral-600 text-[10px] uppercase font-bold tracking-widest">
+                                                            No policies assigned
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* --- 4. Real-Time Activity Feed --- */}
+                                    <div className="space-y-4">
+                                        <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                            <div className="flex items-center gap-2">
+                                                <History className="w-4 h-4 text-purple-400" />
+                                                <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Real-Time Activity Feed</h3>
+                                            </div>
+                                            <Link href="/dashboard/forensics">
+                                                <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-white hover:bg-white/5">
+                                                    View All <ExternalLink className="w-3 h-3 ml-1" />
+                                                </Button>
+                                            </Link>
+                                        </div>
+                                        
+                                        <div className="overflow-hidden border border-white/5 rounded-2xl bg-black/20">
+                                            <table className="w-full text-left border-collapse">
+                                                <thead>
+                                                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Time</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Tool</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Parameters</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest text-right">Decision</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody className="divide-y divide-white/[0.02]">
+                                                    {auditLogs.length === 0 ? (
+                                                        <tr><td colSpan={4} className="text-center py-6 text-neutral-600 italic text-xs">No activity recorded yet in this session window.</td></tr>
+                                                    ) : (
+                                                        auditLogs.map((log) => {
+                                                            const isAllow = log.decision === 'ALLOW';
+                                                            const isPaused = log.decision === 'PAUSED';
+                                                            return (
+                                                                <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
+                                                                    <td className="px-4 py-3 whitespace-nowrap text-[10px] font-mono text-neutral-500">
+                                                                        {log.timestamp?.toDate?.().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                                                                    </td>
+                                                                    <td className="px-4 py-3 whitespace-nowrap">
+                                                                        <span className="text-[11px] font-bold text-neutral-300 font-mono tracking-tight">{log.toolName}</span>
+                                                                    </td>
+                                                                    <td className="px-4 py-3 text-[10px] text-neutral-500 font-mono truncate max-w-[180px]">
+                                                                        {log.arguments ? log.arguments.replace(/[{}]/g, '').substring(0, 50) + (log.arguments.length > 50 ? '...' : '') : '{}'}
+                                                                    </td>
+                                                                    <td className="px-4 py-3 whitespace-nowrap text-right">
+                                                                        <Badge className={`px-2 py-0 h-5 text-[9px] font-black uppercase tracking-widest ${
+                                                                            isAllow ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 
+                                                                            isPaused ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
+                                                                            'bg-rose-500/10 text-rose-400 border-rose-500/20'
+                                                                        }`}>
+                                                                            {log.decision}
+                                                                        </Badge>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })
+                                                    )}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Shared Footer Controls */}
+                                <div className="p-6 border-t border-white/5 bg-black z-10 flex items-center justify-between mt-auto">
+                                    <Button 
+                                        variant="outline" 
+                                        className={`h-11 rounded-xl px-6 border-white/10 font-bold transition-all shadow-[0_0_15px_rgba(255,255,255,0.02)] ${
+                                            selectedAgent.status === 'active' 
+                                                ? 'text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/20' 
+                                                : 'text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/20'
+                                        }`}
+                                        onClick={() => toggleStatus(selectedAgent)}
+                                    >
+                                        {selectedAgent.status === 'active' ? (
+                                            <><Lock className="w-4 h-4 mr-2" /> Suspend Operations</>
+                                        ) : (
+                                            <><Unlock className="w-4 h-4 mr-2" /> Resume Operations</>
+                                        )}
+                                    </Button>
+                                    <Button 
+                                        variant="ghost" 
+                                        className="h-11 rounded-xl px-6 text-rose-500 font-bold hover:bg-rose-500/10 uppercase tracking-widest text-[10px]"
+                                        onClick={() => deleteAgent(selectedAgent.id)}
+                                    >
+                                        Revoke Entirely
+                                    </Button>
+                                </div>
+                            </>
+                        );
+                    })()}
                 </SheetContent>
             </Sheet>
         </div>

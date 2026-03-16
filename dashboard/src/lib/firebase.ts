@@ -1,6 +1,6 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
-import { getFirestore, Firestore, enableMultiTabIndexedDbPersistence } from "firebase/firestore";
+import { getFirestore, Firestore } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -45,24 +45,8 @@ if (isClient && hasConfig) {
 const auth: Auth = getAuth(app);
 const db: Firestore = getFirestore(app);
 
-// Helper to check if we are in mock mode
-(db as any)._isMock = !hasConfig;
-
-// Enable offline persistence on the client
-if (typeof window !== "undefined" && app && db && !(db as any)._isMock) {
-    enableMultiTabIndexedDbPersistence(db).catch((err) => {
-        if (err.code === 'failed-precondition') {
-            // Multiple tabs open, persistence can only be enabled
-            // in one tab at a a time.
-            console.warn("Firestore persistence failed-precondition: Multiple tabs open.");
-        } else if (err.code === 'unimplemented') {
-            // The current browser does not support all of the
-            // features required to enable persistence
-            console.warn("Firestore persistence unimplemented by browser.");
-        } else {
-            console.error("Firestore persistence error:", err);
-        }
-    });
-}
+// Offline persistence intentionally disabled — it can cache stale Firestore
+// project connections when the project ID changes, causing ERR_BLOCKED_BY_CLIENT.
+// If you need offline support in future, re-enable with IndexedDbPersistence.
 
 export { auth, db };
