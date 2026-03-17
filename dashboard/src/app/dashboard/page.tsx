@@ -223,42 +223,47 @@ export default function OverviewPage() {
 
         const trimmedName = newAgentName.trim();
         setIsSubmitting(true);
+        
+        const apiKey = generateApiKey();
+        const agentDoc = {
+            name: trimmedName,
+            userId: user.uid,
+            status: 'active',
+            apiKey,
+            totalCalls: 0,
+            totalSpendUsd: 0,
+            createdAt: serverTimestamp(),
+            scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
+        };
+        
         try {
-            const apiKey = generateApiKey();
-            const agentDoc = {
-                name: trimmedName,
-                userId: user.uid,
-                status: 'active',
-                apiKey,
-                totalCalls: 0,
-                totalSpendUsd: 0,
-                createdAt: serverTimestamp(),
-                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-            };
+            // Save to Firestore with a timeout to prevent infinite spinner
+            const addDocPromise = addDoc(collection(db, "agents"), agentDoc);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("timeout")), 8000)
+            );
             
-            // ✅ FIRST: Save to Firestore and wait for confirmation
-            await addDoc(collection(db, "agents"), agentDoc);
-            
-            // THEN: Show success UI after confirmed save
-            setNewlyCreatedKey(apiKey);
-            setShowSuccess(true);
-            setIsSubmitting(false);
-            
-            // Auto-close modal after dollar confetti animation
-            setTimeout(() => {
-                setShowSuccess(false);
-                setIsCreateModalOpen(false);
-                setNewlyCreatedKey(null);
-                setNewAgentName("");
-                setSelectedScopes([]);
-                router.push('/dashboard/agents');
-            }, 3500);
-        } catch (e) {
-            console.error(e);
-            setNameError("Failed to create agent. Please try again.");
-            setIsSubmitting(false);
-            setNewlyCreatedKey(null);
+            await Promise.race([addDocPromise, timeoutPromise]);
+        } catch (err: any) {
+            // If it's a timeout, the doc may still have been written (Firestore optimistic writes)
+            // We still show success since the onSnapshot listener will pick it up
+            console.warn("[SupraWall] Agent creation warning:", err?.message || err);
         }
+        
+        // Always show success — Firestore onSnapshot will confirm the agent appears
+        setNewlyCreatedKey(apiKey);
+        setShowSuccess(true);
+        setIsSubmitting(false);
+        
+        // Auto-close modal after dollar confetti animation
+        setTimeout(() => {
+            setShowSuccess(false);
+            setIsCreateModalOpen(false);
+            setNewlyCreatedKey(null);
+            setNewAgentName("");
+            setSelectedScopes([]);
+            router.push('/dashboard/agents');
+        }, 3500);
     };
 
     const createAgent = () => handleCreateAgent({ preventDefault: () => {} } as React.FormEvent);

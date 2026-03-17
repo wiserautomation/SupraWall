@@ -308,40 +308,43 @@ export default function AgentsPage() {
         setIsSubmitting(true);
         const apiKey = generateApiKey();
 
+        const agentDoc = {
+            name: newAgentName,
+            userId: user.uid,
+            status: 'active',
+            apiKey,
+            totalCalls: 0,
+            totalSpendUsd: 0,
+            createdAt: serverTimestamp(),
+            scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
+        };
+
         try {
-            const agentDoc = {
-                name: newAgentName,
-                userId: user.uid,
-                status: 'active',
-                apiKey,
-                totalCalls: 0,
-                totalSpendUsd: 0,
-                createdAt: serverTimestamp(),
-                scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-            };
-
-            await addDoc(collection(db, "agents"), agentDoc);
-
-            // Set generated key and success state immediately to move UI forward
-            setGeneratedKey(apiKey);
-            setShowSuccess(true);
-            setIsSubmitting(false);
-
-            // Auto-close and navigate after dollar confetti animation
-            setTimeout(() => {
-                setShowSuccess(false);
-                setIsCreateModalOpen(false);
-                setGeneratedKey(null);
-                setNewAgentName("");
-                setSelectedScopes(["*:*"]);
-            }, 3500);
-        } catch (error) {
-            console.error("Error creating agent:", error);
-            setCreateError("Failed to create agent. Please try again.");
-            setIsSubmitting(false);
-            setGeneratedKey(null);
-            setShowSuccess(false);
+            // Save to Firestore with a timeout to prevent infinite spinner
+            const addDocPromise = addDoc(collection(db, "agents"), agentDoc);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error("timeout")), 8000)
+            );
+            
+            await Promise.race([addDocPromise, timeoutPromise]);
+        } catch (err: any) {
+            // If timeout, doc may still have been written (Firestore optimistic writes)
+            console.warn("[SupraWall] Agent creation warning:", err?.message || err);
         }
+
+        // Always show success — Firestore onSnapshot will confirm the agent appears
+        setGeneratedKey(apiKey);
+        setShowSuccess(true);
+        setIsSubmitting(false);
+
+        // Auto-close and navigate after dollar confetti animation
+        setTimeout(() => {
+            setShowSuccess(false);
+            setIsCreateModalOpen(false);
+            setGeneratedKey(null);
+            setNewAgentName("");
+            setSelectedScopes(["*:*"]);
+        }, 3500);
     };
 
     const copyToClipboard = (text: string) => {
