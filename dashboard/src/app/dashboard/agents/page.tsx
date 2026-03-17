@@ -20,7 +20,8 @@ import {
     History,
     Settings2,
     ShieldCheck,
-    ArrowRight
+    ArrowRight,
+    Loader2
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
