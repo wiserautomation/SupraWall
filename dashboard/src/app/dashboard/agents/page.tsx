@@ -154,14 +154,14 @@ export default function AgentsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const router = useRouter();
-157: 
-158:     if (authLoading) {
-159:         return (
-160:             <div className="flex items-center justify-center min-h-[400px]">
-161:                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
-162:             </div>
-163:         );
-164:     }
+
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     useEffect(() => {
         if (authLoading || !user) return;
