@@ -204,7 +204,10 @@ export default function VaultPage() {
                 }),
             });
             const data = await res.json();
-            if (!res.ok) { setError(data.error); return; }
+            if (!res.ok) { 
+              setError(data.error + (data.message ? ": " + data.message : "")); 
+              return; 
+            }
             setShowCreateSecret(false);
             setNewSecretName(""); setNewSecretValue(""); setNewSecretDesc(""); setNewSecretExpiry("");
             setNewSecretAgents([]);

@@ -223,7 +223,7 @@ export default function AgentsPage() {
         const fetchSecrets = async () => {
             try {
                 if (!user?.uid) return;
-                const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || '') + '/api'}/v1/vault/secrets?tenantId=${user.uid}`);
+                const res = await fetch(`/api/vault/secrets?tenantId=${user.uid}`);
                 if (res.ok) {
                     const allSecrets = await res.json() as VaultSecret[];
                     setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(selectedAgent.id)));
@@ -282,7 +282,7 @@ export default function AgentsPage() {
         const apiKey = generateApiKey();
 
         try {
-            await addDoc(collection(db, "agents"), {
+            const agentDoc = {
                 name: newAgentName,
                 userId: user.uid,
                 status: 'active',
@@ -291,24 +291,31 @@ export default function AgentsPage() {
                 totalSpendUsd: 0,
                 createdAt: serverTimestamp(),
                 scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-            });
+            };
 
+            // Set generated key and success state immediately to move UI forward
+            // The document creation happens in background, and onSnapshot will refresh the list.
             setGeneratedKey(apiKey);
-            setNewAgentName("");
-            setSelectedScopes(["*:*"]);
             setShowSuccess(true);
             setIsSubmitting(false);
+
+            await addDoc(collection(db, "agents"), agentDoc);
+
             // Auto-close and navigate after laser animation
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);
                 setGeneratedKey(null);
-                router.push('/dashboard/agents');
-            }, 2500);
+                setNewAgentName("");
+                setSelectedScopes(["*:*"]);
+                // router.push('/dashboard/agents'); // Already here
+            }, 3000);
         } catch (error) {
             console.error("Error creating agent:", error);
             setCreateError("Failed to create agent. Please try again.");
             setIsSubmitting(false);
+            setGeneratedKey(null);
+            setShowSuccess(false);
         }
     };
 

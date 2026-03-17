@@ -195,7 +195,7 @@ export default function OverviewPage() {
         setIsSubmitting(true);
         try {
             const apiKey = generateApiKey();
-            await addDoc(collection(db, "agents"), {
+            const agentDoc = {
                 name: trimmedName,
                 userId: user.uid,
                 status: 'active',
@@ -204,24 +204,28 @@ export default function OverviewPage() {
                 totalSpendUsd: 0,
                 createdAt: serverTimestamp(),
                 scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-            });
+            };
             
             setNewlyCreatedKey(apiKey);
-            setNewAgentName("");
-            setSelectedScopes([]);
             setShowSuccess(true);
             setIsSubmitting(false);
+
+            await addDoc(collection(db, "agents"), agentDoc);
+            
             // Auto-close and navigate after laser animation
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);
                 setNewlyCreatedKey(null);
+                setNewAgentName("");
+                setSelectedScopes([]);
                 router.push('/dashboard/agents');
-            }, 2500);
+            }, 3000);
         } catch (e) {
             console.error(e);
             setNameError("Failed to create agent");
             setIsSubmitting(false);
+            setNewlyCreatedKey(null);
         }
     };
 
@@ -232,7 +236,7 @@ export default function OverviewPage() {
         setIsSubmitting(true);
         try {
             const apiKey = generateApiKey();
-            await addDoc(collection(db, "agents"), {
+            const agentDoc = {
                 name,
                 userId: user.uid,
                 status: 'active',
@@ -241,20 +245,27 @@ export default function OverviewPage() {
                 totalSpendUsd: 0,
                 createdAt: serverTimestamp(),
                 scopes: scopes.length > 0 ? scopes : ["*:*"]
-            });
+            };
+            
             setNewlyCreatedKey(apiKey);
             setIsCreateModalOpen(true);
             setShowSuccess(true);
             setIsSubmitting(false);
+
+            await addDoc(collection(db, "agents"), agentDoc);
+            
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);
                 setNewlyCreatedKey(null);
+                setNewAgentName("");
+                setSelectedScopes([]);
                 router.push('/dashboard/agents');
-            }, 2500);
+            }, 3000);
         } catch (e) {
             console.error(e);
             setIsSubmitting(false);
+            setNewlyCreatedKey(null);
         }
     };
 
