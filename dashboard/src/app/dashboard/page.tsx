@@ -77,7 +77,7 @@ const LaserSuccess = () => (
 
 
 export default function OverviewPage() {
-    const [user] = useAuthState(auth);
+    const [user, authLoading] = useAuthState(auth);
     const router = useRouter();
     const [agents, setAgents] = useState<Agent[]>([]);
     const [isValidatorOpen, setIsValidatorOpen] = useState(false);
@@ -100,6 +100,14 @@ export default function OverviewPage() {
     const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
+
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-black">
+                <Loader2 className="w-12 h-12 animate-spin text-emerald-500" />
+            </div>
+        );
+    }
     const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
     const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
@@ -211,7 +219,6 @@ export default function OverviewPage() {
         } catch (e) {
             console.error(e);
             setNameError("Failed to create agent");
-        } finally {
             setIsSubmitting(false);
         }
     };
@@ -244,7 +251,6 @@ export default function OverviewPage() {
             }, 2500);
         } catch (e) {
             console.error(e);
-        } finally {
             setIsSubmitting(false);
         }
     };

@@ -1,10 +1,10 @@
 <?php
 
-namespace SUPRA-WALL;
+namespace SupraWall;
 
 use Exception;
 
-class SUPRA-WALL {
+class SupraWall {
     private static ?string $apiKey = null;
     private static ?string $apiUrl = null;
 

@@ -60,7 +60,7 @@ function timeAgo(dateStr: string): string {
 }
 
 export default function VaultPage() {
-    const [user] = useAuthState(auth);
+    const [user, authLoading] = useAuthState(auth);
 
     const [tab, setTab] = useState<Tab>("secrets");
     const [secrets, setSecrets] = useState<VaultSecret[]>([]);
@@ -120,8 +120,31 @@ export default function VaultPage() {
         if (res.ok) setLog(await res.json());
     };
 
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <RotateCcw className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
+    const isSecretValueValid = () => {
+        switch (newSecretType) {
+            case "api_key":
+                return !!newSecretValue;
+            case "credentials":
+                return !!templateFields.username && !!templateFields.password;
+            case "oauth":
+                return !!templateFields.access_token;
+            case "custom":
+                return customFields.length > 0 && customFields.every(f => !!f.key && !!f.value);
+            default:
+                return false;
+        }
+    };
+
     useEffect(() => {
-        if (!user) return;
+        if (authLoading || !user) return;
         
         // Fetch agents for selection
         const q = query(collection(db, "agents"), where("userId", "==", user.uid));
@@ -710,7 +733,7 @@ export default function VaultPage() {
                             </button>
                             <button
                                 onClick={handleCreateSecret}
-                                disabled={loading || !newSecretName || !newSecretValue}
+                                disabled={loading || !newSecretName || !isSecretValueValid()}
                                 className="flex-1 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
                             >
                                 {loading ? "Creating…" : "Create Secret"}

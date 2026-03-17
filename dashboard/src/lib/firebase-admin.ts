@@ -7,12 +7,6 @@ function getFirebaseAdmin(): admin.app.App {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
     if (privateKey) {
         privateKey = privateKey.replace(/\\n/g, '\n');
-        const begin = "-----BEGIN PRIVATE KEY-----";
-        const end = "-----END PRIVATE KEY-----";
-        let base64 = privateKey.replace(begin, "").replace(end, "");
-        base64 = base64.replace(/[^A-Za-z0-9+/=]/g, "");
-        const wrapped = base64.match(/.{1,64}/g)?.join('\n') || '';
-        privateKey = `${begin}\n${wrapped}\n${end}\n`;
     }
 
     // ⚠️ IMPORTANT: The Firebase project ID is 'agentguard-1b9e9'. 

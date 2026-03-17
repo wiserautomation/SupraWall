@@ -131,7 +131,7 @@ interface Policy {
 }
 
 export default function AgentsPage() {
-    const [user] = useAuthState(auth);
+    const [user, authLoading] = useAuthState(auth);
     const [agents, setAgents] = useState<Agent[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
@@ -154,9 +154,17 @@ export default function AgentsPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const router = useRouter();
+157: 
+158:     if (authLoading) {
+159:         return (
+160:             <div className="flex items-center justify-center min-h-[400px]">
+161:                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
+162:             </div>
+163:         );
+164:     }
 
     useEffect(() => {
-        if (!user) return;
+        if (authLoading || !user) return;
 
         const q = query(
             collection(db, "agents"),
@@ -295,7 +303,6 @@ export default function AgentsPage() {
             }, 2500);
         } catch (error) {
             console.error("Error creating agent:", error);
-        } finally {
             setIsSubmitting(false);
         }
     };

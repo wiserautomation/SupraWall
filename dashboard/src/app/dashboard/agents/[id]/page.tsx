@@ -42,6 +42,7 @@ import { useSearchParams } from "next/navigation";
 
 interface Agent {
     id: string;
+    userId: string;
     name: string;
     status: 'active' | 'paused' | 'revoked';
     scopes?: string[];
@@ -68,7 +69,7 @@ interface Policy {
 
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id: agentId } = use(params);
-    const [user] = useAuthState(auth);
+    const [user, authLoading] = useAuthState(auth);
     const [agent, setAgent] = useState<Agent | null>(null);
     const [loading, setLoading] = useState(true);
     const [auditLogs, setAuditLogs] = useState<any[]>([]);
@@ -83,16 +84,25 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
 
     useEffect(() => {
-        if (!user || !agentId) return;
+        if (authLoading || !user || !agentId) return;
 
         const agentRef = doc(db, "agents", agentId);
         const unsubscribeAgent = onSnapshot(agentRef, (snapshot) => {
             if (snapshot.exists()) {
                 const data = { id: snapshot.id, ...snapshot.data() } as Agent;
-                setAgent(data);
-                setEditName(data.name);
-                setEditScopes(data.scopes || []);
+                if (data.userId !== user.uid) {
+                    setAgent(null);
+                } else {
+                    setAgent(data);
+                    setEditName(data.name);
+                    setEditScopes(data.scopes || []);
+                }
+            } else {
+                setAgent(null);
             }
+            setLoading(false);
+        }, (error) => {
+            console.error("Error fetching agent:", error);
             setLoading(false);
         });
 
