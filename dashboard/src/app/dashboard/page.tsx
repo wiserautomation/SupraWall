@@ -100,17 +100,10 @@ export default function OverviewPage() {
     const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [newlyCreatedKey, setNewlyCreatedKey] = useState<string | null>(null);
-
-    if (authLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-black">
-                <Loader2 className="w-12 h-12 animate-spin text-emerald-500" />
-            </div>
-        );
-    }
     const [recentLogs, setRecentLogs] = useState<AuditLog[]>([]);
     const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+
     const API_BASE = "https://suprawall-server.vercel.app";
 
     const generateApiKey = () => {
@@ -145,7 +138,7 @@ export default function OverviewPage() {
                 const logs = await logsRes.json();
                 setRecentLogs(logs);
             }
-            
+
             setLoading(false);
         } catch (e) {
             console.error(e);
@@ -180,6 +173,14 @@ export default function OverviewPage() {
         };
     }, [user]);
 
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-black">
+                <Loader2 className="w-12 h-12 animate-spin text-emerald-500" />
+            </div>
+        );
+    }
+
     const handleCreateAgent = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!user) return;
@@ -209,6 +210,7 @@ export default function OverviewPage() {
             setNewAgentName("");
             setSelectedScopes([]);
             setShowSuccess(true);
+            setIsSubmitting(false);
             // Auto-close and navigate after laser animation
             setTimeout(() => {
                 setShowSuccess(false);
@@ -243,6 +245,7 @@ export default function OverviewPage() {
             setNewlyCreatedKey(apiKey);
             setIsCreateModalOpen(true);
             setShowSuccess(true);
+            setIsSubmitting(false);
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);

@@ -120,6 +120,22 @@ export default function VaultPage() {
         if (res.ok) setLog(await res.json());
     };
 
+    useEffect(() => {
+        if (!user) return;
+
+        // Fetch agents for selection
+        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
+        const unsub = onSnapshot(q, (snap) => {
+            setAgents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+
+        if (tab === "secrets") fetchSecrets();
+        else if (tab === "rules") { fetchRules(); fetchSecrets(); }
+        else if (tab === "log") fetchLog();
+
+        return () => unsub();
+    }, [tab, user]);
+
     if (authLoading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -142,22 +158,6 @@ export default function VaultPage() {
                 return false;
         }
     };
-
-    useEffect(() => {
-        if (authLoading || !user) return;
-        
-        // Fetch agents for selection
-        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-        const unsub = onSnapshot(q, (snap) => {
-            setAgents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
-
-        if (tab === "secrets") fetchSecrets();
-        else if (tab === "rules") { fetchRules(); fetchSecrets(); }
-        else if (tab === "log") fetchLog();
-
-        return () => unsub();
-    }, [tab, user]);
 
     const copyToken = (secretName: string) => {
         const token = `$SUPRAWALL_VAULT_${secretName}`;

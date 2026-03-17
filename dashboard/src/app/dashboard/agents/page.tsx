@@ -154,18 +154,11 @@ export default function AgentsPage() {
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [createError, setCreateError] = useState("");
     const router = useRouter();
 
-    if (authLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-            </div>
-        );
-    }
-
     useEffect(() => {
-        if (authLoading || !user) return;
+        if (!user) return;
 
         const q = query(
             collection(db, "agents"),
@@ -177,7 +170,7 @@ export default function AgentsPage() {
                 id: doc.id,
                 ...doc.data()
             })) as Agent[];
-            
+
             setAgents(agentList.sort((a, b) => {
                 const dateA = a.createdAt?.toDate?.() || new Date(0);
                 const dateB = b.createdAt?.toDate?.() || new Date(0);
@@ -209,7 +202,7 @@ export default function AgentsPage() {
                 id: doc.id,
                 ...doc.data() as any
             }));
-            
+
             setAuditLogs(logs.sort((a, b) => {
                 const dateA = a.timestamp?.toDate?.() || new Date(0);
                 const dateB = b.timestamp?.toDate?.() || new Date(0);
@@ -247,6 +240,14 @@ export default function AgentsPage() {
         };
     }, [selectedAgent, isDrawerOpen, user]);
 
+    if (authLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     const toggleStatus = async (agent: Agent) => {
         const newStatus = agent.status === 'active' ? 'paused' : 'active';
         try {
@@ -275,10 +276,11 @@ export default function AgentsPage() {
 
     const handleCreateAgent = async () => {
         if (!user || !newAgentName) return;
-        
+
+        setCreateError("");
         setIsSubmitting(true);
         const apiKey = generateApiKey();
-        
+
         try {
             await addDoc(collection(db, "agents"), {
                 name: newAgentName,
@@ -290,20 +292,22 @@ export default function AgentsPage() {
                 createdAt: serverTimestamp(),
                 scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
             });
-            
+
             setGeneratedKey(apiKey);
             setNewAgentName("");
             setSelectedScopes(["*:*"]);
             setShowSuccess(true);
+            setIsSubmitting(false);
             // Auto-close and navigate after laser animation
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);
                 setGeneratedKey(null);
-                router.push('/dashboard');
+                router.push('/dashboard/agents');
             }, 2500);
         } catch (error) {
             console.error("Error creating agent:", error);
+            setCreateError("Failed to create agent. Please try again.");
             setIsSubmitting(false);
         }
     };
@@ -462,7 +466,7 @@ export default function AgentsPage() {
                                             key={agent.id} 
                                             className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
                                             onClick={() => {
-                                                window.location.href = `/dashboard/agents/${agent.id}`;
+                                                router.push(`/dashboard/agents/${agent.id}`);
                                             }}
                                         >
                                         <td className="px-6 py-5">
@@ -689,7 +693,10 @@ export default function AgentsPage() {
                                 </div>
                             </div>
 
-                            <Button 
+                            {createError && (
+                                <p className="text-xs text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-lg px-3 py-2">{createError}</p>
+                            )}
+                            <Button
                                 onClick={() => handleCreateAgent()}
                                 disabled={!newAgentName || isSubmitting}
                                 className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-[0.2em] rounded-xl shadow-[0_10px_30px_rgba(16,185,129,0.2)] disabled:opacity-50 disabled:cursor-not-allowed group"
