@@ -34,7 +34,7 @@ export default function MonitoringPage() {
     const [isLive, setIsLive] = useState(true);
     const [selectedSession, setSelectedSession] = useState<string | null>(null);
 
-    const API_BASE = "https://suprawall-server.vercel.app";
+    const API_BASE = "/api";
 
     const fetchAgents = async () => {
         try {

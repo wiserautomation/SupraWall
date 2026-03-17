@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as admin from 'firebase-admin';
+import { admin, getAdminDb } from '@/lib/firebase-admin';
 import { randomBytes } from 'crypto';
 
-// Initialize Firebase Admin (idempotent)
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
-const db = admin.firestore();
+// Use the shared Firebase Admin initialization
+const db = getAdminDb();
 
 /**
  * POST /api/agents/register

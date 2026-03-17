@@ -37,7 +37,7 @@ async function handleProxy(req: NextRequest, path: string[]) {
         // 2. Prepare the Cloud Function URL
         // Regional mapping for Firebase Functions
         const region = "us-central1"; 
-        const projectId = "agentguard-1b9e9";
+        const projectId = process.env.FIREBASE_PROJECT_ID || "suprawall-1b9e9";
         const functionName = "vaultApi";
         
         // Reconstruct path for the API

@@ -29,7 +29,7 @@ export default function SettingsPage() {
     const [notificationEmail, setNotificationEmail] = useState("");
     const [masterApiKey, setMasterApiKey] = useState("");
 
-    const API_BASE = "https://suprawall-server.vercel.app";
+    const API_BASE = "/api";
 
     // Initialize/Sync settings
     useEffect(() => {

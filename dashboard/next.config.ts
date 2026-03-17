@@ -11,7 +11,7 @@ const nextConfig: NextConfig = {
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@suprawall/core": path.resolve(__dirname, "../suprawall-core/index.ts"),
+      "@suprawall/core": path.resolve(__dirname, "../packages/suprawall-core/index.ts"),
       "firebase/app": require.resolve("firebase/app"),
       "firebase/firestore": require.resolve("firebase/firestore"),
       "firebase/auth": require.resolve("firebase/auth"),
@@ -20,7 +20,7 @@ const nextConfig: NextConfig = {
   },
   turbopack: {
     resolveAlias: {
-      "@suprawall/core": "../suprawall-core/index.ts",
+      "@suprawall/core": "../packages/suprawall-core/index.ts",
       "firebase/app": "firebase/app",
       "firebase/firestore": "firebase/firestore",
       "firebase/auth": "firebase/auth",

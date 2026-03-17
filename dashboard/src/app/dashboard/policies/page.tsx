@@ -14,7 +14,7 @@ import { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
 
-const API_BASE = "https://suprawall-server.vercel.app";
+const API_BASE = "/api";
 
 export default function PoliciesPage() {
     const [user] = useAuthState(auth);

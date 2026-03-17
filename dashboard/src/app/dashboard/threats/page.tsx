@@ -30,7 +30,7 @@ export default function ThreatIntelligencePage() {
     const [loading, setLoading] = useState(true);
     const [aggregating, setAggregating] = useState(false);
 
-    const API_BASE = "https://suprawall-server.vercel.app";
+    const API_BASE = "/api";
 
     const fetchData = async () => {
         if (!user) return;

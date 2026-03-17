@@ -17,7 +17,7 @@ export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunc
     if (!apiKey) {
         return res.status(401).json({ 
             decision: "DENY", 
-            reason: "Unauthorized: Missing API Key. Get your key at https://suprawall.ai/" 
+            reason: "Unauthorized: Missing API Key. Get your key at https://supra-wall.com" 
         });
     }
 

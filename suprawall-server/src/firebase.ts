@@ -11,6 +11,7 @@ if (admin.apps.length === 0) {
     if (Object.keys(serviceAccount).length > 0) {
         admin.initializeApp({
             credential: admin.credential.cert(serviceAccount),
+            projectId: "suprawall-1b9e9",
         });
     } else {
         // Fallback or skip if not provided (useful for local dev without firebase)

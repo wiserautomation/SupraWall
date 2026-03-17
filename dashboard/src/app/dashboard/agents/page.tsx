@@ -57,53 +57,80 @@ const SCOPE_PRESETS = [
     { label: "Identity Only", value: "identity:*" },
 ];
 
-const LaserSuccess = () => (
-    <div className="fixed inset-0 overflow-hidden pointer-events-none z-[9999]">
-        {[...Array(24)].map((_, i) => (
+const DollarConfetti = () => {
+    const particles = [...Array(40)].map((_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        startY: 40 + Math.random() * 20,
+        endY: -20 - Math.random() * 40,
+        rotation: Math.random() * 720 - 360,
+        scale: 0.6 + Math.random() * 1.2,
+        delay: Math.random() * 0.6,
+        duration: 1.5 + Math.random() * 1.5,
+        drift: (Math.random() - 0.5) * 60,
+        fontSize: 14 + Math.random() * 18,
+    }));
+    return (
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[9999]">
+            {particles.map((p) => (
+                <motion.div
+                    key={p.id}
+                    initial={{
+                        left: `${p.x}%`,
+                        top: `${p.startY}%`,
+                        opacity: 0,
+                        rotate: 0,
+                        scale: 0,
+                    }}
+                    animate={{
+                        top: `${p.endY}%`,
+                        left: `${p.x + p.drift / 5}%`,
+                        opacity: [0, 1, 1, 0.8, 0],
+                        rotate: p.rotation,
+                        scale: [0, p.scale, p.scale, p.scale * 0.5],
+                    }}
+                    transition={{
+                        duration: p.duration,
+                        delay: p.delay,
+                        ease: [0.22, 0.61, 0.36, 1],
+                    }}
+                    className="absolute font-black select-none"
+                    style={{
+                        fontSize: p.fontSize,
+                        color: `hsl(${150 + Math.random() * 20}, ${70 + Math.random() * 30}%, ${50 + Math.random() * 20}%)`,
+                        textShadow: '0 0 12px rgba(16,185,129,0.7), 0 0 30px rgba(16,185,129,0.3)',
+                    }}
+                >
+                    $
+                </motion.div>
+            ))}
             <motion.div
-                key={i}
-                initial={{ 
-                    top: Math.random() * 100 + "%", 
-                    left: "-10%", 
-                    rotate: (Math.random() - 0.5) * 45,
-                    width: 0,
-                    opacity: 0,
-                    scaleY: 0.5
-                }}
-                animate={{ 
-                    left: ["-10%", "110%"],
-                    width: ["0%", "100%", "0%"],
-                    opacity: [0, 1, 1, 0],
-                    scaleY: [0.5, 2, 0.5]
-                }}
-                transition={{ 
-                    duration: 0.6, 
-                    delay: i * 0.06,
-                    ease: "easeOut"
-                }}
-                className="absolute h-[1px] bg-gradient-to-r from-transparent via-emerald-400 to-transparent shadow-[0_0_15px_#10b981]"
-                style={{ filter: 'blur(0.5px)' }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: [0, 0.25, 0] }}
+                transition={{ duration: 1.2 }}
+                className="absolute inset-0 bg-emerald-500/10"
             />
-        ))}
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: [0, 0.3, 0] }}
-            transition={{ duration: 1.2 }}
-            className="absolute inset-0 bg-emerald-500/10"
-        />
-        <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: [0, 1, 1, 0], scale: [0.5, 1, 1.05, 1.1] }}
-            transition={{ duration: 1.5 }}
-            className="absolute inset-0 flex items-center justify-center"
-        >
-            <div className="text-center space-y-2">
-                <ShieldCheck className="w-16 h-16 text-emerald-400 mx-auto drop-shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
-                <p className="text-emerald-400 font-black uppercase tracking-[0.3em] text-xs">Identity Authorized</p>
-            </div>
-        </motion.div>
-    </div>
-);
+            <motion.div
+                initial={{ opacity: 0, scale: 0.3, y: 20 }}
+                animate={{ opacity: [0, 1, 1, 0], scale: [0.3, 1, 1.05, 1.1], y: [20, 0, -5, -10] }}
+                transition={{ duration: 2.5, delay: 0.3 }}
+                className="absolute inset-0 flex items-center justify-center"
+            >
+                <div className="text-center space-y-3">
+                    <motion.div
+                        animate={{ rotate: [0, -10, 10, -5, 5, 0] }}
+                        transition={{ duration: 0.6, delay: 0.5 }}
+                    >
+                        <ShieldCheck className="w-20 h-20 text-emerald-400 mx-auto drop-shadow-[0_0_30px_rgba(16,185,129,0.6)]" />
+                    </motion.div>
+                    <p className="text-emerald-400 font-black uppercase tracking-[0.3em] text-sm drop-shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                        Agent Secured! 💰
+                    </p>
+                </div>
+            </motion.div>
+        </div>
+    );
+};
 
 interface Agent {
     id: string;
@@ -293,23 +320,21 @@ export default function AgentsPage() {
                 scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
             };
 
+            await addDoc(collection(db, "agents"), agentDoc);
+
             // Set generated key and success state immediately to move UI forward
-            // The document creation happens in background, and onSnapshot will refresh the list.
             setGeneratedKey(apiKey);
             setShowSuccess(true);
             setIsSubmitting(false);
 
-            await addDoc(collection(db, "agents"), agentDoc);
-
-            // Auto-close and navigate after laser animation
+            // Auto-close and navigate after dollar confetti animation
             setTimeout(() => {
                 setShowSuccess(false);
                 setIsCreateModalOpen(false);
                 setGeneratedKey(null);
                 setNewAgentName("");
                 setSelectedScopes(["*:*"]);
-                // router.push('/dashboard/agents'); // Already here
-            }, 3000);
+            }, 3500);
         } catch (error) {
             console.error("Error creating agent:", error);
             setCreateError("Failed to create agent. Please try again.");
@@ -584,7 +609,7 @@ export default function AgentsPage() {
                         <DialogDescription className="text-neutral-500 text-xs font-medium uppercase tracking-widest">
                             Authorize a new autonomous entity in your ecosystem.
                         </DialogDescription>
-                        {showSuccess && <LaserSuccess />}
+                        {showSuccess && <DollarConfetti />}
                     </DialogHeader>
 
                     {!generatedKey ? (

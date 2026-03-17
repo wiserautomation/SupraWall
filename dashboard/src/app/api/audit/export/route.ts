@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import * as admin from 'firebase-admin';
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
-const db = admin.firestore();
+import { getAdminDb } from '@/lib/firebase-admin';
+
+const db = getAdminDb();
 
 /**
  * GET /api/audit/export
