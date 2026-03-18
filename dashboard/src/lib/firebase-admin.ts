@@ -11,7 +11,7 @@ function getFirebaseAdmin(): admin.app.App {
     }
 
     // ⚠️ Read from env var with fallback — MUST match the client-side Firebase project
-    const projectId = process.env.FIREBASE_PROJECT_ID?.trim() || 'suprawall-1b9e9';
+    const projectId = process.env.FIREBASE_PROJECT_ID?.trim() || 'agentguard-1b9e9';
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
 
     console.log(`[Firebase Admin] Initializing with projectId: ${projectId}, clientEmail: ${clientEmail?.substring(0, 20)}...`);
