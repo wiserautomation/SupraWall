@@ -250,7 +250,7 @@ export default function AgentsPage() {
         const fetchSecrets = async () => {
             try {
                 if (!user?.uid) return;
-                const res = await fetch(`/api/vault/secrets?tenantId=${user.uid}`);
+                const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`);
                 if (res.ok) {
                     const allSecrets = await res.json() as VaultSecret[];
                     setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(selectedAgent.id)));

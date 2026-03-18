@@ -7,7 +7,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 
-const API_BASE = "/api/vault";
+const API_BASE = "/api/v1/vault";
 
 type Tab = "secrets" | "rules" | "log";
 
