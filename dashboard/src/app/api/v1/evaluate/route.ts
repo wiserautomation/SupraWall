@@ -237,7 +237,7 @@ export async function POST(req: NextRequest) {
 
     } catch (e: any) {
         console.error("Evaluate error:", e);
-        return NextResponse.json({ error: "Internal error", decision: "DENY" }, { status: 500 });
+        return NextResponse.json({ error: "Internal error", decision: "DENY", details: e.message, stack: e.stack }, { status: 500 });
     }
 }
 
