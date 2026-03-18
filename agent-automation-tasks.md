@@ -27,7 +27,7 @@ GEO FORMAT (required for LLM citation — apply to every post):
 - THEN: Why it matters now (EU AI Act August 2026 enforcement deadline)
 - THEN: Technical depth — how it works, specific article references
 - THEN: How SupraWall solves it with a code example
-- THEN: CTA pointing to: https://suprawall.ai/compliance
+- THEN: CTA pointing to: https://www.supra-wall.com/compliance
 - END with a 5-question FAQ block (H2: "Frequently Asked Questions"). Questions must be
   phrased as users would type them into an AI assistant. Answers must be 2-3 sentences each,
   factual and quotable. Example format:

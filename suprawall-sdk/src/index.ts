@@ -1,6 +1,6 @@
 const DEFAULT_CLOUD_FUNCTION_URL =
-    "https://us-central1-suprawall-prod.cloudfunctions.net/evaluateAction";
-const SDK_VERSION = "0.1.0";
+    "https://www.supra-wall.com/api/v1/evaluate";
+const SDK_VERSION = "1.1.0";
 
 // ---------------------------------------------------------------------------
 // Cost estimation — model token costs (USD per 1k tokens)
@@ -755,7 +755,7 @@ export class AgentIdentity {
             apiKey,
             scopes,
             scopeLimits,
-            registrationUrl = 'https://suprawall.ai/api/agents/register',
+            registrationUrl = 'https://www.supra-wall.com/api/v1/agents/register',
         } = config;
 
         if (!name || !apiKey || !scopes || scopes.length === 0) {

@@ -254,7 +254,7 @@ export default function VaultPage() {
             const secret = secrets.find(s => s.secret_name === newRuleSecret);
             if (!secret) { setError("Select a valid secret"); return; }
             const headers = await getAuthHeaders();
-            const res = await fetch(`${API_BASE}/v1/vault/rules`, {
+            const res = await fetch(`${API_BASE}/rules`, {
                 method: "POST",
                 headers,
                 body: JSON.stringify({
@@ -278,7 +278,7 @@ export default function VaultPage() {
 
     const handleDeleteRule = async (id: string) => {
         const headers = await getAuthHeaders();
-        await fetch(`${API_BASE}/v1/vault/rules/${id}?tenantId=${user?.uid}`, { 
+        await fetch(`${API_BASE}/rules/${id}?tenantId=${user?.uid}`, { 
             method: "DELETE",
             headers
         });
