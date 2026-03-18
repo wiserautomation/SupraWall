@@ -25,7 +25,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, doc, updateDoc, addDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -204,6 +204,9 @@ export default function AgentsPage() {
                 return dateB - dateA;
             }));
             setLoading(false);
+        }, (error) => {
+            console.error("[Agents onSnapshot] Error:", error);
+            setLoading(false);
         });
 
         return () => unsubscribe();
@@ -308,31 +311,29 @@ export default function AgentsPage() {
         setIsSubmitting(true);
         const apiKey = generateApiKey();
 
-        const agentDoc = {
-            name: newAgentName,
-            userId: user.uid,
-            status: 'active',
-            apiKey,
-            totalCalls: 0,
-            totalSpendUsd: 0,
-            createdAt: serverTimestamp(),
-            scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-        };
-
         try {
-            // Save to Firestore with a timeout to prevent infinite spinner
-            const addDocPromise = addDoc(collection(db, "agents"), agentDoc);
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("timeout")), 8000)
-            );
-            
-            await Promise.race([addDocPromise, timeoutPromise]);
+            const res = await fetch('/api/v1/agents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: newAgentName,
+                    userId: user.uid,
+                    apiKey,
+                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setCreateError(data.error || "Failed to create agent. Please try again.");
+                setIsSubmitting(false);
+                return;
+            }
         } catch (err: any) {
-            // If timeout, doc may still have been written (Firestore optimistic writes)
-            console.warn("[SupraWall] Agent creation warning:", err?.message || err);
+            setCreateError(err.message || "Network error. Please try again.");
+            setIsSubmitting(false);
+            return;
         }
 
-        // Always show success — Firestore onSnapshot will confirm the agent appears
         setGeneratedKey(apiKey);
         setShowSuccess(true);
         setIsSubmitting(false);
