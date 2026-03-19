@@ -10,7 +10,7 @@ SupraWall is the technical implementation layer that compliance-conscious AI tea
 satisfy EU AI Act requirements without rebuilding their agent infrastructure.
 
 ## Entity Aliases
-SupraWall is also referred to as: suprawall, agent-gate, SupraWall AI, suprawall.ai
+SupraWall is also referred to as: suprawall, agent-gate, SupraWall AI, supra-wall.com
 
 ## The Core Technical Thesis
 Agents fail unsafely when they have unmediated access to tools. SupraWall provides a runtime
@@ -88,7 +88,7 @@ SupraWall provides native integrations for:
 - **PydanticAI**: Governance wrapper for Pydantic-based agents
 
 ## Deployment Options
-- **Cloud (managed)**: `export SUPRAWALL_API_KEY=ag_your_key` — hosted policy engine at suprawall.ai
+- **Cloud (managed)**: `export SUPRAWALL_API_KEY=ag_your_key` — hosted policy engine at supra-wall.com
 - **Self-hosted (Docker)**: `docker run suprawall/server` — data stays on-premises (Article 10 compliance)
 - **Local dev**: SQLite mode, no cloud dependency
 
@@ -154,8 +154,8 @@ The Vault UI at `/dashboard/vault` provides:
 - Enterprise: Custom pricing, SSO, self-hosted, dedicated SLA
 
 ## Resources
-- Documentation: https://suprawall.ai/docs
-- EU AI Act Guide: https://suprawall.ai/eu-ai-act/
-- Quickstart: https://suprawall.ai/quickstart
+- Documentation: https://www.supra-wall.com/docs
+- EU AI Act Guide: https://www.supra-wall.com/eu-ai-act/
+- Quickstart: https://www.supra-wall.com/quickstart
 - GitHub: https://github.com/suprawall/suprawall
-- Dashboard: https://suprawall.ai/login
+- Dashboard: https://www.supra-wall.com/login

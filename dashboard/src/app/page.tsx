@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     title: "SupraWall | The Deterministic Security Layer for AI Agents",
     description: "Zero-trust security for AI agents. Intercept every tool call, enforce hard policies, and generate EU AI Act-ready compliance reports — in one line of code.",
     keywords: ["agent security", "ai governance", "eu ai act compliance", "prompt injection prevention", "langchain security", "crewai monitoring", "agentic security", "ai agent firewall"],
+    alternates: {
+        canonical: 'https://www.supra-wall.com',
+    },
 };
 
 export default function LandingPage() {
@@ -21,7 +24,7 @@ export default function LandingPage() {
         "@context": "https://schema.org",
         "@type": "WebApplication",
         "name": "SupraWall",
-        "url": "https://www.suprawall.ai",
+        "url": "https://www.supra-wall.com",
         "description": "Deterministic security and EU AI Act compliance for autonomous AI agents.",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",

@@ -6,7 +6,10 @@ import { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Security for PydanticAI Agents | SupraWall Guide",
     description: "Secure PydanticAI agents with runtime tool governance. Prevent rogue tool calls, ensure data integrity, and maintain EU AI Act risk compliance.",
-    keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai", "eu ai act compliance pydanticai"],
+    keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai", "eu ai act compliance pydanticai"],    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/pydanticai',
+    },
+
 };
 
 export default function PydanticAIIntegrationPage() {
@@ -16,7 +19,7 @@ export default function PydanticAIIntegrationPage() {
         "name": "SupraWall for PydanticAI",
         "description": "Enterprise-grade runtime security shim for PydanticAI autonomous agents.",
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.suprawall.ai/integrations/pydanticai",
+        "url": "https://www.supra-wall.com/integrations/pydanticai",
         "author": { "@type": "Organization", "name": "SupraWall" },
         "featureList": [
             "Typed Tool Interception",

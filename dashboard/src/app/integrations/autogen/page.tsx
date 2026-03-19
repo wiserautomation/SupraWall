@@ -7,7 +7,10 @@ import AutoGenClient from "./AutoGenClient";
 export const metadata: Metadata = {
     title: "Secure Microsoft AutoGen Agents | SupraWall Governance",
     description: "Enterprise security and runtime guardrails for Microsoft AutoGen loops. Prevent dangerous code execution, ensure data privacy, and maintain EU AI Act compliance.",
-    keywords: ["autogen agent policy", "secure microsoft autogen", "autogen code execution security", "multi-agent security governance", "eu ai act autogen"],
+    keywords: ["autogen agent policy", "secure microsoft autogen", "autogen code execution security", "multi-agent security governance", "eu ai act autogen"],    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/autogen',
+    },
+
 };
 
 export default function AutoGenIntegrationPage() {
@@ -17,7 +20,7 @@ export default function AutoGenIntegrationPage() {
         "name": "SupraWall for AutoGen",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.suprawall.ai/integrations/autogen",
+        "url": "https://www.supra-wall.com/integrations/autogen",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

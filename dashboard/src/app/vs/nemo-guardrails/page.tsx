@@ -11,7 +11,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "SupraWall vs NeMo Guardrails Comparison Guide",
         description: "Why developers are switching from NeMo's Colang to SupraWall's zero-trust runtime security SDK.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/vs/nemo-guardrails',
+    },
+
 };
 
 export default function vsNemoGuardrailsPage() {
@@ -26,7 +29,7 @@ export default function vsNemoGuardrailsPage() {
         },
         "offers": {
             "@type": "Offer",
-            "url": "https://www.suprawall.ai/login",
+            "url": "https://www.supra-wall.com/login",
             "price": "0",
             "priceCurrency": "USD"
         }

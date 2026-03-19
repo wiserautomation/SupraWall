@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "How to Stop Prompt Injection in Autonomous Agents",
         description: "Enterprise-grade protection against prompt injection and jailbreaks for agentic workflows.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/use-cases/prompt-injection',
+    },
+
 };
 
 export default function PromptInjectionPage() {

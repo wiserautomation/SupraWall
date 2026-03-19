@@ -5,7 +5,10 @@ import GuardrailsAIClient from "./GuardrailsAIClient";
 export const metadata: Metadata = {
     title: "SupraWall vs Guardrails AI | Runtime Security Comparison",
     description: "Technical comparison between SupraWall and Guardrails AI. Learn why action-level runtime security is essential for autonomous agents compared to validation-only guardrails.",
-    keywords: ["suprawall vs guardrails ai", "llm guardrails comparison", "agent runtime security", "autonomous agent safety"],
+    keywords: ["suprawall vs guardrails ai", "llm guardrails comparison", "agent runtime security", "autonomous agent safety"],    alternates: {
+        canonical: 'https://www.supra-wall.com/vs/guardrails-ai',
+    },
+
 };
 
 export default function vsGuardrailsAI() {

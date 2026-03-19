@@ -7,7 +7,10 @@ import OpenClawClient from "./OpenClawClient";
 export const metadata: Metadata = {
     title: "OpenClaw Security Firewall | Autonomous Browser Protection",
     description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage and maintain EU AI Act compliance with the first browser-level agent firewall.",
-    keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails", "eu ai act web agents"],
+    keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails", "eu ai act web agents"],    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/openclaw',
+    },
+
 };
 
 export default function OpenClawIntegrationPage() {
@@ -17,7 +20,7 @@ export default function OpenClawIntegrationPage() {
         "name": "SupraWall for OpenClaw",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.suprawall.ai/integrations/openclaw",
+        "url": "https://www.supra-wall.com/integrations/openclaw",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Stopping the $2,000 AI Agent Loop | SupraWall Strategy",
         description: "Infinite recursive loops are the single most expensive failure mode for autonomous agents. Here is how to shim the runtime to stop them.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/blog/prevent-agent-infinite-loops',
+    },
+
 };
 
 export default function InfiniteLoopsBlogPage() {
@@ -29,7 +32,7 @@ export default function InfiniteLoopsBlogPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://www.suprawall.ai/blog/prevent-agent-infinite-loops"
+        "mainEntityOfPage": "https://www.supra-wall.com/blog/prevent-agent-infinite-loops"
     };
 
     const howToJsonLd = {

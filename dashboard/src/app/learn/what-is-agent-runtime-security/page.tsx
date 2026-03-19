@@ -7,7 +7,10 @@ import LearnClient from "./LearnClient";
 export const metadata: Metadata = {
     title: "What is Agent Runtime Security? | AI Guardrails Explained",
     description: "Agent Runtime Security (ARS) is the layer of protection between autonomous AI agents and your systems. Learn about EU AI Act compliance and agent firewalls.",
-    keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],
+    keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],    alternates: {
+        canonical: 'https://www.supra-wall.com/learn/what-is-agent-runtime-security',
+    },
+
 };
 
 export default function AgentRuntimeSecurityPage() {

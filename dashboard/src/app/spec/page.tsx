@@ -5,7 +5,10 @@ import { SpecClient } from "./SpecClient";
 export const metadata: Metadata = {
     title: "AGPS Policy Spec | Open Standard for AI Agent Governance",
     description: "The Agent Governance Policy Spec (AGPS) is an open standard for defining tool access, security boundaries, and cost controls for autonomous AI agents.",
-    keywords: ["agps policy spec", "agent governance standard", "ai tools security standard", "secure ai agent framework"],
+    keywords: ["agps policy spec", "agent governance standard", "ai tools security standard", "secure ai agent framework"],    alternates: {
+        canonical: 'https://www.supra-wall.com/spec',
+    },
+
 };
 
 export default function SpecPage() {
@@ -22,7 +25,7 @@ export default function SpecPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://www.suprawall.ai/spec"
+        "mainEntityOfPage": "https://www.supra-wall.com/spec"
     };
 
     return (

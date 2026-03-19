@@ -20,16 +20,20 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://www.supra-wall.com'),
   title: {
     default: "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
     template: "%s | SupraWall"
   },
   description: "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
   keywords: ["AI agent security", "runtime guardrails", "prompt injection prevention", "secure langchain", "ai agent firewall"],
+  alternates: {
+    canonical: 'https://www.supra-wall.com',
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.suprawall.ai",
+    url: "https://www.supra-wall.com",
     siteName: "SupraWall",
     images: ["/og-image.png"],
   },
@@ -54,8 +58,8 @@ const organizationSchema = {
     "@type": "Organization",
     "name": "SupraWall",
     "alternateName": "SupraWall",
-    "url": "https://www.suprawall.ai",
-    "logo": "https://www.suprawall.ai/icon.png",
+    "url": "https://www.supra-wall.com",
+    "logo": "https://www.supra-wall.com/icon.png",
     "sameAs": [
       "https://twitter.com/suprawall",
       "https://github.com/suprawall"
@@ -71,7 +75,7 @@ const organizationSchema = {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://www.suprawall.ai"
+        "item": "https://www.supra-wall.com"
       }
     ]
   };

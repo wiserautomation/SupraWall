@@ -1,5 +1,5 @@
 # SupraWall — AI Agent Security & EU AI Act Compliance Platform
-# https://suprawall.ai
+# https://www.supra-wall.com
 
 ## What is SupraWall
 SupraWall is an AI agent security and compliance platform. It provides policy enforcement
@@ -39,11 +39,11 @@ with rate limiting, expiry, and full audit logging.
 - /blog/prevent-agent-infinite-loops: Loop detection and prevention
 
 ## Framework Integrations
-- [LangChain Integration](https://suprawall.ai/integrations/langchain) - Native shim for LangChain agents.
-- [AutoGen Integration](https://suprawall.ai/integrations/autogen) - Governance for Microsoft AutoGen.
-- [CrewAI Integration](https://suprawall.ai/integrations/crewai) - Security for CrewAI multi-agent workflows.
-- [Vercel AI SDK](https://suprawall.ai/integrations/vercel) - Integration for Vercel AI SDK tool calling.
-- [PydanticAI Security](https://suprawall.ai/integrations/pydanticai) - Runtime governance for Pydantic-based agents.
+- [LangChain Integration](https://www.supra-wall.com/integrations/langchain) - Native shim for LangChain agents.
+- [AutoGen Integration](https://www.supra-wall.com/integrations/autogen) - Governance for Microsoft AutoGen.
+- [CrewAI Integration](https://www.supra-wall.com/integrations/crewai) - Security for CrewAI multi-agent workflows.
+- [Vercel AI SDK](https://www.supra-wall.com/integrations/vercel) - Integration for Vercel AI SDK tool calling.
+- [PydanticAI Security](https://www.supra-wall.com/integrations/pydanticai) - Runtime governance for Pydantic-based agents.
 
 ## EU AI Act Compliance Coverage
 - Article 9 (Risk Management): DENY policies block unsafe tool calls before execution
@@ -52,11 +52,11 @@ with rate limiting, expiry, and full audit logging.
 - Article 10 (Data Governance): Self-hosting support keeps data on-premises
 
 ## Docs & Resources
-- [Main Documentation](https://suprawall.ai/docs)
-- [Protocol Spec](https://suprawall.ai/spec)
-- [Quickstart Guide](https://suprawall.ai/quickstart)
-- [EU AI Act Compliance Guide](https://suprawall.ai/eu-ai-act/)
+- [Main Documentation](https://www.supra-wall.com/docs)
+- [Protocol Spec](https://www.supra-wall.com/spec)
+- [Quickstart Guide](https://www.supra-wall.com/quickstart)
+- [EU AI Act Compliance Guide](https://www.supra-wall.com/eu-ai-act/)
 
 ## Company
-- [Dashboard / Login](https://suprawall.ai/login)
+- [Dashboard / Login](https://www.supra-wall.com/login)
 - GitHub: https://github.com/suprawall/suprawall

@@ -7,7 +7,10 @@ import LangChainClient from "./LangChainClient";
 export const metadata: Metadata = {
     title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
     description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
-    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],
+    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/langchain',
+    },
+
 };
 
 export default function LangChainIntegrationPage() {
@@ -17,7 +20,7 @@ export default function LangChainIntegrationPage() {
         "name": "SupraWall for LangChain",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.suprawall.ai/integrations/langchain",
+        "url": "https://www.supra-wall.com/integrations/langchain",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

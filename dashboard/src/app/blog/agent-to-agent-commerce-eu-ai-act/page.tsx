@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Agent-to-Agent Commerce Meets the EU AI Act",
         description: "Palo Alto's Unit 42 flagged agent-to-agent commerce as the next major risk frontier. Here's what their threat report missed.",
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/blog/agent-to-agent-commerce-eu-ai-act',
     },
+
 };
 
 export default function AgentCommerceBlogPage() {
@@ -25,7 +28,7 @@ export default function AgentCommerceBlogPage() {
         genre: "AI Compliance",
         keywords: "EU AI Act agent compliance, agent-to-agent security, Article 14 human oversight",
         publisher: { "@type": "Organization", name: "Supra-wall" },
-        mainEntityOfPage: "https://suprawall.ai/blog/agent-to-agent-commerce-eu-ai-act",
+        mainEntityOfPage: "https://supra-wall.com/blog/agent-to-agent-commerce-eu-ai-act",
     };
 
     const comparisonRows = [

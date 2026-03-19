@@ -11,7 +11,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "How to Secure Vercel AI SDK Agents",
         description: "The official security shim for the Vercel AI SDK. Protect your edge functions from prompt injection and rogue tools.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/vercel',
+    },
+
 };
 
 export default function VercelIntegrationPage() {
@@ -21,7 +24,7 @@ export default function VercelIntegrationPage() {
         "name": "SupraWall for Vercel AI SDK",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.suprawall.ai/integrations/vercel",
+        "url": "https://www.supra-wall.com/integrations/vercel",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

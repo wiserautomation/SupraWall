@@ -2,6 +2,27 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+  async headers() {
+    return [
+      {
+        // Noindex all Vercel preview/staging deployments to prevent duplicate indexation
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Robots-Tag',
+            value: 'noindex',
+          },
+        ],
+        // Only apply when served from the Vercel preview domain
+        has: [
+          {
+            type: 'host',
+            value: '(?!www\\.supra-wall\\.com).*\\.vercel\\.app',
+          },
+        ],
+      },
+    ];
+  },
   transpilePackages: [
     "@suprawall/core",
     "react-remove-scroll",

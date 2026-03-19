@@ -4,7 +4,7 @@ import path from 'path';
 
 /**
  * BASE URL for the sitemap.
- * Priority: Used in layout metadata and new SEO pages as www.suprawall.ai
+ * Priority: Used in layout metadata and new SEO pages as www.supra-wall.com
  */
 const BASE_URL = 'https://www.supra-wall.com';
 

@@ -211,7 +211,7 @@ export default async function VerificationPage({
                         Get Started Free with Supra-wall
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                     </Link>
-                    <p className="text-xs text-neutral-600 mt-3">suprawall.ai</p>
+                    <p className="text-xs text-neutral-600 mt-3">supra-wall.com</p>
                 </div>
             </div>
         </div>

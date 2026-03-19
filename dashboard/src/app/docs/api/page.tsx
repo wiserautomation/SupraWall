@@ -160,7 +160,7 @@ if (decision === "DENY") {
                     <h3 className="text-xl font-bold text-white">Need a custom integration?</h3>
                     <p className="text-neutral-400">Our enterprise team can help you build high-throughput security wrappers.</p>
                 </div>
-                <a href="mailto:support@suprawall.ai" className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-emerald-400 transition-colors whitespace-nowrap">
+                <a href="mailto:support@supra-wall.com" className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-emerald-400 transition-colors whitespace-nowrap">
                     Contact Support
                 </a>
             </section>

@@ -5,7 +5,10 @@ import PortkeyClient from "./PortkeyClient";
 export const metadata: Metadata = {
     title: "SupraWall vs Portkey | Agent Security Comparison",
     description: "Discover why SupraWall is the essential security layer for autonomous agents compared to LLM gateways like Portkey. Action-level blocking vs gateway-level logging.",
-    keywords: ["suprawall vs portkey", "portkey search comparison", "agent security layer", "llm observability security"],
+    keywords: ["suprawall vs portkey", "portkey search comparison", "agent security layer", "llm observability security"],    alternates: {
+        canonical: 'https://www.supra-wall.com/vs/portkey',
+    },
+
 };
 
 export default function vsPortkey() {

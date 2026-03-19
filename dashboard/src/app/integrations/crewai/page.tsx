@@ -11,7 +11,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Secure CrewAI Agent Swarms | EU AI Act Compliance | SupraWall",
         description: "Zero-trust governance for autonomous agent roles. Automate EU AI Act reporting and prevent privilege escalation in multi-agent workflows.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/integrations/crewai',
+    },
+
 };
 
 export default function CrewAIIntegrationPage() {
@@ -21,7 +24,7 @@ export default function CrewAIIntegrationPage() {
         "name": "SupraWall for CrewAI",
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.suprawall.ai/integrations/crewai",
+        "url": "https://www.supra-wall.com/integrations/crewai",
         "author": {
             "@type": "Organization",
             "name": "SupraWall"

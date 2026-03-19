@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Your AI Gateway Isn't Your Compliance Layer",
         description: "Portkey made enterprise AI governance free. But governance and EU AI Act compliance aren't the same thing.",
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/blog/ai-gateway-vs-compliance-layer',
     },
+
 };
 
 export default function GatewayVsCompliancePage() {
@@ -25,7 +28,7 @@ export default function GatewayVsCompliancePage() {
         genre: "AI Compliance",
         keywords: "AI agent compliance, Portkey alternative, EU AI Act compliance tool, Article 14 human oversight",
         publisher: { "@type": "Organization", name: "SupraWall" },
-        mainEntityOfPage: "https://suprawall.ai/blog/ai-gateway-vs-compliance-layer",
+        mainEntityOfPage: "https://supra-wall.com/blog/ai-gateway-vs-compliance-layer",
     };
 
     type Cell = boolean | "partial" | "na" | "scope";

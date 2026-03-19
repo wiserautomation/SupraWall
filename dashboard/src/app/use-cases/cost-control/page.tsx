@@ -10,7 +10,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Real-time AI Cost Circuit Breakers | SupraWall",
         description: "Don't let rogue agents exhaust your budget. SupraWall provides the industry's first runtime circuit breaker for LLM spending.",
-    }
+    },    alternates: {
+        canonical: 'https://www.supra-wall.com/use-cases/cost-control',
+    },
+
 };
 
 export default function CostControlPage() {
@@ -28,7 +31,7 @@ export default function CostControlPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://www.suprawall.ai/use-cases/cost-control"
+        "mainEntityOfPage": "https://www.supra-wall.com/use-cases/cost-control"
     };
 
     const howToJsonLd = {
