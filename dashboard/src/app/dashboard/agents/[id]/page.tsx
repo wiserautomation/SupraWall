@@ -51,6 +51,12 @@ interface Agent {
     lastUsedAt?: any;
     apiKey: string;
     createdAt: any;
+    guardrails?: {
+        budget?: { limitUsd: number; resetPeriod: string; onExceeded: string; currentPeriodSpend?: number };
+        allowedTools?: string[];
+        blockedTools?: string[];
+        piiScrubbing?: { enabled: boolean; patterns: string[]; action: string; customPatterns?: any[] };
+    };
 }
 
 interface VaultSecret {
@@ -82,6 +88,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const [isRotatingKey, setIsRotatingKey] = useState(false);
     const [isCopying, setIsCopying] = useState(false);
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
+    const [activeTab, setActiveTab] = useState<'overview' | 'guardrails'>('overview');
 
     useEffect(() => {
         if (authLoading || !user || !agentId) return;
@@ -306,7 +313,28 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="max-w-7xl mx-auto flex gap-1 bg-white/[0.03] border border-white/5 p-1 rounded-2xl w-fit mb-6">
+                {[
+                    { key: 'overview', label: 'Overview', icon: <BarChart3 className="w-3.5 h-3.5" /> },
+                    { key: 'guardrails', label: 'Guardrails', icon: <Shield className="w-3.5 h-3.5" /> },
+                ].map(tab => (
+                    <button key={tab.key} onClick={() => setActiveTab(tab.key as any)}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
+                            activeTab === tab.key ? 'bg-emerald-600 text-white' : 'text-neutral-500 hover:text-white hover:bg-white/5'
+                        }`}
+                    >
+                        {tab.icon}{tab.label}
+                    </button>
+                ))}
+            </div>
+
+            {activeTab === 'guardrails' && (
+                <div className="max-w-3xl mx-auto">
+                    <GuardrailsPanel agent={agent} agentId={agentId} />
+                </div>
+            )}
+
+            {activeTab === 'overview' && <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <div className="lg:col-span-2 space-y-8">
                     {/* human loop alert */}
@@ -519,7 +547,183 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                     </div>
                 </div>
-            </main>
+            </main>}
+        </div>
+    );
+}
+
+function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) {
+    const [saving, setSaving] = useState(false);
+    const [saveSuccess, setSaveSuccess] = useState(false);
+
+    const [budgetEnabled, setBudgetEnabled] = useState(!!agent.guardrails?.budget?.limitUsd);
+    const [limitUsd, setLimitUsd] = useState(agent.guardrails?.budget?.limitUsd?.toString() || '');
+    const [resetPeriod, setResetPeriod] = useState(agent.guardrails?.budget?.resetPeriod || 'monthly');
+    const [onExceeded, setOnExceeded] = useState(agent.guardrails?.budget?.onExceeded || 'block');
+
+    const [allowedTools, setAllowedTools] = useState(agent.guardrails?.allowedTools?.join(', ') || '');
+    const [blockedTools, setBlockedTools] = useState(agent.guardrails?.blockedTools?.join(', ') || '');
+
+    const [piiEnabled, setPiiEnabled] = useState(agent.guardrails?.piiScrubbing?.enabled || false);
+    const [piiPatterns, setPiiPatterns] = useState<string[]>(agent.guardrails?.piiScrubbing?.patterns || []);
+    const [piiAction, setPiiAction] = useState(agent.guardrails?.piiScrubbing?.action || 'redact');
+
+    const ALL_PATTERNS = ['email', 'phone', 'ssn', 'credit_card', 'ip'];
+
+    const togglePattern = (p: string) => {
+        setPiiPatterns(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
+    };
+
+    const toList = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean);
+
+    const handleSave = async () => {
+        setSaving(true);
+        const guardrails: any = {};
+        if (budgetEnabled && limitUsd) {
+            guardrails.budget = { limitUsd: parseFloat(limitUsd), resetPeriod, onExceeded };
+        }
+        if (toList(allowedTools).length > 0) guardrails.allowedTools = toList(allowedTools);
+        if (toList(blockedTools).length > 0) guardrails.blockedTools = toList(blockedTools);
+        if (piiEnabled && piiPatterns.length > 0) {
+            guardrails.piiScrubbing = { enabled: true, patterns: piiPatterns, action: piiAction };
+        }
+        try {
+            await fetch(`/api/v1/agents/${agentId}/guardrails`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(guardrails),
+            });
+            setSaveSuccess(true);
+            setTimeout(() => setSaveSuccess(false), 2000);
+        } catch (e) {
+            console.error('Failed to save guardrails:', e);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const inputCls = "bg-white/5 border-white/10 text-white placeholder:text-neutral-600 h-11 rounded-xl text-sm";
+    const selectCls = "bg-neutral-900 border border-white/10 text-white rounded-xl h-11 px-3 text-sm w-full";
+    const sectionCls = "bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-8 space-y-6";
+
+    return (
+        <div className="space-y-6">
+            {/* Budget */}
+            <div className={sectionCls}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <DollarSign className="w-5 h-5 text-amber-400" />
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-white">Spend Budget Cap</h3>
+                    </div>
+                    <button onClick={() => setBudgetEnabled(p => !p)}
+                        className={`w-12 h-6 rounded-full transition-all relative ${budgetEnabled ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                        <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${budgetEnabled ? 'left-7' : 'left-1'}`} />
+                    </button>
+                </div>
+                {budgetEnabled && (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Limit (USD)</Label>
+                            <Input value={limitUsd} onChange={e => setLimitUsd(e.target.value)} placeholder="10.00" type="number" min="0" step="0.01" className={inputCls} />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Reset Period</Label>
+                            <select value={resetPeriod} onChange={e => setResetPeriod(e.target.value)} className={selectCls}>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                                <option value="never">Never</option>
+                            </select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">On Exceeded</Label>
+                            <select value={onExceeded} onChange={e => setOnExceeded(e.target.value)} className={selectCls}>
+                                <option value="block">Block</option>
+                                <option value="warn">Warn only</option>
+                                <option value="require_approval">Require Approval</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
+                {budgetEnabled && (
+                    <div className="pt-2 space-y-2">
+                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                            <span>Current Spend</span>
+                            <span className="text-amber-400">${(agent.totalSpendUsd || 0).toFixed(4)} / ${limitUsd || '–'}</span>
+                        </div>
+                        {limitUsd && (
+                            <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-emerald-500 to-rose-500 rounded-full transition-all"
+                                    style={{ width: `${Math.min(((agent.totalSpendUsd || 0) / parseFloat(limitUsd)) * 100, 100)}%` }} />
+                            </div>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            {/* Tool Restrictions */}
+            <div className={sectionCls}>
+                <div className="flex items-center gap-3">
+                    <Lock className="w-5 h-5 text-indigo-400" />
+                    <h3 className="text-lg font-black uppercase tracking-tighter text-white">Tool Restrictions</h3>
+                </div>
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Allowlist (comma-separated, supports wildcards)</Label>
+                        <Input value={allowedTools} onChange={e => setAllowedTools(e.target.value)} placeholder="read_*, list_files, search" className={inputCls} />
+                        <p className="text-[10px] text-neutral-600">If set, only these tools are permitted. Leave empty to allow all.</p>
+                    </div>
+                    <div className="space-y-2">
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Blocklist (comma-separated, supports wildcards)</Label>
+                        <Input value={blockedTools} onChange={e => setBlockedTools(e.target.value)} placeholder="bash, delete_*, send_email" className={inputCls} />
+                    </div>
+                </div>
+            </div>
+
+            {/* PII Scrubbing */}
+            <div className={sectionCls}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Shield className="w-5 h-5 text-purple-400" />
+                        <h3 className="text-lg font-black uppercase tracking-tighter text-white">PII Scrubbing</h3>
+                    </div>
+                    <button onClick={() => setPiiEnabled(p => !p)}
+                        className={`w-12 h-6 rounded-full transition-all relative ${piiEnabled ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                        <span className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${piiEnabled ? 'left-7' : 'left-1'}`} />
+                    </button>
+                </div>
+                {piiEnabled && (
+                    <div className="space-y-5 pt-2">
+                        <div className="space-y-3">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Patterns to Detect</Label>
+                            <div className="flex flex-wrap gap-2">
+                                {ALL_PATTERNS.map(p => (
+                                    <button key={p} onClick={() => togglePattern(p)}
+                                        className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
+                                            piiPatterns.includes(p)
+                                                ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
+                                                : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white'
+                                        }`}
+                                    >{p.replace('_', ' ')}</button>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Action</Label>
+                            <select value={piiAction} onChange={e => setPiiAction(e.target.value)} className={selectCls} style={{ maxWidth: '200px' }}>
+                                <option value="redact">Redact (replace with [REDACTED])</option>
+                                <option value="block">Block (deny entire call)</option>
+                            </select>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Save */}
+            <Button onClick={handleSave} disabled={saving}
+                className="w-full h-14 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase tracking-widest text-sm rounded-2xl transition-all">
+                {saving ? 'Saving...' : saveSuccess ? '✓ Saved' : 'Save Guardrails'}
+            </Button>
         </div>
     );
 }

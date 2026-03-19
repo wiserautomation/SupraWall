@@ -1,3 +1,21 @@
+export interface AgentGuardrails {
+    budget?: {
+        limitUsd: number;
+        resetPeriod: 'daily' | 'weekly' | 'monthly' | 'never';
+        onExceeded: 'block' | 'warn' | 'require_approval';
+        currentPeriodSpend: number;
+        periodStartAt: any;
+    };
+    allowedTools?: string[];
+    blockedTools?: string[];
+    piiScrubbing?: {
+        enabled: boolean;
+        patterns: ('email' | 'phone' | 'ssn' | 'credit_card' | 'ip')[];
+        customPatterns?: { name: string; regex: string; action: 'redact' | 'block' }[];
+        action: 'redact' | 'block';
+    };
+}
+
 export interface Agent {
   id?: string;
   userId: string;
@@ -18,6 +36,7 @@ export interface Agent {
   loopDetection?: boolean;
   loop_detection?: boolean;
   createdAt?: any;
+  guardrails?: AgentGuardrails;
 }
 
 export type RuleType = 'ALLOW' | 'DENY' | 'REQUIRE_APPROVAL';

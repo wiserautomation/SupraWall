@@ -4,6 +4,7 @@ import { db } from '@/lib/firebase-admin';
 import { admin } from '@/lib/firebase-admin';
 import * as crypto from 'crypto';
 import { resolveVaultTokens } from '@/lib/vault-server';
+import { scrubPii } from '@/lib/guardrail-scrubber';
 
 // ── Types ──
 
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const {
+    let {
         apiKey,
         toolName,
         args,
@@ -110,6 +111,17 @@ export async function POST(req: NextRequest) {
 
             if (agentData.status && agentData.status !== 'active') {
                 return NextResponse.json({ decision: "DENY", reason: `Agent is ${agentData.status}.` }, { status: 403 });
+            }
+
+            // ── Guardrail Evaluation — hard stops before policy evaluation ──
+            const guardrailResult = evaluateGuardrailsSync(agentData, toolName, args);
+            if (guardrailResult.blocked) {
+                const gr = guardrailResult.reason || 'Blocked by agent guardrail';
+                await logAudit(agentId, toolName, JSON.stringify(args), "DENY", 0, gr, sessionId, agentRole, isLoop);
+                return NextResponse.json({ decision: "DENY", reason: gr });
+            }
+            if (guardrailResult.modifiedArgs) {
+                args = guardrailResult.modifiedArgs;
             }
 
             // Simple Policy Evaluation for regular agents (from audit logic)
@@ -242,6 +254,46 @@ export async function POST(req: NextRequest) {
 }
 
 // ── Helpers ──
+
+function matchesWildcard(toolName: string, pattern: string): boolean {
+    if (!pattern.includes('*')) return toolName === pattern;
+    return new RegExp('^' + pattern.replace(/\*/g, '.*') + '$').test(toolName);
+}
+
+function evaluateGuardrailsSync(
+    agentData: any, toolName: string, args: any
+): { blocked: boolean; reason?: string; modifiedArgs?: any } {
+    const g = agentData.guardrails;
+    if (!g) return { blocked: false };
+
+    if (g.budget?.limitUsd) {
+        const spend = agentData.totalSpendUsd || 0;
+        if (spend >= g.budget.limitUsd) {
+            if (g.budget.onExceeded === 'block')
+                return { blocked: true, reason: `Spend guardrail: limit $${g.budget.limitUsd} exceeded ($${spend.toFixed(4)} spent)` };
+            if (g.budget.onExceeded === 'require_approval')
+                return { blocked: true, reason: 'PENDING_APPROVAL:budget_exceeded' };
+        }
+    }
+
+    if (g.allowedTools?.length > 0) {
+        if (!g.allowedTools.some((p: string) => matchesWildcard(toolName, p)))
+            return { blocked: true, reason: `Tool guardrail: "${toolName}" not in allowlist` };
+    }
+
+    if (g.blockedTools?.length > 0) {
+        if (g.blockedTools.some((p: string) => matchesWildcard(toolName, p)))
+            return { blocked: true, reason: `Tool guardrail: "${toolName}" is blocked` };
+    }
+
+    if (g.piiScrubbing?.enabled && g.piiScrubbing.patterns?.length > 0) {
+        const { modifiedArgs, shouldBlock } = scrubPii(args, g.piiScrubbing);
+        if (shouldBlock) return { blocked: true, reason: 'PII guardrail: sensitive data detected in arguments' };
+        return { blocked: false, modifiedArgs };
+    }
+
+    return { blocked: false };
+}
 
 function evaluatePolicies(toolName: string, args: any, rules: PolicyRule[]): { decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string } {
     for (const rule of rules) {
