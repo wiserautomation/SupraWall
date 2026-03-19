@@ -15,6 +15,8 @@ function getFirebaseAdmin(): admin.app.App {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
 
     console.log(`[Firebase Admin] Initializing with projectId: ${projectId}, clientEmail: ${clientEmail?.substring(0, 20)}...`);
+    console.log(`[Firebase Admin] Private Key Info: length=${privateKey?.length}, startsWith=${privateKey?.substring(0, 30)}, endsWith=${privateKey?.substring(privateKey.length - 20)}`);
+
 
     if (projectId && clientEmail && privateKey) {
         return admin.initializeApp({
