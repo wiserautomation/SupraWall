@@ -5,7 +5,10 @@
       "Bash(npm install -D @types/pg)",
       "Bash(npx tsc --noEmit)",
       "Bash(grep -v \"^\\\\.$\")",
-      "Bash(python3 -c \":*)"
+      "Bash(python3 -c \":*)",
+      "Bash(/Users/alejandropeghin/.nvm/versions/node/v22.14.0/bin/npx tsc:*)",
+      "Bash(/Users/alejandropeghin/node-v22/bin/npx tsc:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
