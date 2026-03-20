@@ -5,8 +5,73 @@ import { Shield, CheckCircle2, ArrowRight, UserCheck, Eye, Scale } from "lucide-
 import Link from "next/link";
 
 export default function Article14Page() {
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "What does EU AI Act Article 14 require for human oversight?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Article 14 requires high-risk AI systems to be designed so that natural persons can effectively oversee them during use. This includes the ability to understand system capabilities, monitor operations, interpret outputs, and intervene or halt the system at any time.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How do you implement human-in-the-loop for AI agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "SupraWall implements human-in-the-loop by intercepting high-risk tool calls with a REQUIRE_APPROVAL policy. When an agent attempts a sensitive action, execution pauses and a human reviewer receives a notification with full context to approve or deny the action.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is automation bias and how does Article 14 address it?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Automation bias is the tendency for humans to over-rely on AI system outputs. Article 14 requires systems to provide tools that help overseers correctly interpret outputs and maintain appropriate skepticism, preventing blind trust in autonomous agent decisions.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Can AI agents operate autonomously under the EU AI Act?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "High-risk AI agents can operate autonomously for low-risk actions, but Article 14 requires human oversight mechanisms for significant decisions. SupraWall enables this with tiered policies: ALLOW for routine actions, REQUIRE_APPROVAL for high-risk ones.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is the stop button requirement in Article 14?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Article 14 requires the capability to intervene in or interrupt AI system operation through a stop mechanism. For AI agents, this means an immediate kill-switch that halts all agent actions, revokes active tool permissions, and logs the intervention.",
+                },
+            },
+        ],
+    };
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        headline: "EU AI Act Article 14: Human Oversight Requirements for AI Agents",
+        description: "Complete guide to implementing human oversight for autonomous AI agents under EU AI Act Article 14.",
+        author: { "@type": "Organization", name: "SupraWall" },
+        publisher: { "@type": "Organization", name: "SupraWall" },
+        mainEntityOfPage: "https://www.supra-wall.com/eu-ai-act/article-14",
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
             <Navbar />
             
             <main className="pt-32 pb-20 px-6">
@@ -73,6 +138,45 @@ export default function Article14Page() {
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
+
+                    {/* FAQ Section */}
+                    <div className="space-y-8">
+                        <h2 className="text-3xl font-black uppercase italic tracking-tight">Frequently Asked Questions</h2>
+                        <div className="space-y-4">
+                            {faqSchema.mainEntity.map((faq: any, i: number) => (
+                                <details key={i} className="group p-6 rounded-2xl bg-neutral-900/50 border border-white/5 hover:border-emerald-500/20 transition-colors">
+                                    <summary className="text-lg font-bold text-white cursor-pointer list-none flex items-center justify-between">
+                                        {faq.name}
+                                        <span className="text-emerald-500 group-open:rotate-45 transition-transform text-2xl">+</span>
+                                    </summary>
+                                    <p className="mt-4 text-neutral-400 leading-relaxed">{faq.acceptedAnswer.text}</p>
+                                </details>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Related Articles */}
+                    <div className="space-y-6">
+                        <h3 className="text-2xl font-black uppercase italic tracking-tight">Related Articles</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Link href="/learn/human-in-the-loop-ai-agents" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Human-in-the-Loop for AI Agents</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Complete implementation guide for HITL agent workflows.</p>
+                            </Link>
+                            <Link href="/eu-ai-act/article-12" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Article 12: Record-Keeping</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Automated audit logging for EU AI Act compliance.</p>
+                            </Link>
+                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act Compliance for AI Agents</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Full compliance guide covering Articles 9, 12, and 14.</p>
+                            </Link>
+                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act August 2026 Deadline</h4>
+                                <p className="text-sm text-neutral-500 mt-2">5-month compliance roadmap for the August 2 deadline.</p>
+                            </Link>
                         </div>
                     </div>
 

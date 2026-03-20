@@ -227,23 +227,48 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             {[
-                                { title: "Zero-Trust Tool Interception", desc: "Intercepts every tool call before execution. Hard-coded regex rules, not LLM instructions. Works with LangChain & CrewAI.", icon: <Shield className="w-6 h-6" /> },
-                                { title: "Hard Budget Caps", desc: "Set a $10/day limit per agent. When it hits the cap, SupraWall blocks further API executions deterministically.", icon: <Coins className="w-6 h-6" /> },
-                                { title: "Infinite Loop Circuit Breaker", desc: "Detects repetitive failed tool calls and halts the agent before it burns thousands in tokens overnight.", icon: <RefreshCw className="w-6 h-6" /> },
-                                { title: "Human-in-the-Loop Approvals", desc: "Route sensitive actions (sending emails, transactions, deletions) to a human approval queue before execution.", icon: <Users className="w-6 h-6" /> },
-                                { title: "Compliance Report Export", desc: "Generate a one-click PDF 'Human Oversight Evidence Report' with audit logs built for EU AI Act auditors.", icon: <FileText className="w-6 h-6" /> },
-                                { title: "EU AI Act Compliance Dashboard", desc: "Live status badges mapped to specific Articles (Art. 9, 11, 12, 14). Know your compliance posture in real time.", icon: <LayoutDashboard className="w-6 h-6" /> }
-                            ].map((f, i) => (
-                                <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/30 border border-white/5 hover:bg-neutral-900/50 hover:border-emerald-500/20 transition-all group backdrop-blur-3xl min-h-[300px] flex flex-col justify-between">
+                                { title: "Zero-Trust Tool Interception", desc: "Intercepts every tool call before execution. Hard-coded regex rules, not LLM instructions. Works with LangChain & CrewAI.", icon: <Shield className="w-6 h-6" />, href: null },
+                                { title: "Hard Budget Caps", desc: "Set a $10/day limit per agent. When it hits the cap, SupraWall blocks further API executions deterministically.", icon: <Coins className="w-6 h-6" />, href: "/features/budget-limits" },
+                                { title: "Infinite Loop Circuit Breaker", desc: "Detects repetitive failed tool calls and halts the agent before it burns thousands in tokens overnight.", icon: <RefreshCw className="w-6 h-6" />, href: null },
+                                { title: "Human-in-the-Loop Approvals", desc: "Route sensitive actions (sending emails, transactions, deletions) to a human approval queue before execution.", icon: <Users className="w-6 h-6" />, href: null },
+                                { title: "Compliance Report Export", desc: "Generate a one-click PDF 'Human Oversight Evidence Report' with audit logs built for EU AI Act auditors.", icon: <FileText className="w-6 h-6" />, href: null },
+                                { title: "EU AI Act Compliance Dashboard", desc: "Live status badges mapped to specific Articles (Art. 9, 11, 12, 14). Know your compliance posture in real time.", icon: <LayoutDashboard className="w-6 h-6" />, href: null }
+                            ].map((f, i) => {
+                                const inner = (
                                     <div className="space-y-6">
                                         <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
                                             {f.icon}
                                         </div>
                                         <h4 className="text-2xl font-black italic uppercase text-white leading-tight">{f.title}</h4>
                                         <p className="text-xs font-bold text-neutral-500 leading-relaxed uppercase tracking-widest">{f.desc}</p>
+                                        {f.href && <p className="text-[10px] font-black uppercase tracking-widest text-emerald-500 group-hover:text-emerald-400 transition-colors">Learn More →</p>}
                                     </div>
+                                );
+                                const cls = "p-10 rounded-[3rem] bg-neutral-900/30 border border-white/5 hover:bg-neutral-900/50 hover:border-emerald-500/20 transition-all group backdrop-blur-3xl min-h-[300px] flex flex-col justify-between";
+                                return f.href
+                                    ? <Link key={i} href={f.href} className={cls}>{inner}</Link>
+                                    : <div key={i} className={cls}>{inner}</div>;
+                            })}
+                        </div>
+
+                        {/* Feature landing page CTA strip */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+                            <Link href="/features/vault" className="flex items-center justify-between p-6 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-500/40 transition-all group">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">New Feature</p>
+                                    <p className="text-white font-black uppercase italic text-lg">Credential Vault</p>
+                                    <p className="text-neutral-500 text-xs mt-1">Zero-knowledge secret injection — your LLM never sees the key</p>
                                 </div>
-                            ))}
+                                <ArrowRight className="w-5 h-5 text-emerald-500 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                            </Link>
+                            <Link href="/features/budget-limits" className="flex items-center justify-between p-6 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 hover:border-emerald-500/40 transition-all group">
+                                <div>
+                                    <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600 mb-1">New Feature</p>
+                                    <p className="text-white font-black uppercase italic text-lg">Budget Limits</p>
+                                    <p className="text-neutral-500 text-xs mt-1">Hard caps on agent API spend — no more $4k overnight surprises</p>
+                                </div>
+                                <ArrowRight className="w-5 h-5 text-emerald-500 group-hover:translate-x-1 transition-transform flex-shrink-0" />
+                            </Link>
                         </div>
                     </div>
                 </section>

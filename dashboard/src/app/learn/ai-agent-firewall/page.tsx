@@ -81,6 +81,22 @@ export default function AIAgentFirewallPage() {
           text: "SupraWall's policy evaluation adds under 5ms per tool call in the default configuration. Since tool calls typically involve network I/O in the tens to hundreds of milliseconds, the overhead is negligible. Stateful checks (loop detection, budget tracking) add at most 10-15ms for complex session states.",
         },
       },
+      {
+        "@type": "Question",
+        name: "Can an agent firewall prevent prompt injection attacks?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. While prompt injection can manipulate what an LLM outputs, the firewall evaluates the actual tool call the agent attempts, not the prompt. A firewall with a deny policy on dangerous tools will block them regardless of prompt injection — the LLM's output is irrelevant.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How is a firewall configured for different agents?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Each agent gets its own policy scope defining which tools it can access and under what conditions. SupraWall supports wildcard patterns (e.g., database.read.*) and conditional rules based on tool arguments. Policies can be updated in the dashboard without redeploying code.",
+        },
+      },
     ],
   };
 

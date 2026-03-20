@@ -99,6 +99,22 @@ export default function WhatAreAIAgentGuardrailsPage() {
                     text: "Any agent with access to tools (file systems, APIs, databases) needs runtime guardrails. Agents that only generate text have much lower risk, but production autonomous agents are always high-risk.",
                 },
             },
+            {
+                "@type": "Question",
+                name: "Can prompt engineering replace guardrails?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "No. Prompts guide agent behavior probabilistically but cannot enforce deterministic controls. A carefully crafted prompt can be overridden by adversarial input or prompt injection attacks. SupraWall guardrails enforce policies at the execution layer where prompts cannot interfere.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How do guardrails handle multi-agent systems?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "In multi-agent swarms, each agent gets its own policy scope and tool allowlist. When one agent calls another, that inter-agent call passes through the firewall like any other tool call. SupraWall prevents lateral privilege escalation where a compromised agent could hijack another agent's permissions.",
+                },
+            },
         ],
     };
 
@@ -413,6 +429,19 @@ export default function WhatAreAIAgentGuardrailsPage() {
                                     <p className="text-neutral-400 font-medium leading-relaxed">{faq.a}</p>
                                 </div>
                             ))}
+                        </div>
+                    </section>
+
+                    {/* Related Articles */}
+                    <section className="space-y-6">
+                        <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
+                            Related Articles
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Essential checklist for securing autonomous agents in production.</p>
+                            </Link>
                         </div>
                     </section>
 

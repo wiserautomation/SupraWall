@@ -427,7 +427,12 @@ secured_agent.invoke({"input": user_input})`}
                     </div>
 
                     {/* Bottom Links */}
-                    <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-10">
+                    <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
+                            <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
+                            <p className="text-sm text-neutral-500 mt-2 italic">Essential checklist for securing autonomous agents in production.</p>
+                        </Link>
                         <Link href="/integrations/langchain" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Integration Guide</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Secure LangChain Agents</h4>

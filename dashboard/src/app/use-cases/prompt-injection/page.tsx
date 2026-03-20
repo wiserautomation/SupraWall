@@ -38,11 +38,62 @@ export default function PromptInjectionPage() {
         ]
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "What is prompt injection in AI agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Prompt injection is an attack where malicious instructions are embedded in data an AI agent processes (emails, web pages, documents), causing the agent to execute unintended actions like exfiltrating credentials, deleting files, or calling unauthorized APIs.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Why are AI agents more vulnerable to prompt injection than chatbots?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Chatbots can only generate text responses. AI agents can execute real actions — calling APIs, writing files, sending emails. A successful prompt injection against an agent doesn't just produce bad text; it triggers dangerous side effects in production systems.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Can LLM output filters prevent prompt injection in agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "No. LLM output filters check the language of responses but cannot intercept tool calls. An agent can pass every language check while executing 'rm -rf /' or exfiltrating data via an API call. Runtime guardrails that intercept at the tool-call level are required.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is indirect prompt injection?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Indirect prompt injection occurs when malicious instructions are hidden in external data sources — web pages, emails, database records — that the agent reads during normal operation. The agent's original instructions are overwritten by the injected text without the user's knowledge.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How does SupraWall prevent prompt injection attacks?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "SupraWall intercepts every tool call at the runtime level and validates it against ALLOW/DENY/REQUIRE_APPROVAL policies. Even if a prompt injection successfully manipulates the LLM, the malicious tool call is blocked before it reaches the target system.",
+                },
+            },
+        ],
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-rose-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <Navbar />
 

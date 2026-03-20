@@ -5,8 +5,73 @@ import { Shield, FileText, ArrowRight, Zap, ListCheck, Activity } from "lucide-r
 import Link from "next/link";
 
 export default function Article12Page() {
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "What does EU AI Act Article 12 require for AI agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Article 12 requires high-risk AI systems to automatically generate logs throughout their lifecycle. For AI agents, this means every tool call, decision, input, output, and policy evaluation must be recorded with timestamps and session identifiers to ensure full traceability.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How long must AI agent audit logs be retained under Article 12?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Article 12 requires logs to be kept for a period appropriate to the intended purpose of the high-risk AI system, and at minimum for the duration required by applicable Union or national law. For most enterprises, this means at least 5 years of immutable log retention.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What information must be logged under Article 12?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Logs must include: start and end time of each system use, the reference database used, input data that led to a match, identification of natural persons involved in verification, and any events that may indicate risks. SupraWall captures all of these automatically.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How does SupraWall implement Article 12 compliance?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "SupraWall's Deterministic Audit Logs capture 100% of agent tool interactions, including input parameters, output results, policy decisions (ALLOW/DENY/REQUIRE_APPROVAL), timestamps, and session context. Logs are immutable and exportable for regulatory review.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Can existing AI agents be made Article 12 compliant retroactively?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Yes. SupraWall wraps existing agents with one line of code, immediately enabling comprehensive audit logging without changing agent logic. Retroactive compliance is achievable within hours for most LangChain, CrewAI, and AutoGen deployments.",
+                },
+            },
+        ],
+    };
+
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        headline: "EU AI Act Article 12: Record-Keeping Requirements for AI Agents",
+        description: "Complete guide to EU AI Act Article 12 audit logging requirements for autonomous AI agents and how to implement compliance.",
+        author: { "@type": "Organization", name: "SupraWall" },
+        publisher: { "@type": "Organization", name: "SupraWall" },
+        mainEntityOfPage: "https://www.supra-wall.com/eu-ai-act/article-12",
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            />
             <Navbar />
             
             <main className="pt-32 pb-20 px-6">
@@ -94,6 +159,45 @@ export default function Article12Page() {
                                 </li>
                             ))}
                         </ul>
+                    </div>
+
+                    {/* FAQ Section */}
+                    <div className="space-y-8">
+                        <h2 className="text-3xl font-black uppercase italic tracking-tight">Frequently Asked Questions</h2>
+                        <div className="space-y-4">
+                            {faqSchema.mainEntity.map((faq: any, i: number) => (
+                                <details key={i} className="group p-6 rounded-2xl bg-neutral-900/50 border border-white/5 hover:border-emerald-500/20 transition-colors">
+                                    <summary className="text-lg font-bold text-white cursor-pointer list-none flex items-center justify-between">
+                                        {faq.name}
+                                        <span className="text-emerald-500 group-open:rotate-45 transition-transform text-2xl">+</span>
+                                    </summary>
+                                    <p className="mt-4 text-neutral-400 leading-relaxed">{faq.acceptedAnswer.text}</p>
+                                </details>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Related Articles */}
+                    <div className="space-y-6">
+                        <h3 className="text-2xl font-black uppercase italic tracking-tight">Related Articles</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Link href="/learn/ai-agent-audit-trail-logging" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">AI Agent Audit Trail Logging</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Complete guide to implementing immutable audit trails for AI agents.</p>
+                            </Link>
+                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act Compliance for AI Agents</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Full compliance guide covering Articles 9, 12, and 14.</p>
+                            </Link>
+                            <Link href="/eu-ai-act/article-14" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Article 14: Human Oversight</h4>
+                                <p className="text-sm text-neutral-500 mt-2">Implementing human-in-the-loop controls for EU AI Act compliance.</p>
+                            </Link>
+                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act August 2026 Deadline</h4>
+                                <p className="text-sm text-neutral-500 mt-2">What AI agent developers must do before August 2, 2026.</p>
+                            </Link>
+                        </div>
                     </div>
 
                     {/* CTA */}

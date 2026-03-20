@@ -84,6 +84,22 @@ export default function HumanInTheLoopAIAgentsPage() {
           text: "SupraWall HITL requests have a configurable TTL (time-to-live). If the TTL expires before a reviewer approves or denies the request, the action is automatically denied and the agent receives a timeout response. The agent can then choose to retry, escalate, or fail gracefully depending on its error handling logic. This prevents stale approvals from being applied to a context that has already changed.",
         },
       },
+      {
+        "@type": "Question",
+        name: "Which actions should require human approval?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The four high-priority categories are: (1) Financial transactions, especially large amounts; (2) Data deletion — which is irreversible; (3) External communication — emails, messages to external parties; and (4) Infrastructure changes. SupraWall lets you define REQUIRE_APPROVAL policies for each category with different TTLs and approver channels.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Can approval requests be routed to different channels?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes. SupraWall supports three approval channels: the dashboard for centralized AI operations teams, Slack for engineering teams who live in Slack, and email for executive approvers. Different policies can route to different channels based on action category and risk level, ensuring approvals reach the right people.",
+        },
+      },
     ],
   };
 

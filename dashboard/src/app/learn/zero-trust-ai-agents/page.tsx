@@ -78,6 +78,22 @@ export default function ZeroTrustAIAgentsPage() {
           text: "Deny-by-default means agents cannot execute any tool call unless there is an explicit ALLOW policy. Contrast with allow-by-default where everything is permitted unless explicitly blocked.",
         },
       },
+      {
+        "@type": "Question",
+        name: "How does least-privilege scoping work for multi-agent systems?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Each agent is assigned a specific tool scope — the minimum set of tools needed for its function. A summarization agent cannot access payment tools. A support agent cannot modify infrastructure. SupraWall enforces these boundaries regardless of what prompts request, preventing lateral movement if one agent is compromised.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the 'assume breach' principle for agents?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Assume breach means designing controls as if every agent may be compromised via prompt injection or adversarial input. Security cannot depend on the agent behaving correctly — it must hold even when the agent is fully compromised. This is why explicit policies are essential, not prompt-based guidance.",
+        },
+      },
     ],
   };
 

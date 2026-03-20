@@ -34,6 +34,53 @@ export default function CostControlPage() {
         "mainEntityOfPage": "https://www.supra-wall.com/use-cases/cost-control"
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "How much can a runaway AI agent cost?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "A single runaway agent can burn thousands of dollars in minutes. SupraWall has documented incidents where agents consumed $4,000+ in a single overnight session due to infinite loops calling expensive LLM APIs repeatedly.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How do AI agent budget limits work?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Budget limits set hard spending caps per agent, per session, or per day. SupraWall tracks token consumption in real time and deterministically blocks all further API calls when the cap is reached — the agent cannot override or negotiate past the limit.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "What is a circuit breaker for AI agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "A circuit breaker monitors tool call patterns and automatically halts an agent when it detects anomalous behavior like infinite loops or excessive API calls. SupraWall's circuit breaker triggers when N identical calls occur within a configurable time window.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Can I set different budgets for different AI agents?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Yes. SupraWall supports per-agent, per-session, per-user, and per-organization budget scopes. A research agent might get $5/day while a billing agent gets $50/day. Team-level aggregate caps are also supported.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "How is SupraWall's budget enforcement different from cloud cost alerts?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "Cloud cost alerts notify you after the spend has already happened. SupraWall enforces budgets proactively — blocking the tool call before it executes. This is the difference between a $10 cap and a $10,000 surprise bill.",
+                },
+            },
+        ],
+    };
+
     const howToJsonLd = {
         "@context": "https://schema.org",
         "@type": "HowTo",
@@ -63,6 +110,10 @@ export default function CostControlPage() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
 
             <Navbar />

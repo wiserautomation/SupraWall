@@ -79,6 +79,22 @@ export default function RuntimeAIGovernancePage() {
           text: "Yes. Article 14 requires human oversight mechanisms that can intervene in real-time. Article 12 requires automatic logging. Both require systems that can act during operation, not just after.",
         },
       },
+      {
+        "@type": "Question",
+        name: "What are the 4 pillars of runtime AI governance?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The four pillars are: (1) Policy Enforcement — evaluating each action before execution, (2) Audit Logging — creating immutable records of all decisions, (3) Human Oversight — enabling real-time intervention and approval workflows, and (4) Compliance Evidence — automatically generating regulatory documentation.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How does runtime governance reduce the governance gap?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Organizations deploy agents much faster than they build governance frameworks. Runtime governance closes this gap by providing ready-made enforcement, logging, and oversight controls that can be deployed in parallel with agent development, not months after.",
+        },
+      },
     ],
   };
 

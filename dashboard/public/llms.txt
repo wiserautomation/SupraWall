@@ -28,15 +28,61 @@ with rate limiting, expiry, and full audit logging.
 ## Key Pages
 - /: AI agent security and compliance overview
 - /eu-ai-act/: EU AI Act compliance for AI agent developers
+- /eu-ai-act/article-12: EU AI Act Article 12 record-keeping requirements
+- /eu-ai-act/article-14: EU AI Act Article 14 human oversight requirements
 - /compliance/: Enterprise compliance features and evidence reports
 - /integrations/: Framework-specific integration guides (LangChain, AutoGen, CrewAI, Vercel AI)
 - /docs/: Technical documentation and API reference
 - /spec/: AGPS policy specification
-- /vs/: Competitor comparisons (NeMo Guardrails, Guardrails AI)
+- /vs/: Competitor comparisons (NeMo Guardrails, Guardrails AI, Lakera, Portkey, Galileo, Straiker)
+- /features/vault: AI agent credential vault with JIT secret injection
+- /features/budget-limits: Hard spending caps and circuit breakers for AI agents
+- /tools/llm-cost-calculator: LLM API cost calculator tool
+
+## Learning Hub (/learn/)
 - /learn/what-is-agent-runtime-security: Definition and architecture guide
+- /learn/what-are-ai-agent-guardrails: Complete guide to AI agent guardrails
+- /learn/ai-agent-security-best-practices: Security best practices for production agents
+- /learn/ai-agent-security-glossary: AI agent security terminology glossary
+- /learn/ai-agent-firewall: AI agent firewall architecture and implementation
+- /learn/zero-trust-ai-agents: Zero-trust security model for autonomous agents
+- /learn/runtime-ai-governance: Runtime governance for AI agent systems
+- /learn/human-in-the-loop-ai-agents: Human-in-the-loop implementation guide
+- /learn/ai-agent-audit-trail-logging: Immutable audit trail logging guide
+- /learn/ai-agent-pii-protection: PII protection and data scrubbing for agents
+- /learn/ai-agent-secrets-management: Secrets management for AI agents
+- /learn/ai-agent-vault-secrets-management: Vault-based credential management
+- /learn/protect-api-keys-from-ai-agents: API key protection guide
+- /learn/ai-agent-runaway-costs: Preventing runaway costs from autonomous agents
+- /learn/ai-agent-infinite-loop-detection: Loop detection and circuit breakers
+- /learn/how-to-set-token-limits-ai-agents: Token limit configuration guide
+- /learn/prompt-injection-credential-theft: Prompt injection credential theft prevention
+- /learn/mcp-server-security: MCP server security best practices
+- /learn/eu-ai-act-compliance-ai-agents: EU AI Act compliance for AI agents
+- /learn/eu-ai-act-article-14-human-oversight: Article 14 human oversight deep-dive
+- /learn/eu-ai-act-article-9-risk-management: Article 9 risk management deep-dive
+- /learn/eu-ai-act-high-risk-ai-assessment: High-risk AI system assessment guide
+- /learn/eu-ai-act-august-2026-deadline: August 2026 compliance deadline roadmap
+
+## Use Cases
 - /use-cases/prompt-injection: Prompt injection prevention
 - /use-cases/cost-control: AI agent budget control
+
+## Blog
 - /blog/prevent-agent-infinite-loops: Loop detection and prevention
+- /blog/state-of-ai-agent-security-2026: State of AI agent security research report
+- /blog/build-vs-buy-ai-agent-security: Build vs buy analysis for agent security
+- /blog/ai-gateway-vs-compliance-layer: AI gateway vs compliance layer comparison
+- /blog/agent-to-agent-commerce-eu-ai-act: Agent-to-agent commerce and EU AI Act
+- /blog/agentic-ai-security-checklist-2026: 15-point AI agent security deployment checklist
+
+## Competitor Comparisons
+- /vs/nemo-guardrails: SupraWall vs NeMo Guardrails
+- /vs/guardrails-ai: SupraWall vs Guardrails AI
+- /vs/lakera: SupraWall vs Lakera
+- /vs/portkey: SupraWall vs Portkey
+- /vs/galileo: SupraWall vs Galileo
+- /vs/straiker: SupraWall vs Straiker
 
 ## Framework Integrations
 - [LangChain Integration](https://www.supra-wall.com/integrations/langchain) - Native shim for LangChain agents.

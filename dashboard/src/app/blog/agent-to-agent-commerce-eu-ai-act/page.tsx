@@ -409,7 +409,15 @@ secured = protect(
                     </div>
 
                     {/* Bottom Links */}
-                    <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
+                            <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
+                                EU AI Act August 2026 Deadline
+                            </h4>
+                            <p className="text-sm text-neutral-500 mt-2 italic">5-month compliance roadmap for the August 2, 2026 deadline.</p>
+                            <ArrowRight className="w-4 h-4 text-neutral-600 group-hover:text-emerald-400 transition-colors mt-4" />
+                        </Link>
                         <Link href="/blog/ai-gateway-vs-compliance-layer" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">

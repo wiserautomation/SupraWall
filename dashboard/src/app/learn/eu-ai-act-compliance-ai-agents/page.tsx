@@ -439,6 +439,19 @@ export default function EUAIActCompliancePage() {
                         </div>
                     </section>
 
+                    {/* Related Articles */}
+                    <section className="space-y-6">
+                        <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
+                            Related Articles
+                        </h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act August 2026 Deadline</h4>
+                                <p className="text-sm text-neutral-500 mt-2">5-month compliance roadmap for the August 2, 2026 deadline.</p>
+                            </Link>
+                        </div>
+                    </section>
+
                     {/* CTA */}
                     <div className="mt-24 p-16 rounded-[4rem] bg-emerald-600 text-center space-y-8">
                         <p className="text-[10px] font-black text-emerald-200 uppercase tracking-[0.3em]">August 2026 is closer than you think</p>

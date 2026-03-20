@@ -35,6 +35,53 @@ export default function vsNemoGuardrailsPage() {
         }
     };
 
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+            {
+                "@type": "Question",
+                name: "What is the difference between SupraWall and NeMo Guardrails?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "NeMo Guardrails is a middleware proxy for chat interfaces that uses Colang to define conversation flows. SupraWall is a runtime security layer that hooks directly into agent frameworks (LangChain, CrewAI, AutoGen) to intercept and enforce policies on tool calls before they execute.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Does NeMo Guardrails support multi-agent systems?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "NeMo Guardrails was designed for single-agent chat flows. SupraWall natively supports multi-agent swarms with delegation tracking, per-agent policies, and cross-agent audit logging for frameworks like CrewAI and AutoGen.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Which is faster: SupraWall or NeMo Guardrails?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "SupraWall adds less than 1ms latency because it runs inside the application process. NeMo Guardrails operates as an external proxy, adding 20ms+ per interaction due to network round-trips and Colang processing.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Can NeMo Guardrails block dangerous tool calls?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "NeMo Guardrails primarily filters LLM input/output text. It cannot intercept tool calls at the execution layer. SupraWall intercepts every tool call with ALLOW/DENY/REQUIRE_APPROVAL policies, blocking dangerous actions before they reach target systems.",
+                },
+            },
+            {
+                "@type": "Question",
+                name: "Is SupraWall a drop-in replacement for NeMo Guardrails?",
+                acceptedAnswer: {
+                    "@type": "Answer",
+                    text: "SupraWall serves a different purpose than NeMo Guardrails. NeMo is best for chat-level content filtering. SupraWall is best for runtime security of autonomous agents with tool access. Many teams use both: NeMo for input/output filtering and SupraWall for action-level enforcement.",
+                },
+            },
+        ],
+    };
+
     const comparisonData = [
         { feature: "Runtime Interception", suprawall: true, nemo: false, note: "NeMo is post-facto; SupraWall is native runtime." },
         { feature: "Multi-Agent Swarm Support", suprawall: true, nemo: false, note: "Native hooks for CrewAI and AutoGen delegation." },
@@ -48,6 +95,10 @@ export default function vsNemoGuardrailsPage() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
             <Navbar />
 

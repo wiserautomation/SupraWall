@@ -46,6 +46,30 @@ export default function AgentRuntimeSecurityPage() {
                     "@type": "Answer",
                     "text": "Standard guardrails filter text for safety (e.g., hate speech), but they don't prevent an agent from executing a destructive shell command or draining an API budget through infinite loops. ARS provides deterministic action control."
                 }
+            },
+            {
+                "@type": "Question",
+                "name": "What is the difference between ARS and observability?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Observability tells you what an agent did after it happened. Agent Runtime Security intercepts actions before execution, preventing harm rather than just detecting it. ARS includes audit logging but goes far beyond by enforcing real-time policy decisions."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "How does ARS work at the SDK level?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "SupraWall's ARS operates as a shim between your agent framework (LangChain, CrewAI, AutoGen) and the tools it attempts to call. Every tool invocation is intercepted, evaluated against policies in under 5ms, and either allowed, denied, or escalated for human approval."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does Agent Runtime Security add latency?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "SupraWall ARS adds less than 5ms to the decision path for standard policy evaluations. Since typical tool calls involve network I/O measured in tens to hundreds of milliseconds, the overhead is negligible. This makes ARS practical for latency-sensitive production deployments."
+                }
             }
         ]
     };
@@ -146,6 +170,19 @@ export default function AgentRuntimeSecurityPage() {
                                 planned tool call is safe. Every execution must be validated against a <span className="text-white border-b-2 border-emerald-600">Stateful Policy Engine</span> that understands context better than the agent itself.
                             </p>
                         </section>
+                    </div>
+                </div>
+
+                {/* Related Articles */}
+                <div className="max-w-4xl mx-auto space-y-8 py-20">
+                    <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
+                        Related Articles
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
+                            <p className="text-sm text-neutral-500 mt-2">Essential checklist for securing autonomous agents in production.</p>
+                        </Link>
                     </div>
                 </div>
 
