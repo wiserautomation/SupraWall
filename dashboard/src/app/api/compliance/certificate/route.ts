@@ -73,8 +73,8 @@ export async function POST(req: NextRequest) {
             deniedEvents,
             approvalEvents,
             agentCount: agentsSnap.size,
-            verificationUrl: `https://suprawall.ai/share/compliance/${userId}`,
-            certificateUrl: `https://suprawall.ai/certificate/${certId}`,
+            verificationUrl: `https://www.supra-wall.com/share/compliance/${userId}`,
+            certificateUrl: `https://www.supra-wall.com/certificate/${certId}`,
             userId,
         };
 

@@ -2,8 +2,8 @@
 
 ## Partner Information
 - **Company Name:** SupraWall
-- **Website:** https://suprawall.ai
-- **Logo URL:** https://suprawall.ai/logo.png
+- **Website:** https://www.supra-wall.com
+- **Logo URL:** https://www.supra-wall.com/logo.png
 
 ## Integration Details
 - **Name:** SupraWall Security & Governance
@@ -18,9 +18,9 @@
 4. **Budget Caps**: Prevent runaway costs from autonomous loops.
 
 ## Integration Path
-- Redirect URL: `https://app.suprawall.ai/setup/vercel`
-- Webhook URL: `https://api.suprawall.ai/webhooks/vercel`
+- Redirect URL: `https://app.supra-wall.com/setup/vercel`
+- Webhook URL: `https://api.supra-wall.com/webhooks/vercel`
 
 ## Documentation
-- Installation Guide: `https://docs.suprawall.ai/frameworks/vercel-ai`
-- API Reference: `https://docs.suprawall.ai/api-reference`
+- Installation Guide: `https://docs.supra-wall.com/frameworks/vercel-ai`
+- API Reference: `https://docs.supra-wall.com/api-reference`

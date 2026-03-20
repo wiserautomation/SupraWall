@@ -77,7 +77,7 @@ export default function PublishedPages() {
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <a
-                                            href={`https://www.suprawall.ai${page.url}`}
+                                            href={`https://www.supra-wall.com${page.url}`}
                                             target="_blank"
                                             className="inline-flex items-center gap-2 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/20"
                                         >

@@ -15,7 +15,7 @@ or make unauthorized API calls. suprawall puts YOU back in control.
 - Visual dashboard to manage all your agent rules
 
 ## Setup (2 minutes)
-1. Go to https://suprawall.ai and create a free account
+1. Go to https://www.supra-wall.com and create a free account
 2. Create an Agent and copy your API key
 3. Add 2 lines to your OpenClaw config (see below)
 
@@ -26,8 +26,8 @@ clawhub install suprawall
 import { withsuprawall } from '@suprawall/openclaw-guard';
 const securedAgent = withsuprawall(myAgent, {
   apiKey: "your_api_key_from_dashboard",
-  endpoint: process.env.suprawall_ENDPOINT || "https://suprawall.ai"
+  endpoint: process.env.suprawall_ENDPOINT || "https://www.supra-wall.com"
 });
 
 ## Dashboard
-Manage all your agent rules at: https://suprawall.ai
+Manage all your agent rules at: https://www.supra-wall.com

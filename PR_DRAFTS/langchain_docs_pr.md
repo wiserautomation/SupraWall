@@ -12,7 +12,7 @@ This PR adds documentation for the **SupraWall** integration, a deterministic se
 
 ## Documentation Content Preview
 ### SupraWall
-[SupraWall](https://suprawall.ai) provides enterprise-grade governance for AI agents.
+[SupraWall](https://www.supra-wall.com) provides enterprise-grade governance for AI agents.
 
 ```typescript
 import { SupraWallLangChainCallback } from "@suprawall/langchain";

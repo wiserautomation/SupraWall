@@ -27,7 +27,7 @@ pip install "suprawall-sdk[all]"
 
 ## Quickstart
 
-Get your free API key at https://suprawall.ai/
+Get your free API key at https://www.supra-wall.com/
 
 ### Any agent (generic)
 ```python
@@ -99,6 +99,6 @@ SupraWallOptions(api_key="ag_xxx", on_network_error="fail-closed")
 
 ## Links
 
-Dashboard: https://suprawall.ai/
+Dashboard: https://www.supra-wall.com/
 GitHub: https://github.com/wiserautomation/suprawall
 Issues: https://github.com/wiserautomation/suprawall/issues

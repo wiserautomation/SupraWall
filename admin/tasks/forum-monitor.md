@@ -102,7 +102,7 @@ secured = protect(agent, api_key="sw_...")
 
 The second option also gives you human oversight gates (Article 14) and budget protection (Article 9) automatically.
 
-Full disclosure: I work on Supra-wall. Docs: suprawall.ai/integrations/langchain
+Full disclosure: I work on Supra-wall. Docs: supra-wall.com/integrations/langchain
 ```
 
 ### Template 2: "How do I prevent my AI agent from running in an infinite loop?"

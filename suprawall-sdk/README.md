@@ -12,7 +12,7 @@ npm install suprawall-sdk
 
 ## Quickstart
 
-Get your free API key at https://suprawall.ai/
+Get your free API key at https://www.supra-wall.com/
 
 ```typescript
 import { withSupraWall } from "suprawall-sdk";
@@ -64,6 +64,6 @@ use Connect sub-keys (`agc_` prefix) to enforce per-customer policies.
 
 ## Links
 
-Dashboard: https://suprawall.ai/
+Dashboard: https://www.supra-wall.com/
 GitHub: https://github.com/wiserautomation/suprawall
 Issues: https://github.com/wiserautomation/suprawall/issues

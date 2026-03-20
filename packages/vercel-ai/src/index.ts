@@ -34,7 +34,7 @@ export function wrapTools(
 
     const apiUrl = options?.apiUrl || 
                  process.env.SUPRAWALL_API_URL || 
-                 "https://api.suprawall.ai/v1/evaluate";
+                 "https://api.supra-wall.com/v1/evaluate";
     
     const agentId = options?.agentId || "vercel_ai_agent";
 

@@ -8,7 +8,11 @@
       "Bash(python3 -c \":*)",
       "Bash(/Users/alejandropeghin/.nvm/versions/node/v22.14.0/bin/npx tsc:*)",
       "Bash(/Users/alejandropeghin/node-v22/bin/npx tsc:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(grep -rn \"suprawall\\\\.ai\\\\|agentgate\\\\|agent-gate\\\\|agentguard\\\\|agent_gate\\\\|AgentGate\\\\|AgentGuard\" --include=*.ts --include=*.tsx --include=*.js --include=*.json --include=*.md --include=*.txt --include=*.yaml --include=*.yml --include=*.env* .)",
+      "Bash(grep -rn \"suprawall\\\\.ai\\\\|agentgate\\\\|agent-gate\\\\|agentguard\\\\|agent_gate\\\\|AgentGate\\\\|AgentGuard\" --include=*.ts --include=*.tsx --include=*.js --include=*.json --include=*.md --include=*.txt --include=*.yaml --include=*.yml .)"
     ]
   }
 }

@@ -124,7 +124,7 @@ export interface SupraWallResponse {
 export interface SupraWallOptions {
     /**
      * Your SupraWall API key.
-     * Get one free at https://suprawall.ai/
+     * Get one free at https://www.supra-wall.com/
      * Format: ag_xxxxxxxxxxxxxxxx
      */
     apiKey: string;
@@ -452,7 +452,7 @@ export function withSupraWall<T extends AgentInstance>(
     if (!apiKey || !apiKey.startsWith("ag_")) {
         throw new Error(
             `[SupraWall] Invalid API key: "${apiKey}".\n` +
-            `  Get your free key at https://suprawall.ai/\n` +
+            `  Get your free key at https://www.supra-wall.com/\n` +
             `  Expected format: ag_xxxxxxxxxxxxxxxx`
         );
     }

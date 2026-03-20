@@ -28,13 +28,13 @@ export class SupraWallLangChainCallback extends BaseCallbackHandler {
         this.apiKey = options?.apiKey || process.env.SUPRAWALL_API_KEY || "";
         if (!this.apiKey) {
             throw new Error(
-                "[SupraWall] SUPRAWALL_API_KEY is required. Get yours at https://suprawall.ai"
+                "[SupraWall] SUPRAWALL_API_KEY is required. Get yours at https://www.supra-wall.com"
             );
         }
         this.apiUrl =
             options?.apiUrl ||
             process.env.SUPRAWALL_API_URL ||
-            "https://api.suprawall.ai/v1/evaluate";
+            "https://api.supra-wall.com/v1/evaluate";
         this.agentId = options?.agentId || "langchain_agent";
         this.blockOnApproval = options?.blockOnApproval !== false;
     }

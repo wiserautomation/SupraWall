@@ -3,12 +3,12 @@
  * Embeddable countdown to EU AI Act enforcement deadline.
  *
  * Usage:
- *   <script src="https://suprawall.ai/api/widget/countdown.js" defer></script>
+ *   <script src="https://www.supra-wall.com/api/widget/countdown.js" defer></script>
  *   <div data-suprawall-countdown data-theme="dark" data-style="badge"></div>
  */
 
 const ENFORCEMENT_DATE = new Date("2026-08-02T00:00:00Z");
-const BASE_URL = "https://suprawall.ai";
+const BASE_URL = "https://www.supra-wall.com";
 
 function getDaysRemaining(): number {
     const now = new Date();

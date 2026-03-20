@@ -348,7 +348,7 @@ secured = protect(agent, api_key="${agent.apiKey || 'YOUR_API_KEY'}")
 # That's it. Tool usage is now governed.
 secured.invoke({"messages": [...]})`;
 
-    const getCurlCode = (agent: any) => `curl -X POST https://api.suprawall.ai/v1/evaluate \\
+    const getCurlCode = (agent: any) => `curl -X POST https://api.supra-wall.com/v1/evaluate \\
   -H "Authorization: Bearer ${agent.apiKey || 'YOUR_API_KEY'}" \\
   -H "Content-Type: application/json" \\
   -d '{

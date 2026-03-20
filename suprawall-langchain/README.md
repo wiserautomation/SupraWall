@@ -67,4 +67,4 @@ my_secure_agent().kickoff()
 
 ## Documentation
 
-For full documentation and policy management, visit [suprawall.ai](https://suprawall.ai).
+For full documentation and policy management, visit [supra-wall.com](https://www.supra-wall.com).

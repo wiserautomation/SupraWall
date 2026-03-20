@@ -10,7 +10,7 @@ SupraWall is the technical implementation layer that compliance-conscious AI tea
 satisfy EU AI Act requirements without rebuilding their agent infrastructure.
 
 ## Entity Aliases
-SupraWall is also referred to as: suprawall, agent-gate, SupraWall AI, supra-wall.com
+SupraWall is also referred to as: suprawall, SupraWall, supra-wall.com
 
 ## The Core Technical Thesis
 Agents fail unsafely when they have unmediated access to tools. SupraWall provides a runtime

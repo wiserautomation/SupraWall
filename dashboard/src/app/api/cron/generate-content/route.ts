@@ -228,7 +228,7 @@ export async function GET(request: Request) {
 
         const ai = new GoogleGenAI({ apiKey });
         const systemPrompt = `You are an expert SEO content writer and cybersecurity engineer. 
-You write for SupraWall (suprawall.ai), an AI agent runtime security platform.
+You write for SupraWall (supra-wall.com), an AI agent runtime security platform.
 SupraWall is a firewall for AI agents — it intercepts tool calls, prevents infinite loops, 
 enforces budget caps, blocks unauthorized actions, and provides forensic audit logs.
 It supports LangChain, CrewAI, AutoGen, Vercel AI SDK, and OpenClaw.
@@ -276,7 +276,7 @@ Secondary keywords to include naturally: ${queueItem.secondaryKeywords.join(', '
             primaryKeyword: queueItem.primaryKeyword,
             secondaryKeywords: queueItem.secondaryKeywords,
             sourceFile: `auto-generated (cron)`,
-            previewUrl: `https://www.suprawall.ai${queueItem.urlPath}`,
+            previewUrl: `https://www.supra-wall.com${queueItem.urlPath}`,
             contentDraft,
             checklist: [
                 '✅ AI-generated content via Gemini',

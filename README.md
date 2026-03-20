@@ -10,7 +10,7 @@
 [![PyPI](https://img.shields.io/pypi/v/suprawall)](https://pypi.org/project/suprawall/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-[Quick Start](#quick-start) • [EU AI Act Compliance](#eu-ai-act-compliance) • [Documentation](https://suprawall.ai/docs) • [Examples](#examples)
+[Quick Start](#quick-start) • [EU AI Act Compliance](#eu-ai-act-compliance) • [Documentation](https://www.supra-wall.com/docs) • [Examples](#examples)
 
 </div>
 
@@ -209,11 +209,11 @@ policy = {
 
 ## Documentation
 
-- [Full Documentation](https://suprawall.ai/docs)
-- [EU AI Act Compliance Guide](https://suprawall.ai/eu-ai-act/)
-- [API Reference](https://suprawall.ai/docs/api)
-- [Framework Guides](https://suprawall.ai/docs/frameworks/langchain)
-- [AGPS Policy Specification](https://suprawall.ai/spec)
+- [Full Documentation](https://www.supra-wall.com/docs)
+- [EU AI Act Compliance Guide](https://www.supra-wall.com/eu-ai-act/)
+- [API Reference](https://www.supra-wall.com/docs/api)
+- [Framework Guides](https://www.supra-wall.com/docs/frameworks/langchain)
+- [AGPS Policy Specification](https://www.supra-wall.com/spec)
 
 ---
 
@@ -225,7 +225,7 @@ We welcome contributions. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-MIT © [SupraWall](https://suprawall.ai)
+MIT © [SupraWall](https://www.supra-wall.com)
 
 ---
 

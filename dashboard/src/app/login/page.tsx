@@ -94,7 +94,7 @@ export default function LoginPage() {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="operator@suprawall.ai"
+                                    placeholder="operator@supra-wall.com"
                                     required
                                     className="h-14 pl-12 bg-black border-white/[0.05] focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
                                 />

@@ -48,7 +48,7 @@ and makes questions directly quotable by LLMs.
 - Task: A5 (weekly)
 
 ### 2. llms.txt (emerging standard — permanent benefit)
-- Location: suprawall.ai/llms.txt ✓
+- Location: supra-wall.com/llms.txt ✓
 - llms-full.txt: full product context for LLMs ✓
 - Update when major features launch or new EU AI Act content is published
 

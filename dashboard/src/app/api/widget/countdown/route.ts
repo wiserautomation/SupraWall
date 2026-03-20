@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 /**
  * Serves the countdown widget JavaScript.
- * Embed with: <script src="https://suprawall.ai/api/widget/countdown.js" defer></script>
+ * Embed with: <script src="https://www.supra-wall.com/api/widget/countdown.js" defer></script>
  */
 export async function GET(_req: NextRequest) {
     const ENFORCEMENT_DATE = "2026-08-02T00:00:00Z";
-    const BASE_URL = "https://suprawall.ai";
+    const BASE_URL = "https://www.supra-wall.com";
 
     const script = `(function(){
 var E=new Date("${ENFORCEMENT_DATE}"),B="${BASE_URL}";
