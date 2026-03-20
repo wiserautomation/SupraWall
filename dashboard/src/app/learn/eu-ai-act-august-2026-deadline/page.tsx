@@ -375,7 +375,7 @@ export default function EUAIActAugust2026DeadlinePage() {
                                     <span className="text-yellow-400">"tool": "execute_trade"</span>, <span className="text-neutral-500"># Article 9: Identify high-risk actions</span>
                                 </p>
                                 <p className="text-neutral-300 pl-12">
-                                    <span className="text-yellow-400">"condition": "amount > 10000"</span>{`}`},
+                                    <span className="text-yellow-400">"condition": "amount &gt; 10000"</span>{`}`},
                                 </p>
                                 <p className="text-neutral-300 pl-8">
                                     {`{`}<span className="text-yellow-400">"action": "REQUIRE_APPROVAL"</span>,

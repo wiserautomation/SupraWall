@@ -62,7 +62,15 @@ const CREDENTIALS = [
     { icon: <Mail className="w-6 h-6 text-cyan-400" />, type: "SMTP Credentials", example: "smtp_user:smtp_pass", risk: "Spam / phishing from your domain", protection: "Recipient + template scoped" },
 ];
 
-const COMPARISON = [
+interface ComparisonRow {
+    capability: string;
+    sw: boolean | "partial";
+    hc: boolean | "partial";
+    aws: boolean | "partial";
+    op: boolean | "partial";
+}
+
+const COMPARISON: ComparisonRow[] = [
     { capability: "LLM never sees raw credential", sw: true, hc: false, aws: false, op: "partial" },
     { capability: "Per-agent scope policies", sw: true, hc: false, aws: false, op: false },
     { capability: "Per-tool-call credential injection", sw: true, hc: false, aws: false, op: false },
