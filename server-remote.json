@@ -1,0 +1,109 @@
+{
+  "name": "io.github.wiserautomation/suprawall-cloud",
+  "displayName": "SupraWall Cloud - EU AI Act Compliance (Remote)",
+  "version": "1.0.0",
+  "description": "Cloud-hosted EU AI Act compliance middleware accessible via HTTPS/SSE for Claude.",
+  "repository": {
+    "source": "github",
+    "url": "https://github.com/wiserautomation/suprawall-cloud"
+  },
+  "author": "Wiser Automation",
+  "license": "MIT",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "packages": [
+    {
+      "registryType": "http",
+      "identifier": "io.github.wiserautomation/suprawall-cloud",
+      "version": "1.0.0",
+      "transport": {
+        "type": "sse",
+        "url": "https://www.supra-wall.com/api/mcp"
+      },
+      "packageArguments": [],
+      "environmentVariables": [
+        {
+          "name": "SUPRAWALL_API_KEY",
+          "required": true,
+          "description": "SupraWall API key for authentication"
+        }
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "check_policy",
+      "description": "Check if an AI action complies with configured compliance policies (cloud-hosted)",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action to evaluate for compliance"
+          },
+          "context": {
+            "type": "object",
+            "description": "Additional context about the action"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Severity level of the action"
+          }
+        },
+        "required": ["action"]
+      },
+      "readOnlyHint": true
+    },
+    {
+      "name": "request_approval",
+      "description": "Request human approval for a sensitive action with cloud-hosted audit trail",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action requesting approval"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why human approval is needed"
+          },
+          "urgency": {
+            "type": "string",
+            "enum": ["low", "medium", "high"],
+            "description": "Urgency level for approval"
+          },
+          "requesterEmail": {
+            "type": "string",
+            "description": "Email of the person requesting approval"
+          }
+        },
+        "required": ["action", "reason"]
+      },
+      "readOnlyHint": true
+    }
+  ],
+  "io.modelcontextprotocol.registry/publisher-provided": {
+    "capabilities": [
+      "EU AI Act Article 14 compliance",
+      "Cloud-hosted human oversight",
+      "Distributed audit logging",
+      "Real-time policy enforcement",
+      "Multi-tenant support"
+    ],
+    "industry": "Compliance & Governance",
+    "deploymentType": "cloud-hosted",
+    "useCases": [
+      "Enterprise AI governance",
+      "Regulated healthcare systems",
+      "Financial services compliance",
+      "Government AI coordination",
+      "Multi-organization compliance"
+    ],
+    "privacyPolicy": "https://www.supra-wall.com/privacy",
+    "documentation": "https://www.supra-wall.com/docs",
+    "supportEmail": "support@wiserautomation.agency",
+    "authMethod": "API Key (ag_* or agc_*)",
+    "dataResidency": "EU-compliant infrastructure"
+  }
+}

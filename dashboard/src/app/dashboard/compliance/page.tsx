@@ -147,6 +147,7 @@ export default function CompliancePage() {
     const [certLoading, setCertLoading] = useState(false);
     const [certificate, setCertificate] = useState<CertificateData | null>(null);
     const [copied, setCopied] = useState(false);
+    const [certError, setCertError] = useState<string | null>(null);
 
     const fetchStatus = async () => {
         setLoading(true);
@@ -174,17 +175,19 @@ export default function CompliancePage() {
     const generateCertificate = async () => {
         if (!user) return;
         setCertLoading(true);
+        setCertError(null);
         try {
             const res = await fetch("/api/compliance/certificate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ userId: user.uid }),
             });
-            if (!res.ok) throw new Error("Failed to generate certificate");
             const data = await res.json();
+            if (!res.ok) throw new Error(data?.error || "Failed to generate certificate");
             setCertificate(data.certificate);
         } catch (e) {
             console.error(e);
+            setCertError(e instanceof Error ? e.message : "Certificate generation failed. Please try again.");
         } finally {
             setCertLoading(false);
         }
@@ -332,21 +335,29 @@ export default function CompliancePage() {
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                     <CardContent className="p-6">
                         {!certificate ? (
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                                <div>
-                                    <h3 className="text-sm font-black text-white uppercase italic tracking-tight mb-1">Generate EU AI Act Certificate</h3>
-                                    <p className="text-xs text-neutral-400">
-                                        Create a shareable compliance certificate. Share on LinkedIn to drive brand awareness.
-                                    </p>
+                            <div className="flex flex-col gap-4">
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div>
+                                        <h3 className="text-sm font-black text-white uppercase italic tracking-tight mb-1">Generate EU AI Act Certificate</h3>
+                                        <p className="text-xs text-neutral-400">
+                                            Create a shareable compliance certificate. Share on LinkedIn to drive brand awareness.
+                                        </p>
+                                    </div>
+                                    <button
+                                        onClick={generateCertificate}
+                                        disabled={certLoading}
+                                        className="shrink-0 flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors"
+                                    >
+                                        <Award className="w-4 h-4" />
+                                        {certLoading ? "Generating…" : "Generate Certificate"}
+                                    </button>
                                 </div>
-                                <button
-                                    onClick={generateCertificate}
-                                    disabled={certLoading}
-                                    className="shrink-0 flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-60 text-white rounded-xl text-sm font-semibold transition-colors"
-                                >
-                                    <Award className="w-4 h-4" />
-                                    {certLoading ? "Generating…" : "Generate Certificate"}
-                                </button>
+                                {certError && (
+                                    <div className="flex items-start gap-2 p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+                                        <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                                        <p className="text-xs text-red-400">{certError}</p>
+                                    </div>
+                                )}
                             </div>
                         ) : (
                             <div className="space-y-4">
