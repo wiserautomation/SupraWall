@@ -848,17 +848,17 @@ secured.invoke({"messages": [...]})`;
                     setCustomScope("");
                 }
             }}>
-                <DialogContent className="sm:max-w-md bg-transparent border-none text-white shadow-[0_0_120px_rgba(16,185,129,0.3),0_0_40px_rgba(0,0,0,1)] p-0 !overflow-visible rounded-[26px]">
+                <DialogContent className="sm:max-w-md bg-transparent border-none text-white shadow-[0_0_150px_rgba(16,185,129,0.5),0_0_60px_rgba(0,0,0,1)] p-0 !overflow-visible rounded-[26px]">
                     <div className="relative p-[2px] w-full h-full overflow-hidden rounded-[26px]">
                         {/* 2 Spinning Lasers */}
                         <div 
-                            className="absolute -inset-[150%] z-0 animate-[spin_4s_linear_infinite]"
+                            className="absolute -inset-[150%] z-0 animate-[spin_3s_linear_infinite]"
                             style={{
-                                background: 'conic-gradient(from 0deg, transparent 0%, transparent 40%, rgba(16, 185, 129, 1) 50%, transparent 50%, transparent 90%, rgba(16, 185, 129, 1) 100%)'
+                                background: 'conic-gradient(from 0deg, transparent 0%, transparent 45%, rgba(16, 185, 129, 1) 48%, rgba(52, 211, 153, 1) 50%, rgba(16, 185, 129, 1) 52%, transparent 55%, transparent 95%, rgba(16, 185, 129, 1) 100%)'
                             }} 
                         />
                         {/* Core Background */}
-                        <div className="relative z-10 w-full h-full bg-[#050505] rounded-[24px] overflow-hidden shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]">
+                        <div className="relative z-10 w-full h-full bg-[#030303] rounded-[24px] overflow-hidden shadow-[inset_0_0_60px_rgba(16,185,129,0.1),inset_0_0_40px_rgba(0,0,0,0.8)]">
                             <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/80 to-transparent shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
                             {showSuccess && <DollarConfetti />}
                     
@@ -1015,7 +1015,7 @@ secured.invoke({"messages": [...]})`;
 
             {/* Integration Modal */}
             <Dialog open={!!selectedAgent} onOpenChange={(open) => !open && setSelectedAgent(null)}>
-                <DialogContent className="sm:max-w-2xl bg-black border-emerald-500/20 text-white shadow-[0_0_80px_rgba(16,185,129,0.08)]">
+                <DialogContent className="sm:max-w-2xl bg-black border-emerald-500/20 text-white shadow-[0_0_150px_rgba(16,185,129,0.2),0_0_60px_rgba(0,0,0,1)]">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
                     <DialogHeader>
                         <DialogTitle className="text-lg font-black uppercase italic tracking-tighter text-white flex items-center gap-2">
