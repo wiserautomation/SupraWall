@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Check, Zap, Shield, Users, ArrowRight, DollarSign, Loader2 } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Check, Zap, Shield, Users, ArrowRight, DollarSign, Loader2, Gauge, Lock, FileText, Activity, Layers, Globe } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { auth } from '@/lib/firebase';
@@ -18,20 +18,49 @@ export default function PricingPage() {
     const router = useRouter();
     const [loadingCheckout, setLoadingCheckout] = useState(false);
 
+    /**
+     * Board-directed Pricing Model:
+     * First 10k: $0
+     * 10k - 500k: $0.002
+     * 500k - 2M: $0.0015
+     * 2M - 10M: $0.001
+     * 10M+: $0.0005
+     */
     const calculateCost = (ops: number) => {
-        if (ops <= 100000) return 0;
-        return Math.ceil((ops - 100000) / 100000) * 10;
-    };
+        let total = 0;
+        const freeTier = 10000;
+        
+        if (ops <= freeTier) return 0;
 
-    const cost = calculateCost(operations);
+        // Tier 1: 10k to 500k
+        const t1Limit = 500000;
+        const t1Ops = Math.min(ops, t1Limit) - freeTier;
+        if (t1Ops > 0) total += t1Ops * 0.002;
 
-    const handleStartFree = () => {
-        if (user) {
-            router.push('/dashboard');
-        } else {
-            router.push('/login'); // Assuming /login exists
+        // Tier 2: 500k to 2M
+        const t2Limit = 2000000;
+        if (ops > t1Limit) {
+            const t2Ops = Math.min(ops, t2Limit) - t1Limit;
+            total += t2Ops * 0.0015;
         }
+
+        // Tier 3: 2M to 10M
+        const t3Limit = 10000000;
+        if (ops > t2Limit) {
+            const t3Ops = Math.min(ops, t3Limit) - t2Limit;
+            total += t3Ops * 0.001;
+        }
+
+        // Tier 4: 10M+
+        if (ops > t3Limit) {
+            const t4Ops = ops - t3Limit;
+            total += t4Ops * 0.0005;
+        }
+
+        return total;
     };
+
+    const cost = useMemo(() => calculateCost(operations), [operations]);
 
     const handleCheckout = async () => {
         if (!user) {
@@ -58,283 +87,239 @@ export default function PricingPage() {
         }
     };
 
-    return (
-        <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
-            {/* Hero Section */}
-            <div className="relative pt-24 pb-16 px-6 text-center overflow-hidden">
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-emerald-500/10 to-transparent blur-3xl pointer-events-none" />
+    const archetypes = [
+        { name: "Indie Dev", agents: 1, evals: "3,000", cost: "$0" },
+        { name: "Startup", agents: 5, evals: "50,000", cost: "$80" },
+        { name: "Growing Co", agents: 20, evals: "300,000", cost: "$580" },
+        { name: "Scale-up", agents: 50, evals: "1,000,000", cost: "$1,480" },
+        { name: "Mid-Market", agents: 200, evals: "5,000,000", cost: "$5,480" },
+        { name: "Enterprise", agents: 1000, evals: "30,000,000", cost: "$15,480" },
+    ];
 
-                <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
-                    Enterprise security.<br />No enterprise paywalls.
+    return (
+        <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
+            {/* 🚀 Hero Section */}
+            <div className="relative pt-32 pb-20 px-6 text-center overflow-hidden">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
+                
+                <div className="inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-black tracking-[0.2em] text-emerald-400 uppercase mb-8">
+                    Gate Nothing. Meter Everything.
+                </div>
+                
+                <h1 className="text-6xl md:text-9xl font-black tracking-tighter mb-8 italic uppercase leading-none">
+                    One Product. <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">All The Brakes.</span>
                 </h1>
-                <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto mb-10">
-                    We don't gate security features or tax your headcount. Get full SOC2-ready logging and unlimited seats on day one. Pay only for the compute you use.
+                
+                <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-medium italic">
+                    You don't sell a car without brakes and call them a "premium add-on." SupraWall gives every developer the full security stack — Vault, PII, HITL, and Audit — with no feature gates.
                 </p>
             </div>
 
-            <div className="max-w-6xl mx-auto px-6 pb-24">
-                <div className="grid md:grid-cols-2 gap-8 mb-20">
-                    {/* Developer Card */}
-                    <div className="relative group p-8 rounded-3xl bg-neutral-900/50 border border-neutral-800 hover:border-emerald-500/50 transition-all">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
-
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-500">
-                                <Zap className="w-6 h-6" />
-                            </div>
-                            <h3 className="text-2xl font-semibold">Developer Hook</h3>
+            <div className="max-w-7xl mx-auto px-6 pb-40">
+                {/* 🎯 The Main Pricing Card */}
+                <div className="grid lg:grid-cols-3 gap-12 mb-32 items-stretch">
+                   
+                    {/* Feature List Column (2/3 width on large) */}
+                    <div className="lg:col-span-2 p-12 rounded-[3.5rem] bg-neutral-900/30 border border-white/5 backdrop-blur-3xl space-y-12">
+                        <div className="grid md:grid-cols-2 gap-10">
+                            {[
+                                { title: "Secure Vault", icon: <Lock />, desc: "Zero-knowledge secret injection into tool calls." },
+                                { title: "PII Scrubbing", icon: <Shield />, desc: "Deterministic redaction of sensitive data." },
+                                { title: "HITL Approvals", icon: <Users />, desc: "Route high-risk actions to Slack or Dashboard." },
+                                { title: "Article 12 Logs", icon: <FileText />, desc: "Immutable record-keeping for EU AI Act." },
+                                { title: "Policy Engine", icon: <Gauge />, desc: "Unlimited deterministic security rules." },
+                                { title: "Cost Controls", icon: <DollarSign />, desc: "Hard budget caps to prevent agent runaway." }
+                            ].map((f, i) => (
+                                <div key={i} className="flex gap-5 group">
+                                    <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform flex-shrink-0">
+                                        {f.icon}
+                                    </div>
+                                    <div>
+                                        <h4 className="text-xl font-black italic uppercase text-white mb-1">{f.title}</h4>
+                                        <p className="text-sm text-gray-500 font-medium italic uppercase tracking-tight">{f.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-
-                        <div className="mb-8">
-                            <span className="text-4xl font-bold">$0</span>
-                            <span className="text-gray-500"> forever</span>
+                        
+                        <div className="h-px w-full bg-white/5" />
+                        
+                        <div className="bg-emerald-500/5 border border-emerald-500/10 p-8 rounded-3xl">
+                            <p className="text-emerald-500 font-black uppercase text-xs tracking-widest mb-4">The Sam Altman Rule</p>
+                            <p className="text-gray-400 italic font-medium leading-relaxed">
+                                "Your features create a compounding security surface — each makes every other more valuable. Separate them and you degrade the product. We gate nothing."
+                            </p>
                         </div>
-
-                        <ul className="space-y-4 mb-10 text-gray-400">
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>First 100,000 Guarded Operations / month</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>Unlimited Developers & Seats</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>Unlimited Environments</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>30-day Audit Log Retention</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>All Security Policies & Webhooks</span>
-                            </li>
-                        </ul>
-
-                        <button onClick={handleStartFree} className="w-full py-4 rounded-xl font-semibold bg-white text-black hover:bg-gray-200 transition-colors">
-                            Start Building Free
-                        </button>
                     </div>
 
-                    {/* Production Card */}
-                    <div className="relative group p-8 rounded-3xl bg-neutral-900 border border-emerald-500/30 shadow-[0_0_40px_rgba(16,185,129,0.1)]">
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-emerald-500 text-black text-xs font-bold uppercase tracking-widest">
-                            Most Scalable
+                    {/* The CTA Column */}
+                    <div className="p-12 rounded-[3.5rem] bg-emerald-600 border-2 border-emerald-400 text-white shadow-[0_40px_80px_rgba(16,185,129,0.3)] flex flex-col justify-between relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-6 opacity-10">
+                            <Zap className="w-40 h-40" />
                         </div>
-
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="p-2 rounded-lg bg-emerald-500/20 text-emerald-400">
-                                <Shield className="w-6 h-6" />
+                        
+                        <div className="space-y-6 relative z-10">
+                            <h3 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Standard <br />Access</h3>
+                            <div className="h-1 w-12 bg-white" />
+                            <p className="text-sm font-black uppercase tracking-widest text-emerald-100 italic">Unlimited agents. Unlimited policies.</p>
+                            
+                            <div className="py-4">
+                                <div className="text-6xl font-black italic tracking-tighter leading-none">$0.0028</div>
+                                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-200 mt-2">Starting price / policy evaluation</p>
                             </div>
-                            <h3 className="text-2xl font-semibold">Production Scale</h3>
+
+                            <ul className="space-y-3">
+                                {["All 6 security features", "Full Dashboard", "Every SDK integration", "Volume discounts build-in"].map((item, id) => (
+                                    <li key={id} className="flex items-center gap-3 text-xs font-bold uppercase tracking-widest italic">
+                                        <Check className="w-4 h-4 text-white" />
+                                        {item}
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
-                        <div className="mb-8">
-                            <span className="text-4xl font-bold">$10</span>
-                            <span className="text-gray-500"> per additional 100k ops</span>
+                        <div className="pt-10 space-y-4">
+                            <button 
+                                onClick={handleCheckout} 
+                                disabled={loadingCheckout}
+                                className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase tracking-tighter text-xl hover:scale-[1.02] transition-transform shadow-2xl disabled:opacity-50 flex items-center justify-center gap-2"
+                            >
+                                {loadingCheckout ? <Loader2 className="w-6 h-6 animate-spin" /> : "Deploy Now"}
+                            </button>
+                            <p className="text-[10px] font-black uppercase text-center text-emerald-100 tracking-[0.2em]">Usage-based. Cancel anytime.</p>
                         </div>
-
-                        <ul className="space-y-4 mb-10 text-gray-400">
-                            <li className="flex items-start gap-3 text-emerald-400/80">
-                                <Check className="w-5 h-5 shrink-0 mt-0.5" />
-                                <span>Everything in Developer</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>1-Year Audit Log Retention</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>High SLA & Priority Support</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>SOC2 Compliance Documentation</span>
-                            </li>
-                            <li className="flex items-start gap-3">
-                                <Check className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                                <span>Volume Discounts (&gt;10M ops)</span>
-                            </li>
-                        </ul>
-
-                        <button onClick={handleCheckout} disabled={loadingCheckout} className="relative w-full py-4 rounded-xl font-semibold bg-emerald-600 text-white hover:bg-emerald-500 transition-colors overflow-hidden group/btn disabled:opacity-50">
-                            <span className="relative z-10 flex items-center justify-center gap-2">
-                                {loadingCheckout ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Add Payment Method <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" /></>}
-                            </span>
-                            {!loadingCheckout && <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-emerald-600 opacity-0 group-hover/btn:opacity-100 transition-opacity" />}
-                        </button>
                     </div>
                 </div>
 
-                {/* Cost Estimator Slider */}
-                <div className="max-w-3xl mx-auto p-10 rounded-3xl bg-neutral-900/30 border border-neutral-800">
-                    <h3 className="text-2xl font-bold mb-8 text-center">Estimate your monthly cost</h3>
-
-                    <div className="mb-10">
-                        <div className="flex justify-between items-end mb-4">
-                            <span className="text-sm font-medium text-gray-500 uppercase tracking-wider">Agent Operations</span>
-                            <span className="text-3xl font-mono text-emerald-500 font-bold">
-                                {operations.toLocaleString()}
-                            </span>
-                        </div>
-                        <input
-                            type="range"
-                            min="0"
-                            max="5000000"
-                            step="50000"
-                            value={operations}
-                            onChange={(e) => setOperations(parseInt(e.target.value))}
-                            className="w-full h-2 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-emerald-500"
-                        />
-                        <div className="flex justify-between mt-2 text-xs text-gray-600 font-medium">
-                            <span>0</span>
-                            <span>1M</span>
-                            <span>2M</span>
-                            <span>3M</span>
-                            <span>4M</span>
-                            <span>5M+</span>
-                        </div>
+                {/* 💰 Cost Estimator Section */}
+                <div className="max-w-5xl mx-auto mb-40 text-center space-y-16">
+                    <div className="space-y-4">
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Measure Your <span className="text-emerald-500">Security ROI.</span></h2>
+                        <p className="text-neutral-500 font-bold uppercase tracking-widest">Pricing that scales with your agent's autonomy.</p>
                     </div>
 
-                    <div className="pt-8 border-t border-neutral-800 flex flex-col items-center">
-                        <div className="text-sm text-gray-500 uppercase tracking-widest mb-1">Estimated Total</div>
-                        <div className="text-6xl font-bold">${cost.toLocaleString()} <span className="text-lg text-gray-600 font-normal">/ month</span></div>
-                        <p className="mt-4 text-gray-400 text-sm italic">
-                            * First 100,000 operations are totally free. No platform fee.
-                        </p>
-                    </div>
-                </div>
-
-                {/* Global Payouts Section (For Founders) */}
-                <div className="mt-24 max-w-4xl mx-auto">
-                    <div className="p-1 rounded-3xl bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20">
-                        <div className="bg-black rounded-[22px] p-10">
-                            <div className="flex items-center gap-4 mb-8 text-left">
-                                <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400">
-                                    <DollarSign className="w-8 h-8" />
+                    <div className="p-16 rounded-[4rem] bg-neutral-900/40 border border-white/5 relative overflow-hidden">
+                        <div className="grid md:grid-cols-5 gap-16 items-center">
+                            
+                            {/* Slider Side */}
+                            <div className="md:col-span-3 space-y-10 text-left">
+                                <div className="space-y-2">
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">
+                                        <span>Monthly Volume</span>
+                                        <span className="text-white text-xl">{operations.toLocaleString()}</span>
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="50000000"
+                                        step="10000"
+                                        value={operations}
+                                        onChange={(e) => setOperations(parseInt(e.target.value))}
+                                        className="w-full h-3 bg-neutral-800 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                                    />
+                                    <div className="flex justify-between text-[9px] font-black text-neutral-600 uppercase tracking-widest">
+                                        <span>0</span>
+                                        <span>10M</span>
+                                        <span>20M</span>
+                                        <span>30M</span>
+                                        <span>40M</span>
+                                        <span>50M+</span>
+                                    </div>
                                 </div>
-                                <div className="text-left">
-                                    <h2 className="text-3xl font-bold">Global Payouts</h2>
-                                    <p className="text-gray-500">How European founders scale www.supra-wall.com globally.</p>
+
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="p-6 rounded-3xl bg-white/5 border border-white/5 space-y-2">
+                                        <p className="text-[10px] font-black uppercase text-neutral-500 italic">Estimated Bill</p>
+                                        <p className="text-4xl font-black italic tracking-tighter">${Math.floor(cost).toLocaleString()}</p>
+                                    </div>
+                                    <div className="p-6 rounded-3xl bg-white/5 border border-white/5 space-y-2">
+                                        <p className="text-[10px] font-black uppercase text-neutral-500 italic">Evals / Month</p>
+                                        <p className="text-4xl font-black italic tracking-tighter">{operations.toLocaleString()}</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="max-w-none text-gray-400 space-y-6 text-left">
-                                <p className="text-lg text-white">
-                                    You can charge your customers in <span className="text-emerald-400 font-bold">USD</span> globally, but have Stripe automatically convert and pay you out in <span className="text-blue-400 font-bold">EUR</span>.
-                                </p>
-
-                                <div className="grid md:grid-cols-2 gap-8 my-10">
-                                    <div className="p-6 rounded-2xl bg-neutral-900/50 border border-neutral-800">
-                                        <h4 className="text-white font-bold mb-2">Presentment Currency</h4>
-                                        <p className="text-sm">What the customer sees and pays (e.g., $49 USD on your pricing page). Keep your pricing global with USD.</p>
+                            {/* Tiers Visual Side */}
+                            <div className="md:col-span-2 space-y-6">
+                                {[
+                                    { label: "0 – 10K", price: "Free" },
+                                    { label: "10K – 500K", price: "$0.002" },
+                                    { label: "500K – 2M", price: "$0.0015" },
+                                    { label: "2M – 10M", price: "$0.001" },
+                                    { label: "10M+", price: "$0.0005" }
+                                ].map((tier, i) => (
+                                    <div key={i} className="flex justify-between items-center p-4 rounded-2xl bg-neutral-900 border border-white/5 font-black uppercase text-[10px] tracking-widest group hover:border-emerald-500/30 transition-colors">
+                                        <span className="text-neutral-500 group-hover:text-white transition-colors">{tier.label}</span>
+                                        <span className="text-emerald-500 italic">{tier.price} <span className="text-[8px] opacity-40">/ eval</span></span>
                                     </div>
-                                    <div className="p-6 rounded-2xl bg-neutral-900/50 border border-neutral-800">
-                                        <h4 className="text-white font-bold mb-2">Settlement Currency</h4>
-                                        <p className="text-sm">The currency Stripe pays out to your bank account (e.g., EUR to your Revolut). Automatic at mid-market rates.</p>
-                                    </div>
-                                </div>
-
-                                <h3 className="text-xl font-bold text-white mt-8 mb-4">How to set this up in Stripe</h3>
-                                <ol className="list-decimal pl-5 space-y-4">
-                                    <li>Go to your <span className="text-white">Stripe Dashboard &gt; Settings &gt; Bank accounts</span>.</li>
-                                    <li>Ensure your <span className="text-emerald-500">EUR account (like Revolut)</span> is added.</li>
-                                    <li>If you have a USD bank account connected, <span className="text-red-400 underline decoration-red-500/50">delete it from Stripe entirely</span>.</li>
-                                    <li>Set your EUR account as the default payout account.</li>
-                                </ol>
-
-                                {/* Checklist Box */}
-                                <div className="mt-12 p-8 rounded-3xl bg-neutral-900 border border-neutral-800">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                                        <h4 className="text-lg font-bold text-white">The "Stripe Dashboard" Checklist</h4>
-                                    </div>
-                                    <ul className="space-y-6 text-sm">
-                                        <li className="flex gap-4">
-                                            <div className="w-5 h-5 rounded border border-neutral-700 shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-bold text-gray-200">Log in to Stripe</p>
-                                                <p className="text-gray-500 italic">Go to dashboard.stripe.com and log in as the account owner.</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex gap-4">
-                                            <div className="w-5 h-5 rounded border border-neutral-700 shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-bold text-gray-200">Navigate to Bank Settings</p>
-                                                <p className="text-gray-500 italic">Click Settings gear &gt; Bank accounts and scheduling.</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex gap-4">
-                                            <div className="w-5 h-5 rounded border border-neutral-700 shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-bold text-gray-200">Add EUR Account</p>
-                                                <p className="text-gray-500 italic">Add your Revolut IBAN and set currency to EUR.</p>
-                                            </div>
-                                        </li>
-                                        <li className="flex gap-4">
-                                            <div className="w-5 h-5 rounded border border-neutral-700 shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-bold text-gray-200 text-red-400">Delete the USD Account (Crucial)</p>
-                                                <p className="text-gray-500 italic">Remove any Wise or local USD accounts. This forces Stripe to convert all incoming USD to EUR.</p>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-
-                                {/* Vercel Troubleshooting Section */}
-                                <div className="mt-16 border-t border-neutral-800 pt-12 text-left">
-                                    <h3 className="text-xl font-bold text-white mb-4">Troubleshooting: Cron Job not appearing?</h3>
-                                    <p className="text-gray-500 mb-8">
-                                        If you don't see the Cron Job in your Vercel Dashboard, it means Vercel didn't recognize the <code className="text-blue-400">vercel.json</code> file during your last deployment. Follow these steps to fix it:
-                                    </p>
-
-                                    <div className="space-y-10">
-                                        <div className="relative pl-8 border-l border-neutral-800">
-                                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-neutral-900 border-2 border-blue-500" />
-                                            <h4 className="text-lg font-bold text-gray-200 mb-2">1. Check File Location</h4>
-                                            <p className="text-sm text-gray-400 leading-relaxed">
-                                                Ensure <code className="bg-neutral-900 px-2 py-1 rounded text-blue-400">vercel.json</code> is in the <strong>absolute root directory</strong> of your project (same folder as your <code className="text-gray-300">package.json</code> and <code className="text-gray-300">.git</code> folder).
-                                            </p>
-                                        </div>
-
-                                        <div className="relative pl-8 border-l border-neutral-800">
-                                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-neutral-900 border-2 border-blue-500" />
-                                            <h4 className="text-lg font-bold text-gray-200 mb-2">2. Trigger a New Build</h4>
-                                            <p className="text-sm text-gray-400 leading-relaxed mb-4">
-                                                Vercel only parses the configuration during a fresh deployment. Push a new commit to trigger the build:
-                                            </p>
-                                            <div className="bg-neutral-900 p-4 rounded-xl font-mono text-xs text-blue-400 space-y-1 border border-neutral-800">
-                                                <p>git add vercel.json</p>
-                                                <p>git commit -m "Add cron job for Stripe"</p>
-                                                <p>git push</p>
-                                            </div>
-                                        </div>
-
-                                        <div className="relative pl-8 border-l border-neutral-800">
-                                            <div className="absolute left-[-9px] top-0 w-4 h-4 rounded-full bg-neutral-900 border-2 border-emerald-500" />
-                                            <h4 className="text-lg font-bold text-gray-200 mb-2">3. Verify in Vercel Dashboard</h4>
-                                            <ul className="text-sm text-gray-400 space-y-2 list-disc pl-4">
-                                                <li>Go to your project in Vercel.</li>
-                                                <li>Click <span className="text-white">Settings</span> (gear icon).</li>
-                                                <li>Click <span className="text-white font-bold">Cron Jobs</span> in the sidebar.</li>
-                                                <li>You should now see <code className="text-emerald-400">/api/stripe/report-usage</code> with a "Run" button.</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="mt-16 p-6 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                                    <h4 className="text-emerald-500 font-bold mb-2 italic">The Trade-off: 1% Conversion Fee</h4>
-                                    <p className="text-sm leading-relaxed">
-                                        While Stripe charges a 1% fee for this automatic conversion, most European founders find it essential. It removes the headcount and overhead needed to manage international wire thresholds, SWIFT wire problems, and complex USD accounting.
-                                    </p>
-                                </div>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* 💼 Archetype Table */}
+                <div className="max-w-4xl mx-auto mb-40 space-y-12">
+                     <h3 className="text-3xl font-black italic uppercase tracking-tighter text-center">Projected Costs</h3>
+                     <div className="overflow-x-auto rounded-[3rem] border border-white/5 bg-neutral-900/20">
+                        <table className="w-full text-left border-separate border-spacing-0">
+                            <thead>
+                                <tr>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">Organization</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">Avg. Agents</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.4em] text-neutral-500 italic">Evals / Mo</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.4em] text-emerald-500 italic">Est. Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {archetypes.map((row, i) => (
+                                    <tr key={i} className="group hover:bg-white/5 transition-colors">
+                                        <td className="p-8 border-t border-white/5 font-black uppercase italic tracking-tighter">{row.name}</td>
+                                        <td className="p-8 border-t border-white/5 text-neutral-400 font-bold">{row.agents}</td>
+                                        <td className="p-8 border-t border-white/5 text-neutral-400 font-bold">{row.evals}</td>
+                                        <td className="p-8 border-t border-white/5 text-white font-black italic">{row.cost} <span className="text-[10px] text-neutral-500 font-bold tracking-widest font-sans opacity-50">/MONTH</span></td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                     </div>
+                </div>
+
+                {/* 🏢 Enterprise Section */}
+                <div className="max-w-4xl mx-auto p-16 rounded-[4rem] bg-gradient-to-br from-neutral-900 to-black border-2 border-white/5 relative overflow-hidden group">
+                     <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:scale-110 transition-transform">
+                        <Globe className="w-56 h-56" />
+                     </div>
+                     
+                     <div className="space-y-8 relative z-10">
+                        <div className="p-4 bg-emerald-500/10 rounded-3xl w-fit text-emerald-500">
+                            <Layers className="w-10 h-10" />
+                        </div>
+                        <div className="space-y-4">
+                            <h2 className="text-4xl font-black italic uppercase tracking-tighter">Enterprise Operational Layer</h2>
+                            <p className="text-gray-400 font-medium italic leading-relaxed max-w-2xl">
+                                For organizations with large-scale deployment and procurement requirements. Same product, different service level.
+                            </p>
+                        </div>
+                        
+                        <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 italic">
+                            {["Annual Contracts & POs", "Single Sign-On (SAML/SSO)", "Sub-10ms SLA Guarantee", "Self-Hosted / Air-Gapped", "SIEM Export (Datadog/Splunk)", "Dedicated Support & CSM"].map((item, i) => (
+                                <div key={i} className="flex items-center gap-3">
+                                    <Check className="w-4 h-4 text-emerald-500" />
+                                    {item}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="pt-6">
+                            <button className="px-10 py-5 rounded-2xl bg-white text-black font-black uppercase tracking-tighter text-lg hover:bg-emerald-500 hover:text-white transition-all transform hover:translate-x-2">
+                                Talk to Enterprise →
+                            </button>
+                        </div>
+                     </div>
+                </div>
+
             </div>
         </div>
     );

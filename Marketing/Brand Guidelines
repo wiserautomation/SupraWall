@@ -1,0 +1,72 @@
+# SupraWall Brand Guidelines
+
+![SupraWall Brand Mockup](/Users/alejandropeghin/.gemini/antigravity/brain/db3fc181-c338-4317-a907-f2c994d0a861/suprawall_brand_mockup_1774082221565.png)
+
+## 🎯 Brand Mission
+To provide **Deterministic Security** for the agentic future. We ensure that autonomous systems operate within hard-coded safety boundaries, moving governance from the "probabilistic prompt" to the "SDK-level binary intercept."
+
+---
+
+## 🎨 Color Palette
+Our aesthetic is **Technical Noir** — a high-contrast dark mode representing the "Black Box" of AI, illuminated by the "Security Interception" of SupraWall.
+
+| Category | Hex/Var | Usage | Meaning |
+| :--- | :--- | :--- | :--- |
+| **Pillar: Safety** | `#10b981` (Emerald) | Developers, Success, ALLOW | Correctness, Growth, Positive Action |
+| **Pillar: Budget** | `#f59e0b` (Amber) | Case Studies, Cost Control | High Value, High Intent, Warning |
+| **Pillar: Threat** | `#e11d48` (Rose) | Injection Shield, BLOCK | Danger, Blocking, Immediate Risk |
+| **Pillar: Integrity** | `#3b82f6` (Blue) | Compliance, EU AI Act, Legal | Rules, Structure, Verification |
+| **Pillar: Privacy** | `#a855f7` (Purple) | GDPR, PII Shield | Secrecy, Protection, Encryption |
+| **Pillar: Evidence** | `#22d3ee` (Cyan) | Audit Trails, Reporting | Clarity, Information, Transparency |
+
+---
+
+## ✍️ Brand Voice & Tone
+We speak **Engineer-to-Engineer**. We are direct, urgent, and evidence-based.
+
+- **Direct**: "Your AI Agent Will Go Rogue. SupraWall Makes Sure It Can't." (Not "AI agents might have issues").
+- **Deterministic**: We use words like *Intercept*, *Enforce*, *Sovereignty*, *Evidence*, *Signed*.
+- **Problem-First**: Always lead with the threat (Prompt Injection, 404 Hubs, Rogue Transfers), then provide the one-line fix.
+- **No Fluff**: We avoid marketing-speak. If we can't show it in 10 lines of Python or a deterministic audit log, it doesn't exist.
+
+---
+
+## ⌨️ Typography
+- **Headlines**: Semi-condensed, font-black (900), tracking-tighter. Italicized for emphasis.
+- **Subheadlines**: All-caps, tracking-widest, bold. Used for Tag Badges.
+- **Body**: High-readability sans-serif (Inter/Geist). Italicized for secondary "technical insights."
+- **Code**: Monospace (Fira Code/JetBrains Mono). Always syntax-highlighted.
+
+---
+
+## 👥 Ideal Customer Profiles (ICP)
+
+### 1. The Autonomous Developer (Primary)
+- **Pain**: "I'm shipping a CrewAI agent that has write access to my database. I'm terrified it will `rm -rf` my production environment."
+- **Hook**: "One line of code. Local interception. No API proxy latency."
+- **Color**: Emerald (Safety).
+
+### 2. The AI Compliance Officer (High Value)
+- **Pain**: "The EU AI Act is coming. We need Article 12/14 evidence for our agents, but we have no way to audit what the LLM 'decided' to do."
+- **Hook**: "Signed PDF evidence logs. Article 9-14 mapped natively. Regulator-ready."
+- **Color**: Blue (Integrity).
+
+### 3. The Enterprise CTO (Sovereign)
+- **Pain**: "We can't send our customer PII to another 'AI Firewall' cloud provider. We need security that lives in our VPC."
+- **Hook**: "Private Cloud. Self-hosted Node. Zero-knowledge secret injection."
+- **Color**: Purple (Privacy) / Blue (Enterprise).
+
+---
+
+## 🏛️ Content Architecture
+Every page/resource must follow the **SupraWall Formula**:
+1. **Specific Threat**: "$100k wire transfer exfiltrated via prompt injection."
+2. **Visual Comparison**: Leaky Code vs. Shielded SDK.
+3. **The One-Line Fix**: `secure_agent(my_agent, { ... })`
+4. **The Proof**: "Audit Log: BLOCK. Reason: Rule A-14 Violation."
+
+---
+
+## 🔄 Updating Guidelines
+- **Automatic Sync**: Any new `page.tsx` in `src/app` must be automatically reflected in `llms.txt`, `llms-full.txt`, and the dynamic `sitemap.xml`.
+- **Internal Linking**: No page should exist as an "island." Every vertical must link back to the Persona hubs and the Feature pillars.

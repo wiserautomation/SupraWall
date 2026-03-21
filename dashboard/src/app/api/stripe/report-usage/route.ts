@@ -27,9 +27,9 @@ async function handleUsageReport(req: Request) {
 
             if (!customerId) continue;
 
-            // Only bill operations above the 100 000 free-tier ceiling
-            const totalBillable = Math.max(0, operationsThisMonth - 100_000);
-            const alreadyReportedBillable = Math.max(0, lastReportedCount - 100_000);
+            // Only bill operations above the 10 000 free-tier ceiling
+            const totalBillable = Math.max(0, operationsThisMonth - 10_000);
+            const alreadyReportedBillable = Math.max(0, lastReportedCount - 10_000);
             const delta = totalBillable - alreadyReportedBillable;
 
             if (delta > 0) {

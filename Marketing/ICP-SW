@@ -1,0 +1,348 @@
+# SUPRAWALL — Ideal Customer Profiles & Story Architecture
+
+## Who Buys, Why They Buy, and the Story That Makes Them Buy
+
+---
+
+## Part 1: The Three Buyers
+
+Suprawall is bought by three different people for three different reasons. They exist inside the same organization but operate on different timelines, speak different languages, and fear different outcomes.
+
+---
+
+### Buyer 1: The Developer (The Builder)
+
+**Title:** Senior Software Engineer, AI/ML Engineer, Backend Developer, "The person who writes `create_agent()`"
+
+**Company size:** Any — from solo hacker to 10,000-person enterprise
+
+**Age:** 25–40
+
+**Where they live online:** GitHub, Hacker News, DEV Community, Discord servers, X/Twitter, LangChain Forum, Reddit (r/MachineLearning, r/LangChain), Stack Overflow
+
+**What they're building:** Production AI agents using LangChain, CrewAI, AutoGen, Vercel AI SDK, or raw OpenAI/Anthropic APIs. These agents call external tools — databases, APIs, email services, payment processors, file systems.
+
+**Their daily reality:**
+- Shipping fast, iterating on agent architectures
+- Debugging flaky LLM outputs and unpredictable tool calls
+- Dealing with environment variables scattered across .env files
+- No security review process for agent tool access
+- Vaguely aware that "we should probably secure this" but deprioritizing it for features
+
+**FEARS:**
+
+1. **The 3AM incident.** Their agent goes off-script overnight and they wake up to a $4,000 OpenAI bill, a deleted database, or worse. This isn't hypothetical — every developer in the LangChain ecosystem has heard these stories.
+
+2. **Credential theft.** They know their API keys are in environment variables. They know prompt injection is real. They haven't done anything about it because there hasn't been an easy fix. The cognitive dissonance is uncomfortable.
+
+3. **Being responsible for a breach.** If their agent leaks customer data or API keys, it's their code, their deploy, their problem. Even in a company, the developer who shipped the insecure agent gets the blame.
+
+4. **Complexity.** They don't want to learn a new framework, rewrite their agent architecture, or add 200 lines of security boilerplate. If securing their agent requires more than 5 minutes, they'll do it "next sprint" (which means never).
+
+**DESIRES:**
+
+1. **Ship fast AND be secure.** They want security that doesn't slow them down. The dream: one import, one function wrapper, and everything is handled.
+
+2. **Look competent.** When their CTO asks "is this secure?" they want to say "yes, it runs through Suprawall" and have that mean something.
+
+3. **Not think about it.** The best security is invisible security. Once they integrate Suprawall, they want to forget it exists — until they need the dashboard or a compliance report.
+
+4. **Community validation.** They want to see other developers using it. GitHub stars, HN upvotes, framework official mentions — these are the trust signals that matter.
+
+**MOTIVATIONS TO BUY:**
+
+- Hit the free tier limit (evaluation volume exceeded in production)
+- Got asked to "secure the agents" by their manager
+- Had a near-miss incident (runaway cost, unauthorized action, data leak)
+- Read a horror story and thought "that could be us"
+
+**PURCHASE BEHAVIOR:**
+- Self-serve. Credit card. No sales call.
+- Will pay $29-99/month without asking permission
+- Over $100/month, needs manager approval
+- Evaluates in 30 minutes or less — if it doesn't work immediately, they leave
+
+**CONVERSION TRIGGERS:**
+- Working code example they can copy-paste
+- 5-minute quickstart that shows real results
+- The "secure_agent()" one-liner — if they can add it to their existing code with one import and one function call, they'll do it today
+
+---
+
+### Buyer 2: The CTO / Engineering Manager (The Protector)
+
+**Title:** CTO, VP of Engineering, Head of AI/ML, Engineering Director, "The person who approves the architecture"
+
+**Company size:** 50–5,000 employees (mid-market to upper mid-market)
+
+**Age:** 32–50
+
+**Where they live online:** LinkedIn, executive Slack groups, CTO newsletters (The Pragmatic Engineer, ByteByteGo), Hacker News (reading, not posting), vendor comparison sites (G2, PeerSpot), direct referrals from other CTOs
+
+**Their daily reality:**
+- Managing 3-20 engineers building with AI agents
+- Balancing speed of deployment with risk management
+- Getting pressure from the board/CEO to "use AI" and pressure from security/legal to "be careful with AI"
+- Evaluating 5+ AI tools per quarter, tired of vendor pitches
+- Personally liable (or feeling liable) if an AI incident makes the news
+
+**FEARS:**
+
+1. **The board-level incident.** An AI agent in their org does something that makes the news — leaks data, makes a discriminatory decision, costs the company millions. Their job is on the line.
+
+2. **Regulatory surprise.** The EU AI Act hits in August 2026. They haven't thought about it. Their legal team just sent an email asking "are we compliant?" and they have no answer. The fine is 7% of global revenue.
+
+3. **Shadow AI agents.** Developers on their team are shipping agents to production without security review. They don't have visibility into what these agents can do, what tools they access, or what data they touch.
+
+4. **Vendor sprawl.** They already have Datadog for monitoring, Snyk for code security, Vanta for SOC2 compliance. Now they need AI agent security too? Another tool, another vendor, another invoice, another integration project.
+
+5. **Looking uninformed.** When the board asks "what's our AI governance strategy?" they need a credible answer, not "we're working on it."
+
+**DESIRES:**
+
+1. **A single dashboard.** One place where they can see: what agents are running, what they're doing, what's been blocked, what's been approved, what the compliance posture is. Suprawall's dashboard IS this.
+
+2. **Risk reduction they can demonstrate.** Not just "we have security" but "here's a report showing 47 dangerous operations were blocked this week, 12 required human approval, and zero secrets were exposed."
+
+3. **Minimal engineering overhead.** They can't dedicate a team to building agent security infrastructure. One SDK integration across all agents, managed centrally — that's the maximum effort they'll approve.
+
+4. **Compliance readiness without a separate project.** If the compliance report is generated from the same tool that does security, they don't need a separate compliance project. Two birds, one stone.
+
+**MOTIVATIONS TO BUY:**
+
+- Board or legal team asks about AI governance
+- EU AI Act deadline enters their planning horizon
+- A near-miss or actual incident with an AI agent
+- Peer CTO mentions Suprawall at a dinner or event
+- Security audit flags AI agents as an uncontrolled risk
+
+**PURCHASE BEHAVIOR:**
+- Can approve $500-5,000/month independently
+- Over $5,000/month needs CFO/procurement sign-off
+- Wants to see the dashboard before buying (product-led, not sales-led)
+- Will do a 2-week proof of concept with 1-2 agents before rolling out broadly
+- Needs a pricing page, a security whitepaper, and a compliance mapping — not a sales deck
+
+**CONVERSION TRIGGERS:**
+- Dashboard screenshot showing real agent activity (threat blocked, approval routed)
+- Compliance report PDF mapped to EU AI Act articles
+- Comparison table showing Suprawall replaces 6 separate tools
+- Peer recommendation from another CTO
+
+---
+
+### Buyer 3: The Compliance Officer / CISO (The Auditor)
+
+**Title:** Chief Information Security Officer, Head of Compliance, DPO (Data Protection Officer), VP of Risk, GRC Manager, "The person who has to prove it to the regulator"
+
+**Company size:** 200–50,000+ employees (enterprise)
+
+**Industry:** Financial services, healthcare, insurance, legal tech, HR tech, any EU-regulated industry
+
+**Age:** 35–55
+
+**Where they live online:** ISACA forums, IAPP (International Association of Privacy Professionals), LinkedIn (compliance-specific groups), Gartner webinars, GRC vendor comparison reports, direct outreach from consultancies
+
+**Their daily reality:**
+- Managing compliance across dozens of frameworks (GDPR, SOC2, ISO 27001, and now EU AI Act)
+- Translating regulatory text into technical requirements and chasing engineering teams to implement them
+- Preparing for audits — gathering evidence, writing reports, documenting controls
+- Feeling perpetually behind as the regulatory landscape expands faster than their team can adapt
+- Specifically: the EU AI Act is a new regulation they have to learn, implement, and prove compliance with by August 2026. Most of them are still in the "understanding what it requires" phase.
+
+**FEARS:**
+
+1. **Personal liability.** In some jurisdictions, compliance officers can be personally liable for regulatory failures. The EU AI Act fines go up to €35M or 7% of global annual turnover. This is not abstract to them — it's existential.
+
+2. **Not being able to prove compliance.** They might have all the right controls in place, but if they can't document and evidence them in a format the regulator expects, it doesn't matter. "We secure our agents" is worthless without a signed, timestamped audit trail.
+
+3. **Engineering team not cooperating.** They need developers to implement controls, but developers see compliance as overhead. If the compliance tooling requires significant developer effort, it won't get prioritized.
+
+4. **The gap between regulation and reality.** The EU AI Act says "human oversight." What does that mean technically? The regulation is principles-based, not prescriptive. They need a tool that translates principles into provable technical controls.
+
+5. **Audit surprise.** A regulator or external auditor asks for something they didn't anticipate. With traditional compliance, you prepare for specific questions. With a new regulation like the EU AI Act, nobody knows exactly what auditors will ask.
+
+**DESIRES:**
+
+1. **A compliance report they can hand to an auditor.** Not a dashboard. Not a log viewer. A PDF document with their organization name, the reporting period, specific EU AI Act articles mapped to specific controls, and evidence of those controls in action.
+
+2. **Compliance that doesn't depend on developer cooperation.** Suprawall's architecture is ideal for this: the developer adds one line of code, and everything the compliance officer needs (audit trail, approval workflows, policy documentation) is generated automatically.
+
+3. **Article-by-article coverage mapping.** "Article 9 — here's our risk management system (DENY policies). Article 12 — here's our automatic record-keeping (audit logs). Article 14 — here's our human oversight mechanism (REQUIRE_APPROVAL)." Specific, not vague.
+
+4. **Continuous compliance, not point-in-time.** Traditional compliance is a yearly audit. Modern compliance is a live dashboard. The compliance officer wants to check the dashboard any time and see green checkmarks.
+
+**MOTIVATIONS TO BUY:**
+
+- EU AI Act compliance project kicks off internally
+- External auditor or consultant recommends "AI-specific controls"
+- Board-level directive to establish AI governance framework
+- Peer at another company mentions using Suprawall for their EU AI Act compliance
+- Internal AI incident that triggers a compliance review
+
+**PURCHASE BEHAVIOR:**
+- Evaluates through formal procurement process (RFP, security review, legal review)
+- Annual contracts preferred ($24,000-60,000/year range)
+- Needs SOC2 certification, DPA, security questionnaire from Suprawall
+- Decision cycle: 30-90 days from first contact to signed contract
+- Will not use a free tier — needs enterprise licensing from day one
+- Wants a named account contact, even if self-serve is available
+
+**CONVERSION TRIGGERS:**
+- Sample compliance report PDF showing EU AI Act article mapping
+- Live compliance dashboard demo with their specific articles
+- Consultancy or auditor recommending Suprawall
+- Case study from a company in their industry
+- Pricing page that's clear enough to include in their procurement request
+
+---
+
+## Part 2: The Story Architecture
+
+Every great brand tells one story that all three buyers can see themselves in. Here's Suprawall's.
+
+### The Narrative Arc
+
+**Act 1: The Promise (Setup)**
+
+AI agents are the most powerful software ever created. They can research, decide, and act — calling APIs, querying databases, sending emails, processing payments — autonomously. Businesses are deploying them to do the work of entire teams.
+
+*The implicit promise: AI agents will make your business faster, cheaper, and more capable.*
+
+**Act 2: The Betrayal (Conflict)**
+
+But these agents operate on borrowed trust. They have access to everything — your API keys, your customer data, your production systems — and they execute whatever the LLM decides. No oversight. No audit trail. No kill switch.
+
+The LLM can be tricked by a prompt injection. The agent can enter an infinite loop. A hallucination can trigger a dangerous action. A credential in an environment variable can be exfiltrated. Nobody is watching.
+
+And now, the EU AI Act makes this not just dangerous but illegal. By August 2026, every AI system in the EU must have documented human oversight, risk controls, and audit trails. The penalty is 7% of global revenue.
+
+*The betrayal: the thing that was supposed to make you faster is now your biggest risk.*
+
+**Act 3: The Weapon (Resolution)**
+
+Suprawall sits between your agents and the real world. Every tool call is intercepted, evaluated, and enforced — ALLOW, DENY, or REQUIRE_APPROVAL — in under 10ms. Secrets are injected just-in-time and scrubbed from responses. PII is detected and redacted. Costs are capped. Loops are killed. Every decision is logged with full context, exportable for auditors.
+
+One line of code. All six capabilities. Your agents stay powerful. They just can't go rogue.
+
+*The resolution: you don't have to choose between power and safety.*
+
+---
+
+### The Characters
+
+**The Hero: The Builder**
+
+The developer, CTO, or compliance officer who takes responsibility for deploying AI agents safely. They don't stop building — they build responsibly. Suprawall is their weapon, not their constraint.
+
+"Heroes don't stop using powerful tools. They use them with discipline."
+
+**The Villain: Uncontrolled Autonomy**
+
+The villain is NOT AI. The villain is NOT regulation. The villain is **the absence of a trust layer** between AI agents and the real world.
+
+The villain manifests as:
+- The prompt injection that steals your credentials
+- The infinite loop that burns $4,000 overnight
+- The hallucination that sends unauthorized emails
+- The auditor who asks for evidence you don't have
+- The environment variable that exposes your Stripe key
+
+The villain is not malice — it's negligence. It's the gap between "we deployed agents" and "we governed agents."
+
+**The Guide: Suprawall**
+
+Suprawall is the guide — the weapon the hero picks up. Not the hero itself. The customer is always the hero. Suprawall enables their success.
+
+Suprawall speaks with authority ("we intercept every tool call deterministically") but serves the hero ("so you can ship agents with confidence").
+
+---
+
+### The Story in Different Contexts
+
+**On the homepage (30 seconds):**
+Your AI agents are powerful. But they can read your passwords, burn your budget, and leak your data. One line of code fixes that. Suprawall intercepts every tool call. ALLOW, DENY, or REQUIRE_APPROVAL. Secrets protected. Costs capped. Compliance documented. Start free.
+
+**In a blog post (5 minutes):**
+[Specific incident story] → [Technical explanation of how it happened] → [How Suprawall would have prevented it] → [Code showing integration] → [CTA: start free]
+
+**In a LinkedIn post (30 seconds):**
+[Hook: "Last week, a fintech agent leaked its Stripe key..."] → [The consequence] → [The one-line fix] → [CTA: link]
+
+**In a cold email (15 seconds):**
+[Personal observation about their company] → [Specific question about their agent security posture] → [Offer: free, 10 minutes, no sales call]
+
+**In an investor pitch (2 minutes):**
+AI agents are a $100B+ market by 2028. Every agent needs a security layer. Nobody owns it. We're the Stripe of agent security — same product for a solo dev and a Fortune 500. Usage-based pricing. Near-zero marginal cost. EU AI Act mandate creates a non-negotiable compliance deadline in August 2026. Land with developers, expand to enterprise. [Traction metrics].
+
+---
+
+## Part 3: The Emotional Journey Map
+
+Each buyer goes through a predictable emotional journey from "unaware" to "champion." Understanding this journey tells you what content to create for each stage.
+
+### Developer Journey
+
+| Stage | Emotion | Trigger | Content They Need |
+|-------|---------|---------|-------------------|
+| Unaware | Confident / naive | Building agents, not thinking about security | Horror story blog post ("$4,000 overnight," "Stripe key stolen") |
+| Problem-aware | Uncomfortable | Read a horror story, had a near-miss | "How to secure your LangChain agent" tutorial |
+| Solution-aware | Researching | Googling "AI agent security," comparing tools | Comparison page (Suprawall vs Lakera vs Portkey) |
+| Product-aware | Evaluating | Found Suprawall, reading docs | Quickstart guide, code examples, 5-minute demo |
+| Activated | Relieved | Integrated Suprawall, saw first DENY in dashboard | Nothing — they're happy. Leave them alone. |
+| Champion | Proud | Showing colleagues, recommending in forums | Shareable metrics ("47 operations blocked this week"), GitHub badge |
+
+### CTO Journey
+
+| Stage | Emotion | Trigger | Content They Need |
+|-------|---------|---------|-------------------|
+| Unaware | Overconfident | "Our agents are fine" | Industry report on AI agent incidents |
+| Problem-aware | Anxious | Board asks about AI governance, legal flags EU AI Act | "CTO's guide to AI agent governance in 2026" |
+| Solution-aware | Overwhelmed | Seeing 6+ tools needed (Lakera + Portkey + Vault + ...) | "Replace 6 tools with 1 line of code" comparison |
+| Product-aware | Cautiously optimistic | Developer on team already using Suprawall free tier | Dashboard demo, compliance report sample |
+| Activated | Relieved | Rolled out to all agents, sees unified dashboard | Monthly executive summary of operations blocked/approved |
+| Champion | Empowered | Presenting AI governance at board meeting using Suprawall data | Board-ready compliance report, "AI governance with Suprawall" case study |
+
+### Compliance Officer Journey
+
+| Stage | Emotion | Trigger | Content They Need |
+|-------|---------|---------|-------------------|
+| Unaware | Confused | "Wait, we have AI agents? What do they do?" | EU AI Act explainer for non-technical leaders |
+| Problem-aware | Panicked | August 2026 deadline on the calendar, no plan | "EU AI Act compliance checklist for AI agents" |
+| Solution-aware | Skeptical | "Can a software tool really satisfy Article 12?" | Article-by-article compliance mapping document |
+| Product-aware | Hopeful | Sees the compliance dashboard and PDF report | Sample PDF compliance report with their industry context |
+| Activated | Confident | Compliance report generated, controls documented | Ongoing compliance monitoring dashboard |
+| Champion | Strategic | AI governance becomes a competitive advantage | "How [company] turned EU AI Act compliance into a customer trust signal" |
+
+---
+
+## Part 4: Messaging Don'ts (The Anti-Patterns)
+
+### Don't lead with compliance
+Compliance is an outcome, not the product. Leading with compliance limits you to organizations that already know they have a compliance problem. Leading with security + operations captures everyone building agents, regardless of regulatory awareness.
+
+**Wrong:** "EU AI Act compliance for AI agents"
+**Right:** "Your AI agents are powerful. Are they safe?"
+
+### Don't compare yourself to LLM safety tools
+Lakera, NeMo Guardrails, and LLM Guard operate at the model layer — preventing prompt injection and jailbreaks. Suprawall operates at the execution layer — governing what agents can DO. These are different things. Don't position against them; position alongside them.
+
+**Wrong:** "Better than Lakera at prompt injection detection"
+**Right:** "Lakera protects the model. Suprawall protects the world the model touches."
+
+### Don't try to sell all six features at once
+Each buyer cares about different features. The developer cares about the Vault and budget controls. The CTO cares about the dashboard and approval workflows. The compliance officer cares about the audit trail and PDF report. Let each buyer discover the features relevant to them.
+
+**Wrong:** Homepage listing all 6 features with equal emphasis to a generic audience
+**Right:** Homepage showing the universal hook ("one line of code, every tool call governed") then letting visitors self-select into their pain point
+
+### Don't use fear without providing the fix
+Your current messaging is strong on threats (which is good) but always pair the threat with the solution in the same breath. A reader who feels fear without a clear path to resolution will close the tab, not sign up.
+
+**Wrong:** "94% of system prompts are bypassable" (and then moving to a different section)
+**Right:** "94% of system prompts are bypassable. Suprawall doesn't rely on prompts — it enforces policies deterministically at the SDK level."
+
+### Don't say "trusted by" without proof
+Your current homepage says "Trusted by AI engineers shipping LangChain, CrewAI, AutoGen, and Vercel AI to production." If you can't show logos, names, or numbers — remove this line. Unverified social proof damages credibility more than no social proof.
+
+Replace with: "Built for LangChain, CrewAI, AutoGen, and Vercel AI agents" — this describes compatibility, not trust, and doesn't require proof.

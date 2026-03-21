@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "langchain-suprawall"
+version = "0.1.0"
+description = "Deterministic security layer for LangChain agents powered by SupraWall."
+authors = ["SupraWall Engineering <engineering@supra-wall.com>"]
+readme = "README.md"
+packages = [{include = "langchain_suprawall", from = "src"}]
+license = "MIT"
+repository = "https://github.com/suprawall/suprawall"
+homepage = "https://www.supra-wall.com"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+langchain-core = "^0.1.0"
+requests = "^2.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

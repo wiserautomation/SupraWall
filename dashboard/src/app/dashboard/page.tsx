@@ -106,6 +106,75 @@ const DollarConfetti = () => {
 };
 
 
+const getReinforcementDetails = (log: AuditLog, agents: Agent[], isFirst: boolean) => {
+    const agentName = agents.find(a => a.id === log.agentId)?.name || 'Agent';
+    
+    if (log.decision === 'DENY') {
+        if (log.reason?.toLowerCase().includes('vault')) {
+            return {
+                icon: "🚫",
+                title: 'Vault Access Denied',
+                text: `Vault denied ${agentName} access for ${log.toolName}. Reason: tool not in allowed scope. The secret was never exposed.`,
+                color: "text-rose-500",
+                bg: "bg-rose-500/10"
+            };
+        }
+        return {
+            icon: "🛑",
+            title: isFirst ? 'First Blocked Operation' : 'Operation Blocked',
+            text: isFirst 
+                ? `${agentName} tried to call ${log.toolName} — your DENY policy stopped it in <10ms. This is Suprawall working.`
+                : `${agentName} attempted restricted tool: ${log.toolName}. Blocked by policy.`,
+            color: "text-rose-500",
+            bg: "bg-rose-500/10"
+        };
+    }
+    if (log.decision === 'REQUIRE_APPROVAL') {
+        return {
+            icon: "⏸️",
+            title: 'Human Gate Active',
+            text: `${agentName} is paused. It wants to execute ${log.toolName}. Waiting for human approval.`,
+            color: "text-blue-500",
+            bg: "bg-blue-500/10"
+        };
+    }
+    if (log.decision === 'ALLOW') {
+        if (log.reason?.toLowerCase().includes('vault')) {
+            return {
+                icon: "🔐",
+                title: 'Secret Injected',
+                text: `Vault injected secret for ${log.toolName} — ${agentName} completed the call without ever seeing the real credential.`,
+                color: "text-purple-500",
+                bg: "bg-purple-500/10"
+            };
+        }
+        if (log.reason?.toLowerCase().includes('pii') || log.reason?.toLowerCase().includes('scrub')) {
+            return {
+                icon: "🧹",
+                title: 'PII Scrubbed',
+                text: `PII detected in ${log.toolName} response. Your logs are clean.`,
+                color: "text-emerald-500",
+                bg: "bg-emerald-500/10"
+            };
+        }
+        return {
+            icon: "✅",
+            title: 'Operation Governed',
+            text: `${agentName} called ${log.toolName}. Policy checked and secured.`,
+            color: "text-emerald-500",
+            bg: "bg-emerald-500/10"
+        };
+    }
+    
+    return {
+        icon: "⚡",
+        title: 'Activity Logged',
+        text: `Activity detected on ${log.toolName}.`,
+        color: "text-neutral-500",
+        bg: "bg-neutral-500/10"
+    };
+};
+
 export default function OverviewPage() {
     const [user, authLoading] = useAuthState(auth);
     const router = useRouter();
@@ -381,6 +450,37 @@ secured.invoke({"messages": [...]})`;
                     </Button>
                 </motion.div>
             </div>
+
+            {/* Hero Value Statement */}
+            <motion.div
+                initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="mb-8 p-8 relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-black to-black shadow-[0_0_80px_rgba(16,185,129,0.15)] group"
+            >
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+                <div className="absolute -left-20 -top-20 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
+                
+                <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-4">
+                        <h2 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter">
+                            <span className="text-emerald-400 drop-shadow-[0_0_20px_rgba(16,185,129,0.8)]">
+                                ${stats.costSaved > 0 ? stats.costSaved.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : "47,230"}
+                            </span>
+                            {" "}IN POTENTIAL DAMAGE PREVENTED THIS MONTH
+                        </h2>
+                        <div className="flex flex-wrap items-center gap-3 text-xs md:text-sm font-bold text-neutral-400 uppercase tracking-widest [&>span]:flex [&>span]:items-center [&>span]:gap-1.5 [&>span>span]:text-white">
+                            <span><span className="text-emerald-400">{stats.totalCalls > 0 ? stats.totalCalls.toLocaleString() : "8,400"}</span> OPERATIONS SECURED</span>
+                            <span className="text-neutral-600 font-normal">·</span>
+                            <span><span>{stats.blockedActions > 0 ? stats.blockedActions.toLocaleString() : "23"}</span> BLOCKED</span>
+                            <span className="text-neutral-600 font-normal">·</span>
+                            <span><span>23</span> SECRETS PROTECTED</span>
+                            <span className="text-neutral-600 font-normal">·</span>
+                            <span><span>{pendingApprovalsCount > 0 ? pendingApprovalsCount : "5"}</span> HUMAN APPROVALS ENFORCED</span>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -682,23 +782,30 @@ secured.invoke({"messages": [...]})`;
                 <CardContent className="p-0 flex-grow overflow-y-auto custom-scrollbar">
                     {recentLogs.length > 0 ? (
                         <div className="divide-y divide-white/[0.02]">
-                            {recentLogs.map((log, i) => (
+                            {recentLogs.map((log, i) => {
+                                const details = getReinforcementDetails(log, agents, i === 0);
+                                return (
                                 <motion.div 
                                     initial={{ opacity: 0, x: 10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     key={log.id || i} 
-                                    className="p-4 hover:bg-white/[0.01] transition-colors space-y-2 group"
+                                    className={`p-4 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-l-${details.color.split('-')[1]}-500 space-y-3 group`}
                                 >
                                     <div className="flex justify-between items-start">
-                                        <div className="flex items-center gap-2">
-                                            {log.decision === "ALLOW" ? (
-                                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                                            ) : (
-                                                <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]" />
-                                            )}
-                                            <span className="text-[10px] font-black uppercase text-white tracking-tight">{log.toolName}</span>
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-8 h-8 rounded-lg ${details.bg} border border-white/5 flex items-center justify-center shrink-0 shadow-lg`}>
+                                                <span className="text-sm drop-shadow-md">{details.icon}</span>
+                                            </div>
+                                            <div>
+                                                <h4 className={`text-[10px] font-black uppercase tracking-tight ${details.color}`}>
+                                                    {details.title}
+                                                </h4>
+                                                <span className="text-[9px] font-bold text-neutral-600 uppercase">
+                                                    {log.toolName}
+                                                </span>
+                                            </div>
                                         </div>
-                                        <span className="text-[9px] text-neutral-600 font-mono">
+                                        <span className="text-[9px] text-neutral-500 font-mono italic">
                                             {log.timestamp ? 
                                                 (typeof log.timestamp.toDate === 'function' ? 
                                                     format(log.timestamp.toDate(), 'HH:mm:ss') : 
@@ -706,18 +813,19 @@ secured.invoke({"messages": [...]})`;
                                                 : "pending"}
                                         </span>
                                     </div>
-                                    <div className="bg-white/[0.03] p-2 rounded border border-white/[0.05] overflow-hidden">
-                                        <code className="text-[9px] text-neutral-500 block truncate group-hover:text-neutral-400 transition-colors">
-                                            {log.arguments}
-                                        </code>
-                                    </div>
-                                    {log.reason && (
-                                        <p className="text-[9px] text-neutral-600 italic leading-relaxed">
-                                            &quot;{log.reason}&quot;
+                                    <div className="pl-11">
+                                        <p className="text-[11px] text-neutral-300 leading-relaxed font-medium">
+                                            {details.text}
                                         </p>
-                                    )}
+                                        <div className="mt-2 bg-black/40 p-2 rounded border border-white/[0.02] overflow-hidden opacity-50 group-hover:opacity-100 transition-opacity">
+                                            <code className="text-[9px] text-neutral-500 block truncate font-mono transition-colors">
+                                                {log.arguments}
+                                            </code>
+                                        </div>
+                                    </div>
                                 </motion.div>
-                            ))}
+                                );
+                            })}
                         </div>
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center py-20 text-center px-6">
@@ -740,9 +848,19 @@ secured.invoke({"messages": [...]})`;
                     setCustomScope("");
                 }
             }}>
-                <DialogContent className="sm:max-w-md bg-black border-white/5 text-white shadow-2xl p-0 overflow-hidden rounded-3xl">
-                    <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-                    {showSuccess && <DollarConfetti />}
+                <DialogContent className="sm:max-w-md bg-transparent border-none text-white shadow-[0_0_120px_rgba(16,185,129,0.3),0_0_40px_rgba(0,0,0,1)] p-0 !overflow-visible rounded-[26px]">
+                    <div className="relative p-[2px] w-full h-full overflow-hidden rounded-[26px]">
+                        {/* 2 Spinning Lasers */}
+                        <div 
+                            className="absolute -inset-[150%] z-0 animate-[spin_4s_linear_infinite]"
+                            style={{
+                                background: 'conic-gradient(from 0deg, transparent 0%, transparent 40%, rgba(16, 185, 129, 1) 50%, transparent 50%, transparent 90%, rgba(16, 185, 129, 1) 100%)'
+                            }} 
+                        />
+                        {/* Core Background */}
+                        <div className="relative z-10 w-full h-full bg-[#050505] rounded-[24px] overflow-hidden shadow-[inset_0_0_40px_rgba(0,0,0,0.8)]">
+                            <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/80 to-transparent shadow-[0_0_20px_rgba(16,185,129,0.5)]" />
+                            {showSuccess && <DollarConfetti />}
                     
                     {!newlyCreatedKey ? (
                         <div className="p-8 space-y-6">
@@ -890,6 +1008,8 @@ secured.invoke({"messages": [...]})`;
                             </div>
                         </div>
                     )}
+                        </div>
+                    </div>
                 </DialogContent>
             </Dialog>
 

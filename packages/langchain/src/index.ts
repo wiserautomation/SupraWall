@@ -40,8 +40,9 @@ export class SupraWallLangChainCallback extends BaseCallbackHandler {
     }
 
     async handleToolStart(
-        tool: { name?: string; [key: string]: unknown },
-        input: string
+        tool: any,
+        input: string,
+        ..._rest: any[]
     ): Promise<void> {
         const toolName = (tool.name as string) || "unknown";
 

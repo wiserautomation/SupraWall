@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langchain-suprawall"
+version = "1.0.0"
+authors = [
+  { name="SupraWall", email="support@suprawall.ai" },
+]
+description = "Deterministic security and governance for LangChain agents."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "langchain-core>=0.1.0",
+    "requests>=2.25.0",
+]
+
+[project.urls]
+"Homepage" = "https://www.supra-wall.com"
+"Bug Tracker" = "https://github.com/wiserautomation/supawall-mcp-plugin/issues"

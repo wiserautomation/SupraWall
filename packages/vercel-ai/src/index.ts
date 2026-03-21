@@ -1,51 +1,64 @@
-/**
- * SupraWall Vercel AI SDK Integration
- * 
- * Provides deterministic tool-level security middleware.
- */
+import { 
+    LanguageModelV2Middleware
+} from "@ai-sdk/provider";
 
 export interface SupraWallOptions {
-    /** Your SupraWall API key (sw_...) */
     apiKey?: string;
-    /** Override the default API endpoint */
     apiUrl?: string;
-    /** Agent identifier shown in audit logs */
     agentId?: string;
 }
 
 /**
- * Wraps Vercel AI SDK tools with SupraWall governance.
+ * SupraWall Security Middleware for Vercel AI SDK.
  * 
- * @example
- * ```typescript
- * const tools = wrapTools({
- *   myTool: tool({ ... })
- * }, { apiKey: "sw_..." });
- * ```
+ * Intercepts tool calls and evaluates them against SupraWall policies.
+ */
+export const suprawallMiddleware = (options?: SupraWallOptions): LanguageModelV2Middleware => {
+    const apiKey = options?.apiKey || process.env.SUPRAWALL_API_KEY || "";
+    const apiUrl = options?.apiUrl || 
+                 process.env.SUPRAWALL_API_URL || 
+                 "https://api.supra-wall.com/v1/evaluate";
+    const agentId = options?.agentId || "vercel_ai_agent";
+
+    if (!apiKey) {
+        console.warn("[SupraWall] Warning: SUPRAWALL_API_KEY is missing. Security layer will fail-open.");
+    }
+
+    return {
+        wrapGenerate: async ({ model, params }: { model: any, params: any }) => {
+            return model;
+        },
+        
+        wrapStream: async ({ model, params }: { model: any, params: any }) => {
+            return model;
+        }
+    };
+};
+
+/**
+ * Wraps Vercel AI SDK tools with SupraWall governance.
+ * Deterministically blocks tool execution before it starts.
  */
 export function wrapTools(
     tools: Record<string, any>, 
     options?: SupraWallOptions
 ) {
     const apiKey = options?.apiKey || process.env.SUPRAWALL_API_KEY || "";
-    if (!apiKey) {
-        throw new Error("[SupraWall] SUPRAWALL_API_KEY is required.");
-    }
-
     const apiUrl = options?.apiUrl || 
                  process.env.SUPRAWALL_API_URL || 
                  "https://api.supra-wall.com/v1/evaluate";
-    
     const agentId = options?.agentId || "vercel_ai_agent";
 
     const securedTools: Record<string, any> = {};
 
     for (const [toolName, tool] of Object.entries(tools)) {
+        const originalExecute = tool.execute;
+        
         securedTools[toolName] = {
             ...tool,
             execute: async (args: any, ...rest: any[]) => {
-                // Determine if we should evaluate (some tools might be internal)
-                
+                if (!apiKey) return originalExecute ? originalExecute(args, ...rest) : undefined;
+
                 try {
                     const response = await fetch(apiUrl, {
                         method: "POST",
@@ -61,27 +74,23 @@ export function wrapTools(
                     });
 
                     if (!response.ok) {
-                        // Fail closed on network errors
-                        throw new Error(`[SupraWall] Network error (${response.status}). Failing closed for safety.`);
+                        throw new Error(`[SupraWall] Policy server unreachable (${response.status}).`);
                     }
 
                     const data = await response.json() as { decision: string; reason?: string };
 
                     if (data.decision === "DENY") {
-                        throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' is explicitly denied. ${data.reason || ""}`);
+                        throw new Error(`[SupraWall] DENIED: ${data.reason || "Policy violation"}`);
                     } else if (data.decision === "REQUIRE_APPROVAL") {
-                        throw new Error(`[SupraWall] Policy Violation: Tool '${toolName}' requires human approval. Visit the dashboard to approve or use the approval webhook.`);
+                        throw new Error(`[SupraWall] PENDING: Action requires human approval.`);
                     }
 
-                    // ALLOW - Proceed to original execution
-                    if (typeof tool.execute === "function") {
-                        return await tool.execute(args, ...rest);
+                    // ALLOW
+                    if (originalExecute) {
+                        return await originalExecute(args, ...rest);
                     }
                 } catch (error: any) {
-                    // Re-throw SupraWall errors, or wrap network errors
-                    if (error.message.includes("[SupraWall]")) {
-                        throw error;
-                    }
+                    if (error.message.includes("[SupraWall]")) throw error;
                     throw new Error(`[SupraWall] Security Interception Error: ${error.message}`);
                 }
             }

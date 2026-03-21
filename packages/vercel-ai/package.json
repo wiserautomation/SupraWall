@@ -21,8 +21,9 @@
     "author": "SupraWall",
     "license": "MIT",
     "devDependencies": {
-        "typescript": "^5.0.0",
-        "@types/node": "^20.0.0"
+        "@ai-sdk/provider": "^3.0.8",
+        "@types/node": "^20.19.37",
+        "typescript": "^5.0.0"
     },
     "peerDependencies": {
         "ai": ">=3.0.0"
