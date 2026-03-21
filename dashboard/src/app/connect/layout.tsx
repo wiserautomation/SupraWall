@@ -23,7 +23,7 @@ export default function ConnectLayout({
         <AppShell>
             <div className="space-y-6">
                 {/* Connect Tabs */}
-                <div className="flex items-center gap-1 border-b border-white/[0.04] pb-px overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-1 border-b border-white/[0.08] pb-px overflow-x-auto no-scrollbar">
                     {tabs.map((tab) => {
                         const isActive = pathname === tab.href;
                         const Icon = tab.icon;

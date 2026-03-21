@@ -127,7 +127,7 @@ export default function TeamPage() {
                         <span>Workforce Governance</span>
                     </div>
                     <h1 className="text-4xl font-bold tracking-tight text-white italic">
-                        Team <span className="text-neutral-500 not-italic font-light">Management</span>
+                        Team <span className="text-neutral-400 not-italic font-light">Management</span>
                     </h1>
                     <p className="text-neutral-400 max-w-2xl text-lg">
                         Control administrative access and define granular roles for your security team.
@@ -149,23 +149,23 @@ export default function TeamPage() {
                     { label: "Pending Invites", value: members.filter(m => m.status === "invited").length, icon: Mail, color: "violet" },
                     { label: "Admins", value: members.filter(m => m.role === "admin").length, icon: ShieldCheck, color: "blue" },
                 ].map((stat, i) => (
-                    <div key={i} className="bg-neutral-900/40 backdrop-blur-md border border-white/[0.05] p-6 rounded-3xl group hover:border-white/[0.1] transition-all duration-500">
+                    <div key={i} className="bg-neutral-900/40 backdrop-blur-md border border-white/10 p-6 rounded-3xl group hover:border-white/[0.1] transition-all duration-500">
                         <div className="flex items-center justify-between mb-4">
                             <div className={`p-3 rounded-2xl bg-${stat.color}-500/10 text-${stat.color}-400 group-hover:scale-110 transition-transform duration-500`}>
                                 <stat.icon className="w-6 h-6" />
                             </div>
                             <span className="text-3xl font-bold text-white tabular-nums">{stat.value}</span>
                         </div>
-                        <p className="text-neutral-500 font-medium">{stat.label}</p>
+                        <p className="text-neutral-400 font-medium">{stat.label}</p>
                     </div>
                 ))}
             </div>
 
             {/* Main Content Area */}
-            <div className="bg-neutral-950 border border-white/[0.05] rounded-3xl overflow-hidden shadow-2xl relative">
-                <div className="p-6 border-b border-white/[0.05] flex flex-col md:flex-row md:items-center justify-between gap-4 bg-neutral-900/20">
+            <div className="bg-neutral-950 border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative">
+                <div className="p-6 border-b border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-neutral-900/20">
                     <div className="relative flex-1 max-w-md group">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 group-focus-within:text-emerald-400 transition-colors" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400 group-focus-within:text-emerald-400 transition-colors" />
                         <input
                             type="text"
                             placeholder="Search by email or role..."
@@ -175,7 +175,7 @@ export default function TeamPage() {
                         />
                     </div>
                     <div className="flex items-center gap-3">
-                        <button className="p-2.5 text-neutral-400 hover:text-white bg-white/[0.02] border border-white/[0.05] rounded-xl transition-all">
+                        <button className="p-2.5 text-neutral-400 hover:text-white bg-white/[0.05] border border-white/10 rounded-xl transition-all">
                             <Filter className="w-4 h-4" />
                         </button>
                     </div>
@@ -212,7 +212,7 @@ export default function TeamPage() {
                                             {member.role === "admin" ? (
                                                 <ShieldCheck className="w-4 h-4 text-emerald-400 mr-2" />
                                             ) : (
-                                                <Shield className="w-4 h-4 text-neutral-500 mr-2" />
+                                                <Shield className="w-4 h-4 text-neutral-400 mr-2" />
                                             )}
                                             <span className={`text-sm font-medium ${member.role === 'admin' ? 'text-white' : 'text-neutral-400'} capitalize`}>
                                                 {member.role}
@@ -234,12 +234,12 @@ export default function TeamPage() {
                                             {member.id !== "owner" && (
                                                 <button
                                                     onClick={() => removeMember(member.id)}
-                                                    className="p-2 text-neutral-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+                                                    className="p-2 text-neutral-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
                                                 >
                                                     <Trash2 className="w-4 h-4" />
                                                 </button>
                                             )}
-                                            <button className="p-2 text-neutral-500 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all">
+                                            <button className="p-2 text-neutral-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all">
                                                 <ExternalLink className="w-4 h-4" />
                                             </button>
                                         </div>
@@ -255,13 +255,13 @@ export default function TeamPage() {
             {isInviting && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-xl bg-black/60 animate-in fade-in duration-300">
                     <div className="bg-neutral-950 border border-white/[0.1] w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl shadow-emerald-500/5 slide-in-from-bottom-8 animate-in duration-500">
-                        <div className="p-8 border-b border-white/[0.05] bg-gradient-to-br from-neutral-900 to-black">
+                        <div className="p-8 border-b border-white/10 bg-gradient-to-br from-neutral-900 to-black">
                             <h3 className="text-2xl font-bold text-white mb-2 italic">Invite <span className="text-emerald-400 not-italic">Team Member</span></h3>
                             <p className="text-neutral-400 text-sm">Add a colleague to your security organization.</p>
                         </div>
                         <form onSubmit={handleInvite} className="p-8 space-y-6">
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest pl-1">Email Address</label>
+                                <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest pl-1">Email Address</label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-600" />
                                     <input
@@ -276,7 +276,7 @@ export default function TeamPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-xs font-bold text-neutral-500 uppercase tracking-widest pl-1">Security Role</label>
+                                <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest pl-1">Security Role</label>
                                 <div className="grid grid-cols-3 gap-3">
                                     {["admin", "auditor", "viewer"].map((role) => (
                                         <button
@@ -285,7 +285,7 @@ export default function TeamPage() {
                                             onClick={() => setInviteRole(role as any)}
                                             className={`py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all border ${inviteRole === role
                                                     ? 'bg-emerald-500/10 border-emerald-500/40 text-emerald-400 shadow-lg shadow-emerald-500/5'
-                                                    : 'bg-neutral-900 border-white/[0.05] text-neutral-500 hover:border-white/[0.1] hover:text-neutral-300'
+                                                    : 'bg-neutral-900 border-white/10 text-neutral-400 hover:border-white/[0.1] hover:text-neutral-300'
                                                 }`}
                                         >
                                             {role}
@@ -322,12 +322,12 @@ export default function TeamPage() {
 
             {/* Empty State */}
             {filteredMembers.length === 0 && (
-                <div className="bg-neutral-900/20 border border-white/[0.05] border-dashed rounded-[40px] p-20 text-center flex flex-col items-center">
-                    <div className="w-20 h-20 bg-neutral-900 rounded-3xl flex items-center justify-center text-neutral-500 mb-6 ring-1 ring-white/10 shadow-2xl">
+                <div className="bg-neutral-900/20 border border-white/10 border-dashed rounded-[40px] p-20 text-center flex flex-col items-center">
+                    <div className="w-20 h-20 bg-neutral-900 rounded-3xl flex items-center justify-center text-neutral-400 mb-6 ring-1 ring-white/10 shadow-2xl">
                         <Users className="w-10 h-10 opacity-20" />
                     </div>
-                    <h3 className="text-2xl font-bold text-white mb-2 italic">No Team <span className="text-neutral-500 not-italic">Members Found</span></h3>
-                    <p className="text-neutral-500 max-w-sm mb-8">No members match your current filter. Try adjusting your search or inviting more colleagues.</p>
+                    <h3 className="text-2xl font-bold text-white mb-2 italic">No Team <span className="text-neutral-400 not-italic">Members Found</span></h3>
+                    <p className="text-neutral-400 max-w-sm mb-8">No members match your current filter. Try adjusting your search or inviting more colleagues.</p>
                 </div>
             )}
         </div>

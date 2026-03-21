@@ -49,7 +49,7 @@ export function PolicyValidator() {
                     <Badge variant="outline" className="text-[8px] border-emerald-500/20 text-emerald-500 bg-emerald-500/5 font-black uppercase">Real-time Simulation</Badge>
                 </div>
                 <div className="relative group">
-                    <div className="absolute -inset-[1px] bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+                    <div className="absolute -inset-[1px] bg-gradient-to-r from-emerald-500/20 to-blue-500/20 rounded-2xl blur opacity-40 group-hover:opacity-70 transition duration-1000"></div>
                     <textarea 
                         value={json}
                         onChange={(e) => setJson(e.target.value)}
@@ -80,7 +80,7 @@ export function PolicyValidator() {
                     <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Simulation Results</label>
                 </div>
                 
-                <div className="flex-1 bg-white/[0.02] border border-white/[0.05] rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden text-center">
+                <div className="flex-1 bg-white/[0.05] border border-white/10 rounded-3xl p-8 flex flex-col items-center justify-center relative overflow-hidden text-center">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     
                     {!result && !isValidating && (

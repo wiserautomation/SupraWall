@@ -91,7 +91,7 @@ response = agent.invoke("Transfer $500 to my savings account")`}
                 </h2>
 
                 <div className="grid gap-8">
-                    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <div className="p-8 rounded-2xl bg-white/[0.05] border border-white/5">
                         <h3 className="text-lg font-semibold mb-4 text-white">LangChain</h3>
                         <p className="text-neutral-400 text-sm mb-6">
                             SupraWall wraps any <code className="text-emerald-400">Runnable</code> and injects security checks into the executive loop.
@@ -111,7 +111,7 @@ chain.invoke("Delete all files") # Blocked by SupraWall locally or in cloud`}
                         />
                     </div>
 
-                    <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/5">
+                    <div className="p-8 rounded-2xl bg-white/[0.05] border border-white/5">
                         <h3 className="text-lg font-semibold mb-4 text-white">CrewAI</h3>
                         <p className="text-neutral-400 text-sm mb-6">
                             Protect entire Crews or individual Agents to ensure task completion follows your organizational policies.

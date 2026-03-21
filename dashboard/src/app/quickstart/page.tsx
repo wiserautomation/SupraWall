@@ -10,7 +10,7 @@ function CodeBlock({ code, language = "bash" }: { code: string; language?: strin
     return (
         <div className="relative group">
             <div className="bg-black/40 border border-white/10 rounded-xl overflow-hidden backdrop-blur-sm">
-                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.02] border-b border-white/5">
+                <div className="flex items-center justify-between px-4 py-2 bg-white/[0.05] border-b border-white/5">
                     <span className="text-xs text-neutral-500 font-mono tracking-wider">{language.toUpperCase()}</span>
                     <button
                         onClick={() => {
@@ -262,7 +262,7 @@ secured_agent.invoke({"input": "..."})`}
                         ].map((item) => (
                             <div
                                 key={item.label}
-                                className={`border rounded-2xl p-5 ${item.color} hover:bg-white/[0.02] transition-colors duration-300`}
+                                className={`border rounded-2xl p-5 ${item.color} hover:bg-white/[0.05] transition-colors duration-300`}
                             >
                                 <p className={`text-xs font-extrabold mb-1 tracking-widest ${item.textColor}`}>
                                     {item.label}

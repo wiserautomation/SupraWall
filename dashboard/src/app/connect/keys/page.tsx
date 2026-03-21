@@ -35,7 +35,7 @@ function CopyButton({ text }: { text: string }) {
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
             }}
-            className="ml-2 p-1.5 rounded-lg hover:bg-white/[0.05] transition-all border border-transparent hover:border-white/[0.05]"
+            className="ml-2 p-1.5 rounded-lg hover:bg-white/[0.05] transition-all border border-transparent hover:border-white/10"
         >
             {copied
                 ? <Check className="w-3 h-3 text-emerald-400" />
@@ -118,7 +118,7 @@ function IssueKeyDialog({
                             <span className="flex-1 select-all break-all">{newKey}</span>
                             <CopyButton text={newKey} />
                         </div>
-                        <div className="p-4 bg-white/[0.02] border border-white/[0.05] rounded-xl">
+                        <div className="p-4 bg-white/[0.05] border border-white/10 rounded-xl">
                             <p className="text-[10px] text-neutral-500 uppercase tracking-wider leading-relaxed">
                                 Deploy this key to your customer's environment. It inherits all platform-level security policies automatically.
                             </p>
@@ -297,10 +297,10 @@ export default function ConnectKeysPage() {
                     }
                 />
             ) : (
-                <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl overflow-hidden backdrop-blur-sm">
+                <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden backdrop-blur-sm">
                     <Table>
                         <TableHeader>
-                            <TableRow className="border-white/[0.04] bg-white/[0.01]">
+                            <TableRow className="border-white/[0.08] bg-white/[0.01]">
                                 <TableHead className="text-[10px] font-black uppercase tracking-widest text-neutral-500 h-12">
                                     Customer Entity
                                 </TableHead>
@@ -324,7 +324,7 @@ export default function ConnectKeysPage() {
                         </TableHeader>
                         <TableBody>
                             {keys.map((key) => (
-                                <TableRow key={key.subKeyId} className="border-white/[0.04] group hover:bg-white/[0.01] transition-colors">
+                                <TableRow key={key.subKeyId} className="border-white/[0.08] group hover:bg-white/[0.01] transition-colors">
                                     <TableCell>
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center flex-shrink-0">

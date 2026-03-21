@@ -224,7 +224,7 @@ export default function CompliancePage() {
                             <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">
                                 EU AI Act Compliance
                             </h1>
-                            <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1">
+                            <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em] mt-1">
                                 Real-time compliance readiness across EU AI Act requirements.
                             </p>
                         </div>
@@ -254,7 +254,7 @@ export default function CompliancePage() {
                             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
                             <div>
                                 <p className="text-sm font-medium text-amber-400">Could not reach suprawall server</p>
-                                <p className="text-xs text-neutral-500 mt-1">{error}</p>
+                                <p className="text-xs text-neutral-400 mt-1">{error}</p>
                                 <p className="text-xs text-neutral-600 mt-1">
                                     Set <code className="text-emerald-400/80">NEXT_PUBLIC_SUPRAWALL_API_URL</code> in your <code className="text-emerald-400/80">.env.local</code>
                                 </p>
@@ -263,7 +263,7 @@ export default function CompliancePage() {
                     ) : status ? (
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                             <div className="space-y-1">
-                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Overall Status</p>
+                                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Overall Status</p>
                                 <OverallBadge overall={status.overall} />
                             </div>
                             <p className="text-xs text-neutral-600">
@@ -277,7 +277,7 @@ export default function CompliancePage() {
             {/* Checklist */}
             {status && (
                 <div>
-                    <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.25em] mb-4">
+                    <h2 className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.25em] mb-4">
                         Requirement Checklist
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -290,7 +290,7 @@ export default function CompliancePage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.06 }}
                                 >
-                                    <Card className="bg-black/60 backdrop-blur-xl border-white/[0.05] hover:border-emerald-500/20 transition-all duration-300 h-full relative overflow-hidden group">
+                                    <Card className="bg-black/60 backdrop-blur-xl border-white/10 hover:border-emerald-500/20 transition-all duration-300 h-full relative overflow-hidden group">
                                         <CardContent className="p-5 flex flex-col gap-3">
                                             <div className="flex items-start justify-between gap-2">
                                                 <div>
@@ -306,7 +306,7 @@ export default function CompliancePage() {
                                             <p className="text-xs text-neutral-400 leading-relaxed">
                                                 {item.description}
                                             </p>
-                                            <p className="text-xs text-neutral-500 italic">{check.detail}</p>
+                                            <p className="text-xs text-neutral-400 italic">{check.detail}</p>
                                             <Link
                                                 href={item.link}
                                                 className="inline-flex items-center gap-1 text-xs text-emerald-400/70 hover:text-emerald-400 transition-colors mt-auto"
@@ -410,14 +410,14 @@ export default function CompliancePage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0 }}
                         onClick={downloadReport}
-                        className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/[0.05] hover:border-emerald-500/20 rounded-xl text-left transition-all duration-300 group"
+                        className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/10 hover:border-emerald-500/20 rounded-xl text-left transition-all duration-300 group"
                     >
                         <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg group-hover:bg-emerald-500/15 transition-colors">
                             <Download className="w-5 h-5 text-emerald-400" />
                         </div>
                         <div>
                             <p className="text-sm font-medium text-white">Download Compliance Report</p>
-                            <p className="text-xs text-neutral-500 mt-0.5">PDF for auditors (last 30 days)</p>
+                            <p className="text-xs text-neutral-400 mt-0.5">PDF for auditors (last 30 days)</p>
                         </div>
                     </motion.button>
 
@@ -428,14 +428,14 @@ export default function CompliancePage() {
                     >
                         <Link
                             href="/dashboard/policies"
-                            className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/[0.05] hover:border-white/[0.1] rounded-xl text-left transition-all duration-300 group h-full"
+                            className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/10 hover:border-white/[0.1] rounded-xl text-left transition-all duration-300 group h-full"
                         >
                             <div className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg group-hover:bg-white/[0.07] transition-colors">
                                 <Settings className="w-5 h-5 text-neutral-300" />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-white">Configure Policies</p>
-                                <p className="text-xs text-neutral-500 mt-0.5">Set DENY and approval rules</p>
+                                <p className="text-xs text-neutral-400 mt-0.5">Set DENY and approval rules</p>
                             </div>
                         </Link>
                     </motion.div>
@@ -447,14 +447,14 @@ export default function CompliancePage() {
                     >
                         <Link
                             href="/dashboard/audit"
-                            className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/[0.05] hover:border-white/[0.1] rounded-xl text-left transition-all duration-300 group h-full"
+                            className="flex items-center gap-3 p-4 bg-black/30 hover:bg-white/[0.04] border border-white/10 hover:border-white/[0.1] rounded-xl text-left transition-all duration-300 group h-full"
                         >
                             <div className="p-2 bg-white/[0.04] border border-white/[0.06] rounded-lg group-hover:bg-white/[0.07] transition-colors">
                                 <FileText className="w-5 h-5 text-neutral-300" />
                             </div>
                             <div>
                                 <p className="text-sm font-medium text-white">View Full Audit Log</p>
-                                <p className="text-xs text-neutral-500 mt-0.5">Browse forensic event stream</p>
+                                <p className="text-xs text-neutral-400 mt-0.5">Browse forensic event stream</p>
                             </div>
                         </Link>
                     </motion.div>

@@ -135,7 +135,7 @@ export default function SettingsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
-                <p className="text-neutral-500 animate-pulse font-medium tracking-wide">Retrieving configuration...</p>
+                <p className="text-neutral-400 animate-pulse font-medium tracking-wide">Retrieving configuration...</p>
             </div>
         );
     }
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                     <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">Configuration</span>
                 </div>
                 <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic mb-2">Security Settings</h1>
-                <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">
+                <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em]">
                     Infrastructure, notifications, and organizational access.
                 </p>
             </motion.div>
@@ -254,7 +254,7 @@ export default function SettingsPage() {
                                 className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
                             />
                             <div className="flex justify-between items-center text-xs">
-                                <p className="text-neutral-500 italic">Used for policy triggers requiring Human Authorization.</p>
+                                <p className="text-neutral-400 italic">Used for policy triggers requiring Human Authorization.</p>
                                 <Link
                                     href="https://api.slack.com/messaging/webhooks"
                                     target="_blank"
@@ -306,7 +306,7 @@ export default function SettingsPage() {
                                 onChange={(e) => setNotificationEmail(e.target.value)}
                                 className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
                             />
-                            <p className="text-xs text-neutral-500 italic">Emails are routed via Resend for zero-delay delivery.</p>
+                            <p className="text-xs text-neutral-400 italic">Emails are routed via Resend for zero-delay delivery.</p>
                         </div>
 
                         <div className="flex justify-end pt-4 border-t border-white/5 gap-3">

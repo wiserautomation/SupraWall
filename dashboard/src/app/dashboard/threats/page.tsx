@@ -84,7 +84,7 @@ export default function ThreatIntelligencePage() {
                         </div>
                         <h1 className="text-2xl font-black uppercase tracking-tighter text-white italic">Threat Intelligence</h1>
                     </div>
-                    <p className="text-neutral-500 text-xs font-medium uppercase tracking-[0.2em]">Network-wide anomaly detection & risk scoring</p>
+                    <p className="text-neutral-400 text-xs font-medium uppercase tracking-[0.2em]">Network-wide anomaly detection & risk scoring</p>
                 </div>
 
                 <div className="flex items-center gap-3">
@@ -96,7 +96,7 @@ export default function ThreatIntelligencePage() {
                         <RefreshCw className={`w-3 h-3 ${aggregating ? 'animate-spin' : ''}`} />
                         {aggregating ? 'Aggregating...' : 'Sync Scores'}
                     </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-[10px] font-black uppercase tracking-widest text-neutral-400 transition-all">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-white/[0.05] hover:bg-white/[0.06] border border-white/[0.06] rounded-lg text-[10px] font-black uppercase tracking-widest text-neutral-400 transition-all">
                         <Filter className="w-3 h-3" />
                         Filter
                     </button>
@@ -110,7 +110,7 @@ export default function ThreatIntelligencePage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                             <Skull className="w-12 h-12 text-rose-500" />
                         </div>
-                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-1">Entity: {summary.entity_id}</p>
+                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-1">Entity: {summary.entity_id}</p>
                         <h3 className="text-3xl font-black text-white mb-4 italic tracking-tighter">{summary.threat_score}</h3>
                         <div className="flex items-center justify-between text-[10px] uppercase font-black tracking-widest">
                             <span className="text-rose-500/80">Threat Level</span>
@@ -118,7 +118,7 @@ export default function ThreatIntelligencePage() {
                                 {summary.threat_score > 100 ? "CRITICAL" : (summary.threat_score > 50 ? "HIGH" : "ELEVATED")}
                             </span>
                         </div>
-                        <div className="mt-4 w-full h-1 bg-white/[0.03] rounded-full overflow-hidden">
+                        <div className="mt-4 w-full h-1 bg-white/[0.05] rounded-full overflow-hidden">
                             <div 
                                 className={`h-full transition-all duration-1000 ${summary.threat_score > 50 ? "bg-rose-500" : "bg-amber-500"}`}
                                 style={{ width: `${Math.min(summary.threat_score, 100)}%` }}
@@ -127,7 +127,7 @@ export default function ThreatIntelligencePage() {
                     </div>
                 ))}
                 {summaries.length === 0 && !loading && (
-                    <div className="md:col-span-3 py-12 rounded-2xl border border-dashed border-white/[0.06] flex flex-col items-center justify-center text-neutral-500">
+                    <div className="md:col-span-3 py-12 rounded-2xl border border-dashed border-white/[0.06] flex flex-col items-center justify-center text-neutral-400">
                         <Shield className="w-8 h-8 mb-3 opacity-20" />
                         <p className="text-[10px] font-black uppercase tracking-widest">No critical threats detected</p>
                     </div>
@@ -136,7 +136,7 @@ export default function ThreatIntelligencePage() {
 
             {/* Live Event Stream */}
             <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/40 overflow-hidden">
-                <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.02] flex items-center justify-between">
+                <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.05] flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Activity className="w-3.5 h-3.5 text-emerald-400" />
                         <h2 className="text-[11px] font-black uppercase tracking-widest text-white">Live Threat Stream</h2>
@@ -146,7 +146,7 @@ export default function ThreatIntelligencePage() {
 
                 <div className="divide-y divide-white/[0.04]">
                     {events.map((event) => (
-                        <div key={event.id} className="p-4 hover:bg-white/[0.02] transition-colors group">
+                        <div key={event.id} className="p-4 hover:bg-white/[0.05] transition-colors group">
                             <div className="flex items-start gap-4">
                                 <div className={`mt-1 p-1.5 rounded-lg border flex-shrink-0 ${
                                     event.severity === 'high' ? 'bg-rose-500/10 border-rose-500/20 text-rose-400' :
@@ -163,7 +163,7 @@ export default function ThreatIntelligencePage() {
                                     <p className="text-[10px] text-neutral-400 font-medium mb-2">Agent <code className="text-emerald-400 px-1 bg-emerald-500/5 rounded">{event.agentid}</code> triggered a security flag.</p>
                                     <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
                                         {Object.entries(event.details || {}).map(([k, v]) => (
-                                            <span key={k} className="text-[8px] font-black text-neutral-500 border border-white/[0.06] px-2 py-0.5 rounded uppercase tracking-tighter whitespace-nowrap">
+                                            <span key={k} className="text-[8px] font-black text-neutral-400 border border-white/[0.06] px-2 py-0.5 rounded uppercase tracking-tighter whitespace-nowrap">
                                                 {k}: {String(v)}
                                             </span>
                                         ))}

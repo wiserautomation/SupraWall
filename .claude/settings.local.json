@@ -12,7 +12,11 @@
       "Bash(git add:*)",
       "Bash(git push:*)",
       "Bash(grep -rn \"suprawall\\\\.ai\\\\|agentgate\\\\|agent-gate\\\\|agentguard\\\\|agent_gate\\\\|AgentGate\\\\|AgentGuard\" --include=*.ts --include=*.tsx --include=*.js --include=*.json --include=*.md --include=*.txt --include=*.yaml --include=*.yml --include=*.env* .)",
-      "Bash(grep -rn \"suprawall\\\\.ai\\\\|agentgate\\\\|agent-gate\\\\|agentguard\\\\|agent_gate\\\\|AgentGate\\\\|AgentGuard\" --include=*.ts --include=*.tsx --include=*.js --include=*.json --include=*.md --include=*.txt --include=*.yaml --include=*.yml .)"
+      "Bash(grep -rn \"suprawall\\\\.ai\\\\|agentgate\\\\|agent-gate\\\\|agentguard\\\\|agent_gate\\\\|AgentGate\\\\|AgentGuard\" --include=*.ts --include=*.tsx --include=*.js --include=*.json --include=*.md --include=*.txt --include=*.yaml --include=*.yml .)",
+      "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall/dashboard -maxdepth 1 -name *.js -o -name *.ts -o -name *.jsx -o -name *.tsx)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -r \"motion\\\\.\" /Users/alejandropeghin/Desktop/AntiG/SupraWall/dashboard/src/components/*.tsx)",
+      "Bash(npm run:*)"
     ]
   }
 }

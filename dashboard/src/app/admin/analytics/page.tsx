@@ -247,7 +247,7 @@ export default function AdminAnalyticsPage() {
                     <CardContent>
                         <div className="space-y-4">
                             {geoData.map((region, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 bg-white/[0.02] border border-white/[0.04] rounded-xl hover:bg-white/[0.04] transition-colors">
+                                <div key={i} className="flex items-center justify-between p-3 bg-white/[0.05] border border-white/[0.08] rounded-xl hover:bg-white/[0.04] transition-colors">
                                     <div className="flex items-center gap-3">
                                         <div className={`w-2 h-2 rounded-full ${region.status === 'Healthy' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]'}`} />
                                         <span className="text-sm font-bold text-white uppercase italic tracking-tighter">{region.name}</span>

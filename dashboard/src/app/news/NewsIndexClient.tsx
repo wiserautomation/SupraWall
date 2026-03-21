@@ -41,7 +41,7 @@ export default function NewsIndexClient() {
                                 className={`px-4 py-2 rounded-full text-[11px] font-black uppercase tracking-widest border transition-all ${
                                     active === cat
                                         ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400"
-                                        : "bg-white/[0.03] border-white/10 text-neutral-500 hover:text-white hover:border-white/20"
+                                        : "bg-white/[0.05] border-white/10 text-neutral-500 hover:text-white hover:border-white/20"
                                 }`}
                             >
                                 {cat}
@@ -62,7 +62,7 @@ export default function NewsIndexClient() {
                                 <Link
                                     key={article.slug}
                                     href={`/news/${article.slug}`}
-                                    className="group flex flex-col justify-between p-6 bg-white/[0.02] border border-white/5 rounded-2xl hover:border-emerald-500/20 hover:bg-white/[0.04] transition-all"
+                                    className="group flex flex-col justify-between p-6 bg-white/[0.05] border border-white/5 rounded-2xl hover:border-emerald-500/20 hover:bg-white/[0.04] transition-all"
                                 >
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-2 flex-wrap">

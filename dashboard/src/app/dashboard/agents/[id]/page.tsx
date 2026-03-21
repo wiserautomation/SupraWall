@@ -220,7 +220,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     if (loading) {
         return (
             <div className="flex items-center justify-center h-screen bg-black">
-                <p className="text-neutral-500 animate-pulse font-medium tracking-widest uppercase">Initializing Secure Tunnel...</p>
+                <p className="text-neutral-400 animate-pulse font-medium tracking-widest uppercase">Initializing Secure Tunnel...</p>
             </div>
         );
     }
@@ -230,7 +230,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
             <div className="flex flex-col items-center justify-center h-screen bg-black text-center p-8">
                 <AlertCircle className="w-12 h-12 text-rose-500 mb-4" />
                 <h1 className="text-2xl font-bold text-white mb-2">Access Denied</h1>
-                <p className="text-neutral-500 mb-6">The requested agent identity could not be verified or has been redacted.</p>
+                <p className="text-neutral-400 mb-6">The requested agent identity could not be verified or has been redacted.</p>
                 <Link href="/dashboard/agents">
                     <Button variant="outline" className="border-white/10">Return to Registry</Button>
                 </Link>
@@ -281,7 +281,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                         className="bg-white/5 border-white/10 text-3xl font-black text-white p-2 h-auto max-w-[300px]"
                                     />
                                     <Button size="sm" onClick={handleUpdateAgent} className="h-10 bg-emerald-500 text-black font-bold uppercase text-xs hover:bg-emerald-400">Save</Button>
-                                    <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)} className="h-10 text-neutral-500">Cancel</Button>
+                                    <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)} className="h-10 text-neutral-400">Cancel</Button>
                                 </div>
                             ) : (
                                 <h1 className="text-5xl font-black text-white tracking-tighter flex items-center gap-4">
@@ -292,7 +292,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                             <div className="flex items-center gap-3 mt-2">
                                 <span className="text-xs font-mono text-neutral-600 tracking-wider">ID: {agentId}</span>
                                 <span className="w-1 h-1 bg-neutral-800 rounded-full" />
-                                <span className="text-xs text-neutral-500 italic">Established {agent.createdAt?.toDate?.().toLocaleDateString()}</span>
+                                <span className="text-xs text-neutral-400 italic">Established {agent.createdAt?.toDate?.().toLocaleDateString()}</span>
                             </div>
                         </div>
                     </div>
@@ -313,14 +313,14 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
             </header>
 
-            <div className="max-w-7xl mx-auto flex gap-1 bg-white/[0.03] border border-white/5 p-1 rounded-2xl w-fit mb-6">
+            <div className="max-w-7xl mx-auto flex gap-1 bg-white/[0.05] border border-white/5 p-1 rounded-2xl w-fit mb-6">
                 {[
                     { key: 'overview', label: 'Overview', icon: <BarChart3 className="w-3.5 h-3.5" /> },
                     { key: 'guardrails', label: 'Guardrails', icon: <Shield className="w-3.5 h-3.5" /> },
                 ].map(tab => (
                     <button key={tab.key} onClick={() => setActiveTab(tab.key as any)}
                         className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all ${
-                            activeTab === tab.key ? 'bg-emerald-600 text-white' : 'text-neutral-500 hover:text-white hover:bg-white/5'
+                            activeTab === tab.key ? 'bg-emerald-600 text-white' : 'text-neutral-400 hover:text-white hover:bg-white/5'
                         }`}
                     >
                         {tab.icon}{tab.label}
@@ -357,13 +357,13 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
                     {/* Stats */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <StatItem label="Total Compute Cycles" value={agent.totalCalls?.toLocaleString() || "0"} icon={<Terminal className="w-4 h-4 text-neutral-500" />} />
+                        <StatItem label="Total Compute Cycles" value={agent.totalCalls?.toLocaleString() || "0"} icon={<Terminal className="w-4 h-4 text-neutral-400" />} />
                         <StatItem label="Interception Delta" value={`${interceptionRate}%`} sub="Policies Enforced" color="text-rose-400" icon={<Shield className="w-4 h-4 text-rose-500" />} />
                         <StatItem label="Detected Loops" value={loopDetections.toString()} sub="Circular Ref Protection" color="text-indigo-400" icon={<RefreshCw className="w-4 h-4 text-indigo-400" />} />
                     </div>
 
                     {/* Budget Section */}
-                    <div className="bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-8 space-y-6 relative overflow-hidden group">
+                    <div className="bg-neutral-900/40 border border-white/10 rounded-3xl p-8 space-y-6 relative overflow-hidden group">
                         <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl -mr-48 -mt-48 transition-all group-hover:bg-amber-500/10" />
                         <div className="flex items-center justify-between relative z-10">
                             <div className="flex items-center gap-3">
@@ -375,17 +375,17 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         <div className="space-y-4 relative z-10">
                             <div className="flex items-end gap-3">
                                 <div className="text-6xl font-black text-white tracking-tighter">${currentSpend.toFixed(3)}</div>
-                                <div className="text-sm text-neutral-500 mb-2 font-black italic uppercase tracking-widest opacity-50">Accrued Usage</div>
+                                <div className="text-sm text-neutral-400 mb-2 font-black italic uppercase tracking-widest opacity-50">Accrued Usage</div>
                             </div>
                             <div className="w-full h-4 bg-white/5 rounded-full overflow-hidden p-1 border border-white/5">
                                 <motion.div initial={{ width: 0 }} animate={{ width: `${spendProgress}%` }} className="h-full bg-gradient-to-r from-emerald-500 via-amber-500 to-rose-500 rounded-full" />
                             </div>
-                            <p className="text-xs text-neutral-500 uppercase tracking-widest font-bold">Automatic Killswitch at $10.00 USD Overhead</p>
+                            <p className="text-xs text-neutral-400 uppercase tracking-widest font-bold">Automatic Killswitch at $10.00 USD Overhead</p>
                         </div>
                     </div>
 
                     {/* Activity Feed */}
-                    <div className="bg-neutral-900/40 border border-white/[0.05] rounded-3xl overflow-hidden">
+                    <div className="bg-neutral-900/40 border border-white/10 rounded-3xl overflow-hidden">
                         <div className="p-6 border-b border-white/5 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <History className="w-5 h-5 text-purple-400" />
@@ -395,11 +395,11 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">
-                                <thead className="bg-white/[0.02]">
+                                <thead className="bg-white/[0.05]">
                                     <tr>
-                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-500 uppercase tracking-widest">Temporal Vector</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-500 uppercase tracking-widest">Tool/Function</th>
-                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-500 uppercase tracking-widest text-right">Gatekeeper Sec.</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-400 uppercase tracking-widest">Temporal Vector</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-400 uppercase tracking-widest">Tool/Function</th>
+                                        <th className="px-6 py-4 text-[10px] font-black text-neutral-400 uppercase tracking-widest text-right">Gatekeeper Sec.</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/[0.03]">
@@ -407,8 +407,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                         <tr><td colSpan={3} className="text-center py-12 text-neutral-600 uppercase font-black tracking-widest text-xs italic">Awaiting Telemetry Data...</td></tr>
                                     ) : (
                                         auditLogs.map((log) => (
-                                            <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
-                                                <td className="px-6 py-5 whitespace-nowrap text-xs font-mono text-neutral-500">
+                                            <tr key={log.id} className="hover:bg-white/[0.05] transition-colors group">
+                                                <td className="px-6 py-5 whitespace-nowrap text-xs font-mono text-neutral-400">
                                                     {log.timestamp?.toDate?.().toLocaleString()}
                                                 </td>
                                                 <td className="px-6 py-5">
@@ -437,7 +437,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
                 <div className="space-y-8">
                     {/* Identity Details Sidebar */}
-                    <div className="bg-neutral-900/60 border border-white/[0.05] rounded-3xl p-8 space-y-8">
+                    <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 space-y-8">
                         {/* Integration */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
@@ -450,7 +450,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                         <button 
                                             key={t}
                                             onClick={() => setIntegrationTab(t)}
-                                            className={`flex-1 py-3 text-[10px] font-black uppercase transition-all ${integrationTab === t ? 'bg-blue-500 text-black' : 'text-neutral-500 hover:text-white hover:bg-white/5'}`}
+                                            className={`flex-1 py-3 text-[10px] font-black uppercase transition-all ${integrationTab === t ? 'bg-blue-500 text-black' : 'text-neutral-400 hover:text-white hover:bg-white/5'}`}
                                         >
                                             {t}
                                         </button>
@@ -467,7 +467,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
                         {/* Endpoint URI */}
                         <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Assigned Identity URI</Label>
+                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 ml-1">Assigned Identity URI</Label>
                              <div className="bg-black/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:border-blue-500/30 transition-colors cursor-pointer" onClick={() => copyToClipboard(agentUri)}>
                                  <code className="text-xs font-mono text-blue-400">{agentUri}</code>
                                  <Copy className="w-3 h-3 text-neutral-700 group-hover:text-blue-400" />
@@ -477,7 +477,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         {/* Scopes */}
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Authorized Scopes</Label>
+                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 ml-1">Authorized Scopes</Label>
                                 <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="h-5 text-[8px] uppercase tracking-widest text-blue-400 hover:text-blue-300">Expand Access</Button>
                             </div>
                             <div className="flex flex-wrap gap-2">
@@ -493,7 +493,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                 <Lock className="w-4 h-4 text-rose-500" />
                                 <h3 className="text-xs font-black tracking-widest text-white">Credential Rotation</h3>
                             </div>
-                            <p className="text-[10px] text-neutral-500 leading-relaxed font-bold">Revoke currently authorized credentials and generate a fresh cryptographic identity key.</p>
+                            <p className="text-[10px] text-neutral-400 leading-relaxed font-bold">Revoke currently authorized credentials and generate a fresh cryptographic identity key.</p>
                             <Button variant="outline" onClick={handleRotateKey} disabled={isRotatingKey} className="w-full border-rose-500/20 text-rose-500 bg-rose-500/5 hover:bg-rose-500/10 h-12 text-[10px] font-black tracking-widest rounded-2xl">
                                 {isRotatingKey ? "REGENERATING..." : "ROTATE IDENTITY KEY"}
                             </Button>
@@ -501,7 +501,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {/* Security Perimeter */}
-                    <div className="bg-neutral-900/60 border border-white/[0.05] rounded-3xl p-8 space-y-6">
+                    <div className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 space-y-6">
                         <div className="flex items-center gap-3">
                             <ShieldCheck className="w-5 h-5 text-emerald-400" />
                             <h3 className="text-xl font-black uppercase tracking-tighter text-white">Security Perimeter</h3>
@@ -510,7 +510,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         <div className="space-y-6">
                             {/* Linked Secrets */}
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-neutral-500">
+                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-neutral-400">
                                     <span>Validated Secrets</span>
                                     <span>{agentSecrets.length} ENTITIES</span>
                                 </div>
@@ -527,7 +527,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
                             {/* Enforced Policies */}
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-neutral-500">
+                                <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-neutral-400">
                                     <span>Active Interceptors</span>
                                     <span>{agentPolicies.length} RULES</span>
                                 </div>
@@ -538,7 +538,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                                 <span className="text-xs font-mono font-black text-rose-300">{p.toolName}</span>
                                                 <Badge className={`text-[8px] h-4 font-black uppercase tracking-tighter ${p.ruleType === 'DENY' ? 'bg-rose-500 text-black' : 'bg-emerald-500 text-black'}`}>{p.ruleType}</Badge>
                                             </div>
-                                            <p className="text-[10px] text-neutral-500 leading-relaxed font-medium line-clamp-2">{p.condition}</p>
+                                            <p className="text-[10px] text-neutral-400 leading-relaxed font-medium line-clamp-2">{p.condition}</p>
                                         </div>
                                     ))}
                                     {agentPolicies.length === 0 && <p className="text-xs text-neutral-600 font-bold italic py-4 text-center border border-dashed border-white/10 rounded-2xl">Unrestricted execution perimeter.</p>}
@@ -604,7 +604,7 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
 
     const inputCls = "bg-white/5 border-white/10 text-white placeholder:text-neutral-600 h-11 rounded-xl text-sm";
     const selectCls = "bg-neutral-900 border border-white/10 text-white rounded-xl h-11 px-3 text-sm w-full";
-    const sectionCls = "bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-8 space-y-6";
+    const sectionCls = "bg-neutral-900/40 border border-white/10 rounded-3xl p-8 space-y-6";
 
     return (
         <div className="space-y-6">
@@ -623,11 +623,11 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
                 {budgetEnabled && (
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Limit (USD)</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Limit (USD)</Label>
                             <Input value={limitUsd} onChange={e => setLimitUsd(e.target.value)} placeholder="10.00" type="number" min="0" step="0.01" className={inputCls} />
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Reset Period</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Reset Period</Label>
                             <select value={resetPeriod} onChange={e => setResetPeriod(e.target.value)} className={selectCls}>
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -636,7 +636,7 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
                             </select>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">On Exceeded</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">On Exceeded</Label>
                             <select value={onExceeded} onChange={e => setOnExceeded(e.target.value)} className={selectCls}>
                                 <option value="block">Block</option>
                                 <option value="warn">Warn only</option>
@@ -647,7 +647,7 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
                 )}
                 {budgetEnabled && (
                     <div className="pt-2 space-y-2">
-                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-neutral-500">
+                        <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-neutral-400">
                             <span>Current Spend</span>
                             <span className="text-amber-400">${(agent.totalSpendUsd || 0).toFixed(4)} / ${limitUsd || '–'}</span>
                         </div>
@@ -669,12 +669,12 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
                 </div>
                 <div className="space-y-4">
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Allowlist (comma-separated, supports wildcards)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Allowlist (comma-separated, supports wildcards)</Label>
                         <Input value={allowedTools} onChange={e => setAllowedTools(e.target.value)} placeholder="read_*, list_files, search" className={inputCls} />
                         <p className="text-[10px] text-neutral-600">If set, only these tools are permitted. Leave empty to allow all.</p>
                     </div>
                     <div className="space-y-2">
-                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Blocklist (comma-separated, supports wildcards)</Label>
+                        <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Blocklist (comma-separated, supports wildcards)</Label>
                         <Input value={blockedTools} onChange={e => setBlockedTools(e.target.value)} placeholder="bash, delete_*, send_email" className={inputCls} />
                     </div>
                 </div>
@@ -695,21 +695,21 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
                 {piiEnabled && (
                     <div className="space-y-5 pt-2">
                         <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Patterns to Detect</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Patterns to Detect</Label>
                             <div className="flex flex-wrap gap-2">
                                 {ALL_PATTERNS.map(p => (
                                     <button key={p} onClick={() => togglePattern(p)}
                                         className={`px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all border ${
                                             piiPatterns.includes(p)
                                                 ? 'bg-purple-500/20 border-purple-500/40 text-purple-300'
-                                                : 'bg-white/5 border-white/10 text-neutral-500 hover:text-white'
+                                                : 'bg-white/5 border-white/10 text-neutral-400 hover:text-white'
                                         }`}
                                     >{p.replace('_', ' ')}</button>
                                 ))}
                             </div>
                         </div>
                         <div className="space-y-2">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Action</Label>
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Action</Label>
                             <select value={piiAction} onChange={e => setPiiAction(e.target.value)} className={selectCls} style={{ maxWidth: '200px' }}>
                                 <option value="redact">Redact (replace with [REDACTED])</option>
                                 <option value="block">Block (deny entire call)</option>
@@ -730,10 +730,10 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
 
 function StatItem({ label, value, sub, color = "text-white", icon }: { label: string, value: string, sub?: string, color?: string, icon: React.ReactNode }) {
     return (
-        <div className="bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-6 space-y-2 relative overflow-hidden group">
+        <div className="bg-neutral-900/40 border border-white/10 rounded-3xl p-6 space-y-2 relative overflow-hidden group">
             <div className="flex items-center gap-3 relative z-10">
                 {icon}
-                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500">{label}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">{label}</span>
             </div>
             <div className="relative z-10 flex flex-col">
                 <span className={`text-4xl font-black tracking-tighter ${color}`}>{value}</span>

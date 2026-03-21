@@ -181,19 +181,19 @@ export default function Article12Page() {
                     <div className="space-y-6">
                         <h3 className="text-2xl font-black uppercase italic tracking-tight">Related Articles</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link href="/learn/ai-agent-audit-trail-logging" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/ai-agent-audit-trail-logging" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">AI Agent Audit Trail Logging</h4>
                                 <p className="text-sm text-neutral-500 mt-2">Complete guide to implementing immutable audit trails for AI agents.</p>
                             </Link>
-                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act Compliance for AI Agents</h4>
                                 <p className="text-sm text-neutral-500 mt-2">Full compliance guide covering Articles 9, 12, and 14.</p>
                             </Link>
-                            <Link href="/eu-ai-act/article-14" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/eu-ai-act/article-14" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Article 14: Human Oversight</h4>
                                 <p className="text-sm text-neutral-500 mt-2">Implementing human-in-the-loop controls for EU AI Act compliance.</p>
                             </Link>
-                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act August 2026 Deadline</h4>
                                 <p className="text-sm text-neutral-500 mt-2">What AI agent developers must do before August 2, 2026.</p>
                             </Link>

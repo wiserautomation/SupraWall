@@ -125,7 +125,7 @@ export default function ApprovalsPage() {
             className="space-y-8 max-w-6xl mx-auto pb-20"
         >
             {/* ── Header ── */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-b border-white/[0.05] pb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12 border-b border-white/10 pb-10">
                 <div className="space-y-3">
                     <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]" />
@@ -134,21 +134,21 @@ export default function ApprovalsPage() {
                     <h1 className="text-5xl font-black tracking-tighter text-white uppercase italic leading-none">
                         Agent <span className="text-emerald-500">Governance</span>
                     </h1>
-                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.3em] max-w-md">
+                    <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.3em] max-w-md">
                         Critical system actions held for authorized human review.
                     </p>
                 </div>
                 <div className="flex items-center gap-10">
                     <div className="text-right">
                         <p className="text-4xl font-black text-white italic tabular-nums leading-none">{requests.length}</p>
-                        <p className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1">Pending Threats</p>
+                        <p className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mt-1">Pending Threats</p>
                     </div>
                     <div className="h-12 w-px bg-white/10 hidden md:block" />
                     <div className="text-right hidden sm:block">
                         <p className="text-4xl font-black text-emerald-500 italic tabular-nums leading-none">
                             ${requests.reduce((acc, r) => acc + r.estimatedCostUsd, 0).toFixed(4)}
                         </p>
-                        <p className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1">Risk Exposure</p>
+                        <p className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mt-1">Risk Exposure</p>
                     </div>
                 </div>
             </div>
@@ -158,14 +158,14 @@ export default function ApprovalsPage() {
                     <Loader2 className="w-10 h-10 text-emerald-500 animate-spin" />
                     <div className="text-center space-y-1">
                         <p className="text-[10px] font-black text-white uppercase tracking-[0.2em]">Synchronizing Vault...</p>
-                        <p className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">Scanning active agents across the organization.</p>
+                        <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">Scanning active agents across the organization.</p>
                     </div>
                 </div>
             ) : requests.length === 0 ? (
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="bg-zinc-900/40 backdrop-blur-3xl border border-white/[0.05] rounded-[2.5rem] p-24 text-center space-y-6 relative overflow-hidden group"
+                    className="bg-zinc-900/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] p-24 text-center space-y-6 relative overflow-hidden group"
                 >
                     <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none" />
                     <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center mx-auto border border-emerald-500/20 shadow-[0_0_50px_rgba(16,185,129,0.1)] group-hover:scale-110 transition-transform duration-500">
@@ -173,7 +173,7 @@ export default function ApprovalsPage() {
                     </div>
                     <div className="space-y-2 relative">
                         <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">Perimeter Secure</h3>
-                        <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.25em]">No actions currently violate security thresholds.</p>
+                        <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.25em]">No actions currently violate security thresholds.</p>
                     </div>
                 </motion.div>
             ) : (
@@ -189,7 +189,7 @@ export default function ApprovalsPage() {
                                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                 className="group"
                             >
-                                <Card className="bg-zinc-900/60 backdrop-blur-2xl border-white/[0.05] group-hover:border-emerald-500/30 transition-all duration-500 overflow-hidden rounded-[2rem]">
+                                <Card className="bg-zinc-900/60 backdrop-blur-2xl border-white/10 group-hover:border-emerald-500/30 transition-all duration-500 overflow-hidden rounded-[2rem]">
                                     <div className="absolute top-0 left-0 w-1.5 h-full bg-emerald-500/20 group-hover:bg-emerald-500 transition-all duration-500" />
                                     <CardContent className="p-0">
                                         <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] divide-x divide-white/5">
@@ -261,7 +261,7 @@ export default function ApprovalsPage() {
                                                                 <Cpu className="w-3 h-3 text-emerald-500/50" />
                                                                 Origin Agent
                                                             </p>
-                                                            <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                                                            <div className="p-3 bg-white/[0.05] border border-white/5 rounded-xl">
                                                                 <p className="text-xs font-black text-white italic uppercase">{req.agentName}</p>
                                                                 <p className="text-[9px] font-mono text-zinc-500 mt-1 uppercase tracking-tighter">{req.agentId}</p>
                                                             </div>
@@ -273,7 +273,7 @@ export default function ApprovalsPage() {
                                                                     <Shield className="w-3 h-3 text-blue-500/50" />
                                                                     Context Trace
                                                                 </p>
-                                                                <div className="p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                                                                <div className="p-3 bg-white/[0.05] border border-white/5 rounded-xl">
                                                                     <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest truncate">Session: {req.sessionId.substring(0, 16)}...</p>
                                                                     {req.agentRole && (
                                                                         <Badge variant="outline" className="mt-2 text-[8px] border-white/10 text-zinc-500 uppercase tracking-widest px-1.5 font-bold">Role: {req.agentRole}</Badge>
@@ -319,8 +319,8 @@ export default function ApprovalsPage() {
             )}
 
             {/* ── Governance System Overview ── */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16 border-t border-white/[0.05]">
-                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-16 border-t border-white/10">
+                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20">
                             <Check className="w-5 h-5 text-emerald-500" />
@@ -332,7 +332,7 @@ export default function ApprovalsPage() {
                     </p>
                 </div>
                 
-                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
                             <X className="w-5 h-5 text-rose-500" />
@@ -344,7 +344,7 @@ export default function ApprovalsPage() {
                     </p>
                 </div>
 
-                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                <div className="space-y-4 p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
                             <Lock className="w-5 h-5 text-amber-500" />

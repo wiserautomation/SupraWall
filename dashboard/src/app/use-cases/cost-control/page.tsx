@@ -210,14 +210,14 @@ async def run_agent(task):
                                 Effective <strong>ai budget control</strong> requires tiered enforcement. SupraWall models these as distinct policy actions:
                             </p>
                             <div className="space-y-4">
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 flex gap-6 items-start">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5 flex gap-6 items-start">
                                     <Lock className="w-6 h-6 text-emerald-500 mt-1" />
                                     <div>
                                         <h4 className="font-bold text-white uppercase tracking-widest text-sm mb-1">Hard Halt</h4>
                                         <p className="text-sm text-neutral-500 italic">Immediately kill the execution process and revoke tool access once the limit is hit.</p>
                                     </div>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5 flex gap-6 items-start">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5 flex gap-6 items-start">
                                     <BarChart3 className="w-6 h-6 text-emerald-500 mt-1" />
                                     <div>
                                         <h4 className="font-bold text-white uppercase tracking-widest text-sm mb-1">Downgrade Strategy</h4>
@@ -249,12 +249,12 @@ async def run_agent(task):
 
                     {/* Bottom Links */}
                     <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">What is ARS?</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">The framework for securing LLM-env interaction.</p>
                         </Link>
-                        <Link href="/blog/prevent-agent-infinite-loops" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/blog/prevent-agent-infinite-loops" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Analysis</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Stopping Loops</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">How recursive failures lead to budget exhaustion.</p>

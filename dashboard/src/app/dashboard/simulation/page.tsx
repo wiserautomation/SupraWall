@@ -138,7 +138,7 @@ export default function SimulationPage() {
                             </div>
                             <h1 className="text-4xl font-black tracking-tighter uppercase italic">Adversarial Simulator</h1>
                         </div>
-                        <p className="text-neutral-500 max-w-lg text-sm font-medium leading-relaxed tracking-wide uppercase">
+                        <p className="text-neutral-400 max-w-lg text-sm font-medium leading-relaxed tracking-wide uppercase">
                             Stress-test your security perimeter by injecting synthetic agent activity and policy-triggering events.
                         </p>
                     </div>
@@ -161,12 +161,12 @@ export default function SimulationPage() {
                     
                     {/* Controls Sidebar */}
                     <div className="space-y-8">
-                        <section className="bg-neutral-900/60 border border-white/[0.05] rounded-3xl p-8 space-y-8 backdrop-blur-3xl relative overflow-hidden group">
+                        <section className="bg-neutral-900/60 border border-white/10 rounded-3xl p-8 space-y-8 backdrop-blur-3xl relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-indigo-500/10 transition-colors" />
                             
                             <div className="space-y-6 relative z-10">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Assigned Agent Identity</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 ml-1">Assigned Agent Identity</label>
                                     <select 
                                         value={selectedAgentId}
                                         onChange={(e) => setSelectedAgentId(e.target.value)}
@@ -180,7 +180,7 @@ export default function SimulationPage() {
 
                                 <div className="space-y-3">
                                     <div className="flex justify-between items-center px-1">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Emission Frequency</label>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Emission Frequency</label>
                                         <Badge variant="outline" className="text-indigo-400 border-indigo-500/20">{speed}ms</Badge>
                                     </div>
                                     <input 
@@ -220,8 +220,8 @@ export default function SimulationPage() {
 
                     {/* Live Stream Page */}
                     <div className="lg:col-span-2 space-y-6">
-                        <div className="bg-neutral-900/60 border border-white/[0.05] rounded-3xl overflow-hidden min-h-[500px] flex flex-col">
-                            <div className="p-6 border-b border-white/5 bg-white/[0.02] flex items-center justify-between">
+                        <div className="bg-neutral-900/60 border border-white/10 rounded-3xl overflow-hidden min-h-[500px] flex flex-col">
+                            <div className="p-6 border-b border-white/5 bg-white/[0.05] flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className={`w-2 h-2 rounded-full ${isSimulating ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-600'}`} />
                                     <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Live Synthetic Telemetry</h3>
@@ -242,7 +242,7 @@ export default function SimulationPage() {
                                         >
                                             <div className="flex items-center justify-between relative z-10">
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-neutral-500 font-bold">[{log.localTime}]</span>
+                                                    <span className="text-neutral-400 font-bold">[{log.localTime}]</span>
                                                     <span className="text-indigo-400 font-black tracking-tight">{log.toolName}</span>
                                                 </div>
                                                 <Badge className={`px-2 py-0.5 h-6 text-[9px] font-black border ${
@@ -253,7 +253,7 @@ export default function SimulationPage() {
                                                     {log.decision}
                                                 </Badge>
                                             </div>
-                                            <div className="text-[10px] text-neutral-500 bg-white/5 p-2 rounded-lg border border-white/5 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                                            <div className="text-[10px] text-neutral-400 bg-white/5 p-2 rounded-lg border border-white/5 overflow-hidden whitespace-nowrap overflow-ellipsis">
                                                 ARGS: {log.arguments}
                                             </div>
                                             {log.decision !== 'ALLOW' && (
@@ -282,16 +282,16 @@ export default function SimulationPage() {
 
                         {/* Visual Breakdown */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-6 flex items-center justify-between">
+                            <div className="bg-neutral-900/40 border border-white/10 rounded-3xl p-6 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Decision Flux</div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Decision Flux</div>
                                     <div className="text-2xl font-black text-white">Adversarial</div>
                                 </div>
                                 <ShieldAlert className="w-10 h-10 text-rose-500/20" />
                             </div>
-                            <div className="bg-neutral-900/40 border border-white/[0.05] rounded-3xl p-6 flex items-center justify-between">
+                            <div className="bg-neutral-900/40 border border-white/10 rounded-3xl p-6 flex items-center justify-between">
                                 <div className="space-y-1">
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-neutral-500">Latency Simulation</div>
+                                    <div className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Latency Simulation</div>
                                     <div className="text-2xl font-black text-white">Elastic</div>
                                 </div>
                                 <Activity className="w-10 h-10 text-emerald-500/20" />

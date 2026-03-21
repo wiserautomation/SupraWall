@@ -92,7 +92,7 @@ export default function AdminAuditPage() {
                                     </tr>
                                 ) : (
                                     logs.map((log) => (
-                                        <tr key={log.id} className="hover:bg-white/[0.02] transition-colors font-mono">
+                                        <tr key={log.id} className="hover:bg-white/[0.05] transition-colors font-mono">
                                             <td className="px-6 py-4 text-neutral-400 text-xs">
                                                 {format(new Date(log.timestamp), "MMM d, HH:mm:ss")}
                                             </td>

@@ -409,7 +409,7 @@ export default function VaultClient() {
                                 </thead>
                                 <tbody className="divide-y divide-white/[0.04]">
                                     {COMPARISON.map((row) => (
-                                        <tr key={row.capability} className="hover:bg-white/[0.02] transition-colors">
+                                        <tr key={row.capability} className="hover:bg-white/[0.05] transition-colors">
                                             <td className="px-8 py-5 text-neutral-300 font-medium text-sm">{row.capability}</td>
                                             <td className="px-6 py-5"><Cell value={row.sw} /></td>
                                             <td className="px-6 py-5"><Cell value={row.hc} /></td>

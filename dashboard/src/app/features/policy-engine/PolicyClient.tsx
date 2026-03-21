@@ -167,7 +167,7 @@ export default function PolicyEngineClient() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {POLICY_TYPES.map((type) => (
-                            <div key={type.id} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/[0.05] space-y-8 hover:border-white/20 transition-all group overflow-hidden relative">
+                            <div key={type.id} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/10 space-y-8 hover:border-white/20 transition-all group overflow-hidden relative">
                                 <div className={`absolute top-0 right-0 w-32 h-32 blur-[60px] opacity-20 pointer-events-none transition-opacity group-hover:opacity-40 bg-${type.color}-500`} />
                                 <div className={`p-4 rounded-2xl w-fit ${type.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' : type.color === 'rose' ? 'bg-rose-500/10 text-rose-400' : 'bg-blue-500/10 text-blue-400'}`}>
                                     {type.icon}

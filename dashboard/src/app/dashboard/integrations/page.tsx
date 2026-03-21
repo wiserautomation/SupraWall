@@ -8,7 +8,7 @@ export default function IntegrationsDashboardPage() {
     return (
         <div className="space-y-12">
             <div className="space-y-2">
-                <h1 className="text-4xl font-black text-white tracking-tight uppercase italic">Framework Integrations</h1>
+                <h1 className="text-4xl font-black text-white tracking-tight uppercase italic heading-glow">Framework Integrations</h1>
                 <p className="text-neutral-400 text-sm">One-click security for your agentic ecosystem.</p>
             </div>
 
@@ -19,16 +19,16 @@ export default function IntegrationsDashboardPage() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.1 }}
-                        className="group p-8 rounded-[32px] bg-neutral-900/50 border border-white/[0.05] hover:border-emerald-500/30 transition-all flex flex-col items-start gap-4"
+                        className="group p-8 rounded-[32px] bg-neutral-900/50 border border-white/10 hover:border-emerald-500/30 transition-all flex flex-col items-start gap-4 card-hover light-sweep"
                     >
-                        <div className={`p-3 rounded-2xl ${fw.color} bg-opacity-20`}>
+                        <div className={`p-3 rounded-2xl ${fw.color} bg-opacity-20 group-hover:ring-2 group-hover:ring-emerald-500/30 group-hover:shadow-[0_0_20px_rgba(16,185,129,0.2)] transition-all duration-300`}>
                             <fw.icon className={`w-6 h-6 ${fw.textColor}`} />
                         </div>
                         <div className="space-y-1 mt-2">
                             <h3 className="text-lg font-black text-white uppercase tracking-tight">{fw.name}</h3>
-                            <p className="text-neutral-500 text-xs leading-relaxed">{fw.desc}</p>
+                            <p className="text-neutral-400 text-xs leading-relaxed">{fw.desc}</p>
                         </div>
-                        <div className="w-full h-px bg-white/[0.05] my-4" />
+                        <div className="w-full h-px bg-emerald-500/10 my-4" />
                         <Link href={fw.href} className="text-[10px] font-black uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors">
                             Configure Integration →
                         </Link>

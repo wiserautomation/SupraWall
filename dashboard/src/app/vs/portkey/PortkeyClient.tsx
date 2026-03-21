@@ -33,7 +33,7 @@ export default function PortkeyClient({ comparisonData }: { comparisonData: Comp
 
             {/* Comparison Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="p-10 rounded-3xl bg-white/[0.02] border border-white/5 space-y-8 group transition-all hover:bg-white/[0.04]">
+                <div className="p-10 rounded-3xl bg-white/[0.05] border border-white/5 space-y-8 group transition-all hover:bg-white/[0.04]">
                     <div className="space-y-4">
                         <h3 className="text-2xl font-black uppercase italic text-neutral-500">Portkey AI</h3>
                         <p className="text-sm text-neutral-500 leading-relaxed font-medium">
@@ -73,7 +73,7 @@ export default function PortkeyClient({ comparisonData }: { comparisonData: Comp
                 <div className="overflow-x-auto rounded-3xl border border-white/5 bg-white/[0.01]">
                     <table className="w-full text-left text-sm border-collapse">
                         <thead>
-                            <tr className="border-b border-white/5 bg-white/[0.02]">
+                            <tr className="border-b border-white/5 bg-white/[0.05]">
                                 <th className="p-6 font-black uppercase tracking-widest text-neutral-500">Feature</th>
                                 <th className="p-6 font-black uppercase tracking-widest text-neutral-500">Portkey</th>
                                 <th className="p-6 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
@@ -81,7 +81,7 @@ export default function PortkeyClient({ comparisonData }: { comparisonData: Comp
                         </thead>
                         <tbody>
                             {comparisonData.map((row, i) => (
-                                <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                <tr key={i} className="border-b border-white/5 hover:bg-white/[0.05] transition-colors">
                                     <td className="p-6 font-bold text-neutral-300">{row.feature}</td>
                                     <td className="p-6">
                                         {row.portkey === true ? <Check className="w-5 h-5 text-emerald-500" /> : row.portkey === false ? <X className="w-5 h-5 text-rose-900" /> : <span className="text-neutral-500 font-bold">{row.portkey}</span>}

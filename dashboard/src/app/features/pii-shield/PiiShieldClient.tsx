@@ -150,7 +150,7 @@ export default function PiiShieldClient() {
                             { title: "One-Click GDPR", desc: "Instantly satisfy Article 25 (Data Protection by Design) by ensuring agents never export raw customer data.", icon: <FileText className="w-8 h-8 text-blue-400" /> },
                             { title: "Custom Dictionaries", desc: "Block company-specific secrets like project names, internal IDs, or sensitive file paths.", icon: <Lock className="w-8 h-8 text-emerald-400" /> }
                         ].map((p, i) => (
-                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/[0.05] space-y-8 hover:border-purple-500/30 transition-all group overflow-hidden relative">
+                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/10 space-y-8 hover:border-purple-500/30 transition-all group overflow-hidden relative">
                                 <div className="p-4 rounded-2xl w-fit mx-auto md:mx-0 bg-white/5 border border-white/10">{p.icon}</div>
                                 <div className="space-y-4">
                                     <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter leading-none">{p.title}</h4>

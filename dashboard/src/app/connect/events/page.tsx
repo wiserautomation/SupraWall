@@ -61,7 +61,7 @@ export default function ConnectEventsPage() {
             </div>
 
             {/* Filters */}
-            <div className="flex flex-wrap gap-4 items-center bg-white/[0.02] border border-white/[0.08] p-4 rounded-2xl backdrop-blur-md">
+            <div className="flex flex-wrap gap-4 items-center bg-white/[0.05] border border-white/[0.08] p-4 rounded-2xl backdrop-blur-md">
                 <div className="relative flex-1 min-w-[200px] max-w-xs">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-600" />
                     <Input
@@ -116,10 +116,10 @@ export default function ConnectEventsPage() {
                     description="No agent activity matched your filter parameters within the specified time range."
                 />
             ) : (
-                <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl overflow-hidden backdrop-blur-sm">
+                <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl overflow-hidden backdrop-blur-sm">
                     {/* Table header */}
                     <div className="grid grid-cols-[1.2fr_1.8fr_1fr_100px_120px_90px_130px] gap-4 px-6 py-4
-                        bg-white/[0.01] border-b border-white/[0.05] text-[10px] font-black uppercase tracking-widest text-neutral-500">
+                        bg-white/[0.01] border-b border-white/10 text-[10px] font-black uppercase tracking-widest text-neutral-500">
                         <span>Source Entity</span>
                         <span>Capability Invoked</span>
                         <span>Heuristic Reason</span>
@@ -149,7 +149,7 @@ export default function ConnectEventsPage() {
 
                                 {/* Tool */}
                                 <div className="flex items-center gap-2 min-w-0">
-                                    <div className="p-1.5 rounded-md bg-black border border-white/[0.05] group-hover:border-emerald-500/20 transition-all">
+                                    <div className="p-1.5 rounded-md bg-black border border-white/10 group-hover:border-emerald-500/20 transition-all">
                                         <Cpu className="w-3.5 h-3.5 text-neutral-600 group-hover:text-emerald-500 transition-colors" />
                                     </div>
                                     <code className="text-[11px] font-mono text-emerald-400 truncate opacity-80 group-hover:opacity-100 italic">

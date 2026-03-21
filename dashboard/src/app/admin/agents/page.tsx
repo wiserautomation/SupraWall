@@ -112,7 +112,7 @@ export default function AdminAgentsPage() {
                                     </tr>
                                 ) : (
                                     filteredAgents.map((agent) => (
-                                        <tr key={agent.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <tr key={agent.id} className="hover:bg-white/[0.05] transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="font-medium text-white flex items-center gap-2">
                                                     {agent.name}

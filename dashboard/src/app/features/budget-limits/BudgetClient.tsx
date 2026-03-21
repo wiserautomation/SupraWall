@@ -501,7 +501,7 @@ export default function BudgetClient() {
                                 </thead>
                                 <tbody className="divide-y divide-white/[0.04]">
                                     {COMPARISON_ROWS.map((row) => (
-                                        <tr key={row.cap} className="hover:bg-white/[0.02] transition-colors">
+                                        <tr key={row.cap} className="hover:bg-white/[0.05] transition-colors">
                                             <td className="px-8 py-5 text-neutral-300 font-medium text-sm">{row.cap}</td>
                                             <td className="px-5 py-5"><CmpCell v={row.sw} /></td>
                                             <td className="px-5 py-5"><CmpCell v={row.api} /></td>

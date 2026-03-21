@@ -166,7 +166,7 @@ export default function AuditTrailClient() {
                             { art: "Article 11", title: "Technical Documentation", desc: "Automatic generation of the system logs required for technical conformity assessment by regulatory bodies.", icon: <FileText className="w-8 h-8 text-blue-400" /> },
                             { art: "Article 14", title: "Human Oversight", desc: "Cryptographic proof that human approval was required and delivered for every non-trivial agent outcome.", icon: <Users className="w-8 h-8 text-blue-400" /> }
                         ].map((p, i) => (
-                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/[0.05] flex gap-8 hover:border-blue-500/30 transition-all group overflow-hidden relative">
+                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/10 flex gap-8 hover:border-blue-500/30 transition-all group overflow-hidden relative">
                                 <div className="p-6 rounded-3xl bg-blue-500/10 text-blue-500 h-fit group-hover:scale-110 transition-transform">
                                     {p.icon}
                                 </div>

@@ -123,7 +123,7 @@ export default function PartnerPage() {
                 {/* Benefits grid */}
                 <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
                     {benefits.map(({ icon, title, desc }) => (
-                        <div key={title} className="bg-black/30 border border-white/[0.05] rounded-xl p-5">
+                        <div key={title} className="bg-black/30 border border-white/10 rounded-xl p-5">
                             <div className="text-2xl mb-3">{icon}</div>
                             <h3 className="text-sm font-semibold text-white mb-2">{title}</h3>
                             <p className="text-xs text-neutral-500 leading-relaxed">{desc}</p>

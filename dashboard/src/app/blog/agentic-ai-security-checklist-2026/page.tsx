@@ -455,7 +455,7 @@ const incident_runbook = {
                             {checklistItems.map((item, idx) => {
                                 const Icon = item.icon;
                                 return (
-                                    <div key={idx} className="not-prose space-y-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 transition-colors">
+                                    <div key={idx} className="not-prose space-y-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/20 transition-colors">
                                         <div className="flex items-start gap-4">
                                             <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/50 shrink-0 text-emerald-400 font-black text-sm">
                                                 {item.number}
@@ -567,7 +567,7 @@ const incident_runbook = {
                                     <p className="text-xs text-neutral-500 italic mt-4">These five controls stop 80% of real-world incidents. Do not deploy to production without them.</p>
                                 </div>
 
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-lg font-black text-white uppercase italic mb-3">Phase 2: High-Risk Coverage (Week 2–3)</h4>
                                     <ul className="space-y-2 text-neutral-300 text-sm">
                                         <li>✓ Infinite Loop Detection (Control #6)</li>
@@ -578,7 +578,7 @@ const incident_runbook = {
                                     <p className="text-xs text-neutral-500 italic mt-4">Add these if your agents access external APIs, handle sensitive data, or accept user input.</p>
                                 </div>
 
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-lg font-black text-white uppercase italic mb-3">Phase 3: Operational Excellence (Week 4+)</h4>
                                     <ul className="space-y-2 text-neutral-300 text-sm">
                                         <li>✓ Output Validation (Control #9)</li>
@@ -600,7 +600,7 @@ const incident_runbook = {
                             </h2>
 
                             <div className="not-prose space-y-6">
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Mistake 1: Implementing Controls After an Incident</h4>
@@ -610,7 +610,7 @@ const incident_runbook = {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Mistake 2: Soft Limits Instead of Hard Caps</h4>
@@ -620,7 +620,7 @@ const incident_runbook = {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Mistake 3: Mutable Audit Logs</h4>
@@ -630,7 +630,7 @@ const incident_runbook = {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Mistake 4: Hardcoding Credentials into Agent Code</h4>
@@ -640,7 +640,7 @@ const incident_runbook = {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Mistake 5: Skipping Human Approval for "Low-Risk" Actions</h4>
@@ -662,15 +662,15 @@ const incident_runbook = {
                             </p>
 
                             <div className="not-prose space-y-4">
-                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                                <div className="p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-sm font-black uppercase tracking-widest text-emerald-400 mb-2">EU AI Act Article 12 (Transparency)</h4>
                                     <p className="text-neutral-400 text-sm">Covered by: Immutable Audit Logging (#5), EU AI Act Evidence (#13). Your logs and compliance exports provide the transparency Article 12 requires.</p>
                                 </div>
-                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                                <div className="p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-sm font-black uppercase tracking-widest text-emerald-400 mb-2">EU AI Act Article 14 (Human Oversight)</h4>
                                     <p className="text-neutral-400 text-sm">Covered by: Human-in-the-Loop Gates (#4), Audit Logging (#5). Your approval workflows and decision logs satisfy Article 14's oversight requirements.</p>
                                 </div>
-                                <div className="p-6 rounded-2xl bg-white/[0.02] border border-white/5">
+                                <div className="p-6 rounded-2xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-sm font-black uppercase tracking-widest text-emerald-400 mb-2">SOC 2 Type II (Operational Controls)</h4>
                                     <p className="text-neutral-400 text-sm">Covered by: All 15 controls. Audit logging, role-based access, incident response procedures, and compliance reporting align with SOC 2 requirements.</p>
                                 </div>
@@ -736,32 +736,32 @@ secured_agent = protect(
                     <div className="pt-20 border-t border-white/10">
                         <h2 className="text-2xl font-black uppercase italic tracking-tight text-white mb-8">Related Articles</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link href="/learn/what-are-ai-agent-guardrails" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/what-are-ai-agent-guardrails" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">What Are AI Agent Guardrails?</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">Understanding the foundational concept of runtime controls and security guardrails.</p>
                             </Link>
-                            <Link href="/learn/ai-agent-security-best-practices" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/ai-agent-security-best-practices" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">AI Agent Security Best Practices</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">A complete playbook for securing autonomous agents in production environments.</p>
                             </Link>
-                            <Link href="/features/vault" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/features/vault" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Feature Guide</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">SupraWall Vault: Credential Protection</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">How to isolate credentials and inject scoped secrets at runtime.</p>
                             </Link>
-                            <Link href="/features/budget-limits" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/features/budget-limits" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Feature Guide</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Budget Enforcement & Cost Control</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">Set hard spending caps and prevent runaway agent costs.</p>
                             </Link>
-                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Compliance Guide</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act Compliance for AI Agents</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">How this checklist aligns with Articles 12–14 of the EU AI Act.</p>
                             </Link>
-                            <Link href="/build-vs-buy-ai-agent-security" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/build-vs-buy-ai-agent-security" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Decision Guide</p>
                                 <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Build vs Buy: AI Agent Security</h4>
                                 <p className="text-sm text-neutral-500 mt-2 italic">The hidden costs of building these 15 controls in-house.</p>

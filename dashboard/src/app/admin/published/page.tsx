@@ -64,7 +64,7 @@ export default function PublishedPages() {
                             <tr><td colSpan={4} className="px-6 py-12 text-center text-neutral-500">No published pages found.</td></tr>
                         ) : (
                             filtered.map(page => (
-                                <tr key={page.id} className="hover:bg-white/[0.02] transition-colors group">
+                                <tr key={page.id} className="hover:bg-white/[0.05] transition-colors group">
                                     <td className="px-6 py-4">
                                         <p className="text-sm font-bold text-white tracking-tight">{page.url}</p>
                                         <p className="text-[10px] text-neutral-500 uppercase font-bold mt-1 tracking-wider">{page.type}</p>

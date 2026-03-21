@@ -158,7 +158,7 @@ export default function PromptShieldClient() {
                             { title: "Deterministic Intercept", desc: "A hard block on tool calls that violates policies, regardless of how &ldquo;persuasive&rdquo; the injection is.", icon: <ShieldCheck className="w-8 h-8 text-emerald-400" /> },
                             { title: "Jailbreak Scrubbing", desc: "Automatic identification and removal of base64, ROT13, and other obfuscated injection attempts.", icon: <Bug className="w-8 h-8 text-rose-400" /> }
                         ].map((p, i) => (
-                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/[0.05] space-y-8 hover:border-emerald-500/30 transition-all group overflow-hidden relative">
+                            <div key={i} className="p-10 rounded-[3rem] bg-neutral-900/40 border border-white/10 space-y-8 hover:border-emerald-500/30 transition-all group overflow-hidden relative">
                                 <div className="p-4 rounded-2xl w-fit mx-auto md:mx-0 bg-white/5 border border-white/10">{p.icon}</div>
                                 <div className="space-y-4">
                                     <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter leading-none">{p.title}</h4>

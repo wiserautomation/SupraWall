@@ -449,7 +449,7 @@ export function ICPEntryPoints() {
                         {/* Features */}
                         <div className="space-y-3">
                             {p.features.map((f) => (
-                                <Link key={f.label} href={f.href} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] border border-white/[0.04] hover:border-emerald-500/20 transition-all group/link">
+                                <Link key={f.label} href={f.href} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.05] border border-white/[0.08] hover:border-emerald-500/20 transition-all group/link">
                                     <ArrowRight className="w-3.5 h-3.5 text-emerald-500 group-hover/link:translate-x-1 transition-transform flex-shrink-0" />
                                     <div>
                                         <p className="text-white text-sm font-bold group-hover/link:text-emerald-400 transition-colors">{f.label}</p>

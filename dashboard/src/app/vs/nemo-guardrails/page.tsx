@@ -137,7 +137,7 @@ export default function vsNemoGuardrailsPage() {
                         <div className="overflow-x-auto rounded-[2.5rem] border border-white/5 bg-white/[0.01] p-1">
                             <table className="w-full text-left text-sm border-collapse">
                                 <thead>
-                                    <tr className="border-b border-white/5 bg-white/[0.02]">
+                                    <tr className="border-b border-white/5 bg-white/[0.05]">
                                         <th className="p-8 font-black uppercase tracking-widest text-neutral-500">Feature</th>
                                         <th className="p-8 font-black uppercase tracking-widest text-neutral-500">NeMo Guardrails</th>
                                         <th className="p-8 font-black uppercase tracking-widest text-emerald-500">SupraWall</th>
@@ -145,7 +145,7 @@ export default function vsNemoGuardrailsPage() {
                                 </thead>
                                 <tbody>
                                     {comparisonData.map((row, i) => (
-                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors group">
+                                        <tr key={i} className="border-b border-white/5 hover:bg-white/[0.05] transition-colors group">
                                             <td className="p-8 font-bold text-neutral-300 text-lg uppercase italic tracking-tighter">{row.feature}</td>
                                             <td className="p-8">
                                                 {row.nemo === true ? <Check className="w-6 h-6 text-emerald-500" /> : row.nemo === false ? <X className="w-6 h-6 text-rose-900" /> : <span className="text-neutral-500 font-bold">{row.nemo}</span>}

@@ -87,7 +87,7 @@ export default function LearnHubClient() {
                                     <Link 
                                         key={art.href} 
                                         href={art.href}
-                                        className="p-8 rounded-[2.5rem] bg-neutral-900/40 border border-white/[0.05] hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[280px]"
+                                        className="p-8 rounded-[2.5rem] bg-neutral-900/40 border border-white/10 hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[280px]"
                                     >
                                         <div className="space-y-4 relative z-10">
                                             <div className="flex items-center gap-2 text-emerald-500/50 mb-2">

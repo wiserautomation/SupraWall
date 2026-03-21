@@ -117,7 +117,7 @@ export default function AdminUsersPage() {
                                     </tr>
                                 ) : (
                                     filteredUsers.map((user) => (
-                                        <tr key={user.id} className="hover:bg-white/[0.02] transition-colors group">
+                                        <tr key={user.id} className="hover:bg-white/[0.05] transition-colors group">
                                             <td className="px-6 py-4">
                                                 <div className="font-medium text-white flex items-center gap-2">
                                                     {user.email}

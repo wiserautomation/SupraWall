@@ -82,19 +82,19 @@ export default function StateOfAIAgentSecurity2026Page() {
 
                             {/* Stat Grid */}
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 not-prose">
-                                <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/10">
                                     <p className="text-5xl font-black text-emerald-500 mb-3">67%</p>
                                     <p className="text-sm text-neutral-400 leading-relaxed">of enterprise AI deployments have <strong className="text-white">zero runtime access controls</strong> on their production agents. Tools can execute without any policy evaluation layer.</p>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/10">
                                     <p className="text-5xl font-black text-emerald-500 mb-3">$2.3M</p>
                                     <p className="text-sm text-neutral-400 leading-relaxed">average cost of an AI agent security incident in 2026, including data breach remediation, downtime, regulatory fines, and reputational damage.</p>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/10">
                                     <p className="text-5xl font-black text-emerald-500 mb-3">340%</p>
                                     <p className="text-sm text-neutral-400 leading-relaxed">increase in <strong className="text-white">reported prompt injection attacks</strong> on production agents compared to 2025. Indirect injection via tool outputs is now the dominant attack vector.</p>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.03] border border-white/10">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/10">
                                     <p className="text-5xl font-black text-emerald-500 mb-3">47</p>
                                     <p className="text-sm text-neutral-400 leading-relaxed">average number of production agents deployed per enterprise in Q1 2026, up from 9 in Q1 2025. Security postures have not scaled at the same rate.</p>
                                 </div>
@@ -159,7 +159,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                             </p>
 
                             {/* Threat 1 */}
-                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-widest">Critical</span>
                                     <h3 className="text-xl font-black text-white uppercase italic">1. Prompt Injection (Indirect, via Tool Outputs)</h3>
@@ -170,7 +170,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                             </div>
 
                             {/* Threat 2 */}
-                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-widest">Critical</span>
                                     <h3 className="text-xl font-black text-white uppercase italic">2. Runaway Cost Loops (Average Incident: $4,500)</h3>
@@ -181,7 +181,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                             </div>
 
                             {/* Threat 3 */}
-                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-black px-3 py-1 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/30 uppercase tracking-widest">Critical</span>
                                     <h3 className="text-xl font-black text-white uppercase italic">3. Credential Exfiltration via Tool Calls</h3>
@@ -192,7 +192,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                             </div>
 
                             {/* Threat 4 */}
-                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-black px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-widest">High</span>
                                     <h3 className="text-xl font-black text-white uppercase italic">4. Unauthorized Data Access (Excessive Permissions)</h3>
@@ -203,7 +203,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                             </div>
 
                             {/* Threat 5 */}
-                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                            <div className="space-y-3 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                 <div className="flex items-center gap-3">
                                     <span className="text-xs font-black px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/30 uppercase tracking-widest">High</span>
                                     <h3 className="text-xl font-black text-white uppercase italic">5. Compliance Failures (EU AI Act Articles 12 & 14)</h3>
@@ -303,7 +303,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                                                 gapColor: "text-rose-400",
                                             },
                                         ].map((row, idx) => (
-                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.05] transition-colors">
                                                 <td className="p-5 font-bold text-white">{row.layer}</td>
                                                 <td className="p-5 text-neutral-500 italic">{row.common}</td>
                                                 <td className="p-5 text-emerald-400">{row.required}</td>
@@ -383,7 +383,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                                         body: "Define categories of actions that require human review before execution. Implement this as a policy at the runtime layer, not as application code in each agent. A policy-driven HITL workflow can be applied consistently across all agents without per-agent engineering work.",
                                     },
                                 ].map((item, idx) => (
-                                    <div key={idx} className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                    <div key={idx} className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                         <span className="text-4xl font-black text-emerald-500/30 shrink-0 leading-none">{item.number}</span>
                                         <div>
                                             <h4 className="text-lg font-black text-white uppercase italic mb-2">{item.title}</h4>
@@ -418,17 +418,17 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
 
                     {/* Bottom Links */}
                     <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">Essential checklist for securing autonomous agents in production.</p>
                         </Link>
-                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">What is Agent Runtime Security?</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">The definitive framework for securing the LLM-to-environment boundary at runtime.</p>
                         </Link>
-                        <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/learn/eu-ai-act-compliance-ai-agents" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Compliance Guide</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act Compliance for Agents</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">Articles 12 and 14 explained for engineering and compliance teams deploying autonomous agents.</p>

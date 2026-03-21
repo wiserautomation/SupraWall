@@ -438,7 +438,7 @@ export default function WhatAreAIAgentGuardrailsPage() {
                             Related Articles
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-6 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                            <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                                 <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
                                 <p className="text-sm text-neutral-500 mt-2">Essential checklist for securing autonomous agents in production.</p>
                             </Link>

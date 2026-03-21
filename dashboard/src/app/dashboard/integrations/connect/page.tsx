@@ -95,7 +95,7 @@ export default function ConnectIntegrationPage() {
                     </div>
                     <div>
                         <h1 className="text-4xl font-black text-white tracking-tighter uppercase italic">SupraWall Connect</h1>
-                        <p className="text-neutral-500 text-sm font-medium uppercase tracking-widest">Universal Integration Sub-Keys</p>
+                        <p className="text-neutral-400 text-sm font-medium uppercase tracking-widest">Universal Integration Sub-Keys</p>
                     </div>
                 </div>
             </div>
@@ -106,10 +106,10 @@ export default function ConnectIntegrationPage() {
                     animate={{ opacity: 1, x: 0 }}
                     className="space-y-8"
                 >
-                    <div className="bg-neutral-900/50 border border-white/[0.05] rounded-[32px] p-8 space-y-6 shadow-2xl">
+                    <div className="bg-neutral-900/50 border border-white/10 rounded-[32px] p-8 space-y-6 shadow-2xl">
                         <div className="space-y-2">
                             <h2 className="text-xl font-black text-white uppercase tracking-tight">Generate Sub-Key</h2>
-                            <p className="text-neutral-500 text-xs">Authorize specific services or frameworks without exposing your root Agent Key.</p>
+                            <p className="text-neutral-400 text-xs">Authorize specific services or frameworks without exposing your root Agent Key.</p>
                         </div>
 
                         <div className="space-y-4">
@@ -167,10 +167,10 @@ export default function ConnectIntegrationPage() {
                                         onClick={() => copyToClipboard(generatedSubKey)}
                                         className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-white/5 rounded-lg transition-colors"
                                     >
-                                        {isCopying ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-neutral-500" />}
+                                        {isCopying ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4 text-neutral-400" />}
                                     </button>
                                 </div>
-                                <p className="text-[10px] text-neutral-500 leading-tight">
+                                <p className="text-[10px] text-neutral-400 leading-tight">
                                     This key inherits policies from the parent identity but allows isolated tracking and revocation.
                                 </p>
                             </motion.div>
@@ -183,7 +183,7 @@ export default function ConnectIntegrationPage() {
                     animate={{ opacity: 1, x: 0 }}
                     className="space-y-6"
                 >
-                    <div className="bg-neutral-900/30 border border-white/[0.05] rounded-[32px] p-8 space-y-6">
+                    <div className="bg-neutral-900/30 border border-white/10 rounded-[32px] p-8 space-y-6">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-blue-500/10 rounded-lg">
                                 <Command className="w-4 h-4 text-blue-400" />
@@ -203,7 +203,7 @@ export default function ConnectIntegrationPage() {
                                 </div>
                                 <div className="space-y-1">
                                     <h4 className="text-xs font-bold text-white uppercase tracking-tight">{item.title}</h4>
-                                    <p className="text-[11px] text-neutral-500 leading-relaxed">{item.desc}</p>
+                                    <p className="text-[11px] text-neutral-400 leading-relaxed">{item.desc}</p>
                                 </div>
                             </div>
                         ))}

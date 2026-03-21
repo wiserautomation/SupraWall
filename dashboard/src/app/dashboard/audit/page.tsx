@@ -234,7 +234,7 @@ export default function ForensicAuditPage() {
                         </div>
                         <div>
                             <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Forensic Audit Logs</h1>
-                            <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Tamper-proof, cryptographically-chained event stream with risk intelligence.</p>
+                            <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em]">Tamper-proof, cryptographically-chained event stream with risk intelligence.</p>
                         </div>
                     </div>
                 </div>
@@ -280,12 +280,12 @@ export default function ForensicAuditPage() {
                                         </div>
                                         <div>
                                             <h2 className="text-base font-semibold text-white">Export Compliance Report</h2>
-                                            <p className="text-xs text-neutral-500 mt-0.5">Human Oversight Evidence Report (PDF)</p>
+                                            <p className="text-xs text-neutral-400 mt-0.5">Human Oversight Evidence Report (PDF)</p>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => setShowExportModal(false)}
-                                        className="text-neutral-500 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
+                                        className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
                                     >
                                         <XCircle className="w-4 h-4" />
                                     </button>
@@ -301,7 +301,7 @@ export default function ForensicAuditPage() {
                                                 type="date"
                                                 value={exportFrom}
                                                 onChange={(e) => setExportFrom(e.target.value)}
-                                                className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
+                                                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
                                             />
                                         </div>
                                         <div>
@@ -312,7 +312,7 @@ export default function ForensicAuditPage() {
                                                 type="date"
                                                 value={exportTo}
                                                 onChange={(e) => setExportTo(e.target.value)}
-                                                className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
+                                                className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/30 transition-all"
                                             />
                                         </div>
                                     </div>
@@ -324,7 +324,7 @@ export default function ForensicAuditPage() {
                                         <select
                                             value={exportAgentId}
                                             onChange={(e) => setExportAgentId(e.target.value)}
-                                            className="w-full px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/30 transition-all appearance-none cursor-pointer"
+                                            className="w-full px-3 py-2 bg-white/[0.05] border border-white/[0.06] rounded-xl text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/30 transition-all appearance-none cursor-pointer"
                                         >
                                             <option value="ALL">All Agents</option>
                                             {agents.map((a) => (
@@ -372,11 +372,11 @@ export default function ForensicAuditPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
                     >
-                        <Card className="bg-black/40 backdrop-blur-xl border-white/[0.05] hover:border-white/[0.08] transition-all duration-300">
+                        <Card className="bg-black/40 backdrop-blur-xl border-white/10 hover:border-white/[0.08] transition-all duration-300">
                             <CardContent className="p-4">
                                 <div className="flex items-center gap-2 mb-1">
                                     <stat.icon className={`w-3.5 h-3.5 ${stat.color}`} />
-                                    <span className="text-[11px] uppercase tracking-wider text-neutral-500 font-medium">{stat.label}</span>
+                                    <span className="text-[11px] uppercase tracking-wider text-neutral-400 font-medium">{stat.label}</span>
                                 </div>
                                 <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
                             </CardContent>
@@ -386,24 +386,24 @@ export default function ForensicAuditPage() {
             </div>
 
             {/* Filters Bar */}
-            <Card className="bg-black/30 backdrop-blur-xl border-white/[0.05]">
+            <Card className="bg-black/30 backdrop-blur-xl border-white/10">
                 <CardContent className="p-4">
                     <div className="flex flex-wrap gap-3 items-center">
                         {/* Search */}
                         <div className="relative flex-1 min-w-[200px]">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                             <input
                                 type="text"
                                 placeholder="Search tools, agents, arguments, reasons..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-white placeholder:text-neutral-500 focus:outline-none focus:border-emerald-500/30 focus:bg-white/[0.05] transition-all"
+                                className="w-full pl-10 pr-4 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-xl text-sm text-white placeholder:text-neutral-400 focus:outline-none focus:border-emerald-500/30 focus:bg-white/[0.05] transition-all"
                             />
                         </div>
 
                         {/* Decision filter */}
                         <div className="flex items-center gap-1.5">
-                            <Filter className="w-3.5 h-3.5 text-neutral-500" />
+                            <Filter className="w-3.5 h-3.5 text-neutral-400" />
                             {(["ALL", "ALLOW", "DENY", "REQUIRE_APPROVAL"] as DecisionFilter[]).map(d => (
                                 <button
                                     key={d}
@@ -413,7 +413,7 @@ export default function ForensicAuditPage() {
                                             : d === "DENY" ? "bg-red-500/15 text-red-400 border border-red-500/30"
                                                 : d === "REQUIRE_APPROVAL" ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30"
                                                     : "bg-white/[0.08] text-white border border-white/[0.1]"
-                                        : "text-neutral-400 bg-white/[0.02] border border-transparent hover:bg-white/[0.04] hover:text-white"
+                                        : "text-neutral-400 bg-white/[0.05] border border-transparent hover:bg-white/[0.04] hover:text-white"
                                         }`}
                                 >
                                     {d === "REQUIRE_APPROVAL" ? "APPROVAL" : d}
@@ -425,7 +425,7 @@ export default function ForensicAuditPage() {
                         <select
                             value={agentFilter}
                             onChange={(e) => setAgentFilter(e.target.value)}
-                            className="px-3 py-2.5 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/30 transition-all appearance-none cursor-pointer"
+                            className="px-3 py-2.5 bg-white/[0.05] border border-white/[0.06] rounded-xl text-sm text-neutral-300 focus:outline-none focus:border-emerald-500/30 transition-all appearance-none cursor-pointer"
                         >
                             <option value="ALL">All Agents</option>
                             {agents.map(a => (
@@ -435,7 +435,7 @@ export default function ForensicAuditPage() {
 
                         {/* Risk filter */}
                         <div className="flex items-center gap-2">
-                            <AlertTriangle className="w-3.5 h-3.5 text-neutral-500" />
+                            <AlertTriangle className="w-3.5 h-3.5 text-neutral-400" />
                             <input
                                 type="range"
                                 min={0}
@@ -454,10 +454,10 @@ export default function ForensicAuditPage() {
             <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl overflow-hidden relative group">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
 
-                <CardHeader className="border-b border-white/[0.04] flex flex-row items-center justify-between pb-4 bg-black/20">
+                <CardHeader className="border-b border-white/[0.08] flex flex-row items-center justify-between pb-4 bg-black/20">
                     <CardTitle className="text-sm flex items-center gap-2 font-black text-white uppercase italic tracking-tighter">
                         <Activity className="w-5 h-5 text-emerald-400" /> Live Feed
-                        <span className="text-xs text-neutral-500 font-normal ml-2">
+                        <span className="text-xs text-neutral-400 font-normal ml-2">
                             {filteredLogs.length} of {logs.length} events
                         </span>
                     </CardTitle>
@@ -469,9 +469,9 @@ export default function ForensicAuditPage() {
 
                 <CardContent className="p-0">
                     {loading ? (
-                        <p className="text-neutral-500 py-24 text-center animate-pulse">Connecting to forensic log stream...</p>
+                        <p className="text-neutral-400 py-24 text-center animate-pulse">Connecting to forensic log stream...</p>
                     ) : filteredLogs.length === 0 ? (
-                        <div className="py-24 text-center text-neutral-500 flex flex-col items-center justify-center">
+                        <div className="py-24 text-center text-neutral-400 flex flex-col items-center justify-center">
                             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}>
                                 <Fingerprint className="w-16 h-16 mb-6 text-neutral-700 opacity-40" />
                                 <p className="text-neutral-400">No audit events match your filters.</p>
@@ -481,7 +481,7 @@ export default function ForensicAuditPage() {
                         <div className="overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="border-white/[0.05] hover:bg-transparent">
+                                    <TableRow className="border-white/10 hover:bg-transparent">
                                         <TableHead
                                             className="text-neutral-400 font-medium px-5 py-4 cursor-pointer hover:text-white transition-colors"
                                             onClick={() => toggleSort("timestamp")}
@@ -525,10 +525,10 @@ export default function ForensicAuditPage() {
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0 }}
                                                 transition={{ delay: Math.min(idx * 0.02, 0.5) }}
-                                                className="border-white/[0.02] hover:bg-white/[0.02] transition-colors group/row cursor-pointer"
+                                                className="border-white/[0.02] hover:bg-white/[0.05] transition-colors group/row cursor-pointer"
                                                 onClick={() => setSelectedLog(selectedLog?.id === log.id ? null : log)}
                                             >
-                                                <TableCell className="text-neutral-500 text-xs px-5 py-3.5 whitespace-nowrap font-mono">
+                                                <TableCell className="text-neutral-400 text-xs px-5 py-3.5 whitespace-nowrap font-mono">
                                                     <span className="text-emerald-200/50">
                                                         {log.timestamp?.toDate ? log.timestamp.toDate().toLocaleTimeString([], { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Now'}
                                                     </span>
@@ -593,7 +593,7 @@ export default function ForensicAuditPage() {
                         transition={{ duration: 0.3 }}
                     >
                         <Card className="bg-black/60 backdrop-blur-2xl border-emerald-500/10 shadow-2xl shadow-emerald-500/5 overflow-hidden">
-                            <CardHeader className="border-b border-white/[0.05] pb-3">
+                            <CardHeader className="border-b border-white/10 pb-3">
                                 <div className="flex items-center justify-between">
                                     <CardTitle className="text-base flex items-center gap-2 text-white/90">
                                         <Fingerprint className="w-4 h-4 text-emerald-400" />
@@ -601,7 +601,7 @@ export default function ForensicAuditPage() {
                                     </CardTitle>
                                     <button
                                         onClick={() => setSelectedLog(null)}
-                                        className="text-neutral-500 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
+                                        className="text-neutral-400 hover:text-white p-1 rounded-lg hover:bg-white/5 transition-all"
                                     >
                                         <XCircle className="w-4 h-4" />
                                     </button>
@@ -611,7 +611,7 @@ export default function ForensicAuditPage() {
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     {/* Metadata */}
                                     <div className="space-y-3">
-                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Event Metadata</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Event Metadata</h3>
                                         <div className="space-y-2">
                                             {[
                                                 { label: "Agent", value: getAgentName(selectedLog.agentId) },
@@ -621,7 +621,7 @@ export default function ForensicAuditPage() {
                                                 { label: "Loop", value: selectedLog.isLoop ? "⚠️ Yes" : "No" },
                                             ].map(item => (
                                                 <div key={item.label} className="flex justify-between text-sm">
-                                                    <span className="text-neutral-500">{item.label}</span>
+                                                    <span className="text-neutral-400">{item.label}</span>
                                                     <span className="text-neutral-200 font-mono text-xs">{item.value}</span>
                                                 </div>
                                             ))}
@@ -630,7 +630,7 @@ export default function ForensicAuditPage() {
 
                                     {/* Risk Analysis */}
                                     <div className="space-y-3">
-                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Risk Analysis</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Risk Analysis</h3>
                                         {selectedLog.riskScore != null ? (
                                             <div className="space-y-3">
                                                 <div className="flex items-center gap-3">
@@ -661,18 +661,18 @@ export default function ForensicAuditPage() {
 
                                     {/* Integrity Chain */}
                                     <div className="space-y-3">
-                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Integrity Chain</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Integrity Chain</h3>
                                         {selectedLog.integrityHash ? (
                                             <div className="space-y-2">
                                                 <div>
-                                                    <div className="text-[10px] text-neutral-500 mb-0.5">CURRENT HASH</div>
+                                                    <div className="text-[10px] text-neutral-400 mb-0.5">CURRENT HASH</div>
                                                     <div className="font-mono text-[10px] text-emerald-400/80 break-all bg-emerald-500/5 border border-emerald-500/10 rounded-lg p-2">
                                                         {selectedLog.integrityHash}
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <div className="text-[10px] text-neutral-500 mb-0.5">PREVIOUS HASH</div>
-                                                    <div className="font-mono text-[10px] text-neutral-400/60 break-all bg-white/[0.02] border border-white/[0.05] rounded-lg p-2">
+                                                    <div className="text-[10px] text-neutral-400 mb-0.5">PREVIOUS HASH</div>
+                                                    <div className="font-mono text-[10px] text-neutral-400/60 break-all bg-white/[0.05] border border-white/10 rounded-lg p-2">
                                                         {selectedLog.previousHash || "GENESIS"}
                                                     </div>
                                                 </div>
@@ -689,14 +689,14 @@ export default function ForensicAuditPage() {
 
                                 {/* Arguments + Reason */}
                                 <div className="space-y-2">
-                                    <h3 className="text-xs uppercase tracking-wider text-neutral-500 font-semibold">Arguments Payload</h3>
-                                    <pre className="text-xs font-mono text-emerald-300/70 bg-black/40 border border-white/[0.04] rounded-xl p-4 overflow-x-auto max-h-40 whitespace-pre-wrap">
+                                    <h3 className="text-xs uppercase tracking-wider text-neutral-400 font-semibold">Arguments Payload</h3>
+                                    <pre className="text-xs font-mono text-emerald-300/70 bg-black/40 border border-white/[0.08] rounded-xl p-4 overflow-x-auto max-h-40 whitespace-pre-wrap">
                                         {(() => { try { return JSON.stringify(JSON.parse(selectedLog.arguments || "{}"), null, 2); } catch { return selectedLog.arguments; } })()}
                                     </pre>
                                 </div>
                                 {selectedLog.reason && (
                                     <div className="space-y-2">
-                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500">Decision Reason</h3>
+                                        <h3 className="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Decision Reason</h3>
                                         <p className="text-sm text-neutral-300 bg-red-500/5 border border-red-500/10 rounded-xl p-3">{selectedLog.reason}</p>
                                     </div>
                                 )}

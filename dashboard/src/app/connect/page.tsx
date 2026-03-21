@@ -45,7 +45,7 @@ export default function ConnectPage() {
                     </p>
                 </div>
 
-                <div className="bg-white/[0.03] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 space-y-6 shadow-2xl relative overflow-hidden">
+                <div className="bg-white/[0.05] backdrop-blur-xl border border-white/[0.06] rounded-2xl p-8 space-y-6 shadow-2xl relative overflow-hidden">
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
                     
                     <div className="space-y-2">
@@ -85,7 +85,7 @@ export default function ConnectPage() {
                         { icon: BrickWall, label: "Enforce policies across all" },
                         { icon: Activity, label: "Full forensic audit logs" }
                     ].map((feature, i) => (
-                        <div key={i} className="flex flex-col items-center text-center p-4 bg-white/[0.02] border border-white/[0.04] rounded-xl group hover:bg-white/[0.04] transition-all">
+                        <div key={i} className="flex flex-col items-center text-center p-4 bg-white/[0.05] border border-white/[0.08] rounded-xl group hover:bg-white/[0.04] transition-all">
                             <feature.icon className="w-5 h-5 mb-3 text-emerald-500/40 group-hover:text-emerald-500/80 transition-colors" />
                             <span className="text-[9px] font-black uppercase tracking-wider text-neutral-500 group-hover:text-neutral-300">{feature.label}</span>
                         </div>
@@ -175,7 +175,7 @@ export default function ConnectPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Top tools */}
-                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+                <div className="bg-white/[0.05] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Top Capabilities Invoked</h2>
                         <div className="h-1 flex-1 mx-4 bg-white/[0.04] rounded-full" />
@@ -189,7 +189,7 @@ export default function ConnectPage() {
                     ) : (
                         <div className="space-y-3">
                             {analytics!.topTools.map((t, i) => (
-                                <div key={i} className="flex justify-between items-center bg-white/[0.03] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
+                                <div key={i} className="flex justify-between items-center bg-white/[0.05] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
                                     <div className="flex items-center gap-3">
                                         <span className="text-[10px] text-neutral-600 font-bold w-4">0{i + 1}</span>
                                         <code className="text-[11px] text-emerald-400 font-mono tracking-tight bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 group-hover:border-emerald-500/30 transition-all">
@@ -206,7 +206,7 @@ export default function ConnectPage() {
                 </div>
 
                 {/* Top customers */}
-                <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
+                <div className="bg-white/[0.05] border border-white/[0.06] rounded-2xl p-6 relative overflow-hidden">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Most Active Identifiers</h2>
                         <div className="h-1 flex-1 mx-4 bg-white/[0.04] rounded-full" />
@@ -220,7 +220,7 @@ export default function ConnectPage() {
                     ) : (
                         <div className="space-y-3">
                             {analytics!.topCustomers.map((c, i) => (
-                                <div key={c.customerId} className="flex justify-between items-center bg-white/[0.03] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
+                                <div key={c.customerId} className="flex justify-between items-center bg-white/[0.05] p-4 rounded-xl border border-white/[0.03] hover:border-emerald-500/20 transition-all group">
                                     <div className="flex items-center gap-3">
                                         <div className="w-6 h-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-400 uppercase">
                                             {c.customerId[0]}
@@ -247,7 +247,7 @@ export default function ConnectPage() {
                     { href: "/connect/events", icon: BrickWall, title: "Compliance Logs", desc: "Searchable forensic action trails" }
                 ].map((action, i) => (
                     <Link key={i} href={action.href}>
-                        <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-6 hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group relative overflow-hidden">
+                        <div className="bg-white/[0.05] border border-white/[0.06] rounded-2xl p-6 hover:border-emerald-500/40 hover:bg-emerald-500/[0.02] transition-all cursor-pointer group relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-opacity">
                                 <ArrowRight className="w-4 h-4 text-emerald-500" />
                             </div>

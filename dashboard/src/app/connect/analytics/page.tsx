@@ -57,14 +57,14 @@ export default function ConnectAnalyticsPage() {
                     </p>
                 </div>
                 {/* Period selector */}
-                <div className="flex items-center gap-1 bg-white/[0.03] border border-white/[0.08] rounded-xl p-1 backdrop-blur-sm">
+                <div className="flex items-center gap-1 bg-white/[0.05] border border-white/[0.08] rounded-xl p-1 backdrop-blur-sm">
                     {PERIOD_OPTIONS.map((opt) => (
                         <button
                             key={opt.days}
                             onClick={() => setDays(opt.days)}
                             className={`px-4 py-2 rounded-lg text-[10px] font-black transition-all ${days === opt.days
                                 ? "bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.3)]"
-                                : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.02]"
+                                : "text-neutral-500 hover:text-neutral-300 hover:bg-white/[0.05]"
                             }`}
                         >
                             {opt.label}
@@ -109,14 +109,14 @@ export default function ConnectAnalyticsPage() {
 
                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         {/* Decision breakdown (takes 2 cols) */}
-                        <div className="lg:col-span-2 bg-white/[0.02] border border-white/[0.08] rounded-2xl p-6 relative overflow-hidden group hover:border-white/[0.12] transition-all">
+                        <div className="lg:col-span-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6 relative overflow-hidden group hover:border-white/[0.12] transition-all">
                             <div className="flex items-center justify-between mb-8">
                                 <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Decision Distribution</h2>
-                                <div className="h-0.5 flex-1 mx-6 bg-white/[0.03] rounded-full" />
+                                <div className="h-0.5 flex-1 mx-6 bg-white/[0.05] rounded-full" />
                             </div>
                             
                             {total === 0 ? (
-                                <div className="text-center py-20 border border-dashed border-white/[0.04] rounded-xl">
+                                <div className="text-center py-20 border border-dashed border-white/[0.08] rounded-xl">
                                     <Target className="w-8 h-8 text-neutral-800 mx-auto mb-3" />
                                     <p className="text-[10px] text-neutral-700 font-black uppercase tracking-widest">No Telemetry In Range</p>
                                 </div>
@@ -152,10 +152,10 @@ export default function ConnectAnalyticsPage() {
                         </div>
 
                         {/* Top tools */}
-                        <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-6 transition-all hover:border-white/[0.12]">
+                        <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6 transition-all hover:border-white/[0.12]">
                             <div className="flex items-center justify-between mb-6">
                                 <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Capability Heat</h2>
-                                <div className="h-0.5 w-12 bg-white/[0.03] rounded-full" />
+                                <div className="h-0.5 w-12 bg-white/[0.05] rounded-full" />
                             </div>
                             
                             {(analytics?.topTools ?? []).length === 0 ? (
@@ -196,10 +196,10 @@ export default function ConnectAnalyticsPage() {
                     </div>
 
                     {/* Secondary Metrics */}
-                    <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-6 transition-all hover:border-white/[0.12]">
+                    <div className="bg-white/[0.05] border border-white/[0.08] rounded-2xl p-6 transition-all hover:border-white/[0.12]">
                         <div className="flex items-center justify-between mb-8">
                             <h2 className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em]">Load Per Entity</h2>
-                            <div className="h-0.5 flex-1 mx-6 bg-white/[0.03] rounded-full" />
+                            <div className="h-0.5 flex-1 mx-6 bg-white/[0.05] rounded-full" />
                         </div>
                         
                         {(analytics?.topCustomers ?? []).length === 0 ? (

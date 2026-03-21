@@ -107,7 +107,7 @@ export default function StraikerClient() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.08 }}
-                            className="bg-white/[0.02] border border-white/5 rounded-2xl p-8 space-y-5 hover:bg-white/[0.04] transition-colors"
+                            className="bg-white/[0.05] border border-white/5 rounded-2xl p-8 space-y-5 hover:bg-white/[0.04] transition-colors"
                         >
                             <h4 className="text-xs font-black uppercase tracking-widest text-emerald-500">{card.title}</h4>
                             <div className="space-y-3">
@@ -136,7 +136,7 @@ export default function StraikerClient() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: i * 0.1 }}
-                            className="bg-white/[0.02] border border-white/5 rounded-2xl p-8 space-y-3 hover:bg-white/[0.04] transition-colors"
+                            className="bg-white/[0.05] border border-white/5 rounded-2xl p-8 space-y-3 hover:bg-white/[0.04] transition-colors"
                         >
                             <h3 className="text-base font-black text-white">{faq.q}</h3>
                             <p className="text-sm text-neutral-400 leading-relaxed font-medium">{faq.a}</p>

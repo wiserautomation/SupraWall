@@ -127,12 +127,12 @@ export default function LangChainIntegrationPage() {
                                 our callback handler triggers, verifying the intent and payload before any compute is consumed.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12 mb-20">
-                                <div className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5">
+                                <div className="p-10 rounded-[2.5rem] bg-white/[0.05] border border-white/5">
                                     <Terminal className="w-8 h-8 text-emerald-500 mb-4" />
                                     <h4 className="font-bold uppercase text-white tracking-widest text-sm mb-2">Bash & Python REPL</h4>
                                     <p className="text-xs text-neutral-500 font-bold uppercase tracking-tight">Detects and blocks destructive `rm`, `chmod`, and data exfiltration commands.</p>
                                 </div>
-                                <div className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/5">
+                                <div className="p-10 rounded-[2.5rem] bg-white/[0.05] border border-white/5">
                                     <Shield className="w-8 h-8 text-emerald-500 mb-4" />
                                     <h4 className="font-bold uppercase text-white tracking-widest text-sm mb-2">Database Connectors</h4>
                                     <p className="text-xs text-neutral-500 font-bold uppercase tracking-tight">Enforces read-only policies or blocks DROP/TRUNCATE operations instantly.</p>

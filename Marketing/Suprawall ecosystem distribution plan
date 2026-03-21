@@ -1,0 +1,370 @@
+# Suprawall — Ecosystem Distribution Plan
+
+## Complete Playbook: Getting Listed in Anthropic, LangChain & Vercel
+
+---
+
+## Current State
+
+Your MCP plugin lives at `github.com/wiserautomation/supawall-mcp-plugin`. It has:
+- ✅ TypeScript source in `src/`
+- ✅ Built `dist/` directory
+- ✅ `marketplace.json` for Claude Code plugin marketplace
+- ✅ 3 tools: `check_policy`, `request_approval`, `log_action`
+- ✅ Examples in `examples/` directory
+- ✅ README with usage examples
+- ❌ 0 stars, 0 forks (no community traction signals)
+- ❌ `node_modules` committed to repo (should be in `.gitignore`)
+- ❌ No tool safety annotations (`readOnlyHint`/`destructiveHint`)
+- ❌ No privacy policy
+- ❌ No `.mcpb` Desktop Extension packaging
+
+There are **THREE separate Anthropic directories** plus LangChain and Vercel. Each has a different submission process. Here's the exact playbook for all five.
+
+---
+
+## Channel 1: Anthropic Claude Code Plugin Directory
+
+**What it is:** The `anthropics/claude-plugins-official` GitHub repo. Plugins install via `/plugin install {name}@claude-plugins-official` in Claude Code.
+
+**Current status:** Your plugin can already be installed manually via `/plugin marketplace add wiserautomation/suprawall-mcp-plugin`. But it's NOT in the official directory, so users can't discover it.
+
+### Steps to Submit
+
+**Step 1: Clean up the repo (1 hour)**
+
+- Add `node_modules/` to `.gitignore` and remove from git tracking
+- Verify `marketplace.json` matches the official schema (see `anthropics/claude-plugins-official/external_plugins/` for examples)
+- Add a description, website URL, and topics to the GitHub repo settings (currently says "No description, website, or topics provided")
+
+**Step 2: Add tool safety annotations (30 minutes)**
+
+Every tool MUST have `readOnlyHint` or `destructiveHint`. This is the #1 rejection reason:
+
+```
+check_policy   → readOnlyHint: true   (only reads policy engine)
+request_approval → destructiveHint: true (sends external notifications)
+log_action     → destructiveHint: true  (writes to audit log)
+```
+
+**Step 3: Submit a PR to `anthropics/claude-plugins-official`**
+
+Add your plugin config to the `/external_plugins/` directory. Follow the structure of existing external plugins in that repo. Your PR should include:
+
+- Plugin config file matching their schema
+- Link to your GitHub repo
+- Brief description of what Suprawall does
+
+**Estimated time:** 2-3 hours total
+**Review time:** Unknown — they review PRs but don't guarantee acceptance or timeline
+
+---
+
+## Channel 2: Anthropic MCP Connectors Directory (Claude.ai / Claude Desktop — Remote)
+
+**What it is:** The directory at `claude.com/connectors` that appears inside Claude.ai and Claude Desktop. Users click "Connect" and it just works. This gives you access to ALL Claude users across web, desktop, mobile, and API.
+
+**This is the highest-value channel.** Getting listed here makes Suprawall one-click installable for every Claude user.
+
+### Requirements (ALL mandatory — missing any = rejection)
+
+1. **Remote MCP server (cloud-hosted, HTTPS)** — Your server must be accessible at a public HTTPS URL (e.g., `https://mcp.suprawall.ai`). This is NOT a local plugin — it's a hosted server.
+
+2. **OAuth 2.0 authentication** — Must implement OAuth 2.0 authorization code flow. Allowlist these callback URLs:
+   - `http://localhost:6274/oauth/callback`
+   - `http://localhost:6274/oauth/callback/debug`
+   - `https://claude.ai/api/mcp/auth_callback`
+   - `https://claude.com/api/mcp/auth_callback`
+
+3. **Tool safety annotations** — Every tool needs `readOnlyHint` or `destructiveHint`
+
+4. **Privacy policy** — Published at a stable HTTPS URL on your domain
+
+5. **Production-ready (GA status)** — Cannot be marked "beta" or "alpha"
+
+6. **Minimum 3 working usage examples** in documentation
+
+7. **Test account with sample data** — For Anthropic's review team
+
+8. **Dedicated support channel** — Email or web-based
+
+9. **IP allowlisting** — Must allowlist Claude's IP addresses (see `docs.claude.com/en/api/ip-addresses`)
+
+10. **Streamable HTTP transport** — Must support it (SSE may be deprecated)
+
+11. **Max 25,000 tokens per tool result**
+
+### Submission
+
+**Form:** https://docs.google.com/forms/d/e/1FAIpQLSeafJF2NDI7oYx1r8o0ycivCSVLNq92Mpc1FPxMKSw1CzDkqA/viewform
+
+### What You Need to Build First
+
+Your current MCP plugin is a LOCAL server (runs on user's machine via Claude Code). The Connectors Directory requires a REMOTE server. This means you need:
+
+- A hosted MCP endpoint (e.g., `https://mcp.suprawall.ai`) that wraps your existing Suprawall API
+- OAuth 2.0 flow integrated with your existing auth system
+- The MCP server translated from local stdio transport to Streamable HTTP transport
+
+**Estimated build time:** 3-5 days (requires hosting + OAuth implementation)
+**Estimated review time:** Unknown — they state "we cannot promise that we will accept your submission or respond to it individually"
+
+### Priority Assessment
+
+This is the HIGHEST impact channel but requires the most work. Consider tackling this AFTER the Claude Code plugin directory and Desktop Extension, which are faster wins.
+
+---
+
+## Channel 3: Anthropic Desktop Extensions (Claude Desktop — Local)
+
+**What it is:** `.mcpb` packages that install with one click in Claude Desktop. Users find them in Settings → Extensions. This is the successor to manual JSON config editing.
+
+### Steps to Submit
+
+**Step 1: Install MCPB tooling**
+
+```bash
+npm install -g @anthropic-ai/mcpb
+```
+
+**Step 2: Initialize your extension**
+
+```bash
+cd supawall-mcp-plugin
+mcpb init
+```
+
+This creates a `manifest.json` (or updates your existing one) with the MCPB schema. You need:
+
+- `manifest_version`: "0.3" or higher
+- `name`: "suprawall"
+- `description`: Clear one-liner
+- `privacy_policies`: Array with HTTPS URL to your privacy policy
+- Server configuration pointing to your built MCP server
+
+**Step 3: Add tool safety annotations** (same as Channel 1)
+
+**Step 4: Add privacy policy**
+
+Two locations required:
+1. `privacy_policies` array in `manifest.json`
+2. "Privacy Policy" section in `README.md`
+
+Both MUST be present or you get rejected.
+
+**Step 5: Ensure 3+ examples in README** (you already have these — verify they match the required format with "User prompt" → "What happens" structure)
+
+**Step 6: Package**
+
+```bash
+# Clean build
+rm -rf node_modules/.cache
+npm install --production
+
+# Package
+mcpb pack
+
+# Verify
+mcpb info suprawall.mcpb
+```
+
+**Step 7: Test in clean environment**
+
+- Install on a machine with NO development tools
+- Follow only your README instructions
+- Verify it works as documented
+
+**Step 8: Submit**
+
+**Form:** https://forms.gle/tyiAZvch1kDADKoP9
+
+Required: Extension details, documentation links, test credentials, 3+ examples, contact info.
+
+**Estimated time:** 1-2 days
+**Review time:** Unknown — same caveat as remote submissions
+
+---
+
+## Channel 4: LangChain Ecosystem
+
+**What it is:** LangChain has 1,000+ integrations. Getting listed means every LangChain developer can `pip install langchain-suprawall` and add EU AI Act compliance to their agents.
+
+### Path A: `langchain-suprawall` Python Package (Recommended)
+
+LangChain recommends standalone `langchain-*` packages for third-party integrations rather than contributing directly to `langchain-community`.
+
+**Step 1: Create `langchain-suprawall` package**
+
+Structure:
+```
+langchain-suprawall/
+├── langchain_suprawall/
+│   ├── __init__.py
+│   ├── middleware.py      # LangChain middleware implementation
+│   ├── callback.py        # LangChain callback handler
+│   └── tools.py           # LangChain tool wrappers
+├── pyproject.toml
+├── README.md
+└── tests/
+```
+
+The key integration point is **LangChain middleware**. LangChain's middleware system lets you add human-in-the-loop approval, data removal, and guardrails as composable hooks — which is exactly what Suprawall does.
+
+Implement:
+- A middleware that intercepts tool calls, sends them to Suprawall's policy engine, and enforces ALLOW/DENY/REQUIRE_APPROVAL
+- A callback handler for `on_tool_start` / `on_tool_end` that logs to Suprawall's audit trail
+- Wrapper tools that expose `check_policy`, `request_approval`, `log_action` as LangChain tools
+
+**Step 2: Publish to PyPI**
+
+```bash
+pip install build twine
+python -m build
+twine upload dist/*
+```
+
+Package name: `langchain-suprawall`
+
+**Step 3: Submit PR to `langchain-ai/langchain-community`**
+
+Add a reference to your package in the community integrations. Follow their contributing guide.
+
+**Step 4: Write documentation**
+
+Create a docs page following LangChain's integration docs format. Submit as PR to their docs repo.
+
+**Step 5: Community presence**
+
+- Post a tutorial on the LangChain Forum
+- Write "How to Make Your LangChain Agent EU AI Act Compliant" on DEV Community
+- Target the LangChain Interrupt 2026 conference (May 13-14, San Francisco) — submit a lightning talk proposal on EU AI Act compliance for agents
+
+### Path B: LangChain Partner Network (Longer-term)
+
+The LangChain Partner Network includes Azure, Google Cloud, etc. This is for established companies. Revisit once you have customers and traction.
+
+**Estimated time for Path A:** 3-5 days (package creation + PyPI publish + PR + docs)
+
+---
+
+## Channel 5: Vercel AI SDK Ecosystem
+
+**What it is:** Vercel's AI SDK is the leading framework for building AI apps in Next.js/React. Getting an official integration means every Vercel developer can `npm install @suprawall/vercel-ai`.
+
+### Steps
+
+**Step 1: Create `@suprawall/vercel-ai` npm package**
+
+Your README already references this package. Build it:
+
+```
+suprawall-vercel-ai/
+├── src/
+│   ├── index.ts
+│   ├── middleware.ts    # Vercel AI middleware
+│   └── provider.ts     # Vercel AI provider wrapper
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+Key implementation: Vercel AI SDK has a middleware system. Build a Suprawall middleware that wraps tool execution with policy checks.
+
+**Step 2: Publish to npm**
+
+```bash
+npm publish --access public
+```
+
+Scope: `@suprawall/vercel-ai`
+
+**Step 3: Submit to Vercel Integration Marketplace**
+
+Vercel's marketplace requires:
+- A working integration
+- Documentation
+- OAuth flow (for connecting to your dashboard)
+- A Vercel partner account
+
+Apply at: https://vercel.com/integrations (look for "Create Integration" or partner submission)
+
+**Step 4: Write content**
+
+- Blog post: "Add EU AI Act Compliance to Your Vercel AI Agent in One Line"
+- Submit to Vercel's blog or community
+
+**Estimated time:** 3-5 days (package + marketplace submission)
+
+---
+
+## Execution Priority & Timeline
+
+### Week 1: Fast Wins
+
+| Day | Task | Channel | Time |
+|-----|------|---------|------|
+| Mon | Clean repo (`.gitignore`, add description/topics, add tool annotations) | All | 2 hrs |
+| Mon | Add privacy policy page to suprawall.ai | All | 1 hr |
+| Mon | Add privacy policy to README.md | All | 30 min |
+| Tue | Submit PR to `anthropics/claude-plugins-official` | Claude Code | 2 hrs |
+| Tue | Install `mcpb`, init, package as `.mcpb` | Desktop Extension | 3 hrs |
+| Wed | Test `.mcpb` in clean environment | Desktop Extension | 2 hrs |
+| Wed | Submit Desktop Extension via Google Form | Desktop Extension | 1 hr |
+| Thu-Fri | Write "EU AI Act Compliance for LangChain Agents" tutorial | LangChain + SEO | 4 hrs |
+| Fri | Post tutorial to LangChain Forum + DEV Community + HN | Distribution | 2 hrs |
+
+### Week 2: Package Creation
+
+| Day | Task | Channel | Time |
+|-----|------|---------|------|
+| Mon-Tue | Build `langchain-suprawall` Python package | LangChain | 8 hrs |
+| Wed | Publish to PyPI, submit PR to langchain-community | LangChain | 3 hrs |
+| Thu-Fri | Build `@suprawall/vercel-ai` npm package | Vercel | 8 hrs |
+| Fri | Publish to npm | Vercel | 1 hr |
+
+### Week 3: Remote MCP + Vercel Marketplace
+
+| Day | Task | Channel | Time |
+|-----|------|---------|------|
+| Mon-Wed | Build remote MCP server with OAuth 2.0 | Connectors Directory | 12 hrs |
+| Thu | Submit to Anthropic Connectors Directory | Connectors Directory | 2 hrs |
+| Thu-Fri | Submit to Vercel Integration Marketplace | Vercel | 3 hrs |
+
+### Week 4: Content & Community
+
+| Day | Task | Channel | Time |
+|-----|------|---------|------|
+| Mon | Open GitHub issues on top 5 LangChain agent repos about EU AI Act compliance | LangChain community | 3 hrs |
+| Tue | Submit lightning talk proposal for LangChain Interrupt 2026 (May 13-14 SF) | LangChain | 2 hrs |
+| Wed | Submit Suprawall to PulseMCP.com server directory | MCP ecosystem | 1 hr |
+| Wed | Submit to modelcontextprotocol/servers community list on GitHub | MCP ecosystem | 1 hr |
+| Thu | Write "Suprawall vs Lakera" comparison post | SEO | 4 hrs |
+| Fri | Submit to Product Hunt | General distribution | 3 hrs |
+
+---
+
+## Quick Reference: Submission Links
+
+| Channel | Submission URL |
+|---------|---------------|
+| Claude Code Plugins | PR to `github.com/anthropics/claude-plugins-official` |
+| Claude Desktop Extension | https://forms.gle/tyiAZvch1kDADKoP9 |
+| Claude Connectors (Remote MCP) | https://docs.google.com/forms/d/e/1FAIpQLSeafJF2NDI7oYx1r8o0ycivCSVLNq92Mpc1FPxMKSw1CzDkqA/viewform |
+| LangChain Community | PR to `github.com/langchain-ai/langchain-community` |
+| LangChain Docs | PR to LangChain docs repo |
+| Vercel Marketplace | https://vercel.com/integrations |
+| MCP Community Servers | PR to `github.com/modelcontextprotocol/servers` |
+| PulseMCP Directory | https://www.pulsemcp.com (11,880+ servers listed) |
+| Product Hunt | https://www.producthunt.com |
+
+---
+
+## Critical Pre-Requisites (Do These First)
+
+Before ANY submission, you need these three things done:
+
+1. **Tool safety annotations on all 3 tools** — Without this, every Anthropic submission gets auto-rejected
+2. **Privacy policy at `https://suprawall.ai/privacy`** — Required by both Anthropic directories AND good practice for LangChain/Vercel
+3. **Remove `node_modules` from git** — Signals amateur repo management to reviewers
+
+These three fixes take under 2 hours and unblock everything else.

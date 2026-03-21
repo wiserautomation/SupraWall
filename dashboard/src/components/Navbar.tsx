@@ -35,7 +35,7 @@ export function Navbar() {
     ];
 
     return (
-        <nav className="fixed top-0 w-full z-50 border-b border-white/[0.05] bg-black/60 backdrop-blur-3xl">
+        <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/60 backdrop-blur-3xl">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 <Link href="/" className="flex items-center gap-3 group">
                     <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_20px_rgba(5,150,105,0.4)] group-hover:scale-110 transition-transform duration-500">
@@ -95,20 +95,20 @@ function Dropdown({ label, isOpen, onOpen, onClose, items }: any) {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 6 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-neutral-950 border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl p-2"
+                        className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-neutral-950 border border-emerald-500/15 rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/[0.06] p-2"
                     >
                         {items.map((f: any, i: number) => (
                             <Link
                                 key={f.href}
                                 href={f.href}
-                                className={`flex items-start gap-4 px-5 py-4 hover:bg-white/5 transition-all group rounded-2xl`}
+                                className={`flex items-start gap-4 px-5 py-4 hover:bg-emerald-500/[0.06] transition-all group rounded-2xl`}
                             >
                                 <div className="mt-0.5 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
                                     {f.icon}
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-white text-[11px] font-black uppercase tracking-widest group-hover:text-emerald-400 transition-colors uppercase italic">{f.label}</p>
-                                    <p className="text-neutral-500 text-[10px] font-bold normal-case tracking-tight leading-relaxed uppercase italic opacity-60">{f.desc}</p>
+                                    <p className="text-neutral-500 text-[10px] font-bold normal-case tracking-tight leading-relaxed uppercase italic opacity-80">{f.desc}</p>
                                 </div>
                             </Link>
                         ))}

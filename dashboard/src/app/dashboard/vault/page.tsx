@@ -318,7 +318,7 @@ export default function VaultPage() {
                         className={`px-4 py-2 text-[10px] font-black uppercase tracking-wider rounded-t-lg transition-all ${
                             tab === t
                                 ? "bg-emerald-500/10 text-emerald-400 border-b-2 border-emerald-400"
-                                : "text-neutral-500 hover:text-neutral-200"
+                                : "text-neutral-400 hover:text-neutral-200"
                         }`}
                     >
                         {t === "log" ? "Access Log" : t === "rules" ? "Access Rules" : "Secrets"}
@@ -339,7 +339,7 @@ export default function VaultPage() {
                     </div>
 
                     {secrets.length === 0 ? (
-                        <div className="text-center py-16 text-neutral-500">No secrets stored yet.</div>
+                        <div className="text-center py-16 text-neutral-400">No secrets stored yet.</div>
                     ) : (
                         <div className="rounded-xl border border-white/10 overflow-hidden">
                             <table className="w-full text-sm">
@@ -355,13 +355,13 @@ export default function VaultPage() {
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {secrets.map(s => (
-                                        <tr key={s.id} className="hover:bg-white/[0.02]">
+                                        <tr key={s.id} className="hover:bg-white/[0.05]">
                                             <td className="px-4 py-3">
                                                 <div className="flex items-center gap-2">
                                                     <Lock className="w-3 h-3 text-emerald-400 flex-shrink-0" />
                                                     <span className="font-mono text-white text-xs">{s.secret_name}</span>
                                                 </div>
-                                                {s.description && <div className="text-[10px] text-neutral-500 mt-0.5 ml-5">{s.description}</div>}
+                                                {s.description && <div className="text-[10px] text-neutral-400 mt-0.5 ml-5">{s.description}</div>}
                                             </td>
                                             <td className="px-4 py-3">
                                                 <span className="px-2 py-0.5 rounded border border-white/10 bg-white/5 text-[9px] font-bold uppercase tracking-wider text-neutral-400">
@@ -431,7 +431,7 @@ export default function VaultPage() {
                     </div>
 
                     {rules.length === 0 ? (
-                        <div className="text-center py-16 text-neutral-500">No access rules defined yet.</div>
+                        <div className="text-center py-16 text-neutral-400">No access rules defined yet.</div>
                     ) : (
                         <div className="rounded-xl border border-white/10 overflow-hidden">
                             <table className="w-full text-sm">
@@ -446,7 +446,7 @@ export default function VaultPage() {
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {rules.map(r => (
-                                        <tr key={r.id} className="hover:bg-white/[0.02]">
+                                        <tr key={r.id} className="hover:bg-white/[0.05]">
                                             <td className="px-4 py-3 font-mono text-xs text-white">
                                                 {agents.find(a => a.id === r.agent_id)?.name || r.agent_id}
                                             </td>
@@ -476,7 +476,7 @@ export default function VaultPage() {
             {tab === "log" && (
                 <div className="space-y-4">
                     {log.length === 0 ? (
-                        <div className="text-center py-16 text-neutral-500">No vault access events yet.</div>
+                        <div className="text-center py-16 text-neutral-400">No vault access events yet.</div>
                     ) : (
                         <div className="rounded-xl border border-white/10 overflow-hidden">
                             <table className="w-full text-sm">
@@ -491,7 +491,7 @@ export default function VaultPage() {
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
                                     {log.map(entry => (
-                                        <tr key={entry.id} className="hover:bg-white/[0.02]">
+                                        <tr key={entry.id} className="hover:bg-white/[0.05]">
                                             <td className="px-4 py-3 text-neutral-400 text-xs whitespace-nowrap">
                                                 {new Date(entry.created_at).toLocaleString()}
                                             </td>

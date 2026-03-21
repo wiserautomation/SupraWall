@@ -170,7 +170,7 @@ const getReinforcementDetails = (log: AuditLog, agents: Agent[], isFirst: boolea
         icon: "⚡",
         title: 'Activity Logged',
         text: `Activity detected on ${log.toolName}.`,
-        color: "text-neutral-500",
+        color: "text-neutral-400",
         bg: "bg-neutral-500/10"
     };
 };
@@ -440,8 +440,8 @@ secured.invoke({"messages": [...]})`;
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">Zero-Trust Active</span>
                     </div>
-                    <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Security Overview</h1>
-                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Real-time cost control and agent governance.</p>
+                    <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic heading-glow">Security Overview</h1>
+                    <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em]">Real-time cost control and agent governance.</p>
                 </div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                     <Button onClick={() => setIsCreateModalOpen(true)} className="bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 transition-all font-black uppercase tracking-wider text-xs">
@@ -514,7 +514,7 @@ secured.invoke({"messages": [...]})`;
                                     {item.icon}
                                 </div>
                                 <div className="min-w-0">
-                                    <p className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em]">{item.label}</p>
+                                    <p className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em]">{item.label}</p>
                                     <p className="text-2xl font-black text-white mt-1 tracking-tighter italic flex items-center gap-2">
                                         {item.value}
                                         {typeof item.value === 'number' && item.value > 0 && (
@@ -532,7 +532,7 @@ secured.invoke({"messages": [...]})`;
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
-                            className={`bg-black/60 backdrop-blur-xl border p-5 rounded-2xl relative group overflow-hidden transition-all duration-300 ${accentMap[accent].split(' ').slice(1).join(' ')}`}
+                            className={`bg-black/60 backdrop-blur-xl border p-5 rounded-2xl relative group overflow-hidden transition-all duration-300 card-hover ${accentMap[accent].split(' ').slice(1).join(' ')}`}
                         >
                             {item.href ? (
                                 <Link href={item.href}>{content}</Link>
@@ -549,14 +549,14 @@ secured.invoke({"messages": [...]})`;
                 transition={{ delay: 0.4 }}
                 className="grid grid-cols-1 lg:grid-cols-3 gap-8"
             >
-                <Card className="lg:col-span-2 bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl p-6 relative overflow-hidden">
+                <Card className="lg:col-span-2 bg-black/60 backdrop-blur-xl border-emerald-500/20 shadow-2xl p-6 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                     <div className="flex justify-between items-center mb-8">
                         <div>
                             <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">Spend Over Time</h3>
-                            <p className="text-[9px] font-black text-neutral-500 mt-1 uppercase tracking-[0.2em]">Daily actual spend across all agents (USD)</p>
+                            <p className="text-[9px] font-black text-neutral-400 mt-1 uppercase tracking-[0.2em]">Daily actual spend across all agents (USD)</p>
                         </div>
-                        <div className="flex items-center gap-2 text-xs text-neutral-500">
+                        <div className="flex items-center gap-2 text-xs text-neutral-400">
                             <span className="w-2 h-2 rounded-full bg-emerald-500" />
                             Actual Spend
                         </div>
@@ -592,14 +592,14 @@ secured.invoke({"messages": [...]})`;
                                     tickFormatter={(val) => `$${val}`}
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#111', border: '1px solid #333', borderRadius: '8px', fontSize: '12px' }}
+                                    contentStyle={{ backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(12px)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '12px', fontSize: '12px', boxShadow: '0 8px 30px rgba(0,0,0,0.5)' }}
                                     itemStyle={{ color: '#10b981' }}
                                 />
                                 <Area
                                     type="monotone"
                                     dataKey="amount"
                                     stroke="#10b981"
-                                    strokeWidth={2}
+                                    strokeWidth={2.5}
                                     fillOpacity={1}
                                     fill="url(#colorAmount)"
                                 />
@@ -608,7 +608,7 @@ secured.invoke({"messages": [...]})`;
                     </div>
                 </Card>
 
-                <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl p-6 flex flex-col justify-between relative overflow-hidden">
+                <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/20 shadow-2xl p-6 flex flex-col justify-between relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                     <div>
                         <h3 className="text-sm font-black text-white uppercase italic tracking-tighter mb-6 flex items-center gap-2">
@@ -621,7 +621,7 @@ secured.invoke({"messages": [...]})`;
                                     <span className="text-neutral-400">Monthly Usage</span>
                                     <span className="text-white font-medium">{Math.min(100, Math.round((stats.actualSpend / 50) * 100))}%</span>
                                 </div>
-                                <div className="w-full bg-white/[0.03] rounded-full h-2 border border-white/[0.05]">
+                                <div className="w-full bg-white/[0.05] rounded-full h-2 border border-white/10">
                                     <motion.div
                                         initial={{ width: 0 }}
                                         animate={{ width: `${Math.min(100, (stats.actualSpend / 50) * 100)}%` }}
@@ -659,7 +659,7 @@ secured.invoke({"messages": [...]})`;
                             <Activity className="w-5 h-5 text-emerald-500" />
                             Prompt Health Check
                         </h2>
-                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mt-1">
+                        <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mt-1">
                             Validate your system prompts against active security policies.
                         </p>
                     </div>
@@ -680,10 +680,10 @@ secured.invoke({"messages": [...]})`;
             </motion.div>
 
 
-            <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl overflow-hidden relative group">
+            <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/20 shadow-2xl overflow-hidden relative group">
                 <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
 
-                <CardHeader className="border-b border-white/[0.04] bg-black/20">
+                <CardHeader className="border-b border-white/[0.08] bg-black/20">
                     <CardTitle className="text-sm font-black text-white uppercase italic tracking-tighter flex items-center gap-2">
                         <Shield className="w-4 h-4 text-emerald-500" />
                         Connected Agents
@@ -692,7 +692,7 @@ secured.invoke({"messages": [...]})`;
                 <CardContent className="p-0">
                     {loading ? (
                         <div className="py-24 text-center">
-                            <p className="text-neutral-500 animate-pulse">Loading agents...</p>
+                            <p className="text-neutral-400 animate-pulse">Loading agents...</p>
                         </div>
                     ) : agents.length === 0 ? (
                         <OnboardingWizard 
@@ -704,19 +704,19 @@ secured.invoke({"messages": [...]})`;
                     ) : (
                         <Table>
                             <TableHeader>
-                                <TableRow className="border-white/[0.04] hover:bg-transparent">
-                                    <TableHead className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] py-4 px-6">Agent</TableHead>
-                                    <TableHead className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] py-4 px-6">API Key</TableHead>
-                                    <TableHead className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] py-4 px-6">Scopes</TableHead>
-                                    <TableHead className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] py-4 px-6">Status</TableHead>
-                                    <TableHead className="text-[9px] font-black text-neutral-500 uppercase tracking-[0.2em] py-4 px-6 text-right">Actions</TableHead>
+                                <TableRow className="border-white/[0.08] hover:bg-transparent">
+                                    <TableHead className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] py-4 px-6">Agent</TableHead>
+                                    <TableHead className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] py-4 px-6">API Key</TableHead>
+                                    <TableHead className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] py-4 px-6">Scopes</TableHead>
+                                    <TableHead className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] py-4 px-6">Status</TableHead>
+                                    <TableHead className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] py-4 px-6 text-right">Actions</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
                                 {agents.map((agent) => (
                                     <TableRow
                                         key={agent.id}
-                                        className="border-white/[0.02] hover:bg-white/[0.02] transition-colors group/row"
+                                        className="border-white/[0.02] hover:bg-white/[0.05] transition-colors group/row"
                                     >
                                         <TableCell className="font-medium text-white px-6 py-4">
                                             {agent.name}
@@ -736,7 +736,7 @@ secured.invoke({"messages": [...]})`;
                                                     <span className="text-xs text-neutral-600 italic">No scopes (full access)</span>
                                                 )}
                                                 {agent.scopes && agent.scopes.length > 3 && (
-                                                    <span className="text-[10px] text-neutral-500">+{agent.scopes.length - 3} more</span>
+                                                    <span className="text-[10px] text-neutral-400">+{agent.scopes.length - 3} more</span>
                                                 )}
                                             </div>
                                         </TableCell>
@@ -769,8 +769,8 @@ secured.invoke({"messages": [...]})`;
             </Card>
 
             {/* Right Column: Live Activity Feed */}
-            <Card className="bg-black border-white/[0.04] overflow-hidden flex flex-col h-full shadow-[0_0_40px_rgba(0,0,0,0.5)]">
-                <CardHeader className="border-b border-white/[0.04] bg-white/[0.01] py-4 px-6">
+            <Card className="bg-black border-white/[0.08] overflow-hidden flex flex-col h-full shadow-[0_0_40px_rgba(0,0,0,0.5)]">
+                <CardHeader className="border-b border-white/[0.08] bg-white/[0.01] py-4 px-6">
                     <div className="flex justify-between items-center">
                         <CardTitle className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 flex items-center gap-2">
                            <Activity className="w-3.3 h-3.3 text-blue-500 animate-pulse" />
@@ -789,7 +789,7 @@ secured.invoke({"messages": [...]})`;
                                     initial={{ opacity: 0, x: 10 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     key={log.id || i} 
-                                    className={`p-4 hover:bg-white/[0.02] transition-colors border-l-2 border-transparent hover:border-l-${details.color.split('-')[1]}-500 space-y-3 group`}
+                                    className={`p-4 hover:bg-white/[0.05] transition-colors border-l-2 border-transparent hover:border-l-${details.color.split('-')[1]}-500 space-y-3 group`}
                                 >
                                     <div className="flex justify-between items-start">
                                         <div className="flex items-center gap-3">
@@ -805,7 +805,7 @@ secured.invoke({"messages": [...]})`;
                                                 </span>
                                             </div>
                                         </div>
-                                        <span className="text-[9px] text-neutral-500 font-mono italic">
+                                        <span className="text-[9px] text-neutral-400 font-mono italic">
                                             {log.timestamp ? 
                                                 (typeof log.timestamp.toDate === 'function' ? 
                                                     format(log.timestamp.toDate(), 'HH:mm:ss') : 
@@ -818,7 +818,7 @@ secured.invoke({"messages": [...]})`;
                                             {details.text}
                                         </p>
                                         <div className="mt-2 bg-black/40 p-2 rounded border border-white/[0.02] overflow-hidden opacity-50 group-hover:opacity-100 transition-opacity">
-                                            <code className="text-[9px] text-neutral-500 block truncate font-mono transition-colors">
+                                            <code className="text-[9px] text-neutral-400 block truncate font-mono transition-colors">
                                                 {log.arguments}
                                             </code>
                                         </div>
@@ -868,7 +868,7 @@ secured.invoke({"messages": [...]})`;
                                 <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter text-center sm:text-left">
                                     Register AI Identity
                                 </h2>
-                                <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest text-center sm:text-left leading-relaxed">
+                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest text-center sm:text-left leading-relaxed">
                                     Define the core boundaries for your autonomous entity.
                                 </p>
                             </div>
@@ -885,7 +885,7 @@ secured.invoke({"messages": [...]})`;
                                             setNewAgentName(e.target.value);
                                             if (nameError) setNameError("");
                                         }}
-                                        className={`bg-white/[0.03] border-white/10 h-12 rounded-xl text-white placeholder:text-neutral-700 focus:ring-emerald-500/50 focus:border-emerald-500/50 ${nameError ? 'border-rose-500/50' : ''}`}
+                                        className={`bg-white/[0.05] border-white/10 h-12 rounded-xl text-white placeholder:text-neutral-700 focus:ring-emerald-500/50 focus:border-emerald-500/50 ${nameError ? 'border-rose-500/50' : ''}`}
                                     />
                                     {nameError && (
                                         <p className="text-rose-500 text-[10px] mt-1 ml-1 font-bold uppercase tracking-wider">{nameError}</p>
@@ -913,7 +913,7 @@ secured.invoke({"messages": [...]})`;
                                                 key={scope}
                                                 className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-[11px] ${selectedScopes.includes(scope)
                                                     ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                                                    : 'bg-white/[0.03] border-white/5 text-neutral-400 hover:border-white/10'
+                                                    : 'bg-white/[0.05] border-white/5 text-neutral-400 hover:border-white/10'
                                                     }`}
                                             >
                                                 <input
@@ -965,7 +965,7 @@ secured.invoke({"messages": [...]})`;
                                 <h2 className="text-2xl font-black text-white uppercase italic tracking-tighter">
                                     Agent Secured
                                 </h2>
-                                <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-relaxed">
+                                <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest leading-relaxed">
                                     Save your API key now. For your security, <br />
                                     <span className="text-emerald-400">it will never be shown again.</span>
                                 </p>
@@ -1022,7 +1022,7 @@ secured.invoke({"messages": [...]})`;
                             <Terminal className="w-4 h-4 text-emerald-500" />
                             Connect {selectedAgent?.name}
                         </DialogTitle>
-                        <DialogDescription className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.15em]">
+                        <DialogDescription className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.15em]">
                             Drop this into your agent codebase to activate zero-trust interception.
                         </DialogDescription>
                     </DialogHeader>
@@ -1088,16 +1088,16 @@ secured.invoke({"messages": [...]})`;
 
             {/* Analytics Report Modal */}
             <Dialog open={isAnalyticsModalOpen} onOpenChange={setIsAnalyticsModalOpen}>
-                <DialogContent className="max-w-4xl bg-[#0A0A0A] border-white/5 p-0 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
+                <DialogContent className="max-w-4xl bg-[#0A0A0A] border-white/10 p-0 overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]">
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                     
                     <div className="p-10 space-y-10">
                         <div className="flex items-start justify-between">
                             <div className="space-y-1">
-                                <h2 className="text-4xl font-black text-white uppercase italic tracking-tight leading-none">
+                                <h2 className="text-4xl font-black text-white uppercase italic tracking-tight leading-none heading-glow">
                                     Forensic <span className="text-emerald-500">Intelligence</span>
                                 </h2>
-                                <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.3em] inline-flex items-center gap-2">
+                                <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.3em] inline-flex items-center gap-2">
                                     Consolidated Agent Performance • <Activity className="w-3 h-3 text-emerald-500/50" /> System Live
                                 </p>
                             </div>
@@ -1105,7 +1105,7 @@ secured.invoke({"messages": [...]})`;
                                 variant="ghost" 
                                 size="icon" 
                                 onClick={() => setIsAnalyticsModalOpen(false)}
-                                className="h-10 w-10 text-neutral-500 hover:text-white hover:bg-white/5 rounded-full"
+                                className="h-10 w-10 text-neutral-400 hover:text-white hover:bg-white/5 rounded-full"
                             >
                                 <X className="w-5 h-5" />
                             </Button>
@@ -1128,7 +1128,7 @@ secured.invoke({"messages": [...]})`;
                                     <div className="w-8 h-8 rounded-lg bg-black/50 border border-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                                         <stat.icon className={`w-4 h-4 ${stat.color}`} />
                                     </div>
-                                    <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">{stat.label}</p>
+                                    <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{stat.label}</p>
                                     <p className="text-2xl font-black text-white mt-1 tracking-tighter">{stat.value}</p>
                                     <p className="text-[9px] font-bold text-neutral-600 uppercase mt-1 italic">{stat.sub}</p>
                                 </motion.div>
@@ -1144,7 +1144,7 @@ secured.invoke({"messages": [...]})`;
                                     </h3>
                                     <div className="flex gap-2">
                                         <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                        <span className="text-[10px] font-bold text-neutral-500 uppercase">Cost Intensity</span>
+                                        <span className="text-[10px] font-bold text-neutral-400 uppercase">Cost Intensity</span>
                                     </div>
                                 </div>
                                 <div className="h-[250px] w-full p-4 bg-black border border-white/5 rounded-2xl relative group overflow-hidden">

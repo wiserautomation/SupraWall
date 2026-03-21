@@ -403,7 +403,7 @@ export default function AgentsPage() {
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
-                <p className="text-neutral-500 animate-pulse font-medium tracking-wide">Scanning for authorized identities...</p>
+                <p className="text-neutral-400 animate-pulse font-medium tracking-wide">Scanning for authorized identities...</p>
             </div>
         );
     }
@@ -428,7 +428,7 @@ export default function AgentsPage() {
 
                 <div className="flex items-center gap-4">
                     <div className="relative w-full md:w-80">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                         <input 
                             type="text"
                             placeholder="Search by name or ID..."
@@ -476,23 +476,23 @@ export default function AgentsPage() {
             <motion.div 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-neutral-900/40 backdrop-blur-md border border-white/[0.05] rounded-2xl overflow-hidden shadow-2xl"
+                className="bg-neutral-900/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
             >
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="border-b border-white/5 bg-white/[0.02]">
-                                <th className="px-6 py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest">Identity & Scopes</th>
-                                <th className="px-6 py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest text-center">Status</th>
-                                <th className="px-6 py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest">Usage Metrics</th>
-                                <th className="px-6 py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest">Identity ID</th>
-                                <th className="px-6 py-4 text-xs font-bold text-neutral-500 uppercase tracking-widest text-right">Actions</th>
+                            <tr className="border-b border-white/5 bg-white/[0.05]">
+                                <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest">Identity & Scopes</th>
+                                <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest text-center">Status</th>
+                                <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest">Usage Metrics</th>
+                                <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest">Identity ID</th>
+                                <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.03]">
                             {filteredAgents.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-neutral-500 italic">
+                                    <td colSpan={5} className="px-6 py-12 text-center text-neutral-400 italic">
                                         No agents found. Register your first agent using the SDK.
                                     </td>
                                 </tr>
@@ -517,7 +517,7 @@ export default function AgentsPage() {
                                                         </Badge>
                                                     ))}
                                                     {(agent.scopes?.length || 0) > 3 && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/5 text-neutral-500">
+                                                        <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-white/5 text-neutral-400">
                                                             +{(agent.scopes?.length || 0) - 3} more
                                                         </span>
                                                     )}
@@ -544,7 +544,7 @@ export default function AgentsPage() {
                                                     <span className="text-emerald-400/80 font-mono text-xs">${(agent.totalSpendUsd || 0).toFixed(3)}</span>
                                                 </div>
                                                 {agent.lastUsedAt && (
-                                                    <div className="flex items-center gap-1.5 text-[10px] text-neutral-500 uppercase font-bold tracking-wider">
+                                                    <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 uppercase font-bold tracking-wider">
                                                         <Clock className="w-3 h-3" />
                                                         {agent.lastUsedAt.toDate?.().toLocaleString()}
                                                     </div>
@@ -552,7 +552,7 @@ export default function AgentsPage() {
                                             </div>
                                         </td>
                                         <td className="px-6 py-5">
-                                            <code className="text-xs text-neutral-500 bg-black/30 px-2 py-1 rounded border border-white/5 font-mono">
+                                            <code className="text-xs text-neutral-400 bg-black/30 px-2 py-1 rounded border border-white/5 font-mono">
                                                 {agent.id}
                                             </code>
                                         </td>
@@ -605,12 +605,12 @@ export default function AgentsPage() {
 
             {/* Create Agent Modal */}
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-                <DialogContent className="bg-neutral-950 border-white/[0.05] shadow-2xl space-y-6 sm:max-w-[450px]">
+                <DialogContent className="bg-neutral-950 border-white/10 shadow-2xl space-y-6 sm:max-w-[450px]">
                     <DialogHeader className="relative">
                         <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter">
                             Register AI Identity
                         </DialogTitle>
-                        <DialogDescription className="text-neutral-500 text-xs font-medium uppercase tracking-widest">
+                        <DialogDescription className="text-neutral-400 text-xs font-medium uppercase tracking-widest">
                             Authorize a new autonomous entity in your ecosystem.
                         </DialogDescription>
                         {showSuccess && <DollarConfetti />}
@@ -627,7 +627,7 @@ export default function AgentsPage() {
                                     placeholder="e.g. Finance Intelligence Agent"
                                     value={newAgentName}
                                     onChange={(e) => setNewAgentName(e.target.value)}
-                                    className="bg-white/[0.03] border-white/10 h-12 rounded-xl text-white focus:ring-emerald-500/50 focus:border-emerald-500/50"
+                                    className="bg-white/[0.05] border-white/10 h-12 rounded-xl text-white focus:ring-emerald-500/50 focus:border-emerald-500/50"
                                 />
                             </div>
 
@@ -635,7 +635,7 @@ export default function AgentsPage() {
                                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500/70 ml-1">
                                     Authorization Scopes
                                 </Label>
-                                <p className="text-[11px] text-neutral-500 px-1 italic">Restrict what this agent can access. Leave empty for full access (*:*).</p>
+                                <p className="text-[11px] text-neutral-400 px-1 italic">Restrict what this agent can access. Leave empty for full access (*:*).</p>
                                 
                                 <div className="grid grid-cols-2 gap-2">
                                     {[
@@ -654,7 +654,7 @@ export default function AgentsPage() {
                                             key={scope}
                                             className={`flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all text-[11px] ${selectedScopes.includes(scope)
                                                 ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                                                : 'bg-white/[0.03] border-white/5 text-neutral-400 hover:border-white/10'
+                                                : 'bg-white/[0.05] border-white/5 text-neutral-400 hover:border-white/10'
                                                 }`}
                                         >
                                             <input
@@ -685,7 +685,7 @@ export default function AgentsPage() {
                                         placeholder="Add custom scope (e.g. tools:*)"
                                         value={customScope}
                                         onChange={(e) => setCustomScope(e.target.value)}
-                                        className="bg-white/[0.03] border-white/10 h-10 rounded-xl text-white text-xs font-mono"
+                                        className="bg-white/[0.05] border-white/10 h-10 rounded-xl text-white text-xs font-mono"
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' && customScope) {
                                                 e.preventDefault();
@@ -764,7 +764,7 @@ export default function AgentsPage() {
                                 </Label>
                                 <div className="relative group">
                                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                        <KeyIcon className="h-4 w-4 text-neutral-500" />
+                                        <KeyIcon className="h-4 w-4 text-neutral-400" />
                                     </div>
                                     <div className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-12 py-3 text-xs font-mono text-blue-100 shadow-inner break-all">
                                         {generatedKey}
@@ -851,7 +851,7 @@ export default function AgentsPage() {
                                                         </SheetTitle>
                                                     )}
                                                     <div className="flex items-center gap-2 mt-1">
-                                                        <Badge variant="outline" className="text-[10px] font-mono tracking-widest uppercase text-neutral-500 bg-white/5 border-white/5">
+                                                        <Badge variant="outline" className="text-[10px] font-mono tracking-widest uppercase text-neutral-400 bg-white/5 border-white/5">
                                                             ID: {selectedAgent.id}
                                                         </Badge>
                                                         {isEditing && (
@@ -894,20 +894,20 @@ export default function AgentsPage() {
                                             {/* Left Col */}
                                             <div className="space-y-4">
                                                 <div className="space-y-2">
-                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Agent URI</Label>
+                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Agent URI</Label>
                                                     <div className="flex bg-black/40 border border-white/5 rounded-xl h-10 items-center px-3 group transition-colors hover:border-white/10">
                                                         <code className="text-[11px] text-blue-300 font-mono w-full truncate">{agentUri}</code>
-                                                        <button onClick={() => copyToClipboard(agentUri)} className="shrink-0 p-1 rounded-md text-neutral-500 hover:text-white hover:bg-white/10 transition">
+                                                        <button onClick={() => copyToClipboard(agentUri)} className="shrink-0 p-1 rounded-md text-neutral-400 hover:text-white hover:bg-white/10 transition">
                                                             <Copy className="w-3 h-3" />
                                                         </button>
                                                     </div>
                                                 </div>
                                                 <div className="space-y-2">
-                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">API Key</Label>
+                                                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">API Key</Label>
                                                     <div className="flex items-center justify-between bg-black/40 border border-white/5 rounded-xl h-10 px-3 group transition-colors hover:border-white/10">
                                                         <div className="flex items-center gap-2">
                                                             <KeyIcon className={`w-3.5 h-3.5 ${isRotatingKey ? 'animate-spin' : 'text-emerald-400'}`} />
-                                                            <code className="text-[11px] text-neutral-500 font-mono">
+                                                            <code className="text-[11px] text-neutral-400 font-mono">
                                                                 {isRotatingKey ? "GENERATING..." : "••••••••••••••••••••••••"}
                                                             </code>
                                                         </div>
@@ -918,7 +918,7 @@ export default function AgentsPage() {
                                                 </div>
                                                 <div className="space-y-2">
                                                     <div className="flex items-center justify-between">
-                                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Scopes</Label>
+                                                        <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Scopes</Label>
                                                         <Button variant="ghost" size="sm" onClick={() => setIsEditing(!isEditing)} className="h-5 text-[9px] uppercase px-2 bg-white/5 hover:bg-white/10">{isEditing ? "Editing..." : "Edit"}</Button>
                                                     </div>
                                                     {isEditing ? (
@@ -944,14 +944,14 @@ export default function AgentsPage() {
                                             </div>
                                             {/* Right Col */}
                                             <div className="space-y-2 flex flex-col">
-                                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Quick Integration</Label>
+                                                <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400">Quick Integration</Label>
                                                 <div className="flex-1 bg-black/40 border border-white/5 rounded-xl overflow-hidden flex flex-col shadow-inner">
-                                                    <div className="flex border-b border-white/5 bg-white/[0.02]">
+                                                    <div className="flex border-b border-white/5 bg-white/[0.05]">
                                                         {(['python', 'ts', 'go'] as const).map(t => (
                                                             <button 
                                                                 key={t}
                                                                 onClick={() => setIntegrationTab(t)}
-                                                                className={`flex-1 py-1.5 text-[10px] font-black uppercase text-center transition-colors ${integrationTab === t ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-400/5' : 'text-neutral-500 hover:text-neutral-300'}`}
+                                                                className={`flex-1 py-1.5 text-[10px] font-black uppercase text-center transition-colors ${integrationTab === t ? 'text-blue-400 border-b-2 border-blue-400 bg-blue-400/5' : 'text-neutral-400 hover:text-neutral-300'}`}
                                                             >
                                                                 {t === 'python' ? 'Python' : t === 'ts' ? 'TypeScript' : 'Go'}
                                                             </button>
@@ -975,27 +975,27 @@ export default function AgentsPage() {
                                             <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Telemetry & Health Metrics</h3>
                                         </div>
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between">
-                                                <div className="flex gap-2 items-center text-neutral-500 mb-2">
+                                            <div className="p-4 bg-white/[0.05] border border-white/5 rounded-2xl flex flex-col justify-between">
+                                                <div className="flex gap-2 items-center text-neutral-400 mb-2">
                                                     <Terminal className="w-3.5 h-3.5" />
                                                     <span className="text-[9px] uppercase tracking-widest font-black">Total Calls</span>
                                                 </div>
                                                 <div className="text-2xl font-black text-white">{selectedAgent.totalCalls || 0}</div>
                                             </div>
-                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between">
-                                                <div className="flex gap-2 items-center text-neutral-500 mb-2">
+                                            <div className="p-4 bg-white/[0.05] border border-white/5 rounded-2xl flex flex-col justify-between">
+                                                <div className="flex gap-2 items-center text-neutral-400 mb-2">
                                                     <Shield className="w-3.5 h-3.5 text-rose-400/50" />
                                                     <span className="text-[9px] uppercase tracking-widest font-black">Interception</span>
                                                 </div>
                                                 <div className="flex items-baseline gap-1">
                                                     <div className="text-2xl font-black text-rose-400">{interceptionRate}%</div>
-                                                    <div className="text-[10px] text-neutral-500">blocked</div>
+                                                    <div className="text-[10px] text-neutral-400">blocked</div>
                                                 </div>
                                             </div>
-                                            <div className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col justify-between col-span-2 md:col-span-2 group relative overflow-hidden">
+                                            <div className="p-4 bg-white/[0.05] border border-white/5 rounded-2xl flex flex-col justify-between col-span-2 md:col-span-2 group relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-amber-500/10 transition-colors" />
                                                 <div className="flex justify-between items-start mb-2 relative z-10">
-                                                    <div className="flex gap-2 items-center text-neutral-500">
+                                                    <div className="flex gap-2 items-center text-neutral-400">
                                                         <DollarSign className="w-3.5 h-3.5 text-amber-500" />
                                                         <span className="text-[9px] uppercase tracking-widest font-black">Budget Cap</span>
                                                     </div>
@@ -1004,7 +1004,7 @@ export default function AgentsPage() {
                                                 <div className="relative z-10 space-y-1.5">
                                                     <div className="flex items-end gap-1.5">
                                                         <div className="text-2xl font-black text-amber-400 tracking-tighter">${currentSpend.toFixed(3)}</div>
-                                                        <div className="text-xs text-neutral-500 mb-1 font-bold">SPENT</div>
+                                                        <div className="text-xs text-neutral-400 mb-1 font-bold">SPENT</div>
                                                     </div>
                                                     <div className="w-full h-1.5 bg-black/50 rounded-full overflow-hidden shadow-inner flex">
                                                         <div className="h-full bg-gradient-to-r from-amber-500/50 to-rose-500/80 transition-all duration-1000" style={{ width: `${spendProgress}%` }} />
@@ -1012,14 +1012,14 @@ export default function AgentsPage() {
                                                 </div>
                                             </div>
                                             {/* Loop Detections Row Extension */}
-                                            <div className="p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between col-span-2 md:col-span-4">
+                                            <div className="p-3 bg-white/[0.05] border border-white/5 rounded-2xl flex items-center justify-between col-span-2 md:col-span-4">
                                                 <div className="flex gap-3 items-center">
                                                     <div className="p-2 bg-indigo-500/10 rounded-lg">
                                                         <RefreshCw className="w-4 h-4 text-indigo-400" />
                                                     </div>
                                                     <div>
                                                         <div className="text-[10px] uppercase tracking-widest font-black text-neutral-400">Circuit Breaker: Loop Detections</div>
-                                                        <div className="text-[11px] text-neutral-500 mt-0.5">Times the agent was halted from repeating identical flawed API requests.</div>
+                                                        <div className="text-[11px] text-neutral-400 mt-0.5">Times the agent was halted from repeating identical flawed API requests.</div>
                                                     </div>
                                                 </div>
                                                 <div className="text-xl font-black text-indigo-400 bg-indigo-500/10 px-4 py-1.5 rounded-xl border border-indigo-500/20">{loopDetections}</div>
@@ -1046,7 +1046,7 @@ export default function AgentsPage() {
                                                     {agentSecrets.length > 0 ? agentSecrets.map(s => (
                                                         <div key={s.id} className="flex justify-between items-center bg-black/40 p-2 rounded-lg border border-white/5">
                                                             <span className="text-[11px] font-mono text-emerald-300">{s.secret_name}</span>
-                                                            <span className="text-[9px] text-neutral-500">Accessible</span>
+                                                            <span className="text-[9px] text-neutral-400">Accessible</span>
                                                         </div>
                                                     )) : (
                                                         <div className="text-center p-4 border border-dashed border-white/10 rounded-xl bg-black/20 text-neutral-600 text-[10px] uppercase font-bold tracking-widest">
@@ -1071,7 +1071,7 @@ export default function AgentsPage() {
                                                                 <span className="text-[10px] font-mono font-bold text-rose-300 truncate pr-2">{p.toolName}</span>
                                                                 <Badge variant="outline" className="text-[8px] h-4 leading-none bg-rose-500/10 text-rose-400 border-rose-500/20 uppercase tracking-widest">{p.ruleType}</Badge>
                                                             </div>
-                                                            <span className="text-[9px] text-neutral-500 truncate">{p.condition}</span>
+                                                            <span className="text-[9px] text-neutral-400 truncate">{p.condition}</span>
                                                         </div>
                                                     )) : (
                                                         <div className="text-center p-4 border border-dashed border-white/10 rounded-xl bg-black/20 text-neutral-600 text-[10px] uppercase font-bold tracking-widest">
@@ -1091,7 +1091,7 @@ export default function AgentsPage() {
                                                 <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Real-Time Activity Feed</h3>
                                             </div>
                                             <Link href="/dashboard/forensics">
-                                                <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-widest text-neutral-500 hover:text-white hover:bg-white/5">
+                                                <Button variant="ghost" size="sm" className="h-6 text-[9px] font-black uppercase tracking-widest text-neutral-400 hover:text-white hover:bg-white/5">
                                                     View All <ExternalLink className="w-3 h-3 ml-1" />
                                                 </Button>
                                             </Link>
@@ -1100,11 +1100,11 @@ export default function AgentsPage() {
                                         <div className="overflow-hidden border border-white/5 rounded-2xl bg-black/20">
                                             <table className="w-full text-left border-collapse">
                                                 <thead>
-                                                    <tr className="border-b border-white/5 bg-white/[0.02]">
-                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Time</th>
-                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Tool</th>
-                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest">Parameters</th>
-                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-500 uppercase tracking-widest text-right">Decision</th>
+                                                    <tr className="border-b border-white/5 bg-white/[0.05]">
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Time</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Tool</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Parameters</th>
+                                                        <th className="px-4 py-3 text-[9px] font-black text-neutral-400 uppercase tracking-widest text-right">Decision</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="divide-y divide-white/[0.02]">
@@ -1115,14 +1115,14 @@ export default function AgentsPage() {
                                                             const isAllow = log.decision === 'ALLOW';
                                                             const isPaused = log.decision === 'PAUSED';
                                                             return (
-                                                                <tr key={log.id} className="hover:bg-white/[0.02] transition-colors group">
-                                                                    <td className="px-4 py-3 whitespace-nowrap text-[10px] font-mono text-neutral-500">
+                                                                <tr key={log.id} className="hover:bg-white/[0.05] transition-colors group">
+                                                                    <td className="px-4 py-3 whitespace-nowrap text-[10px] font-mono text-neutral-400">
                                                                         {log.timestamp?.toDate?.().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
                                                                     </td>
                                                                     <td className="px-4 py-3 whitespace-nowrap">
                                                                         <span className="text-[11px] font-bold text-neutral-300 font-mono tracking-tight">{log.toolName}</span>
                                                                     </td>
-                                                                    <td className="px-4 py-3 text-[10px] text-neutral-500 font-mono truncate max-w-[180px]">
+                                                                    <td className="px-4 py-3 text-[10px] text-neutral-400 font-mono truncate max-w-[180px]">
                                                                         {log.arguments ? log.arguments.replace(/[{}]/g, '').substring(0, 50) + (log.arguments.length > 50 ? '...' : '') : '{}'}
                                                                     </td>
                                                                     <td className="px-4 py-3 whitespace-nowrap text-right">
@@ -1182,7 +1182,7 @@ function StatCard({ icon, label, value, subtext }: { icon: React.ReactNode, labe
     return (
         <motion.div 
             whileHover={{ y: -2 }}
-            className="p-6 bg-neutral-900/50 backdrop-blur-xl border border-white/[0.05] rounded-2xl shadow-xl space-y-3 relative overflow-hidden group"
+            className="p-6 bg-neutral-900/50 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl space-y-3 relative overflow-hidden group"
         >
             <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-white/10 transition-all" />
             <div className="flex items-center gap-3">
@@ -1193,7 +1193,7 @@ function StatCard({ icon, label, value, subtext }: { icon: React.ReactNode, labe
             </div>
             <div className="flex items-baseline gap-2">
                 <span className="text-3xl font-black text-white tracking-tighter">{value}</span>
-                <span className="text-[10px] text-neutral-500 font-bold tracking-widest uppercase">{subtext}</span>
+                <span className="text-[10px] text-neutral-400 font-bold tracking-widest uppercase">{subtext}</span>
             </div>
         </motion.div>
     );

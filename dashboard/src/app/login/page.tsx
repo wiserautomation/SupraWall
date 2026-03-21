@@ -76,7 +76,7 @@ export default function LoginPage() {
                     </p>
                 </div>
 
-                <div className="bg-[#0A0A0A] border border-white/[0.05] rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-emerald-500/5 backdrop-blur-3xl relative overflow-hidden group">
+                <div className="bg-[#0A0A0A] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-emerald-500/5 backdrop-blur-3xl relative overflow-hidden group">
                     {/* Top accent line */}
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
@@ -96,7 +96,7 @@ export default function LoginPage() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="operator@supra-wall.com"
                                     required
-                                    className="h-14 pl-12 bg-black border-white/[0.05] focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
+                                    className="h-14 pl-12 bg-black border-white/10 focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
                                 />
                             </div>
                         </div>
@@ -112,7 +112,7 @@ export default function LoginPage() {
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="••••••••"
                                     required
-                                    className="h-14 pl-12 bg-black border-white/[0.05] focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
+                                    className="h-14 pl-12 bg-black border-white/10 focus:border-emerald-500/50 text-white placeholder:text-neutral-700 rounded-xl transition-all font-medium"
                                 />
                             </div>
                         </div>

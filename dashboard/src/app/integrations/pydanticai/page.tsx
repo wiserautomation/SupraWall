@@ -121,14 +121,14 @@ export default function PydanticAIIntegrationPage() {
                         </section>
 
                         <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 transition-all">
+                            <div className="p-10 rounded-[2rem] bg-white/[0.05] border border-white/5 hover:border-emerald-500/20 transition-all">
                                 <Shield className="w-12 h-12 text-emerald-500 mb-6" />
                                 <h3 className="text-xl font-bold uppercase text-white tracking-widest mb-4 italic">Injection Blocking</h3>
                                 <p className="text-sm text-neutral-500 leading-relaxed uppercase tracking-tight font-bold">
                                     SupraWall monitors PydanticAI's tool calling patterns specifically looking for indirect prompt injection vectors in RAG-provided data.
                                 </p>
                             </div>
-                            <div className="p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:border-emerald-500/20 transition-all">
+                            <div className="p-10 rounded-[2rem] bg-white/[0.05] border border-white/5 hover:border-emerald-500/20 transition-all">
                                 <Box className="w-12 h-12 text-emerald-500 mb-6" />
                                 <h3 className="text-xl font-bold uppercase text-white tracking-widest mb-4 italic">Type-Safe Audits</h3>
                                 <p className="text-sm text-neutral-500 leading-relaxed uppercase tracking-tight font-bold">

@@ -124,7 +124,7 @@ export default function InfiniteLoopsBlogPage() {
                                 However, <strong>agent loop prevention</strong> requires semantic awareness. An agent might validly call a search tool 10 times in 10 minutes, but calling a specific write-action 3 times in 3 seconds with identical parameters is almost certainly a failure state.
                             </p>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-500 mb-4" />
                                     <h4 className="font-bold uppercase text-white tracking-widest text-sm mb-2">Volumetric Limiting</h4>
                                     <p className="text-xs text-neutral-500 italic">"Allow 100 calls/hour." - Fails if the loop burns $50 in the first 5 minutes.</p>
@@ -194,12 +194,12 @@ secured_agent.invoke({"input": "Perform the recursive task"})`}
 
                     {/* Bottom Links */}
                     <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/learn/what-is-agent-runtime-security" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">What is ARS?</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">The framework for securing LLM-env interaction.</p>
                         </Link>
-                        <Link href="/integrations/langchain" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/integrations/langchain" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Integration Guide</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Secure LangChain</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">Official native shim for LangChain executors.</p>

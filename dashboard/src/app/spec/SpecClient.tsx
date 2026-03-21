@@ -105,7 +105,7 @@ export function SpecClient() {
                                 { title: "action", desc: "ALLOW, DENY, or REQUIRE_APPROVAL." },
                                 { title: "condition", desc: "Optional RegEx or LLM-based filter for tool arguments." },
                             ].map((item, idx) => (
-                                <div key={idx} className="flex gap-4 p-4 hover:bg-white/[0.02] rounded-2xl transition-colors border border-transparent hover:border-white/5">
+                                <div key={idx} className="flex gap-4 p-4 hover:bg-white/[0.05] rounded-2xl transition-colors border border-transparent hover:border-white/5">
                                     <div className="font-mono text-sm text-emerald-400 shrink-0 font-bold">{item.title}</div>
                                     <div className="text-sm text-neutral-500 font-medium">{item.desc}</div>
                                 </div>

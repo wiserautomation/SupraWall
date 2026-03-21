@@ -223,7 +223,7 @@ export default function GatewayVsCompliancePage() {
                                     </thead>
                                     <tbody>
                                         {tableRows.map(({ capability, portkey, suprawall }) => (
-                                            <tr key={capability} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                                            <tr key={capability} className="border-b border-white/[0.08] hover:bg-white/[0.05] transition-colors">
                                                 <td className="py-3.5 pr-4 text-neutral-300 text-sm leading-snug">{capability}</td>
                                                 <td className="text-center py-3.5 px-4">{renderCell(portkey, false)}</td>
                                                 <td className="text-center py-3.5 pl-4">{renderCell(suprawall, true)}</td>
@@ -350,7 +350,7 @@ export default function GatewayVsCompliancePage() {
 
                     {/* Bottom Links */}
                     <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Link href="/blog/agent-to-agent-commerce-eu-ai-act" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/blog/agent-to-agent-commerce-eu-ai-act" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
                                 Agent-to-Agent Commerce & the EU AI Act
@@ -358,7 +358,7 @@ export default function GatewayVsCompliancePage() {
                             <p className="text-sm text-neutral-500 mt-2 italic">What Palo Alto's threat report missed about legal accountability.</p>
                             <ArrowRight className="w-4 h-4 text-neutral-600 group-hover:text-emerald-400 transition-colors mt-4" />
                         </Link>
-                        <Link href="/vs/nemo-guardrails" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/vs/nemo-guardrails" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Comparison</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
                                 Supra-wall vs NeMo Guardrails

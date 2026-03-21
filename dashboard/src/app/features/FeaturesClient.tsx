@@ -88,7 +88,7 @@ export default function FeaturesClient() {
                             <Link 
                                 key={f.id} 
                                 href={f.href}
-                                className="group relative block p-10 rounded-[3rem] bg-neutral-900/40 border border-white/[0.05] hover:border-emerald-500/30 transition-all overflow-hidden"
+                                className="group relative block p-10 rounded-[3rem] bg-neutral-900/40 border border-white/10 hover:border-emerald-500/30 transition-all overflow-hidden"
                             >
                                 <div className={`absolute top-0 right-0 w-32 h-32 blur-[60px] opacity-10 group-hover:opacity-20 transition-opacity bg-${f.color}-500`} />
                                 

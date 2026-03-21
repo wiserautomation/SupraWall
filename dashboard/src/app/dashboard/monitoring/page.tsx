@@ -121,7 +121,7 @@ export default function MonitoringPage() {
                         <span className="text-[9px] font-black tracking-[0.2em] text-emerald-400 uppercase">{isLive ? 'Live Feed' : 'Paused'}</span>
                     </div>
                     <h1 className="text-4xl font-black tracking-tighter text-white uppercase italic">Live Swarm Inspector</h1>
-                    <p className="text-[11px] font-black text-neutral-500 uppercase tracking-[0.2em]">Real-time agent orchestration &amp; tool governance</p>
+                    <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em]">Real-time agent orchestration &amp; tool governance</p>
                 </div>
                 <div className="flex gap-3">
                     <Button
@@ -152,7 +152,7 @@ export default function MonitoringPage() {
                     <div className="space-y-1">
                         <button
                             onClick={() => setSelectedSession(null)}
-                            className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3 border ${!selectedSession ? 'bg-white/5 border-white/10 text-white' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+                            className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3 border ${!selectedSession ? 'bg-white/5 border-white/10 text-white' : 'border-transparent text-neutral-400 hover:text-neutral-300'}`}
                         >
                             <Layers className="w-4 h-4" />
                             <span className="text-xs font-black uppercase italic">All Activity</span>
@@ -161,7 +161,7 @@ export default function MonitoringPage() {
                             <button
                                 key={s}
                                 onClick={() => setSelectedSession(s)}
-                                className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3 border ${selectedSession === s ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'border-transparent text-neutral-500 hover:text-neutral-300'}`}
+                                className={`w-full text-left px-4 py-3 rounded-xl transition-all flex items-center gap-3 border ${selectedSession === s ? 'bg-orange-500/10 border-orange-500/30 text-orange-400' : 'border-transparent text-neutral-400 hover:text-neutral-300'}`}
                             >
                                 <Bot className="w-4 h-4" />
                                 <div className="flex-1 overflow-hidden">
@@ -174,7 +174,7 @@ export default function MonitoringPage() {
                 </div>
 
                 {/* Main Timeline Stream */}
-                <div className="lg:col-span-9 bg-black/40 backdrop-blur-3xl border border-white/[0.05] rounded-[2.5rem] overflow-hidden flex flex-col relative">
+                <div className="lg:col-span-9 bg-black/40 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col relative">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
                     <div className="px-8 py-6 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
@@ -198,7 +198,7 @@ export default function MonitoringPage() {
                                 >
                                     {/* Timeline Line */}
                                     {idx !== filteredLogs.length - 1 && (
-                                        <div className="absolute left-[23px] top-10 bottom-0 w-[2px] bg-white/[0.03]" />
+                                        <div className="absolute left-[23px] top-10 bottom-0 w-[2px] bg-white/[0.05]" />
                                     )}
 
                                     {/* Decision Icon */}
@@ -209,13 +209,13 @@ export default function MonitoringPage() {
                                         {log.decision === 'ALLOW' ? <ShieldCheck className="w-5 h-5" /> : <ShieldAlert className="w-5 h-5" />}
                                     </div>
 
-                                    <div className="bg-white/[0.01] border border-white/[0.05] p-6 rounded-[2rem] hover:bg-white/[0.03] transition-all group/card relative overflow-hidden">
+                                    <div className="bg-white/[0.01] border border-white/10 p-6 rounded-[2rem] hover:bg-white/[0.05] transition-all group/card relative overflow-hidden">
 
                                         <div className="flex flex-wrap justify-between items-start gap-4 mb-4">
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-3">
                                                     <h3 className="text-sm font-black text-white uppercase italic tracking-tight">{log.toolName}</h3>
-                                                    <Badge variant="outline" className="text-[8px] border-white/10 text-neutral-500 font-bold tracking-widest uppercase">
+                                                    <Badge variant="outline" className="text-[8px] border-white/10 text-neutral-400 font-bold tracking-widest uppercase">
                                                         {log.sessionId ? 'SWARM ACTION' : 'DIRECT CALL'}
                                                     </Badge>
                                                     {log.agentRole && (
@@ -224,7 +224,7 @@ export default function MonitoringPage() {
                                                         </Badge>
                                                     )}
                                                 </div>
-                                                <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-2">
+                                                <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
                                                     <Clock className="w-3 h-3" />
                                                     {log.timestamp ? format(log.timestamp.toDate(), 'HH:mm:ss.SSS') : 'Just now'}
                                                 </p>
@@ -241,7 +241,7 @@ export default function MonitoringPage() {
                                                     <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
                                                     <div className="w-1.5 h-1.5 rounded-full bg-white/10" />
                                                 </div>
-                                                <p className="text-neutral-500 mb-2">// Call arguments</p>
+                                                <p className="text-neutral-400 mb-2">// Call arguments</p>
                                                 <p className="text-blue-400 break-all">{log.arguments}</p>
                                             </div>
 
@@ -276,12 +276,12 @@ export default function MonitoringPage() {
 
                         {!loading && filteredLogs.length === 0 && (
                             <div className="py-32 text-center space-y-6">
-                                <div className="p-8 bg-white/[0.02] rounded-full w-24 h-24 mx-auto border border-white/5 flex items-center justify-center">
+                                <div className="p-8 bg-white/[0.05] rounded-full w-24 h-24 mx-auto border border-white/5 flex items-center justify-center">
                                     <Bot className="w-10 h-10 text-neutral-700" />
                                 </div>
                                 <div className="space-y-2">
                                     <h3 className="text-xl font-black text-white italic uppercase">No swarm activity found</h3>
-                                    <p className="text-neutral-500 text-sm max-w-xs mx-auto">Connect your CrewAI or AutoGen agents to see real-time tool governance here.</p>
+                                    <p className="text-neutral-400 text-sm max-w-xs mx-auto">Connect your CrewAI or AutoGen agents to see real-time tool governance here.</p>
                                 </div>
                             </div>
                         )}

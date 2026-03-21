@@ -184,7 +184,7 @@ export default function NewsArticlePage({ params }: Props) {
                                 <Link
                                     key={link.href}
                                     href={link.href}
-                                    className="flex items-center justify-between p-4 bg-white/[0.02] border border-white/5 rounded-xl hover:border-white/10 hover:bg-white/[0.04] transition-all group"
+                                    className="flex items-center justify-between p-4 bg-white/[0.05] border border-white/5 rounded-xl hover:border-white/10 hover:bg-white/[0.04] transition-all group"
                                 >
                                     <span className="text-sm font-medium text-neutral-400 group-hover:text-white transition-colors">
                                         {link.label}
@@ -196,7 +196,7 @@ export default function NewsArticlePage({ params }: Props) {
                     </div>
 
                     {/* CTA */}
-                    <div className="mt-16 p-10 bg-white/[0.02] border border-white/5 rounded-3xl text-center">
+                    <div className="mt-16 p-10 bg-white/[0.05] border border-white/5 rounded-3xl text-center">
                         <h2 className="text-2xl font-black uppercase italic text-white mb-3">
                             Protect Your AI Agents
                         </h2>

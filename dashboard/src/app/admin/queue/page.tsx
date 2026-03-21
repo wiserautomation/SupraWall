@@ -126,7 +126,7 @@ export default function QueuePage() {
                             const config = statusConfig[item.status] || statusConfig.queued;
                             const Icon = config.icon;
                             return (
-                                <tr key={item.id} className="hover:bg-white/[0.02] transition-colors">
+                                <tr key={item.id} className="hover:bg-white/[0.05] transition-colors">
                                     <td className="px-6 py-4 text-sm text-neutral-600 tabular-nums font-mono">{item.priority}</td>
                                     <td className="px-6 py-4">
                                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold ${config.bg} ${config.color}`}>

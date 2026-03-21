@@ -139,14 +139,14 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                                                 maint: "High — regulation evolves, new requirements emerge",
                                             },
                                         ].map((row, idx) => (
-                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.05] transition-colors">
                                                 <td className="p-5 font-bold text-white">{row.component}</td>
                                                 <td className="p-5 text-neutral-500 italic text-xs">{row.what}</td>
                                                 <td className="p-5 text-amber-400 font-mono font-bold">{row.weeks}</td>
                                                 <td className="p-5 text-rose-400 text-xs font-bold uppercase tracking-wide">{row.maint}</td>
                                             </tr>
                                         ))}
-                                        <tr className="bg-white/[0.03]">
+                                        <tr className="bg-white/[0.05]">
                                             <td className="p-5 font-black text-white uppercase tracking-widest text-xs" colSpan={2}>Total</td>
                                             <td className="p-5 font-black text-amber-400 font-mono text-lg">21–39 weeks</td>
                                             <td className="p-5 font-black text-rose-400 text-xs uppercase tracking-widest">Continuous</td>
@@ -173,7 +173,7 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                             </p>
 
                             <div className="not-prose space-y-6">
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <Layers className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Framework Fragmentation</h4>
@@ -183,7 +183,7 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <FileText className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Compliance Drift</h4>
@@ -193,7 +193,7 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <AlertTriangle className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Incident Response Ownership</h4>
@@ -203,7 +203,7 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                                     </div>
                                 </div>
 
-                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="flex gap-6 p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <Shield className="w-8 h-8 text-rose-400 shrink-0 mt-1" />
                                     <div>
                                         <h4 className="text-lg font-black text-white uppercase italic mb-2">Testing Surface Area</h4>
@@ -224,15 +224,15 @@ export default function BuildVsBuyAIAgentSecurityPage() {
                                 This guide would not be an honest analysis without acknowledging that there are real scenarios where building your own agent security infrastructure is the correct decision. These scenarios exist, but they are narrower than most engineering teams assume when they first propose building in-house.
                             </p>
                             <div className="not-prose space-y-4">
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-lg font-black text-white uppercase italic mb-2">Scenario 1: Classified or Air-Gapped Environments</h4>
                                     <p className="text-neutral-400 text-sm leading-relaxed">If you are operating AI agents in a classified or air-gapped environment where no third-party software can be introduced — defense, intelligence, or highly regulated government deployments — building in-house is not a preference, it is a requirement. No external vendor can satisfy the access and vetting requirements for these environments. This is a legitimate and well-understood exception.</p>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-lg font-black text-white uppercase italic mb-2">Scenario 2: Hyperscale with Custom Infrastructure Requirements</h4>
                                     <p className="text-neutral-400 text-sm leading-relaxed">If you are operating at a scale where a shared SaaS platform's throughput or latency characteristics genuinely cannot meet your requirements — and you have validated this with actual data, not assumptions — custom infrastructure may be justified. This applies to a very small number of organizations: typically those processing millions of agent actions per day with sub-millisecond latency requirements. For most enterprise deployments, this threshold is never reached.</p>
                                 </div>
-                                <div className="p-8 rounded-3xl bg-white/[0.02] border border-white/5">
+                                <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/5">
                                     <h4 className="text-lg font-black text-white uppercase italic mb-2">Scenario 3: You Are a Security Vendor</h4>
                                     <p className="text-neutral-400 text-sm leading-relaxed">If AI agent security is your core product — if you are building and selling security infrastructure to others — building your own is obviously necessary. Your competitive differentiation depends on it, and the investment is directly tied to your revenue model. This is a different category of decision entirely from an enterprise team building AI applications that need to be secured.</p>
                                 </div>
@@ -323,13 +323,13 @@ secured_agent.invoke({"input": user_input})`}
                                             { feature: "EU AI Act compliance reports", build: "2–4 weeks + ongoing", sw: "Included + auto-updated" },
                                             { feature: "Ongoing maintenance", build: "$200K–$400K/year engineering", sw: "Covered by subscription" },
                                         ].map((row, idx) => (
-                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.02] transition-colors">
+                                            <tr key={idx} className="border-b border-white/5 hover:bg-white/[0.05] transition-colors">
                                                 <td className="p-5 font-bold text-white">{row.feature}</td>
                                                 <td className="p-5 text-rose-400 text-xs italic">{row.build}</td>
                                                 <td className="p-5 text-emerald-400 font-bold text-xs">{row.sw}</td>
                                             </tr>
                                         ))}
-                                        <tr className="bg-white/[0.03]">
+                                        <tr className="bg-white/[0.05]">
                                             <td className="p-5 font-black text-white uppercase tracking-widest text-xs">Total first-year cost</td>
                                             <td className="p-5 font-black text-rose-400 text-sm">$350K–$700K</td>
                                             <td className="p-5 font-black text-emerald-400 text-sm">Contact for pricing</td>
@@ -428,17 +428,17 @@ secured_agent.invoke({"input": user_input})`}
 
                     {/* Bottom Links */}
                     <div className="pt-20 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Related Article</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">Essential checklist for securing autonomous agents in production.</p>
                         </Link>
-                        <Link href="/integrations/langchain" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/integrations/langchain" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Integration Guide</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">Secure LangChain Agents</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">Official native shim for LangChain — two-line integration with full runtime security.</p>
                         </Link>
-                        <Link href="/learn/ai-agent-security-best-practices" className="group p-8 rounded-3xl bg-white/[0.02] border border-white/5 hover:border-emerald-500/30 transition-all">
+                        <Link href="/learn/ai-agent-security-best-practices" className="group p-8 rounded-3xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">Pillar Content</p>
                             <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">AI Agent Security Best Practices</h4>
                             <p className="text-sm text-neutral-500 mt-2 italic">The complete playbook for securing autonomous agents in production environments.</p>

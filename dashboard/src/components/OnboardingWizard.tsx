@@ -152,7 +152,7 @@ export function OnboardingWizard({ onComplete, isSubmitting }: OnboardingWizardP
               className="space-y-8 flex-grow"
             >
               <div className="space-y-2">
-                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic">Define Your Agent</h2>
+                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic heading-glow">Define Your Agent</h2>
                 <p className="text-neutral-500 text-sm">Every agent in SupraWall acts as a secure cryptographic identity.</p>
               </div>
 
@@ -210,7 +210,7 @@ export function OnboardingWizard({ onComplete, isSubmitting }: OnboardingWizardP
               className="space-y-8 flex-grow"
             >
               <div className="space-y-2">
-                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic">Zero-Trust Scopes</h2>
+                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic heading-glow">Zero-Trust Scopes</h2>
                 <p className="text-neutral-500 text-sm">Select the exact boundaries for this agent. Any action outside these scopes will be blocked.</p>
               </div>
 
@@ -261,7 +261,7 @@ export function OnboardingWizard({ onComplete, isSubmitting }: OnboardingWizardP
               className="space-y-8 flex-grow"
             >
               <div className="space-y-2">
-                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic">Security Provision</h2>
+                <h2 className="text-3xl font-black tracking-tighter text-white uppercase italic heading-glow">Security Provision</h2>
                 <p className="text-neutral-500 text-sm">Review the cryptographic identity configuration before deployment.</p>
               </div>
 

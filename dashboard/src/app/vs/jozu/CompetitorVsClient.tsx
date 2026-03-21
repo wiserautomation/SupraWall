@@ -57,7 +57,7 @@ export default function CompetitorVsClient({ competitor, focus }: CompetitorProp
                                     { f: "Autonomous Budget Caps", c: false, s: true },
                                     { f: "Zero Prompt Dependencies", c: false, s: true }
                                 ].map((row, i) => (
-                                    <tr key={i} className="group/row hover:bg-white/[0.02] transition-colors">
+                                    <tr key={i} className="group/row hover:bg-white/[0.05] transition-colors">
                                         <td className="py-8 text-white/60 group-hover/row:text-white transition-colors">{row.f}</td>
                                         <td className="py-8"><X className="w-5 h-5 text-rose-500/30" /></td>
                                         <td className="py-8 text-blue-500 shadow-text-glow font-black"><Check className="w-6 h-6" /></td>
