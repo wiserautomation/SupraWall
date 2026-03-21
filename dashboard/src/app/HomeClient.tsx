@@ -499,7 +499,8 @@ export function AttackDemo() {
         const tick = () => {
             if (!isRunning) return;
             if (i < sequence.length) {
-                setLines(prev => [...prev, sequence[i].text]);
+                const text = sequence[i].text;
+                setLines(prev => [...prev, text]);
                 i++;
                 setTimeout(tick, i <= 2 ? 800 : i <= 4 ? 600 : 500);
             } else {
