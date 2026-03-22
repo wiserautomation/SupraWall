@@ -7,8 +7,17 @@ import { createSupraWallMCPServer } from '../../../lib/mcp-server';
  * This works natively on Vercel/Next.js.
  */
 
+function getApiKey(req: NextRequest) {
+    const authHeader = req.headers.get('Authorization');
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return authHeader.substring(7);
+    }
+    return req.headers.get('x-api-key') || req.nextUrl.searchParams.get('apiKey');
+}
+
 export async function GET(req: NextRequest) {
-    const server = createSupraWallMCPServer();
+    const apiKey = getApiKey(req);
+    const server = createSupraWallMCPServer(apiKey || undefined as any);
     const transport = new WebStandardStreamableHTTPServerTransport({
         sessionIdGenerator: undefined // Stateless mode
     });
@@ -17,7 +26,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const server = createSupraWallMCPServer();
+    const apiKey = getApiKey(req);
+    const server = createSupraWallMCPServer(apiKey || undefined as any);
     const transport = new WebStandardStreamableHTTPServerTransport({
         sessionIdGenerator: undefined // Stateless mode
     });
@@ -26,7 +36,8 @@ export async function POST(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-    const server = createSupraWallMCPServer();
+    const apiKey = getApiKey(req);
+    const server = createSupraWallMCPServer(apiKey || undefined as any);
     const transport = new WebStandardStreamableHTTPServerTransport({
         sessionIdGenerator: undefined // Stateless mode
     });

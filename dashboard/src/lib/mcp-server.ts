@@ -3,34 +3,36 @@ import {
     CallToolRequestSchema,
     ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { db } from './firebase-admin';
-import * as admin from 'firebase-admin';
-import { resolveVaultTokens } from './vault-server';
 
 // ── MCP Tools Implementation ──
 
 interface SupraWallToolArgs {
-    toolName: string;
-    args: any;
-    agentRole?: string;
-    sessionId?: string;
-    apiKey: string;
+    action: string;
+    context?: any;
+    severity?: string;
+    reason?: string;
+    urgency?: string;
+    requesterEmail?: string;
+    apiKey?: string;
 }
 
-async function evaluateSupraWallAction(params: SupraWallToolArgs) {
-    const { apiKey, toolName, args, sessionId, agentRole } = params;
+async function evaluateSupraWallAction(params: SupraWallToolArgs, defaultApiKey?: string) {
+    const { apiKey, action, context, severity } = params;
+    const finalApiKey = apiKey || defaultApiKey;
     
-    // Call our internal evaluation endpoint or logic
+    if (!finalApiKey) {
+        throw new Error("Missing SupraWall API Key. Provide it in tool arguments or via Bearer token.");
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.supra-wall.com';
     const evaluateRes = await fetch(`${baseUrl}/api/v1/evaluate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            apiKey,
-            toolName,
-            args,
-            sessionId,
-            agentRole
+            apiKey: finalApiKey,
+            toolName: action,
+            args: context || {},
+            severity
         })
     });
 
@@ -43,7 +45,7 @@ async function evaluateSupraWallAction(params: SupraWallToolArgs) {
 
 // ── MCP Server Factory ──
 
-export function createSupraWallMCPServer() {
+export function createSupraWallMCPServer(defaultApiKey?: string) {
     const server = new Server(
         {
             name: 'suprawall-cloud',
@@ -61,31 +63,31 @@ export function createSupraWallMCPServer() {
             tools: [
                 {
                     name: 'check_policy',
-                    description: 'Verify if an action is allowed by SupraWall security policies',
+                    description: 'Check if an AI action complies with configured compliance policies (cloud-hosted)',
                     inputSchema: {
                         type: 'object',
                         properties: {
-                            apiKey: { type: 'string', description: 'Your SupraWall API Key (ag_ or agc_)' },
-                            toolName: { type: 'string', description: 'The tool/action being performed' },
-                            args: { type: 'object', description: 'Arguments passed to the tool' },
-                            agentRole: { type: 'string', description: 'Optional agent persona' },
-                            sessionId: { type: 'string', description: 'Optional session tracking identifier' },
+                            action: { type: 'string', description: 'The action to evaluate for compliance' },
+                            context: { type: 'object', description: 'Additional context about the action' },
+                            severity: { type: 'string', enum: ['low', 'medium', 'high', 'critical'], description: 'Severity level' },
+                            apiKey: { type: 'string', description: 'Optional API Key (if not provided via header)' }
                         },
-                        required: ['apiKey', 'toolName', 'args']
+                        required: ['action']
                     }
                 },
                 {
                     name: 'request_approval',
-                    description: 'Force a human approval request for a tool call',
+                    description: 'Request human approval for a sensitive action with cloud-hosted audit trail',
                     inputSchema: {
                         type: 'object',
                         properties: {
-                            apiKey: { type: 'string', description: 'Your SupraWall API Key' },
-                            toolName: { type: 'string', description: 'The tool requiring approval' },
-                            args: { type: 'object', description: 'Tool arguments' },
-                            reason: { type: 'string', description: 'Reason for the manual approval request' },
+                            action: { type: 'string', description: 'The action requesting approval' },
+                            reason: { type: 'string', description: 'Why human approval is needed' },
+                            urgency: { type: 'string', enum: ['low', 'medium', 'high'], description: 'Urgency level' },
+                            requesterEmail: { type: 'string', description: 'Email of the person requesting approval' },
+                            apiKey: { type: 'string', description: 'Optional API Key' }
                         },
-                        required: ['apiKey', 'toolName', 'args', 'reason']
+                        required: ['action', 'reason']
                     }
                 }
             ]
@@ -98,17 +100,27 @@ export function createSupraWallMCPServer() {
         try {
             switch (name) {
                 case 'check_policy': {
-                    const result = await evaluateSupraWallAction(args as any);
+                    const result = await evaluateSupraWallAction(args as any, defaultApiKey);
                     return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
                 }
                 case 'request_approval': {
+                    const finalArgs = args as any;
+                    const finalApiKey = finalArgs.apiKey || defaultApiKey;
+                    
                     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.supra-wall.com';
                     const res = await fetch(`${baseUrl}/api/v1/evaluate`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            ...(args as any),
-                            forceApproval: true
+                            apiKey: finalApiKey,
+                            toolName: finalArgs.action,
+                            args: {
+                                ...(finalArgs.context || {}),
+                                urgency: finalArgs.urgency,
+                                requesterEmail: finalArgs.requesterEmail
+                            },
+                            forceApproval: true,
+                            reason: finalArgs.reason
                         })
                     });
                     const result = await res.json();
