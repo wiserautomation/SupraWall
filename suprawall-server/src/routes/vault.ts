@@ -39,6 +39,60 @@ router.post("/secrets", async (req: Request, res: Response) => {
     }
 });
 
+// POST /v1/vault/secrets/bulk — Create multiple secrets
+router.post("/secrets/bulk", async (req: Request, res: Response) => {
+    try {
+        const { tenantId, secrets } = req.body;
+
+        if (!tenantId || !Array.isArray(secrets)) {
+            return res.status(400).json({ error: "Missing required fields: tenantId, secrets (array)" });
+        }
+
+        if (secrets.length > 100) {
+            return res.status(400).json({ error: "Bulk import limit is 100 secrets per request" });
+        }
+
+        if (!process.env.VAULT_ENCRYPTION_KEY) {
+            return res.status(500).json({ error: "Vault encryption key not configured" });
+        }
+
+        const created = [];
+        const skipped = [];
+        const errors = [];
+
+        for (const s of secrets) {
+            const { secretName, secretValue, description } = s;
+
+            if (!secretName || !secretValue || !SECRET_NAME_PATTERN.test(secretName)) {
+                errors.push({ secretName, error: "Invalid name or missing value" });
+                continue;
+            }
+
+            try {
+                const result = await pool.query(
+                    `INSERT INTO vault_secrets (tenant_id, secret_name, encrypted_value, description)
+                     VALUES ($1, $2, pgp_sym_encrypt($3, $4), $5)
+                     RETURNING id, secret_name`,
+                    [tenantId, secretName, secretValue, process.env.VAULT_ENCRYPTION_KEY, description || "Bulk imported"]
+                );
+                created.push(result.rows[0]);
+            } catch (e: any) {
+                if (e.code === "23505") {
+                    skipped.push({ secretName, reason: "Already exists" });
+                } else {
+                    console.error(`Bulk import error for ${secretName}:`, e);
+                    errors.push({ secretName, error: "Database error" });
+                }
+            }
+        }
+
+        res.status(207).json({ created, skipped, errors });
+    } catch (e: any) {
+        console.error("Vault bulk import error:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // GET /v1/vault/secrets?tenantId=<id> — List secrets (metadata only)
 router.get("/secrets", async (req: Request, res: Response) => {
     try {

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { db } from "./firebase";
+import { pool } from "./db";
 
 export interface AuthenticatedRequest extends Request {
     agent?: {
@@ -7,8 +8,36 @@ export interface AuthenticatedRequest extends Request {
         tenantId: string;
         name: string;
         scopes: string[];
+        max_cost_usd?: number;
     };
+    tenantId?: string;
 }
+
+export const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: "Unauthorized: Missing or invalid Authorization header. Use Bearer sw_admin_xxxx" });
+    }
+
+    const masterKey = authHeader.split(" ")[1];
+
+    try {
+        const result = await pool.query(
+            "SELECT id FROM tenants WHERE master_api_key = $1",
+            [masterKey]
+        );
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: "Unauthorized: Invalid Master API Key." });
+        }
+
+        (req as AuthenticatedRequest).tenantId = result.rows[0].id;
+        next();
+    } catch (error) {
+        console.error("[AdminAuth] Error:", error);
+        res.status(500).json({ error: "Internal authentication error" });
+    }
+};
 
 export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunction) => {
     // 1. Extract API Key
@@ -60,6 +89,7 @@ export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunc
             tenantId: agentData.tenantId || "default-tenant",
             name: agentData.name,
             scopes: agentData.scopes || [],
+            max_cost_usd: agentData.max_cost_usd || 10,
         };
 
         next();

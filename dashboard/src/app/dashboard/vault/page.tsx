@@ -1,11 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock, Users } from "lucide-react";
+import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock, Users, FileUp, X } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
+import { parseEnvFile, ParsedSecret } from "@/lib/parse-env";
 
 const API_BASE = "/api/v1/vault";
 
@@ -71,6 +72,9 @@ export default function VaultPage() {
     const [showCreateSecret, setShowCreateSecret] = useState(false);
     const [showCreateRule, setShowCreateRule] = useState(false);
     const [showRotate, setShowRotate] = useState<string | null>(null);
+    const [showImportEnv, setShowImportEnv] = useState(false);
+    const [importData, setImportData] = useState<{ valid: ParsedSecret[], invalid: any[] } | null>(null);
+    const [importResults, setImportResults] = useState<{ created: number, skipped: number, errors: number } | null>(null);
     const [copied, setCopied] = useState<string | null>(null);
 
     // Form state
@@ -285,6 +289,43 @@ export default function VaultPage() {
         await fetchRules();
     };
 
+    const handleBulkImport = async () => {
+        if (!importData || !user) return;
+        setLoading(true);
+        setError(null);
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_BASE}/secrets/bulk`, {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                    tenantId: user.uid,
+                    secrets: importData.valid.map(s => ({
+                        secretName: s.key,
+                        secretValue: s.value,
+                        description: s.description
+                    }))
+                }),
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || "Bulk import failed");
+                return;
+            }
+            setImportResults({
+                created: data.created.length,
+                skipped: data.skipped.length,
+                errors: data.errors.length
+            });
+            // Don't close immediately so they can see results
+            await fetchSecrets();
+        } catch (e: any) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -329,7 +370,18 @@ export default function VaultPage() {
             {/* Secrets tab */}
             {tab === "secrets" && (
                 <div className="space-y-4">
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-3">
+                        <button
+                            onClick={() => { 
+                                setShowImportEnv(true); 
+                                setImportData(null); 
+                                setImportResults(null);
+                                setError(null); 
+                            }}
+                            className="flex items-center gap-2 px-4 py-2 border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-400 text-sm font-medium rounded-lg transition-colors"
+                        >
+                            <FileUp className="w-4 h-4" /> Import .env
+                        </button>
                         <button
                             onClick={() => { setShowCreateSecret(true); setError(null); }}
                             className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-medium rounded-lg transition-colors"
@@ -838,6 +890,136 @@ export default function VaultPage() {
                                 {loading ? "Creating…" : "Create Rule"}
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+            {/* Import .env Modal */}
+            {showImportEnv && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                    <div className="w-full max-w-2xl bg-neutral-900 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
+                        <div className="flex items-center justify-between">
+                            <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                                <FileUp className="w-5 h-5 text-emerald-400" /> Bulk Import .env
+                            </h2>
+                            <button onClick={() => setShowImportEnv(false)} className="text-neutral-500 hover:text-white">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {error && (
+                            <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 rounded-lg px-3 py-2">
+                                <AlertCircle className="w-4 h-4 flex-shrink-0" /> {error}
+                            </div>
+                        )}
+
+                        {importResults ? (
+                            <div className="space-y-6 py-4">
+                                <div className="grid grid-cols-3 gap-4">
+                                    <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-xl p-4 text-center">
+                                        <div className="text-2xl font-black text-emerald-400">{importResults.created}</div>
+                                        <div className="text-[10px] text-emerald-500/70 uppercase tracking-widest font-bold">Created</div>
+                                    </div>
+                                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-center">
+                                        <div className="text-2xl font-black text-yellow-400">{importResults.skipped}</div>
+                                        <div className="text-[10px] text-yellow-500/70 uppercase tracking-widest font-bold">Skipped</div>
+                                    </div>
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-center">
+                                        <div className="text-2xl font-black text-red-400">{importResults.errors}</div>
+                                        <div className="text-[10px] text-red-500/70 uppercase tracking-widest font-bold">Errors</div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => setShowImportEnv(false)}
+                                    className="w-full py-3 bg-white text-black font-black uppercase tracking-widest rounded-xl hover:bg-neutral-200 transition-all text-sm"
+                                >
+                                    Done
+                                </button>
+                            </div>
+                        ) : !importData ? (
+                            <div 
+                                onDragOver={(e) => e.preventDefault()}
+                                onDrop={(e) => {
+                                    e.preventDefault();
+                                    const file = e.dataTransfer.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = (ev) => {
+                                            const res = parseEnvFile(ev.target?.result as string);
+                                            setImportData(res);
+                                        };
+                                        reader.readAsText(file);
+                                    }
+                                }}
+                                className="border-2 border-dashed border-emerald-500/20 bg-emerald-500/5 rounded-2xl py-20 flex flex-col items-center justify-center space-y-4 hover:bg-emerald-500/10 transition-colors cursor-pointer"
+                                onClick={() => {
+                                    const input = document.createElement('input');
+                                    input.type = 'file';
+                                    input.onchange = (e) => {
+                                        const file = (e.target as any).files[0];
+                                        if (file) {
+                                            const reader = new FileReader();
+                                            reader.onload = (ev) => {
+                                                const res = parseEnvFile(ev.target?.result as string);
+                                                setImportData(res);
+                                            };
+                                            reader.readAsText(file);
+                                        }
+                                    };
+                                    input.click();
+                                }}
+                            >
+                                <div className="p-4 bg-emerald-500/10 rounded-2xl">
+                                    <FileUp className="w-8 h-8 text-emerald-400" />
+                                </div>
+                                <div className="text-center">
+                                    <p className="text-white font-bold">Click or drag `.env` file to upload</p>
+                                    <p className="text-neutral-500 text-xs">Parsing happens entirely in your browser</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-4">
+                                <div className="max-h-[300px] overflow-y-auto border border-white/5 rounded-xl bg-black/40">
+                                    <table className="w-full text-[11px]">
+                                        <thead className="sticky top-0 bg-neutral-900 border-b border-white/10">
+                                            <tr>
+                                                <th className="px-4 py-2 text-left text-neutral-500 uppercase">Key</th>
+                                                <th className="px-4 py-2 text-left text-neutral-500 uppercase">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-white/5">
+                                            {importData.valid.map((s, i) => (
+                                                <tr key={i}>
+                                                    <td className="px-4 py-2 font-mono text-emerald-400">{s.key}</td>
+                                                    <td className="px-4 py-2 text-emerald-500/70 font-bold uppercase text-[9px]">Ready</td>
+                                                </tr>
+                                            ))}
+                                            {importData.invalid.map((s, i) => (
+                                                <tr key={i}>
+                                                    <td className="px-4 py-2 font-mono text-rose-400">{s.key || "UNPARSEABLE"}</td>
+                                                    <td className="px-4 py-2 text-rose-500/70 font-bold uppercase text-[9px]">{s.reason}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={() => setImportData(null)}
+                                        className="flex-1 px-4 py-2 text-sm text-neutral-400 hover:text-white bg-white/5 rounded-lg transition-colors"
+                                    >
+                                        Back
+                                    </button>
+                                    <button
+                                        onClick={handleBulkImport}
+                                        disabled={loading || importData.valid.length === 0}
+                                        className="flex-[2] px-4 py-2 text-sm font-black uppercase tracking-widest text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 rounded-lg transition-colors shadow-2xl"
+                                    >
+                                        {loading ? "Importing…" : `Import ${importData.valid.length} Secrets`}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

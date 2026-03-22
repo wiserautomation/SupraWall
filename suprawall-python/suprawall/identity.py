@@ -26,7 +26,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-DEFAULT_REGISTER_URL = "https://suprawall.ai/api/agents/register"
+DEFAULT_REGISTER_URL = "https://www.supra-wall.com/v1/agents"
 
 # Valid scope format: namespace:action (e.g. crm:read, email:send, *:*)
 _SCOPE_RE = re.compile(r"^[\w\-\*]+:[\w\-\*]+$")
@@ -65,26 +65,26 @@ class RegistrationError(Exception):
     def __init__(self, status_code: int, message: str):
         self.status_code = status_code
         self.message = message
-        super().__init__(f"Registration failed (HTTP {status_code}): {message}")
+        super().__init__(f"Agent creation failed (HTTP {status_code}): {message}")
 
 
 @dataclass(frozen=True)
 class AgentCredentials:
     """
-    Immutable credentials returned after successful agent registration.
+    Credentials returned after successful agent creation.
     """
     agent_id: str
     agent_api_key: str
     name: str
-    scopes: List[str]
+    created_at: Optional[str] = None
+    scopes: List[str] = field(default_factory=list)
 
     def __repr__(self) -> str:
         masked = self.agent_api_key[:8] + "..." + self.agent_api_key[-4:]
         return (
             f"AgentCredentials(name={self.name!r}, "
             f"agent_id={self.agent_id!r}, "
-            f"key={masked}, "
-            f"scopes={self.scopes})"
+            f"key={masked})"
         )
 
 
@@ -92,47 +92,14 @@ class AgentCredentials:
 class AgentIdentity:
     """
     Manages an agent's identity, including its credentials and scopes.
-
-    Create via the register() class method to register a new agent,
-    or via from_credentials() to use an existing agent.
-
-    Example:
-        # Register a new agent
-        identity = await AgentIdentity.register(
-            api_key="ag_org_key",
-            name="Email Bot",
-            scopes=["email:send"],
-        )
-
-        # Or re-use existing credentials
-        identity = AgentIdentity.from_credentials(
-            agent_api_key="ag_xxxxx",
-            scopes=["email:send"],
-        )
-
-        # Integrate with SupraWall
-        options = identity.to_options()
     """
     credentials: AgentCredentials
-
-    @staticmethod
-    def validate_scopes(scopes: List[str]) -> None:
-        """
-        Validates that all scopes follow the namespace:action format.
-        Raises ScopeValidationError on failure.
-        """
-        invalid = [s for s in scopes if not _SCOPE_RE.match(s)]
-        if invalid:
-            raise ScopeValidationError(
-                f"Invalid scope format(s): {invalid}. "
-                "Scopes must be 'namespace:action' (e.g. 'crm:read', 'email:send', '*:*')."
-            )
 
     @staticmethod
     def resolve_scopes(scopes: List[str]) -> List[str]:
         """
         Expands preset names (e.g. 'readonly', 'browser') into their
-        individual scopes, and validates the rest.
+        individual scopes.
         """
         resolved: List[str] = []
         for scope in scopes:
@@ -140,7 +107,6 @@ class AgentIdentity:
                 resolved.extend(SCOPE_PRESETS[scope])
             else:
                 resolved.append(scope)
-        # Deduplicate while preserving order
         seen: set = set()
         deduped = []
         for s in resolved:
@@ -155,71 +121,21 @@ class AgentIdentity:
         api_key: str,
         name: str,
         scopes: Optional[List[str]] = None,
-        scope_limits: Optional[Dict[str, Any]] = None,
+        guardrails: Optional[Dict[str, Any]] = None,
         register_url: str = DEFAULT_REGISTER_URL,
         timeout: float = 10.0,
     ) -> "AgentIdentity":
         """
         Register a new agent with the SupraWall backend.
-
-        Args:
-            api_key:      The organization's master API key (ag_...).
-            name:         Human-readable name for the agent.
-            scopes:       List of scopes (e.g. ["crm:read", "email:send"]).
-                          Can include preset names like "readonly" or "browser".
-            scope_limits: Optional per-scope rate limits, e.g.
-                          {"email:send": {"max_per_hour": 10}}.
-            register_url: Override the registration endpoint URL.
-            timeout:      HTTP request timeout in seconds.
-
-        Returns:
-            An AgentIdentity instance with the agent's credentials.
-
-        Raises:
-            ScopeValidationError: If scopes have invalid format.
-            RegistrationError: If the server rejects the registration.
         """
-        if not api_key or not api_key.startswith("ag_"):
-            raise ValueError(
-                "api_key must be a valid organization API key (starting with 'ag_')."
-            )
-        if not name or not name.strip():
-            raise ValueError("Agent name must not be empty.")
-
-        # Resolve and validate scopes
-        final_scopes = cls.resolve_scopes(scopes or [])
-        if final_scopes:
-            cls.validate_scopes(final_scopes)
-
-        payload: Dict[str, Any] = {
-            "apiKey": api_key,
-            "name": name.strip(),
-        }
-        if final_scopes:
-            payload["scopes"] = final_scopes
-        if scope_limits:
-            payload["scopeLimits"] = scope_limits
-
-        async with httpx.AsyncClient(timeout=timeout) as client:
-            resp = await client.post(register_url, json=payload)
-
-        # Next.js API returns 201 Created for positive registration
-        if resp.status_code not in (200, 201):
-            try:
-                err = resp.json().get("error", resp.text)
-            except Exception:
-                err = resp.text
-            raise RegistrationError(resp.status_code, str(err))
-
-        data = resp.json()
-
-        creds = AgentCredentials(
-            agent_id=data["id"],
-            agent_api_key=data["apiKey"],
-            name=name.strip(),
-            scopes=final_scopes or [],
+        return await SupraWallAdmin.create_agent(
+            api_key=api_key,
+            name=name,
+            scopes=scopes,
+            guardrails=guardrails,
+            base_url=register_url.rsplit("/v1/agents", 1)[0],
+            timeout=timeout
         )
-        return cls(credentials=creds)
 
     @classmethod
     def register_sync(
@@ -227,52 +143,21 @@ class AgentIdentity:
         api_key: str,
         name: str,
         scopes: Optional[List[str]] = None,
-        scope_limits: Optional[Dict[str, Any]] = None,
+        guardrails: Optional[Dict[str, Any]] = None,
         register_url: str = DEFAULT_REGISTER_URL,
         timeout: float = 10.0,
     ) -> "AgentIdentity":
         """
         Synchronous version of register() for non-async contexts.
         """
-        if not api_key or not api_key.startswith("ag_"):
-            raise ValueError(
-                "api_key must be a valid organization API key (starting with 'ag_')."
-            )
-        if not name or not name.strip():
-            raise ValueError("Agent name must not be empty.")
-
-        final_scopes = cls.resolve_scopes(scopes or [])
-        if final_scopes:
-            cls.validate_scopes(final_scopes)
-
-        payload: Dict[str, Any] = {
-            "apiKey": api_key,
-            "name": name.strip(),
-        }
-        if final_scopes:
-            payload["scopes"] = final_scopes
-        if scope_limits:
-            payload["scopeLimits"] = scope_limits
-
-        with httpx.Client(timeout=timeout) as client:
-            resp = client.post(register_url, json=payload)
-
-        if resp.status_code not in (200, 201):
-            try:
-                err = resp.json().get("error", resp.text)
-            except Exception:
-                err = resp.text
-            raise RegistrationError(resp.status_code, str(err))
-
-        data = resp.json()
-
-        creds = AgentCredentials(
-            agent_id=data["id"],
-            agent_api_key=data["apiKey"],
-            name=name.strip(),
-            scopes=final_scopes or [],
+        return SupraWallAdmin.create_agent_sync(
+            api_key=api_key,
+            name=name,
+            scopes=scopes,
+            guardrails=guardrails,
+            base_url=register_url.rsplit("/v1/agents", 1)[0],
+            timeout=timeout
         )
-        return cls(credentials=creds)
 
     @classmethod
     def from_credentials(
@@ -293,10 +178,9 @@ class AgentIdentity:
         )
         return cls(credentials=creds)
 
-    def to_options(self, **overrides) -> "SupraWallOptions":
+    def to_options(self, **overrides) -> Any:
         """
         Returns a SupraWallOptions configured with this agent's API key.
-        Extra keyword arguments are forwarded as option overrides.
         """
         from .gate import SupraWallOptions
         return SupraWallOptions(
@@ -319,3 +203,114 @@ class AgentIdentity:
     @property
     def scopes(self) -> List[str]:
         return self.credentials.scopes
+
+
+class SupraWallAdmin:
+    """
+    Administrative client for managing SupraWall agents programmatically.
+    """
+    @staticmethod
+    async def create_agent(
+        api_key: str,
+        name: str,
+        scopes: Optional[List[str]] = None,
+        guardrails: Optional[Dict[str, Any]] = None,
+        base_url: str = "https://www.supra-wall.com",
+        timeout: float = 10.0,
+    ) -> "AgentIdentity":
+        if not api_key:
+            raise ValueError("api_key (sw_admin_...) is required.")
+        
+        final_scopes = AgentIdentity.resolve_scopes(scopes or ["*:*"])
+        payload = {
+            "name": name,
+            "scopes": final_scopes,
+            "guardrails": guardrails or {}
+        }
+
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.post(
+                f"{base_url}/v1/agents",
+                json=payload,
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+
+        if resp.status_code not in (200, 201):
+            raise RegistrationError(resp.status_code, resp.text)
+
+        data = resp.json()
+        creds = AgentCredentials(
+            agent_id=data["id"],
+            agent_api_key=data["apiKey"],
+            name=data["name"],
+            created_at=data.get("createdAt"),
+            scopes=final_scopes
+        )
+        return AgentIdentity(credentials=creds)
+
+    @staticmethod
+    def create_agent_sync(
+        api_key: str,
+        name: str,
+        scopes: Optional[List[str]] = None,
+        guardrails: Optional[Dict[str, Any]] = None,
+        base_url: str = "https://www.supra-wall.com",
+        timeout: float = 10.0,
+    ) -> "AgentIdentity":
+        if not api_key:
+            raise ValueError("api_key (sw_admin_...) is required.")
+        
+        final_scopes = AgentIdentity.resolve_scopes(scopes or ["*:*"])
+        payload = {
+            "name": name,
+            "scopes": final_scopes,
+            "guardrails": guardrails or {}
+        }
+
+        with httpx.Client(timeout=timeout) as client:
+            resp = client.post(
+                f"{base_url}/v1/agents",
+                json=payload,
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+
+        if resp.status_code not in (200, 201):
+            raise RegistrationError(resp.status_code, resp.text)
+
+        data = resp.json()
+        creds = AgentCredentials(
+            agent_id=data["id"],
+            agent_api_key=data["apiKey"],
+            name=data["name"],
+            created_at=data.get("createdAt"),
+            scopes=final_scopes
+        )
+        return AgentIdentity(credentials=creds)
+
+    @staticmethod
+    async def list_agents(
+        api_key: str,
+        base_url: str = "https://www.supra-wall.com",
+        timeout: float = 10.0
+    ) -> List[Dict[str, Any]]:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.get(
+                f"{base_url}/v1/agents",
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+        resp.raise_for_status()
+        return resp.json()
+
+    @staticmethod
+    async def revoke_agent(
+        agent_id: str,
+        api_key: str,
+        base_url: str = "https://www.supra-wall.com",
+        timeout: float = 10.0
+    ) -> None:
+        async with httpx.AsyncClient(timeout=timeout) as client:
+            resp = await client.delete(
+                f"{base_url}/v1/agents/{agent_id}",
+                headers={"Authorization": f"Bearer {api_key}"}
+            )
+        resp.raise_for_status()

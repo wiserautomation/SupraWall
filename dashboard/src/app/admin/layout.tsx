@@ -18,7 +18,9 @@ import {
     CheckSquare,
     Brain,
     Layout,
-    ListOrdered
+    ListOrdered,
+    DollarSign,
+    Filter
 } from "lucide-react";
 
 // Add official admin emails here
@@ -61,13 +63,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navItems = [
         { name: "Overview", href: "/admin", icon: BarChart2 },
+        { name: "Revenue", href: "/admin/revenue", icon: DollarSign },
+        { name: "Funnel", href: "/admin/funnel", icon: Filter },
+        { name: "Traffic", href: "/admin/analytics", icon: Activity },
+        { name: "Users", href: "/admin/users", icon: Users },
+        { name: "Agents", href: "/admin/agents", icon: Server },
+        { name: "Audit Logs", href: "/admin/audit", icon: Database },
         { name: "Task Review", href: "/admin/tasks", icon: CheckSquare },
         { name: "Intelligence", href: "/admin/intelligence", icon: Brain },
         { name: "Published", href: "/admin/published", icon: Layout },
         { name: "Queue", href: "/admin/queue", icon: ListOrdered },
-        { name: "Users", href: "/admin/users", icon: Users },
-        { name: "Agents", href: "/admin/agents", icon: Server },
-        { name: "Audit Logs", href: "/admin/audit", icon: Activity },
         { name: "Settings", href: "/admin/settings", icon: Settings },
     ];
 

@@ -34,6 +34,7 @@ app.get("/health", async (req, res) => {
 
 // Policy Evaluation Webhook
 app.post("/v1/evaluate", gatekeeperAuth, evaluatePolicy);
+app.post("/v1/evaluateAction", gatekeeperAuth, evaluatePolicy); // Alias for MCP compatibility
 
 // Vault scrub endpoint
 app.post("/v1/scrub", scrubToolResponse);

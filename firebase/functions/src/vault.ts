@@ -143,6 +143,71 @@ export const vaultApi = onRequest({ cors: true }, async (req, res) => {
             return;
         }
 
+        // ROUTE 2.5: POST /api/v1/vault/secrets/bulk
+        if (method === "POST" && path.endsWith("/api/v1/vault/secrets/bulk")) {
+            const { secrets } = req.body;
+
+            if (!Array.isArray(secrets)) {
+                res.status(400).json({ error: "Missing secrets array." });
+                return;
+            }
+
+            if (secrets.length > 100) {
+                res.status(400).json({ error: "Bulk import limit is 100 secrets." });
+                return;
+            }
+
+            const created = [];
+            const skipped = [];
+            const errors = [];
+
+            for (const s of secrets) {
+                const { secretName, secretValue, description } = s;
+
+                if (!secretName || !/^[A-Z0-9_]+$/.test(secretName) || !secretValue) {
+                    errors.push({ secretName, error: "Invalid name or missing value" });
+                    continue;
+                }
+
+                // Check uniqueness
+                const existingSnap = await db.collection("vault_secrets")
+                    .where("tenantId", "==", tenantId)
+                    .where("secret_name", "==", secretName)
+                    .limit(1)
+                    .get();
+                
+                if (!existingSnap.empty) {
+                    skipped.push({ secretName, reason: "Already exists" });
+                    continue;
+                }
+
+                try {
+                    const encrypted = encryptSecret(secretValue);
+                    const now = new Date().toISOString();
+
+                    const docRef = await db.collection("vault_secrets").add({
+                        tenantId,
+                        secret_name: secretName,
+                        secret_type: "api_key",
+                        encrypted_value: encrypted,
+                        description: description || "Bulk imported",
+                        expires_at: null,
+                        assigned_agents: [],
+                        last_rotated_at: now,
+                        created_at: now
+                    });
+
+                    created.push({ id: docRef.id, secret_name: secretName });
+                } catch (e: any) {
+                    console.error(`Bulk import error for ${secretName}:`, e);
+                    errors.push({ secretName, error: e.message });
+                }
+            }
+
+            res.status(207).json({ created, skipped, errors });
+            return;
+        }
+
         // ROUTE 3: DELETE /api/v1/vault/secrets/:id
         if (method === "DELETE" && path.match(/\/api\/v1\/vault\/secrets\/[^\/]+$/)) {
             const secretId = path.split("/").pop()!;

@@ -1,98 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
-import { db } from "@/lib/firebase";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-    Activity, Globe, Server, Clock, Zap, AlertCircle,
-    ArrowUpRight, ArrowDownRight, Smartphone, Monitor, Database
+import { 
+    Activity, Globe, Server, Clock, Zap, AlertCircle, 
+    ArrowUpRight, ArrowDownRight, Database 
 } from "lucide-react";
 import {
-    LineChart, Line, AreaChart, Area, BarChart, Bar, Cell,
-    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+    AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, 
+    CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
-import { subDays, subHours, format } from "date-fns";
 
 export default function AdminAnalyticsPage() {
     const [loading, setLoading] = useState(true);
-    const [trafficStats, setTrafficStats] = useState({
-        totalRequests: 0,
-        requestsGrowth: "+12.5%",
-        avgLatency: "42ms",
-        latencyGrowth: "-5.2%",
-        successRate: "99.2%",
-        errorCount: 84
-    });
-
-    const [trafficData, setTrafficData] = useState<any[]>([]);
-    const [latencyData, setLatencyData] = useState<any[]>([]);
-    const [geoData, setGeoData] = useState<any[]>([]);
-    const [languageData, setLanguageData] = useState<any[]>([]);
+    const [traffic, setTraffic] = useState<any>(null);
+    const [stats, setStats] = useState<any>(null);
 
     useEffect(() => {
         async function fetchAnalytics() {
-            setLoading(true);
             try {
-                // In a real app, this would be a server-side aggregation or BigQuery proxy.
-                // Here we'll simulate high-fidelity "Traffic" metrics from audit logs.
-                const yesterday = subDays(new Date(), 1).getTime();
-                const logsSnap = await getDocs(
-                    query(collection(db, "audit_logs"), where("timestamp", ">=", yesterday))
-                ).catch(() => ({ size: 0, docs: [] }));
-
-                // 1. Requests Over Time (Every 2 hours for last 24h)
-                const mockTraffic = [];
-                for (let i = 24; i >= 0; i -= 2) {
-                    const timeLabel = format(subHours(new Date(), i), "HH:mm");
-                    // Simulate some variance based on actual audit log count
-                    const baseCount = Math.floor(logsSnap.size / 12) || 50;
-                    mockTraffic.push({
-                        time: timeLabel,
-                        requests: baseCount + Math.floor(Math.random() * 20),
-                        errors: Math.floor(Math.random() * 5),
-                        latency: 35 + Math.floor(Math.random() * 15)
-                    });
-                }
-                setTrafficData(mockTraffic);
-
-                // 2. Language/Adapter Distribution
-                setLanguageData([
-                    { name: 'Python', value: 45, color: '#3776ab' },
-                    { name: 'TypeScript', value: 30, color: '#3178c6' },
-                    { name: 'Golang', value: 15, color: '#00add8' },
-                    { name: 'Rust', value: 7, color: '#dea584' },
-                    { name: 'Other', value: 3, color: '#888888' }
+                const [trafficRes, statsRes] = await Promise.all([
+                    fetch('/api/admin/traffic'),
+                    fetch('/api/admin/users/stats')
                 ]);
-
-                // 3. Geo Traffic (City/Regions)
-                setGeoData([
-                    { name: 'San Francisco', hits: 1205, status: 'Healthy' },
-                    { name: 'New York', hits: 954, status: 'Healthy' },
-                    { name: 'London', hits: 842, status: 'Degraded' },
-                    { name: 'Berlin', hits: 712, status: 'Healthy' },
-                    { name: 'Singapore', hits: 562, status: 'Healthy' }
-                ]);
-
-                setTrafficStats(prev => ({
-                    ...prev,
-                    totalRequests: logsSnap.size || 2480,
-                    errorCount: Math.floor((logsSnap.size || 2480) * 0.008)
-                }));
-
-            } catch (error) {
-                console.error("SupraWall Analytics Error", error);
+                if (trafficRes.ok) setTraffic(await trafficRes.json());
+                if (statsRes.ok) setStats(await statsRes.json());
+            } catch (err) {
+                console.error("Failed to fetch analytics", err);
             }
             setLoading(false);
         }
-
         fetchAnalytics();
     }, []);
 
     if (loading) {
         return (
             <div className="flex h-[80vh] items-center justify-center">
-                <Zap className="w-10 h-10 text-emerald-500 animate-pulse" />
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
             </div>
         );
     }
@@ -104,180 +48,78 @@ export default function AdminAnalyticsPage() {
                     <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-2 italic uppercase">
                         <Activity className="w-8 h-8 text-emerald-500 not-italic" /> Traffic & Network
                     </h1>
-                    <p className="text-neutral-500 text-sm font-medium">Global system throughput and network health metrics.</p>
-                </div>
-                <div className="flex items-center gap-2 bg-neutral-900 border border-white/5 p-1 rounded-xl">
-                    <button className="px-4 py-1.5 text-xs font-bold text-white bg-white/10 rounded-lg">Last 24 Hours</button>
-                    <button className="px-4 py-1.5 text-xs font-bold text-neutral-500 hover:text-white transition-colors">Last 7 Days</button>
+                    <p className="text-neutral-500 text-sm font-medium italic uppercase tracking-widest">Global system throughput and network health.</p>
                 </div>
             </div>
 
-            {/* Top Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { title: "Network Requests", value: trafficStats.totalRequests.toLocaleString(), sub: trafficStats.requestsGrowth, icon: Globe, up: true },
-                    { title: "P99 Latency", value: trafficStats.avgLatency, sub: trafficStats.latencyGrowth, icon: Clock, up: false },
-                    { title: "Success Rate", value: trafficStats.successRate, sub: "99.9% target", icon: Zap, up: true, color: "text-emerald-400" },
-                    { title: "Blocked Threats", value: trafficStats.errorCount, sub: "Denied events", icon: AlertCircle, up: true, color: "text-rose-400" }
+                    { title: "DAU / MAU", value: `${((stats?.stats?.dauCount / stats?.stats?.mauCount) * 100).toFixed(1)}%`, sub: "Stickiness", icon: Zap, color: "text-emerald-400" },
+                    { title: "7D Traffic", value: traffic?.daily?.reduce((acc: any, r: any) => acc + r.count, 0)?.toLocaleString(), sub: "Total Ops", icon: Globe, color: "text-blue-400" },
+                    { title: "Peak Hourly", value: Math.max(...traffic?.hourly?.map((h: any) => h.ALLOW + h.DENY + h.REQUIRE_APPROVAL) || [0]), sub: "Ops / Hr", icon: Clock, color: "text-purple-400" },
+                    { title: "Growth", value: stats?.growth?.activeGrowth, sub: "W/W Engagement", icon: ArrowUpRight, color: "text-emerald-400" }
                 ].map((stat, i) => (
-                    <Card key={i} className="bg-[#080808] border-white/5 backdrop-blur-md relative overflow-hidden group">
+                    <Card key={i} className="bg-[#080808] border-white/5 relative overflow-hidden group">
                         <CardContent className="p-6">
-                            <div className="flex items-center justify-between mb-2">
-                                <stat.icon className={`w-5 h-5 ${stat.color || 'text-neutral-500'}`} />
-                                <div className={`flex items-center text-[10px] font-black ${stat.up ? 'text-emerald-500' : 'text-rose-500'}`}>
-                                    {stat.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
-                                    {stat.sub}
-                                </div>
-                            </div>
-                            <p className="text-sm font-bold text-neutral-500 uppercase tracking-widest">{stat.title}</p>
-                            <h3 className="text-3xl font-black text-white mt-1 tracking-tighter">{stat.value}</h3>
+                            <stat.icon className={`w-5 h-5 mb-2 ${stat.color}`} />
+                            <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">{stat.title}</p>
+                            <h3 className="text-3xl font-black text-white mt-1 tracking-tighter italic">{stat.value}</h3>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            {/* Traffic Volume Area Chart */}
-            <Card className="bg-[#080808] border-white/5">
+            <Card className="bg-[#080808] border-white/5 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent" />
                 <CardHeader className="flex flex-row items-center justify-between">
-                    <CardTitle className="text-sm font-bold text-neutral-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                        <Activity className="w-4 h-4" /> Global Throughput (RPS)
+                    <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em] flex items-center gap-2">
+                        <Activity className="w-4 h-4 text-emerald-500" /> Hourly Throughput (24H Breakdown)
                     </CardTitle>
-                    <div className="flex gap-4 text-[10px] font-bold text-neutral-600">
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Success</span>
-                        <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-rose-500" /> Errors</span>
-                    </div>
                 </CardHeader>
                 <CardContent className="h-[350px] pt-4">
                     <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart data={trafficData}>
-                            <defs>
-                                <linearGradient id="colorReq" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
+                        <AreaChart data={traffic?.hourly}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" vertical={false} />
-                            <XAxis
-                                dataKey="time"
-                                stroke="#555"
-                                fontSize={10}
-                                tickLine={false}
-                                axisLine={false}
-                                tick={{ fill: '#666' }}
-                            />
-                            <YAxis
-                                stroke="#555"
-                                fontSize={10}
-                                tickLine={false}
-                                axisLine={false}
-                                tickFormatter={(v) => `${v}`}
-                                tick={{ fill: '#666' }}
-                            />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#000', border: '1px solid #222', borderRadius: '8px', fontSize: '12px' }}
-                                itemStyle={{ fontWeight: 'bold' }}
-                            />
-                            <Area
-                                type="monotone"
-                                dataKey="requests"
-                                stroke="#6366f1"
-                                strokeWidth={3}
-                                fillOpacity={1}
-                                fill="url(#colorReq)"
-                            />
-                            <Area
-                                type="monotone"
-                                dataKey="errors"
-                                stroke="#f43f5e"
-                                strokeWidth={2}
-                                fillOpacity={0}
-                            />
+                            <XAxis dataKey="hour" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                            <YAxis stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                            <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #222', borderRadius: '8px' }} />
+                            <Area type="monotone" dataKey="ALLOW" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.2} />
+                            <Area type="monotone" dataKey="DENY" stackId="1" stroke="#f43f5e" fill="#f43f5e" fillOpacity={0.2} />
+                            <Area type="monotone" dataKey="REQUIRE_APPROVAL" stackId="1" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
+                            <Legend verticalAlign="top" height={36} iconType="circle" />
                         </AreaChart>
                     </ResponsiveContainer>
                 </CardContent>
             </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-
-                {/* Traffic by Language / SDK */}
-                <Card className="bg-[#080808] border-white/5">
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold text-neutral-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <Server className="w-4 h-4" /> SDK Distribution
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="h-[250px] pt-4">
+                <Card className="bg-black border-white/5">
+                    <CardHeader><CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Top Tool Volume (7D)</CardTitle></CardHeader>
+                    <CardContent className="h-[250px]">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={languageData} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" horizontal={false} />
+                            <BarChart data={traffic?.topTools} layout="vertical">
                                 <XAxis type="number" hide />
-                                <YAxis
-                                    dataKey="name"
-                                    type="category"
-                                    stroke="#888"
-                                    fontSize={12}
-                                    tickLine={false}
-                                    axisLine={false}
-                                />
-                                <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ backgroundColor: '#000', border: 'none' }} />
-                                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                                    {languageData.map((entry, index) => (
-                                        <Cell key={index} fill={entry.color} />
-                                    ))}
-                                </Bar>
+                                <YAxis dataKey="name" type="category" stroke="#888" fontSize={10} width={100} tickLine={false} axisLine={false} />
+                                <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ backgroundColor: '#000', border: 'none' }} />
+                                <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} />
                             </BarChart>
                         </ResponsiveContainer>
-                        <div className="flex gap-4 mt-4 justify-center">
-                            {languageData.map(l => (
-                                <div key={l.name} className="flex items-center gap-1.5 text-[10px] font-bold text-neutral-500">
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: l.color }} /> {l.name}
-                                </div>
-                            ))}
-                        </div>
                     </CardContent>
                 </Card>
-
-                {/* Geo Traffic List */}
-                <Card className="bg-[#080808] border-white/5">
-                    <CardHeader>
-                        <CardTitle className="text-sm font-bold text-neutral-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                            <Database className="w-4 h-4" /> Region Heatmap
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="space-y-4">
-                            {geoData.map((region, i) => (
-                                <div key={i} className="flex items-center justify-between p-3 bg-white/[0.05] border border-white/[0.08] rounded-xl hover:bg-white/[0.04] transition-colors">
-                                    <div className="flex items-center gap-3">
-                                        <div className={`w-2 h-2 rounded-full ${region.status === 'Healthy' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]'}`} />
-                                        <span className="text-sm font-bold text-white uppercase italic tracking-tighter">{region.name}</span>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-xs font-black text-white">{region.hits.toLocaleString()}</p>
-                                        <p className="text-[10px] text-neutral-500 font-bold uppercase">{region.status}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                <Card className="bg-black border-white/5">
+                    <CardHeader><CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Active Retention Curve</CardTitle></CardHeader>
+                    <CardContent className="h-[250px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={stats?.retention}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" vertical={false} />
+                                <XAxis dataKey="day" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#444" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}%`} />
+                                <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #222', borderRadius: '8px' }} />
+                                <Area type="monotone" dataKey="value" stroke="#6366f1" fill="#6366f1" fillOpacity={0.2} />
+                            </AreaChart>
+                        </ResponsiveContainer>
                     </CardContent>
                 </Card>
-
-            </div>
-
-            {/* Bottom Section - Performance Alerts */}
-            <div className="bg-emerald-600/10 border border-emerald-500/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="p-3 bg-emerald-500/20 rounded-xl">
-                        <Zap className="w-6 h-6 text-emerald-400" />
-                    </div>
-                    <div>
-                        <p className="text-white font-bold tracking-tight">Real-time Policy Evaluation Active</p>
-                        <p className="text-neutral-500 text-sm">System is operating at peak efficiency. All 5 edge regions reported healthy.</p>
-                    </div>
-                </div>
-                <button className="px-6 py-2.5 bg-emerald-600 text-white font-black text-sm rounded-xl hover:bg-emerald-700 transition-colors uppercase tracking-widest italic">
-                    View System Logs
-                </button>
             </div>
         </div>
     );

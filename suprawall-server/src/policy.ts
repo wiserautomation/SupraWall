@@ -26,6 +26,27 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "Missing agentId or toolName" });
         }
 
+        // 0. Budget Enforcement
+        const maxBudget = agent?.max_cost_usd || 10;
+        const spendResult = await pool.query(
+            "SELECT SUM(cost_usd) as total FROM audit_logs WHERE agentid = $1 AND decision = 'ALLOW'",
+            [agentId]
+        );
+        const currentSpend = parseFloat(spendResult.rows[0].total || 0);
+
+        if (currentSpend >= maxBudget) {
+            await pool.query(
+                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                 JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
+            );
+
+            return res.status(403).json({
+                decision: "DENY",
+                reason: `Budget exceeded: Current spend $${currentSpend.toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
+            });
+        }
+
         // 0. Threat Detection (Fire-and-forget)
         const argsString = JSON.stringify(args || {});
         (async () => {

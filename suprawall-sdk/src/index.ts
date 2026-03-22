@@ -675,68 +675,55 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
 
 export interface AgentIdentityConfig {
     /**
-     * Human-readable agent name. Must be unique per user.
-     * Example: "customer-support-agent"
+     * Human-readable agent name.
      */
     name: string;
     /**
-     * The SupraWall API key for the owning organization.
-     * Used to authenticate the registration request.
+     * The SupraWall Master API Key (sw_admin_...) or Org Key.
      */
     apiKey: string;
     /**
      * Scoped permissions granted to this agent.
-     * Format: "namespace:action"
-     * Examples: "crm:read", "email:send", "database:delete"
-     * Use "namespace:*" for full namespace access or "*:*" for unrestricted.
      */
-    scopes: string[];
+    scopes?: string[];
     /**
-     * Optional per-scope limits (e.g., rate limits, row limits).
-     * Example: { "email:send": { maxPerDay: 100 } }
+     * Security guardrails for this agent (budget, policies, vault).
      */
-    scopeLimits?: Record<string, any>;
+    guardrails?: {
+        budget?: {
+            limitUsd: number;
+            resetPeriod?: "daily" | "weekly" | "monthly";
+        };
+        blockedTools?: string[];
+        policies?: Array<{
+            name: string;
+            toolName: string;
+            ruleType: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
+            description?: string;
+        }>;
+        vault?: Array<{
+            secretName: string;
+            allowedTools?: string[];
+            requiresApproval?: boolean;
+        }>;
+    };
     /**
-     * Override the registration endpoint URL.
-     * Defaults to the hosted SupraWall API.
+     * Override the endpoint URL.
      */
-    registrationUrl?: string;
+    baseUrl?: string;
 }
 
 export interface AgentCredentials {
     id: string;
     name: string;
     apiKey: string;
-    uri: string;
-    scopes: string[];
-    scopeLimits: Record<string, any>;
-    status: string;
+    createdAt: string;
+    uri?: string;
+    scopes?: string[];
 }
 
 /**
  * Represents a unique AI agent with scoped permissions.
- *
- * AgentIdentity enables the Principle of Least Privilege for AI agents.
- * Register your agent once, receive scoped credentials, and use them
- * with any SupraWall wrapper (withSupraWall, protect, createSupraWallMiddleware).
- *
- * @example
- * ```ts
- * import { AgentIdentity } from "@suprawall/sdk";
- *
- * const agent = await AgentIdentity.register({
- *   name: "csv-report-builder",
- *   apiKey: "ag_your_org_key",
- *   scopes: ["files:read", "email:send"],
- *   scopeLimits: { "email:send": { maxPerDay: 50 } }
- * });
- *
- * console.log(agent.credentials.apiKey);  // ag_xxxx (unique per-agent key)
- * console.log(agent.credentials.uri);     // agent://csv-report-builder@suprawall.com
- *
- * // Use the agent's key with protect()
- * const secured = protect(myAgent, { apiKey: agent.credentials.apiKey });
- * ```
  */
 export class AgentIdentity {
     public readonly credentials: AgentCredentials;
@@ -746,52 +733,11 @@ export class AgentIdentity {
     }
 
     /**
-     * Register a new agent with scoped permissions.
+     * Create a new agent with scoped permissions and guardrails.
      * Returns an AgentIdentity instance with credential info.
      */
     static async register(config: AgentIdentityConfig): Promise<AgentIdentity> {
-        const {
-            name,
-            apiKey,
-            scopes,
-            scopeLimits,
-            registrationUrl = 'https://www.supra-wall.com/api/v1/agents/register',
-        } = config;
-
-        if (!name || !apiKey || !scopes || scopes.length === 0) {
-            throw new Error(
-                '[SupraWall] AgentIdentity.register() requires: name, apiKey, and at least one scope.\n' +
-                '  Example: AgentIdentity.register({ name: "my-agent", apiKey: "ag_...", scopes: ["crm:read"] })'
-            );
-        }
-
-        // Decode the userId from the org key
-        // For now, pass it as-is — the server resolves the user from the org key
-        const response = await fetch(registrationUrl, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`,
-                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
-            },
-            body: JSON.stringify({
-                name,
-                userId: apiKey, // the registration endpoint will resolve the actual userId
-                scopes,
-                scopeLimits: scopeLimits || {},
-            }),
-        });
-
-        if (!response.ok) {
-            const errorBody = await response.json().catch(() => ({})) as { error?: string };
-            throw new Error(
-                `[SupraWall] Agent registration failed (${response.status}): ` +
-                `${errorBody.error || response.statusText}`
-            );
-        }
-
-        const data = (await response.json()) as AgentCredentials;
-        return new AgentIdentity(data);
+        return SupraWallAdmin.createAgent(config);
     }
 
     /**
@@ -808,7 +754,7 @@ export class AgentIdentity {
 
     /** Agent URI in the format agent://name@suprawall.com */
     get uri(): string {
-        return this.credentials.uri;
+        return this.credentials.uri || `agent://${this.credentials.name}@suprawall.com`;
     }
 
     /** The scoped API key for this agent */
@@ -818,6 +764,92 @@ export class AgentIdentity {
 
     /** The granted scopes */
     get scopes(): string[] {
-        return this.credentials.scopes;
+        return this.credentials.scopes || [];
+    }
+}
+
+/**
+ * Administrative client for SupraWall.
+ * Used for managing agents, policies, and vault rules programmatically.
+ */
+export class SupraWallAdmin {
+    /**
+     * Create a new agent with full security configuration.
+     */
+    static async createAgent(config: AgentIdentityConfig): Promise<AgentIdentity> {
+        const {
+            name,
+            apiKey,
+            scopes,
+            guardrails,
+            baseUrl = 'https://www.supra-wall.com',
+        } = config;
+
+        if (!name || !apiKey) {
+            throw new Error('[SupraWall] createAgent() requires: name and apiKey (sw_admin_...).');
+        }
+
+        const url = `${baseUrl}/v1/agents`;
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
+            },
+            body: JSON.stringify({
+                name,
+                scopes: scopes || ["*:*"],
+                guardrails,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({})) as { error?: string };
+            throw new Error(
+                `[SupraWall] Agent creation failed (${response.status}): ` +
+                `${errorBody.error || response.statusText}`
+            );
+        }
+
+        const credentials = (await response.json()) as AgentCredentials;
+        // @ts-ignore - access private constructor
+        return new AgentIdentity(credentials);
+    }
+
+    /**
+     * Revoke an agent by ID.
+     */
+    static async revokeAgent(agentId: string, adminKey: string, baseUrl: string = 'https://www.supra-wall.com'): Promise<void> {
+        const url = `${baseUrl}/v1/agents/${agentId}`;
+        const response = await fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${adminKey}`,
+                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
+            },
+        });
+
+        if (!response.ok) {
+            const errorBody = await response.json().catch(() => ({})) as { error?: string };
+            throw new Error(`[SupraWall] Revocation failed: ${errorBody.error || response.statusText}`);
+        }
+    }
+
+    /**
+     * List all agents for the organization.
+     */
+    static async listAgents(adminKey: string, baseUrl: string = 'https://www.supra-wall.com'): Promise<any[]> {
+        const url = `${baseUrl}/v1/agents`;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${adminKey}`,
+                'X-SupraWall-SDK': `js-${SDK_VERSION}`,
+            },
+        });
+
+        if (!response.ok) throw new Error(`[SupraWall] List failed: ${response.statusText}`);
+        return await response.json();
     }
 }
