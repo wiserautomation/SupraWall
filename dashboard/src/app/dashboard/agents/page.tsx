@@ -400,10 +400,78 @@ export default function AgentsPage() {
         }
     };
 
-    if (loading) {
+    // Minimum scanning animation time for UX feel
+    const [isScanning, setIsScanning] = useState(true);
+    
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsScanning(false);
+        }, 1200); // Snappy but visible scan
+        return () => clearTimeout(timer);
+    }, []);
+
+    if (loading || isScanning) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <p className="text-neutral-400 animate-pulse font-medium tracking-wide">Scanning for authorized identities...</p>
+            <div className="flex flex-col items-center justify-center min-h-[400px] space-y-8 relative overflow-hidden">
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="relative"
+                >
+                    <motion.div
+                        animate={{ 
+                            rotate: 360,
+                            scale: [1, 1.1, 1],
+                        }}
+                        transition={{ 
+                            rotate: { duration: 4, repeat: Infinity, ease: "linear" },
+                            scale: { duration: 2, repeat: Infinity }
+                        }}
+                        className="w-24 h-24 rounded-full border-2 border-dashed border-blue-500/20 flex items-center justify-center"
+                    >
+                        <div className="w-16 h-16 rounded-full border border-blue-500/10" />
+                    </motion.div>
+                    
+                    <motion.div
+                        animate={{ 
+                            top: ["0%", "100%", "0%"],
+                            opacity: [0, 1, 0]
+                        }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent shadow-[0_0_15px_rgba(59,130,246,0.5)]"
+                    />
+                    
+                    <motion.div className="absolute inset-0 flex items-center justify-center">
+                        <Users className="w-8 h-8 text-blue-400/50" />
+                    </motion.div>
+                </motion.div>
+
+                <div className="text-center space-y-3">
+                    <motion.p 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-white font-black italic uppercase tracking-[0.4em] text-[10px] drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]"
+                    >
+                        {loading ? "Decrypting Identities..." : "Syncing Access..."}
+                    </motion.p>
+                    <div className="flex justify-center gap-1.5">
+                        {[0, 1, 2].map((i) => (
+                            <motion.div
+                                key={i}
+                                animate={{ 
+                                    scale: [1, 1.5, 1],
+                                    opacity: [0.3, 1, 0.3]
+                                }}
+                                transition={{ 
+                                    duration: 1,
+                                    repeat: Infinity,
+                                    delay: i * 0.2
+                                }}
+                                className="w-1.5 h-1.5 rounded-full bg-blue-500/50"
+                            />
+                        ))}
+                    </div>
+                </div>
             </div>
         );
     }
