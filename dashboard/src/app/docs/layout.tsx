@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign } from "lucide-react";
+import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign, Sparkles } from "lucide-react";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -13,6 +13,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
             items: [
                 { name: "Introduction", href: "/docs", icon: BookOpen },
                 { name: "Quickstart", href: "/docs/quickstart", icon: Zap },
+                { name: "AI Assistant Guide", href: "/docs/ai-assistants", icon: Sparkles },
             ]
         },
         {

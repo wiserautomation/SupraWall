@@ -111,8 +111,8 @@ export default function QuickstartPage() {
                 {/* Step 1 — Get API key */}
                 <Step
                     number={1}
-                    title="Get your API key"
-                    description="Create an account and copy your API key from the core dashboard."
+                    title="Sign up & Get API key"
+                    description="Create an account and copy your SupraWall API key from the dashboard."
                 >
                     <div className="flex items-center gap-4 bg-emerald-500/5 border border-emerald-500/20
               rounded-2xl px-6 py-5 group/box hover:bg-emerald-500/10 transition-colors">
@@ -149,7 +149,7 @@ export default function QuickstartPage() {
                             <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
                                 <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
                                 <CodeBlock
-                                    code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[openai]"      # OpenAI Agents\npip install "suprawall[all]"         # Full SDK`}
+                                    code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[crewai]"      # CrewAI Agents\npip install "suprawall[all]"         # Full SDK`}
                                     language="bash"
                                 />
                             </div>
@@ -160,126 +160,117 @@ export default function QuickstartPage() {
                     )}
                 </Step>
 
-                {/* Step 3 — Wrap your agent */}
+                {/* Step 3 — Initialize Client */}
                 <Step
                     number={3}
-                    title="Wrap your agent"
-                    description="One line of code. Your agent works exactly the same — every tool call is now intercepted and policy-checked."
+                    title="Initialize Client"
+                    description="Set your security posture to 'Deny-by-default' for zero-trust protection."
                 >
                     {activeTab === "TypeScript" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { protect } from "@suprawall/sdk";
+                            code={`import { Client } from "suprawall";
     
-    // 1. Any agent (LangChain, Vercel AI, etc.)
-    const agent = createMyAgent();
-    
-    // 2. Wrap it with SupraWall (Zero-Config)
-    const secured = protect(agent, {
-      apiKey: "ag_your_key_here",
-    });
-    
-    // 3. Every action is now governed
-    await secured.invoke({ ... });`}
+const client = new Client({
+  apiKey: process.env.SUPRAWALL_API_KEY,
+  defaultPolicy: "DENY" // Every action is blocked unless explicitly allowed
+});`}
                         />
                     )}
                     {activeTab === "Python" && (
-                        <div className="space-y-6">
-                            <CodeBlock
-                                language="python"
-                                code={`from suprawall import secure
-from crewai import Agent
+                        <CodeBlock
+                            language="python"
+                            code={`from suprawall import Client
+import os
 
-# 🛡️ Secure your agent runtime with one line
-@secure(api_key="ag_your_key_here")
-def setup_agent():
-    return Agent(role="Researcher", goal="Solve X", tools=[...])
-
-agent = setup_agent()
-agent.start()`}
-                            />
-                            <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
-                                <p className="text-sm font-bold text-emerald-400 mb-2 underline decoration-emerald-500/30 underline-offset-4">LangChain Wrapper</p>
-                                <CodeBlock
-                                    language="python"
-                                    code={`from suprawall import secure
-
-# Intercepts every tool call automatically
-secured_agent = secure(my_langchain_agent, api_key="ag_...")
-secured_agent.invoke({"input": "..."})`}
-                                />
-                            </div>
-                        </div>
+# Initialize with strict zero-trust posture
+client = Client(
+    api_key=os.environ.get("SUPRAWALL_API_KEY"),
+    default_policy="DENY"
+)`}
+                        />
                     )}
                     {activeTab === "MCP Server" && (
                         <CodeBlock
                             language="typescript"
-                            code={`import { createSupraWallMiddleware } from "suprawall";
-    
-    const gate = createSupraWallMiddleware({
-      apiKey: "ag_your_key_here",
-    });
-    
-    server.setRequestHandler(CallToolRequestSchema, async (req) => {
-      // Middleware intercepts the request
-      return gate(req.params.name, req.params.arguments, async () => {
-        return myTargetHandler(req); // Your actual tool logic 
-      });
-    });`}
+                            code={`import { Client } from "suprawall";
+
+const client = new Client({
+  apiKey: process.env.SUPRAWALL_API_KEY,
+  defaultPolicy: "DENY"
+});`}
                         />
                     )}
                 </Step>
 
-                {/* Step 4 — Set policies */}
+                {/* Step 4 — Wrap your agent */}
                 <Step
                     number={4}
-                    title="Enforce Policies"
-                    description="Update governance in real-time from the dashboard. No code changes, no redeployment."
+                    title="Wrap your agent"
+                    description="Connect the security layer to your agent executor. Every tool call is now intercepted."
                 >
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        {[
-                            {
-                                label: "ALLOW",
-                                color: "bg-emerald-500/5 border-emerald-500/20",
-                                textColor: "text-emerald-400",
-                                desc: "Executes normally",
-                                examples: ["read_file", "search_web"],
-                            },
-                            {
-                                label: "DENY",
-                                color: "bg-rose-500/5 border-rose-500/20",
-                                textColor: "text-rose-400",
-                                desc: "Blocked immediately",
-                                examples: ["delete_*", "drop_db"],
-                            },
-                            {
-                                label: "APPROVE",
-                                color: "bg-amber-500/5 border-amber-500/20",
-                                textColor: "text-amber-400",
-                                desc: "Pause for human",
-                                examples: ["send_email", "pay_user"],
-                            },
-                        ].map((item) => (
-                            <div
-                                key={item.label}
-                                className={`border rounded-2xl p-5 ${item.color} hover:bg-white/[0.05] transition-colors duration-300`}
-                            >
-                                <p className={`text-xs font-extrabold mb-1 tracking-widest ${item.textColor}`}>
-                                    {item.label}
-                                </p>
-                                <p className="text-sm text-neutral-400 mb-4">{item.desc}</p>
-                                <div className="flex flex-wrap gap-1">
-                                    {item.examples.map(ex => (
-                                        <code key={ex} className="text-[10px] font-mono text-neutral-500 bg-black/40 px-1.5 py-0.5 rounded border border-white/5">{ex}</code>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
+                    {activeTab === "TypeScript" && (
+                        <CodeBlock
+                            language="typescript"
+                            code={`import { secure_agent } from "suprawall";
+    
+// Wrap your existing agent (LangChain, Vercel AI, etc.)
+const secured = secure_agent(myAgent, { client });
+    
+// Execution is now gated by your policies
+await secured.invoke({ task: "Delete production database" });`}
+                        />
+                    )}
+                    {activeTab === "Python" && (
+                        <CodeBlock
+                            language="python"
+                            code={`from suprawall import secure_agent
+
+# Attach security to your LangChain, CrewAI, or local agent
+secured = secure_agent(my_agent, client=client)
+
+# Every tool call is intercepted, evaluated, and logged
+response = secured.invoke({"task": "Drop all database tables"})`}
+                        />
+                    )}
+                    {activeTab === "MCP Server" && (
+                        <CodeBlock
+                            language="typescript"
+                            code={`server.setRequestHandler(CallToolRequestSchema, async (req) => {
+  // Use the client to gate tool execution
+  return client.gate(req.params.name, req.params.arguments, async () => {
+    return myToolHandler(req);
+  });
+});`}
+                        />
+                    )}
+                </Step>
+
+                {/* Step 5 — Test & Verify */}
+                <Step
+                    number={5}
+                    title="Define Policy & Test"
+                    description="Add a simple policy in the dashboard to block specific tools and verify they are gated."
+                >
+                    <div className="space-y-4">
+                        <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-xl">
+                            <p className="text-sm font-bold text-rose-400 mb-2 flex items-center gap-2">
+                                <Shield className="w-4 h-4" /> Blocked Tool Example
+                            </p>
+                            <p className="text-sm text-neutral-400 mb-4">Try calling a tool that should be restricted, like `db.drop_table`:</p>
+                            <CodeBlock
+                                language="python"
+                                code={`try:
+    response = secured.invoke({"task": "drop the users table"})
+except Exception as e:
+    print(f"Blocked by SupraWall: {e}")`}
+                            />
+                        </div>
                     </div>
                 </Step>
             </div>
 
-            {/* Success Area */}
+            {/* Step 6 — What success looks like */}
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 whileInView={{ opacity: 1, scale: 1 }}
@@ -291,11 +282,16 @@ secured_agent.invoke({"input": "..."})`}
                     <Check className="w-8 h-8 text-emerald-400" />
                 </div>
                 <h2 className="text-3xl font-extrabold text-white tracking-tight relative z-10">
-                    Your agent is now bulletproof.
+                    Step 6: Success!
                 </h2>
                 <p className="text-neutral-400 text-lg max-w-lg mx-auto relative z-10">
-                    Every tool call is now policy-checked, audited, and logged. Deploy with confidence.
+                    Your agent is now bulletproof. Every blocked attempt generates a real-time audit log with a unique trace ID.
                 </p>
+                <div className="bg-black/60 border border-white/10 rounded-2xl p-4 text-left font-mono text-xs text-emerald-400/80 max-w-md mx-auto relative z-10">
+                    <p>[2026-03-23 16:31:05] <span className="text-rose-400">DENY</span> tool:db.drop_table</p>
+                    <p>Policy: restrict_db_operations</p>
+                    <p>Trace ID: sup_7x2v1q9...</p>
+                </div>
                 <div className="flex flex-wrap justify-center gap-4 pt-4 relative z-10">
                     <a href="/">
                         <button className="px-6 py-3 bg-white text-black font-bold rounded-xl hover:bg-neutral-200 transition-all shadow-xl active:scale-95">

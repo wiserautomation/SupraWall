@@ -34,20 +34,22 @@ export default function AutoGenDocs() {
                     <CodeBlock 
                         language="python" 
                         code={`import autogen
-from suprawall.autogen import SupraWallManager
+from suprawall import Client, secure_agent
+import os
 
-# Initialize the SupraWall session
-manager = SupraWallManager(api_key="your_api_key")
+# 1. Initialize SupraWall with Deny-by-default
+sw = Client(api_key=os.environ.get("SUPRAWALL_API_KEY"), default_policy="DENY")
 
-# Setup your AutoGen agents
+# 2. Setup your AutoGen agents
 assistant = autogen.AssistantAgent("assistant", llm_config=...)
 user_proxy = autogen.UserProxyAgent("user_proxy", ...)
 
-# 1. Attach SupraWall to the user proxy
-manager.protect(user_proxy)
+# 🛡️ Secure the user proxy
+# Every tool call attempted by user_proxy is now gated by SupraWall.
+secured_proxy = secure_agent(user_proxy, client=sw)
 
-# 2. Execute conversation with full tool governance
-user_proxy.initiate_chat(assistant, message="Analyze the sales data and delete temporary files.")`} 
+# 3. Execute conversation
+secured_proxy.initiate_chat(assistant, message="Analyze data.")`} 
                     />
                 </section>
 

@@ -6,22 +6,30 @@ import { Terminal, Shield, Zap, Server, Code, CheckCircle2, ArrowRight } from "l
 import Link from "next/link";
 
 export default function VercelAIDocs() {
-    const starterCode = `import { useChat } from "ai/react";
-import { wrapTools } from "suprawall/vercel";
+    const starterCode = `import { Client, secure_tools } from "suprawall";
+import { generateText } from "ai";
 
-// 1. Wrap your tools with SupraWall middleware
-const tools = wrapTools({
+// 1. Initialize SupraWall with Deny-by-default
+const sw = new Client({ 
+  apiKey: process.env.SUPRAWALL_API_KEY, 
+  defaultPolicy: "DENY" 
+});
+
+// 2. Secure your tools
+const tools = {
   weather: {
     description: "Get current weather",
     parameters: z.object({ city: z.string() }),
     execute: async ({ city }) => { ... }
   }
-}, { apiKey: process.env.SUPRAWALL_API_KEY });
+};
 
-// 2. Pass to your generateText or streamText call
+const securedTools = secure_tools(tools, { client: sw });
+
+// 3. Pass to your generateText call
 const { text } = await generateText({
   model: openai("gpt-4o"),
-  tools,
+  tools: securedTools,
   prompt: "What is the weather in London?",
 });`;
 

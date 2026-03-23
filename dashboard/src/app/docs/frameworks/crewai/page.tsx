@@ -29,28 +29,35 @@ export default function CrewAIDocs() {
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">2. Securing a Crew Task</h2>
                     <p className="text-neutral-400 text-sm leading-relaxed">
-                        SupraWall integrates with CrewAI's task lifecycle. Simply pass the SupraWall decorator or callback to your tasks.
+                        SupraWall integrates with CrewAI's task lifecycle. Initialize the global client and wrap your agent or crew.
                     </p>
                     <CodeBlock 
                         language="python" 
                         code={`from crewai import Agent, Task, Crew
-from suprawall.crewai import SupraWallTaskGuard
+from suprawall import Client, secure_agent
+import os
 
-# Initialize the Guard
-guard = SupraWallTaskGuard(api_key="your_api_key")
+# 1. Initialize SupraWall with Deny-by-default
+sw = Client(api_key=os.environ.get("SUPRAWALL_API_KEY"), default_policy="DENY")
 
-# Define your agents and tools
-research_agent = Agent(role="Researcher", goal="Search the web", tools=[search_tool])
-
-# 1. Apply the guard to specific tasks
-task = Task(
-    description="Find the latest AI news and save to database.",
-    agent=research_agent,
-    guard=guard # <-- SupraWall will now intercept every tool call in this task
+# 2. Define your research agent
+research_agent = Agent(
+    role="Researcher", 
+    goal="Search the web", 
+    tools=[search_tool]
 )
 
-# 2. Run your crew
-crew = Crew(agents=[research_agent], tasks=[task])
+# 🛡️ Secure the agent (or the whole crew)
+# Every tool call attempted by research_agent is now gated by SupraWall.
+secured_agent = secure_agent(research_agent, client=sw)
+
+# 3. Use in your task
+task = Task(
+    description="Find the latest AI news.",
+    agent=secured_agent
+)
+
+crew = Crew(agents=[secured_agent], tasks=[task])
 crew.kickoff()`} 
                     />
                 </section>

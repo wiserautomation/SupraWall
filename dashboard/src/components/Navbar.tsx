@@ -22,10 +22,10 @@ export function Navbar() {
     ];
 
     const resources = [
-        { href: "/learn", icon: <Book className="w-4 h-4 text-emerald-400" />, label: "Learning Hub", desc: "The Agent Security Bible" },
-        { href: "/blog", icon: <FileText className="w-4 h-4 text-rose-400" />, label: "Engineering Blog", desc: "Latest research & insights" },
+        { href: "/quickstart", icon: <Zap className="w-4 h-4 text-yellow-400" />, label: "Quickstart", desc: "5-minute zero-trust setup" },
+        { href: "/docs", icon: <Book className="w-4 h-4 text-emerald-400" />, label: "Documentation", desc: "SDK guides & API reference" },
         { href: "/integrations", icon: <Workflow className="w-4 h-4 text-purple-400" />, label: "Frameworks", desc: "LangChain, CrewAI, AutoGen" },
-        { href: "/vs", icon: <Layers className="w-4 h-4 text-blue-400" />, label: "Comparisons", desc: "SupraWall vs Competitors" },
+        { href: "/blog", icon: <FileText className="w-4 h-4 text-rose-400" />, label: "Engineering Blog", desc: "Latest research & insights" },
     ];
 
     const company = [

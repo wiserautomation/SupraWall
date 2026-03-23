@@ -27,7 +27,8 @@ import {
     Trash2,
     PauseCircle,
     Ban,
-    Code
+    Code,
+    Sparkles
 } from "lucide-react";
 import { useState, useEffect, use } from "react";
 import { auth, db } from "@/lib/firebase";
@@ -89,6 +90,8 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const [isCopying, setIsCopying] = useState(false);
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
     const [activeTab, setActiveTab] = useState<'overview' | 'guardrails'>('overview');
+    const [promptFramework, setPromptFramework] = useState<'python-langchain' | 'ts-vercel' | 'python-crewai'>('python-langchain');
+    const [isPromptCopying, setIsPromptCopying] = useState(false);
 
     useEffect(() => {
         if (authLoading || !user || !agentId) return;
@@ -464,6 +467,58 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                         {isCopying ? <CheckCircle2 className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* AI Assistant Prompt */}
+                        <div className="space-y-4 pt-4 border-t border-white/5">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Sparkles className="w-5 h-5 text-violet-400" />
+                                    <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white">AI Assistant Prompt</h3>
+                                </div>
+                                <Badge variant="outline" className="border-violet-500/20 text-violet-400 text-[8px] uppercase tracking-widest">Beta</Badge>
+                            </div>
+                            <p className="text-[10px] text-neutral-400 leading-relaxed font-bold">Paste this into Cursor, Copilot, or Antigravity to secure this agent.</p>
+                            
+                            <div className="space-y-2">
+                                <select 
+                                    value={promptFramework} 
+                                    onChange={(e) => setPromptFramework(e.target.value as any)}
+                                    className="w-full bg-neutral-900 border border-white/10 text-white rounded-xl h-10 px-3 text-[10px] font-black uppercase tracking-widest"
+                                >
+                                    <option value="python-langchain">Python + LangChain</option>
+                                    <option value="ts-vercel">TS + Vercel AI SDK</option>
+                                    <option value="python-crewai">Python + CrewAI</option>
+                                </select>
+                                
+                                <Button 
+                                    onClick={() => {
+                                        const prompt = `Act as a Senior AI Integration Engineer. Your task is to install and configure SupraWall to secure my AI agent.
+
+Environment Data:
+- Agent ID: \`${agentId}\`
+- API Key: \`${agent.apiKey}\`
+- Framework: ${promptFramework.replace('-', ' ')}
+
+1. **Install SDK:** Run \`pip install suprawall\` (Python) or \`npm install suprawall\` (Node).
+2. **Initialization:** Use this boilerplate for \`suprawall_client.py\`:
+   \`\`\`python
+   from suprawall import Client, secure_agent
+   import os
+   client = Client(api_key="${agent.apiKey}", default_policy="DENY")
+   \`\`\`
+3. **Wrap:** Find the Agent Executor and wrap it using \`secure_agent(my_agent, client=client)\`.
+
+Verify that calls to sensitive tools like \`db.drop_table\` are blocked.`;
+                                        navigator.clipboard.writeText(prompt);
+                                        setIsPromptCopying(true);
+                                        setTimeout(() => setIsPromptCopying(false), 2000);
+                                    }}
+                                    className="w-full bg-violet-600 hover:bg-violet-500 text-white font-black uppercase tracking-widest text-[10px] h-12 rounded-2xl transition-all shadow-xl shadow-violet-900/10"
+                                >
+                                    {isPromptCopying ? <><CheckCircle2 className="w-3.5 h-3.5 mr-2" /> Copied Prompt</> : <><Copy className="w-3.5 h-3.5 mr-2" /> Copy Prompt for AI</>}
+                                </Button>
                             </div>
                         </div>
 

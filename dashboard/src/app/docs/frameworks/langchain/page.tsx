@@ -63,22 +63,51 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
             </div>
 
             <div className="space-y-6 pt-4">
-                <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Python Implementation</h2>
-                <p className="text-neutral-400 text-sm">SupraWall provides a native callback handler for Python LangChain agents as well.</p>
-                <CodeBlock language="python" code={`from suprawall import SupraWallLangChainCallback, SupraWallOptions
-                from langchain.agents import AgentExecutor
+                <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">Full Runnable Example (Python)</h2>
+                <p className="text-neutral-400 text-sm">Save this as `secure_agent.py`. It initializes a SupraWall client with deny-by-default and wraps a standard LangChain agent.</p>
+                <CodeBlock language="python" code={`from suprawall import Client, secure_agent
+from langchain_openai import ChatOpenAI
+from langchain.agents import create_openai_functions_agent, AgentExecutor
+from langchain import hub
+import os
 
-                # 1. Setup callback
-                callback = SupraWallLangChainCallback(
-                SupraWallOptions(api_key="ag_your_api_key_here")
-                )
+# 1. Initialize SupraWall with Deny-by-default
+# This ensures zero trust: all tools are blocked unless explicitly allowed in dashboard.
+sw = Client(api_key=os.environ.get("SUPRAWALL_API_KEY"), default_policy="DENY")
 
-                # 2. Attach to executor
-                agent_executor = AgentExecutor(
-                agent=agent,
-                tools=tools,
-                callbacks=[callback]
-)`} />
+# 2. Setup your standard LangChain Agent
+llm = ChatOpenAI(model="gpt-4", temperature=0)
+prompt = hub.pull("hwchase17/openai-functions-agent")
+tools = [...] # Your agent tools here
+agent = create_openai_functions_agent(llm, tools, prompt)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+
+# 3. 🛡️ Secure the executor with one line
+# Every tool call attempted by agent_executor is now gated by SupraWall.
+secured_agent = secure_agent(agent_executor, client=sw)
+
+# 4. Invoke as usual
+# If the agent tries to use a blocked tool, SupraWall will intercept and block it.
+try:
+    response = secured_agent.invoke({"input": "Perform a sensitive operation"})
+    print(response["output"])
+except Exception as e:
+    print(f"SupraWall Security Block: {e}")`} />
+            </div>
+
+            <div className="space-y-6 pt-4">
+                <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">TypeScript Implementation</h2>
+                <p className="text-neutral-400 text-sm">Use the `@suprawall/sdk` for Node.js environments.</p>
+                <CodeBlock language="typescript" code={`import { Client, secure_agent } from "suprawall";
+import { AgentExecutor } from "langchain/agents";
+
+const sw = new Client({ 
+    apiKey: process.env.SUPRAWALL_API_KEY, 
+    defaultPolicy: "DENY" 
+});
+
+const secured = secure_agent(myAgentExecutor, { client: sw });
+await secured.invoke({ input: "..." });`} />
             </div>
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
