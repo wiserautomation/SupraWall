@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db_sql';
 import { db } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
@@ -11,12 +10,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    const result = await query(
-      "SELECT * FROM agents WHERE tenantid = $1 ORDER BY createdat DESC",
-      [tenantId]
-    );
+    const snapshot = await db.collection("agents")
+      .where("userId", "==", tenantId)
+      .orderBy("createdAt", "desc")
+      .get();
 
-    return NextResponse.json(result.rows);
+    const agents = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt
+    }));
+
+    return NextResponse.json(agents);
   } catch (err: any) {
     console.error("[API Agents GET] Error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
