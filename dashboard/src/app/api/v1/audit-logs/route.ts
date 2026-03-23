@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
 
-const db = getAdminDb();
-
 export async function GET(request: NextRequest) {
+  const db = getAdminDb();
   try {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');

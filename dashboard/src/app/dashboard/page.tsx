@@ -247,32 +247,31 @@ export default function OverviewPage() {
     useEffect(() => {
         if (!user) return;
         
-        // Stats and logs polling
-        fetchData();
-        const interval = setInterval(fetchData, 10000);
+        // 2. Poll Agents from our internal API (bypasses ad-blockers)
+        const loadAgents = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAgents(data.sort((a: Agent, b: Agent) => {
+                        const dateA = new Date(a.createdAt).getTime();
+                        const dateB = new Date(b.createdAt).getTime();
+                        return dateB - dateA;
+                    }));
+                }
+            } catch (e) {
+                console.error("[Dashboard] Failed to poll agents:", e);
+            }
+        };
 
-        // Real-time Agents from Firestore
-        console.log(`[OverviewPage] Starting onSnapshot for userId: ${user.uid}`);
-        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const agentList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })) as Agent[];
-            setAgents(agentList.sort((a, b) => {
-                const dateA = a.createdAt?.toDate?.() || new Date(0);
-                const dateB = b.createdAt?.toDate?.() || new Date(0);
-                return dateB - dateA;
-            }));
-            setLoading(false);
-        }, (error) => {
-            console.error("[SupraWall] Agent snapshot error:", error);
-            setLoading(false);
-        });
+        fetchData();
+        loadAgents();
+        const statsInterval = setInterval(fetchData, 10000);
+        const agentsInterval = setInterval(loadAgents, 10000);
 
         return () => {
-            clearInterval(interval);
-            unsubscribe();
+            clearInterval(statsInterval);
+            clearInterval(agentsInterval);
         };
     }, [user]);
 

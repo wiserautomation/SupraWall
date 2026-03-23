@@ -187,31 +187,29 @@ export default function AgentsPage() {
     useEffect(() => {
         if (!user) return;
 
-        // Real-time Agents from Firestore
-        console.log(`[AgentsPage] Starting onSnapshot for userId: ${user.uid}`);
-        const q = query(
-            collection(db, "agents"),
-            where("userId", "==", user.uid)
-        );
+        // Poll Agents from our internal API (bypasses ad-blockers)
+        const loadAgents = async () => {
+            try {
+                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAgents(data.sort((a: Agent, b: Agent) => {
+                        const dateA = new Date(a.createdAt).getTime();
+                        const dateB = new Date(b.createdAt).getTime();
+                        return dateB - dateA;
+                    }));
+                }
+                setLoading(false);
+            } catch (e) {
+                console.error("[AgentsPage] Failed to poll agents:", e);
+                setLoading(false);
+            }
+        };
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const agentList = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data()
-            })) as Agent[];
+        loadAgents();
+        const interval = setInterval(loadAgents, 10000);
 
-            setAgents(agentList.sort((a, b) => {
-                const dateA = a.createdAt?.toDate?.() || new Date(0);
-                const dateB = b.createdAt?.toDate?.() || new Date(0);
-                return dateB - dateA;
-            }));
-            setLoading(false);
-        }, (error) => {
-            console.error("[Agents onSnapshot] Error:", error);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
+        return () => clearInterval(interval);
     }, [user]);
 
     useEffect(() => {
