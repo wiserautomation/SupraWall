@@ -35,12 +35,16 @@ export function Navbar() {
     ];
 
     const integrations = [
+        { type: "label", label: "Frameworks" },
         { href: "/integrations/langchain", icon: <Workflow className="w-4 h-4 text-emerald-400" />, label: "LangChain", desc: "Secure agent executors" },
         { href: "/integrations/crewai", icon: <Users className="w-4 h-4 text-amber-400" />, label: "CrewAI", desc: "Task-level governance" },
         { href: "/integrations/autogen", icon: <Globe className="w-4 h-4 text-blue-400" />, label: "AutoGen", desc: "Multi-agent security" },
-        { href: "/integrations/vercel", icon: <Zap className="w-4 h-4 text-rose-400" />, label: "Vercel AI SDK", desc: "Edge-ready middleware" },
-        { href: "/integrations/pydanticai", icon: <ShieldCheck className="w-4 h-4 text-purple-400" />, label: "PydanticAI", desc: "Type-safe guardrails" },
         { href: "/integrations/llamaindex", icon: <Layers className="w-4 h-4 text-cyan-400" />, label: "LlamaIndex", desc: "Data-aware protection" },
+        
+        { type: "label", label: "Platforms & Models" },
+        { href: "/integrations/stripe", icon: <DollarSign className="w-4 h-4 text-emerald-500" />, label: "Stripe", desc: "Financial guardrails" },
+        { href: "/integrations/claude", icon: <Zap className="w-4 h-4 text-orange-500" />, label: "Claude / Anthropic", desc: "Computer use security" },
+        { href: "/integrations/openclaw", icon: <Globe className="w-4 h-4 text-purple-400" />, label: "OpenClaw", desc: "Browser-level firewall" },
     ];
 
     return (
@@ -116,19 +120,25 @@ function Dropdown({ label, isOpen, onOpen, onClose, items }: any) {
                         className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-80 bg-neutral-950 border border-emerald-500/15 rounded-[2.5rem] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/[0.06] p-2"
                     >
                         {items.map((f: any, i: number) => (
-                            <Link
-                                key={f.href}
-                                href={f.href}
-                                className={`flex items-start gap-4 px-5 py-4 hover:bg-emerald-500/[0.06] transition-all group rounded-2xl`}
-                            >
-                                <div className="mt-0.5 w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                                    {f.icon}
+                            f.type === "label" ? (
+                                <div key={i} className="px-5 pt-4 pb-2 text-[9px] font-black uppercase tracking-[0.2em] text-neutral-500 italic opacity-50 border-b border-white/5 mb-1">
+                                    {f.label}
                                 </div>
-                                <div className="space-y-1">
-                                    <p className="text-white text-[11px] font-black uppercase tracking-widest group-hover:text-emerald-400 transition-colors uppercase italic">{f.label}</p>
-                                    <p className="text-neutral-500 text-[10px] font-bold normal-case tracking-tight leading-relaxed uppercase italic opacity-80">{f.desc}</p>
-                                </div>
-                            </Link>
+                            ) : (
+                                <Link
+                                    key={f.href}
+                                    href={f.href}
+                                    className={`flex items-start gap-4 px-5 py-3 hover:bg-emerald-500/[0.06] transition-all group rounded-2xl`}
+                                >
+                                    <div className="mt-0.5 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
+                                        {f.icon}
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-white text-[10px] font-black uppercase tracking-widest group-hover:text-emerald-400 transition-colors uppercase italic">{f.label}</p>
+                                        <p className="text-neutral-500 text-[9px] font-bold normal-case tracking-tight leading-relaxed uppercase italic opacity-80">{f.desc}</p>
+                                    </div>
+                                </Link>
+                            )
                         ))}
                     </motion.div>
                 )}

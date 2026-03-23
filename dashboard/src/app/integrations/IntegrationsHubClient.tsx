@@ -52,6 +52,20 @@ const INTEGRATION_CARDS = [
         color: "cyan"
     },
     {
+        title: "Claude",
+        href: "/integrations/claude",
+        desc: "Secure computer use and high-autonomy agent tool calls in Anthropic Claude 3.5.",
+        pill: "Model",
+        color: "orange"
+    },
+    {
+        title: "Stripe",
+        href: "/integrations/stripe",
+        desc: "Enforce deterministic financial guardrails and limits on autonomous banking tools.",
+        pill: "Financial",
+        color: "blue"
+    },
+    {
         title: "OpenClaw",
         href: "/integrations/openclaw",
         desc: "The native runtime for OpenClaw agents in search and social automation.",
