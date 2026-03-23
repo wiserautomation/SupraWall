@@ -264,6 +264,9 @@ export default function OverviewPage() {
                 return dateB - dateA;
             }));
             setLoading(false);
+        }, (error) => {
+            console.error("[SupraWall] Agent snapshot error:", error);
+            setLoading(false);
         });
 
         return () => {
@@ -294,45 +297,44 @@ export default function OverviewPage() {
         setIsSubmitting(true);
         
         const apiKey = generateApiKey();
-        const agentDoc = {
-            name: trimmedName,
-            userId: user.uid,
-            status: 'active',
-            apiKey,
-            totalCalls: 0,
-            totalSpendUsd: 0,
-            createdAt: serverTimestamp(),
-            scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"]
-        };
         
         try {
-            // Save to Firestore with a timeout to prevent infinite spinner
-            const addDocPromise = addDoc(collection(db, "agents"), agentDoc);
-            const timeoutPromise = new Promise((_, reject) => 
-                setTimeout(() => reject(new Error("timeout")), 8000)
-            );
+            const res = await fetch('/api/v1/agents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: trimmedName,
+                    userId: user.uid,
+                    apiKey,
+                    scopes: selectedScopes.length > 0 ? selectedScopes : ["*:*"],
+                }),
+            });
             
-            await Promise.race([addDocPromise, timeoutPromise]);
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to create agent");
+            }
+
+            // ✅ Only show success when server confirmed the write
+            setNewlyCreatedKey(apiKey);
+            setShowSuccess(true);
+            
+            // Auto-close modal after dollar confetti animation
+            setTimeout(() => {
+                setShowSuccess(false);
+                setIsCreateModalOpen(false);
+                setNewlyCreatedKey(null);
+                setNewAgentName("");
+                setSelectedScopes([]);
+                router.push('/dashboard/agents');
+            }, 3500);
+
         } catch (err: any) {
-            // If it's a timeout, the doc may still have been written (Firestore optimistic writes)
-            // We still show success since the onSnapshot listener will pick it up
-            console.warn("[SupraWall] Agent creation warning:", err?.message || err);
+            console.error("[SupraWall] Agent creation failure:", err);
+            setNameError(err.message || "Failed to create agent. Try again.");
+        } finally {
+            setIsSubmitting(false);
         }
-        
-        // Always show success — Firestore onSnapshot will confirm the agent appears
-        setNewlyCreatedKey(apiKey);
-        setShowSuccess(true);
-        setIsSubmitting(false);
-        
-        // Auto-close modal after dollar confetti animation
-        setTimeout(() => {
-            setShowSuccess(false);
-            setIsCreateModalOpen(false);
-            setNewlyCreatedKey(null);
-            setNewAgentName("");
-            setSelectedScopes([]);
-            router.push('/dashboard/agents');
-        }, 3500);
     };
 
     const createAgent = () => handleCreateAgent({ preventDefault: () => {} } as React.FormEvent);
@@ -342,23 +344,26 @@ export default function OverviewPage() {
         setIsSubmitting(true);
         try {
             const apiKey = generateApiKey();
-            const agentDoc = {
-                name,
-                userId: user.uid,
-                status: 'active',
-                apiKey,
-                totalCalls: 0,
-                totalSpendUsd: 0,
-                createdAt: serverTimestamp(),
-                scopes: scopes.length > 0 ? scopes : ["*:*"]
-            };
             
-            await addDoc(collection(db, "agents"), agentDoc);
+            const res = await fetch('/api/v1/agents', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    userId: user.uid,
+                    apiKey,
+                    scopes: scopes.length > 0 ? scopes : ["*:*"],
+                }),
+            });
+            
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to create agent");
+            }
 
             setNewlyCreatedKey(apiKey);
             setIsCreateModalOpen(true);
             setShowSuccess(true);
-            setIsSubmitting(false);
             
             setTimeout(() => {
                 setShowSuccess(false);
@@ -368,10 +373,11 @@ export default function OverviewPage() {
                 setSelectedScopes([]);
                 router.push('/dashboard/agents');
             }, 3000);
-        } catch (e) {
-            console.error(e);
+        } catch (e: any) {
+            console.error("[SupraWall] Onboarding agent creation error:", e);
+            alert(e.message || "Failed to create agent during onboarding.");
+        } finally {
             setIsSubmitting(false);
-            setNewlyCreatedKey(null);
         }
     };
 
