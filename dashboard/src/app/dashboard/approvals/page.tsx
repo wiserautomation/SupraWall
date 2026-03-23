@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -44,6 +45,9 @@ export default function ApprovalsPage() {
     const [requests, setRequests] = useState<ApprovalRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const autoProcessed = useRef<string[]>([]);
 
     useEffect(() => {
         if (!user) return;
@@ -83,6 +87,26 @@ export default function ApprovalsPage() {
 
         return () => unsubscribe();
     }, [user]);
+
+    // Handle auto-approval from notification
+    useEffect(() => {
+        const id = searchParams.get("id");
+        const action = searchParams.get("action");
+
+        if (id && action && user && !autoProcessed.current.includes(id)) {
+            if (action === "approve" || action === "deny") {
+                console.log(`Auto-processing notification action: ${action} for request ${id}`);
+                autoProcessed.current.push(id);
+                handleAction(id, action === "approve" ? "approved" : "denied").then(() => {
+                    // Clean up URL after processing
+                    const newParams = new URLSearchParams(searchParams.toString());
+                    newParams.delete("action");
+                    // Keep the ID to show the success state if needed, but remove action so it doesn't re-run
+                    router.replace(`${window.location.pathname}?${newParams.toString()}`);
+                });
+            }
+        }
+    }, [searchParams, user, router]);
 
     const handleAction = async (id: string, decision: "approved" | "denied") => {
         setProcessingId(id);

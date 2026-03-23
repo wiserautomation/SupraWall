@@ -1,6 +1,7 @@
 import { initializeApp, getApps, getApp, FirebaseApp } from "firebase/app";
 import { getAuth, Auth } from "firebase/auth";
 import { getFirestore, Firestore } from "firebase/firestore";
+import { getMessaging, Messaging } from "firebase/messaging";
 
 const firebaseConfig = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -21,5 +22,6 @@ const app = (isClient || !hasConfig)
 
 const auth = isClient ? getAuth(app) : ({} as Auth);
 const db = isClient ? getFirestore(app) : ({} as Firestore);
+const messaging = isClient ? getMessaging(app) : ({} as Messaging);
 
-export { app, auth, db, firebaseConfig };
+export { app, auth, db, messaging, firebaseConfig };

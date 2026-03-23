@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock, Users, FileUp, X } from "lucide-react";
+import { Lock, Plus, RotateCcw, Trash2, Copy, Check, Shield, AlertCircle, Clock, Users, FileUp, X, Search } from "lucide-react";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
@@ -93,6 +93,7 @@ export default function VaultPage() {
     const [newRuleApproval, setNewRuleApproval] = useState(false);
     const [rotateValue, setRotateValue] = useState("");
     const [error, setError] = useState<string | null>(null);
+    const [agentSearch, setAgentSearch] = useState("");
 
     const getAuthHeaders = async (): Promise<Record<string, string>> => {
         if (!user) return {};
@@ -738,25 +739,42 @@ export default function VaultPage() {
                                 </div>
                                 <div>
                                     <label className="text-xs text-neutral-400 mb-1 block">Scoped Agents</label>
-                                    <div className="flex flex-wrap gap-1 p-2 rounded-lg bg-black/20 border border-white/5 min-h-[40px]">
-                                        {agents.map(a => (
-                                            <button
-                                                key={a.id}
-                                                onClick={() => {
-                                                    setNewSecretAgents(prev => 
-                                                        prev.includes(a.id) ? prev.filter(id => id !== a.id) : [...prev, a.id]
-                                                    );
-                                                }}
-                                                className={`px-1.5 py-0.5 rounded text-[9px] font-mono border transition-all ${
-                                                    newSecretAgents.includes(a.id)
-                                                        ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
-                                                        : "bg-white/5 border-white/10 text-neutral-600"
-                                                }`}
-                                            >
-                                                {a.name}
-                                            </button>
-                                        ))}
-                                        {agents.length === 0 && <span className="text-[9px] text-neutral-600">No agents found</span>}
+                                    <div className="space-y-2">
+                                        <div className="relative">
+                                            <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-neutral-500" />
+                                            <input 
+                                                type="text"
+                                                placeholder="Search agents..."
+                                                value={agentSearch}
+                                                onChange={(e) => setAgentSearch(e.target.value)}
+                                                className="w-full bg-black/40 border border-white/10 rounded-lg pl-8 pr-3 py-2 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                            />
+                                        </div>
+                                        <div className="flex flex-wrap gap-1 p-2 rounded-lg bg-black/20 border border-white/5 max-h-[120px] overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-500/20">
+                                            {agents.filter(a => a.name.toLowerCase().includes(agentSearch.toLowerCase())).map(a => (
+                                                <button
+                                                    key={a.id}
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setNewSecretAgents(prev => 
+                                                            prev.includes(a.id) ? prev.filter(id => id !== a.id) : [...prev, a.id]
+                                                        );
+                                                    }}
+                                                    className={`px-2 py-1 rounded text-[10px] font-mono border transition-all flex items-center gap-1.5 ${
+                                                        newSecretAgents.includes(a.id)
+                                                            ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-400"
+                                                            : "bg-white/5 border-white/10 text-neutral-500 hover:border-white/20"
+                                                    }`}
+                                                >
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${newSecretAgents.includes(a.id) ? "bg-emerald-500" : "bg-neutral-700"}`} />
+                                                    {a.name}
+                                                </button>
+                                            ))}
+                                            {agents.length === 0 && <span className="text-[9px] text-neutral-600 p-2">No agents found</span>}
+                                            {agents.length > 0 && agents.filter(a => a.name.toLowerCase().includes(agentSearch.toLowerCase())).length === 0 && (
+                                                <span className="text-[9px] text-neutral-600 p-2">No matches for "{agentSearch}"</span>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

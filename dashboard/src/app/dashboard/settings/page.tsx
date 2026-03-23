@@ -4,9 +4,11 @@ import { motion } from "framer-motion";
 import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap, Key, ShieldCheck, Slack, Copy, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
-import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
+import { requestNotificationPermission } from "@/lib/notifications";
+import { Bell, BellOff, Info } from "lucide-react";
 
 export default function SettingsPage() {
     const [user] = useAuthState(auth);
@@ -19,6 +21,8 @@ export default function SettingsPage() {
     const [testSent, setTestSent] = useState(false);
     const [emailTestSent, setEmailTestSent] = useState(false);
     const [copiedKey, setCopiedKey] = useState(false);
+    const [browserNotificationsEnabled, setBrowserNotificationsEnabled] = useState(false);
+    const [permissionPrompt, setPermissionPrompt] = useState(false);
 
     // Form States
     const [dbType, setDbType] = useState("firebase");
@@ -47,6 +51,7 @@ export default function SettingsPage() {
                     setSlackWebhookUrl(data.slack_webhook_url || "");
                     setNotificationEmail(data.notification_email || "");
                     setMasterApiKey(data.master_api_key || "");
+                    setBrowserNotificationsEnabled(!!(data.fcmTokens && data.fcmTokens.length > 0));
                 }
             } catch (e) {
                 console.error(e);
@@ -57,6 +62,27 @@ export default function SettingsPage() {
 
         fetchSettings();
     }, [user]);
+
+    const handleToggleBrowserNotifications = async () => {
+        if (!user) return;
+        
+        if (!browserNotificationsEnabled) {
+            // Enabling
+            try {
+                await requestNotificationPermission(user.uid);
+                setBrowserNotificationsEnabled(true);
+                setSavedEmail(true); // Reuse saved state or add a new one
+                setTimeout(() => setSavedEmail(false), 2000);
+            } catch (e) {
+                console.error("Failed to enable browser notifications:", e);
+                alert("Permission denied or registration failed. Check your browser settings.");
+            }
+        } else {
+            // Disabling - we would ideally remove tokens, but for now just update state
+            setBrowserNotificationsEnabled(false);
+            // Optional: call backend to remove tokens
+        }
+    };
 
     const handleSaveGeneral = async (field: string, value: any, setStatus: (v: boolean) => void) => {
         if (!user) return;
@@ -335,7 +361,52 @@ export default function SettingsPage() {
                 </motion.div>
             </section>
 
-            {/* EVENT WEBHOOKS */}
+            {/* BROWSER NOTIFICATIONS */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-orange-500/10 rounded-xl border border-orange-500/20 shadow-[0_0_15px_rgba(249,115,22,0.1)]">
+                        <Bell className="w-5 h-5 text-orange-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Browser Notifications</h2>
+                        <p className="text-sm text-neutral-400">Instant approval requests on your desktop.</p>
+                    </div>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
+                >
+                    <div className="flex items-center justify-between gap-6">
+                        <div className="space-y-1">
+                            <h3 className="font-bold text-white">Security Push Notifications</h3>
+                            <p className="text-xs text-neutral-400 max-w-md">Receive real-time push events when your agents request policy-gated tools. Approve or deny directly from the pop-up even if the dashboard is closed.</p>
+                        </div>
+                        
+                        <button
+                            onClick={handleToggleBrowserNotifications}
+                            className={`flex items-center gap-3 px-6 py-3 rounded-xl font-bold transition-all border ${browserNotificationsEnabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" : "bg-neutral-800 text-neutral-300 border-white/5 hover:bg-neutral-700 hover:border-white/10"}`}
+                        >
+                            {browserNotificationsEnabled ? (
+                                <><Bell className="w-4 h-4" /> Notifications Enabled</>
+                            ) : (
+                                <><BellOff className="w-4 h-4" /> Enable Browser Alerts</>
+                            )}
+                        </button>
+                    </div>
+                    
+                    {!browserNotificationsEnabled && (
+                        <div className="mt-6 p-4 bg-orange-500/5 rounded-xl border border-orange-500/10 flex items-start gap-3">
+                            <Info className="w-4 h-4 text-orange-400 mt-0.5" />
+                            <p className="text-[10px] leading-relaxed text-orange-300/80 uppercase font-bold tracking-wider">
+                                Recommended for Human-In-The-Loop (HITL) compliance under the EU AI Act.
+                            </p>
+                        </div>
+                    )}
+                </motion.div>
+            </section>
             <section className="space-y-6">
                 <div className="flex items-center gap-3">
                     <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">

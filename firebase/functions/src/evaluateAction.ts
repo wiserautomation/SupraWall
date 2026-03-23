@@ -507,6 +507,20 @@ async function handleApprovalFlow(
                 console.error("[SupraWall] Email alert failed:", err);
             }
         }
+
+        // --- Browser Push Notifications (FCM) ---
+        if (userData?.fcmTokens && userData.fcmTokens.length > 0) {
+            try {
+                await sendFcmNotification(userData.fcmTokens, {
+                    requestId,
+                    agentName: agentData.name || "Unknown Agent",
+                    toolName,
+                    arguments: argsString,
+                });
+            } catch (err) {
+                console.error("[SupraWall] FCM notification failed:", err);
+            }
+        }
     }
 
     await logAudit(userId, agentId, toolName, argsString, "REQUIRE_APPROVAL", estimatedCost, forcedReason || "Awaiting human approval", sessionId, agentRole, isLoop, isDryRun);
@@ -1046,5 +1060,77 @@ export const generatePolicyRegex = onRequest({ cors: true }, async (request, res
         console.error("Error generating regex via Gemini:", error);
         response.status(500).json({ error: "Internal Server Error" });
         return;
+    }
+});
+
+async function sendFcmNotification(tokens: string[], data: { requestId: string, agentName: string, toolName: string, arguments: string }) {
+    const payload = {
+        data: {
+            requestId: data.requestId,
+            type: "APPROVAL_REQUEST",
+            toolName: data.toolName,
+            agentName: data.agentName,
+            click_action: "FLUTTER_NOTIFICATION_CLICK", // Generic, some SDKs use this
+        },
+        notification: {
+            title: "🛡️ SupraWall: Action Approval Required",
+            body: `${data.agentName} wants to use ${data.toolName}. Approve or Deny now.`,
+        },
+        tokens,
+    };
+
+    try {
+        const response = await admin.messaging().sendEachForMulticast(payload);
+        console.log(`FCM: Successfully sent ${response.successCount} messages; ${response.failureCount} failed.`);
+    } catch (err) {
+        console.error("FCM Send Error:", err);
+    }
+}
+
+/**
+ * Fast processing endpoint for browser notification actions
+ */
+export const handleNotificationAction = onRequest({ cors: true }, async (req, res) => {
+    if (req.method === "OPTIONS") { res.status(204).send(""); return; }
+    if (req.method !== "POST") { res.status(405).json({ error: "Method not allowed" }); return; }
+
+    const { requestId, decision, userId } = req.body;
+
+    if (!requestId || !decision || !userId) {
+        res.status(400).json({ error: "Missing parameters: requestId, decision, and userId are required." });
+        return;
+    }
+
+    try {
+        const requestRef = db.collection("approvalRequests").doc(requestId);
+        const requestSnap = await requestRef.get();
+
+        if (!requestSnap.exists) {
+            res.status(404).json({ error: "Request not found." });
+            return;
+        }
+
+        const requestData = requestSnap.data()!;
+        if (requestData.status !== "pending") {
+            res.status(400).json({ error: "Request already processed or expired." });
+            return;
+        }
+
+        // Security: Ensure the user owns the request
+        if (requestData.userId !== userId) {
+            res.status(403).json({ error: "Unauthorized access to this approval request." });
+            return;
+        }
+
+        await requestRef.update({
+            status: decision === "approve" ? "approved" : "denied",
+            respondedAt: FieldValue.serverTimestamp(),
+            reviewedBy: "System (Direct Action)"
+        });
+
+        res.status(200).json({ success: true, decision });
+    } catch (e: any) {
+        console.error("handleNotificationAction Error:", e);
+        res.status(500).json({ error: e.message || "Internal error processing notification action." });
     }
 });

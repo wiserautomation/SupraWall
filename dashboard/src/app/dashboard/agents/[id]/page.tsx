@@ -249,9 +249,9 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const hasPendingApproval = auditLogs.some(l => l.decision === 'PAUSED');
 
     const snippetCode = {
-        python: `import suprawall\n\nagent = suprawall.Agent(\n  identity="${agentUri}",\n  api_key="ag_xxxxxxxxxxx"\n)\n\nagent.start()`,
-        ts: `import { SupraWall } from '@suprawall/sdk';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "ag_xxxxxxxxxxx"\n});\n\nawait agent.connect();`,
-        go: `import "github.com/suprawall/sdk-go"\n\nagent := suprawall.NewAgent(&suprawall.Config{\n    Identity: "${agentUri}",\n    APIKey:   "ag_xxxxxxxxxxx",\n})\nagent.Run()`
+        python: `import suprawall\n\nagent = suprawall.Agent(\n  identity="${agentUri}",\n  api_key="${agent.apiKey}"\n)\n\nagent.start()`,
+        ts: `import { SupraWall } from '@suprawall/sdk';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "${agent.apiKey}"\n});\n\nawait agent.connect();`,
+        go: `import "github.com/suprawall/sdk-go"\n\nagent := suprawall.NewAgent(&suprawall.Config{\n    Identity: "${agentUri}",\n    APIKey:   "${agent.apiKey}",\n})\nagent.Run()`
     };
 
     return (
@@ -290,7 +290,9 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                                 </h1>
                             )}
                             <div className="flex items-center gap-3 mt-2">
-                                <span className="text-xs font-mono text-neutral-600 tracking-wider">ID: {agentId}</span>
+                                <span className="text-xs font-mono text-neutral-600 tracking-wider flex items-center gap-1" title="Unique database identifier for management">
+                                    DATABASE ID: {agentId}
+                                </span>
                                 <span className="w-1 h-1 bg-neutral-800 rounded-full" />
                                 <span className="text-xs text-neutral-400 italic">Established {agent.createdAt?.toDate?.().toLocaleDateString()}</span>
                             </div>
@@ -467,7 +469,7 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
 
                         {/* Endpoint URI */}
                         <div className="space-y-2">
-                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 ml-1">Assigned Identity URI</Label>
+                             <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 ml-1">SDK Agent Identity URI</Label>
                              <div className="bg-black/40 border border-white/5 rounded-2xl p-4 flex items-center justify-between group hover:border-blue-500/30 transition-colors cursor-pointer" onClick={() => copyToClipboard(agentUri)}>
                                  <code className="text-xs font-mono text-blue-400">{agentUri}</code>
                                  <Copy className="w-3 h-3 text-neutral-700 group-hover:text-blue-400" />
