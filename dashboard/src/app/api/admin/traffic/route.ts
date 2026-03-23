@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
     try {
-        const { searchParams } = new URL(request.url);
+        const { searchParams } = new URL(req.url);
         const period = searchParams.get('period') || '24h'; // or '7d', '30d'
 
         // --- 1. Hourly Request Throughput (Last 24h) ---
