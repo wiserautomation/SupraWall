@@ -58,9 +58,28 @@ export async function POST(req: Request) {
                 const orgDoc = orgQuery.docs[0];
                 await orgDoc.ref.update({
                     status: 'active',
-                    // Reset local counter if needed, or rely on Stripe's period management
+                });
+
+                // Restore agent permissions on backend
+                await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'restore', subscriptionId }),
                 });
             }
+            break;
+        }
+
+        case 'invoice.payment_failed': {
+            const invoice = event.data.object as any;
+            const subscriptionId = invoice.subscription;
+
+            // Call SupraWall API to revoke agent permissions
+            await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'revoke', subscriptionId }),
+            });
             break;
         }
 
@@ -72,7 +91,15 @@ export async function POST(req: Request) {
                 .get();
 
             if (!orgQuery.empty) {
+                const subscriptionId = subscription.id;
                 await orgQuery.docs[0].ref.update({ status: 'canceled' });
+
+                // Revoke agent permissions on backend
+                await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'revoke', subscriptionId }),
+                });
             }
             break;
         }
