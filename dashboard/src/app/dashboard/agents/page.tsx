@@ -339,15 +339,6 @@ export default function AgentsPage() {
         setGeneratedKey(apiKey);
         setShowSuccess(true);
         setIsSubmitting(false);
-
-        // Auto-close and navigate after dollar confetti animation
-        setTimeout(() => {
-            setShowSuccess(false);
-            setIsCreateModalOpen(false);
-            setGeneratedKey(null);
-            setNewAgentName("");
-            setSelectedScopes(["*:*"]);
-        }, 3500);
     };
 
     const copyToClipboard = (text: string) => {

@@ -319,16 +319,6 @@ export default function OverviewPage() {
             // ✅ Only show success when server confirmed the write
             setNewlyCreatedKey(apiKey);
             setShowSuccess(true);
-            
-            // Auto-close modal after dollar confetti animation
-            setTimeout(() => {
-                setShowSuccess(false);
-                setIsCreateModalOpen(false);
-                setNewlyCreatedKey(null);
-                setNewAgentName("");
-                setSelectedScopes([]);
-                router.push('/dashboard/agents');
-            }, 3500);
 
         } catch (err: any) {
             console.error("[SupraWall] Agent creation failure:", err);
@@ -365,15 +355,6 @@ export default function OverviewPage() {
             setNewlyCreatedKey(apiKey);
             setIsCreateModalOpen(true);
             setShowSuccess(true);
-            
-            setTimeout(() => {
-                setShowSuccess(false);
-                setIsCreateModalOpen(false);
-                setNewlyCreatedKey(null);
-                setNewAgentName("");
-                setSelectedScopes([]);
-                router.push('/dashboard/agents');
-            }, 3000);
         } catch (e: any) {
             console.error("[SupraWall] Onboarding agent creation error:", e);
             alert(e.message || "Failed to create agent during onboarding.");
