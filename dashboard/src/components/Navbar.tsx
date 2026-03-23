@@ -34,6 +34,15 @@ export function Navbar() {
         { href: "/changelog", icon: <Zap className="w-4 h-4 text-rose-500" />, label: "Changelog", desc: "Product updates" },
     ];
 
+    const integrations = [
+        { href: "/integrations/langchain", icon: <Workflow className="w-4 h-4 text-emerald-400" />, label: "LangChain", desc: "Secure agent executors" },
+        { href: "/integrations/crewai", icon: <Users className="w-4 h-4 text-amber-400" />, label: "CrewAI", desc: "Task-level governance" },
+        { href: "/integrations/autogen", icon: <Globe className="w-4 h-4 text-blue-400" />, label: "AutoGen", desc: "Multi-agent security" },
+        { href: "/integrations/vercel", icon: <Zap className="w-4 h-4 text-rose-400" />, label: "Vercel AI SDK", desc: "Edge-ready middleware" },
+        { href: "/integrations/pydanticai", icon: <ShieldCheck className="w-4 h-4 text-purple-400" />, label: "PydanticAI", desc: "Type-safe guardrails" },
+        { href: "/integrations/llamaindex", icon: <Layers className="w-4 h-4 text-cyan-400" />, label: "LlamaIndex", desc: "Data-aware protection" },
+    ];
+
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/60 backdrop-blur-3xl">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
@@ -52,6 +61,15 @@ export function Navbar() {
                         onOpen={() => setOpenMenu("platform")} 
                         onClose={() => setOpenMenu(null)}
                         items={features}
+                    />
+
+                    {/* Integrations Dropdown */}
+                    <Dropdown 
+                        label="Integrations" 
+                        isOpen={openMenu === "integrations"} 
+                        onOpen={() => setOpenMenu("integrations")} 
+                        onClose={() => setOpenMenu(null)}
+                        items={integrations}
                     />
 
                     {/* Resources Dropdown */}

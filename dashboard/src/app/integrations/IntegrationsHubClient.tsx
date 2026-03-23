@@ -45,6 +45,13 @@ const INTEGRATION_CARDS = [
         color: "amber"
     },
     {
+        title: "LlamaIndex",
+        href: "/integrations/llamaindex",
+        desc: "Secure RAG pipelines and data engines with retrieval-level governance.",
+        pill: "Data Framework",
+        color: "cyan"
+    },
+    {
         title: "OpenClaw",
         href: "/integrations/openclaw",
         desc: "The native runtime for OpenClaw agents in search and social automation.",
@@ -102,7 +109,7 @@ export default function IntegrationsHubClient() {
              <section className="py-40 px-6 bg-black relative border-y border-white/5 overflow-hidden">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-20 relative z-10 text-center">
                     <div className="space-y-4">
-                        <div className="text-6xl font-black italic uppercase tracking-tighter text-purple-500">6+</div>
+                        <div className="text-6xl font-black italic uppercase tracking-tighter text-purple-500">12+</div>
                         <div className="text-sm font-black uppercase tracking-[0.4em] text-neutral-500 italic">Major Frameworks</div>
                     </div>
                     <div className="space-y-4">
