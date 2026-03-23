@@ -13,6 +13,7 @@ import auditLogsRouter from "./routes/audit_logs";
 import tenantsRouter from "./routes/tenants";
 import statsRouter from "./routes/stats";
 import { gatekeeperAuth } from "./auth";
+import stripeAppRouter from "./routes/stripe-app";
 
 dotenv.config();
 
@@ -65,6 +66,9 @@ app.use("/v1/tenants", tenantsRouter);
 
 // Stats Routes
 app.use("/v1/stats", statsRouter);
+
+// Stripe App Routes
+app.use("/v1/stripe-app", stripeAppRouter);
 
 // Export the app for Vercel
 export default app;
