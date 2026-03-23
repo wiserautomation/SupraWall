@@ -187,6 +187,8 @@ export default function AgentsPage() {
     useEffect(() => {
         if (!user) return;
 
+        // Real-time Agents from Firestore
+        console.log(`[AgentsPage] Starting onSnapshot for userId: ${user.uid}`);
         const q = query(
             collection(db, "agents"),
             where("userId", "==", user.uid)

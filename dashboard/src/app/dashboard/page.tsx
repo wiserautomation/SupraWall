@@ -252,6 +252,7 @@ export default function OverviewPage() {
         const interval = setInterval(fetchData, 10000);
 
         // Real-time Agents from Firestore
+        console.log(`[OverviewPage] Starting onSnapshot for userId: ${user.uid}`);
         const q = query(collection(db, "agents"), where("userId", "==", user.uid));
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const agentList = snapshot.docs.map(doc => ({
