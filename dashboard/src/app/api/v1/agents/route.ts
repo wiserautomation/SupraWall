@@ -6,6 +6,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
 
+    if (tenantId === 'DEBUG_ENV') {
+      return NextResponse.json({
+        hasProjectId: !!process.env.FIREBASE_PROJECT_ID,
+        hasClientEmail: !!process.env.FIREBASE_CLIENT_EMAIL,
+        hasPrivateKey: !!process.env.FIREBASE_PRIVATE_KEY,
+        privateKeyLength: process.env.FIREBASE_PRIVATE_KEY?.length,
+        privateKeyStart: process.env.FIREBASE_PRIVATE_KEY?.substring(0, 40),
+      });
+    }
+
     if (tenantId === 'DEBUG_ALL') {
       const snapshot = await db.collection("agents").limit(50).get();
       const agentsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -34,7 +44,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(agents);
   } catch (err: any) {
     console.error("[API Agents GET] Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
