@@ -151,7 +151,8 @@ class SupraWallOptions:
     approval_poll_interval: int = 2            # Seconds between polls
     # --- Vault (JIT Secret Injection) ---
     tenant_id: str = "default-tenant"          # Tenant ID for vault lookups
-    vault_scrub_url: Optional[str] = None      # Override scrub endpoint URL
+    # --- OpenRouter Attribution ---
+    openrouter_attribution: Optional[dict] = None  # { "app_url": "...", "app_title": "...", "categories": "..." }
 
 
 def _check_budget(options: SupraWallOptions) -> Optional[dict]:
@@ -345,6 +346,17 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     if safety_block: return safety_block
 
     session_id = options.session_id or options.api_key
+    
+    headers = {"X-SupraWall-SDK": f"python-{SDK_VERSION}"}
+    if options.openrouter_attribution:
+        attr = options.openrouter_attribution
+        if attr.get("app_url"):
+            headers["HTTP-Referer"] = attr["app_url"]
+        if attr.get("app_title"):
+            headers["X-Title"] = attr["app_title"]
+        if attr.get("categories"):
+            headers["X-OpenRouter-Categories"] = attr["categories"]
+
     with httpx.Client(timeout=options.timeout) as client:
         resp = client.post(
             options.cloud_function_url,
@@ -357,7 +369,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
                 "sessionId": session_id,
                 "agentRole": options.agent_role,
             },
-            headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
+            headers=headers,
         )
     if resp.status_code == 401:
         raise ValueError(
@@ -389,6 +401,17 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
     if safety_block: return safety_block
 
     session_id = options.session_id or options.api_key
+
+    headers = {"X-SupraWall-SDK": f"python-{SDK_VERSION}"}
+    if options.openrouter_attribution:
+        attr = options.openrouter_attribution
+        if attr.get("app_url"):
+            headers["HTTP-Referer"] = attr["app_url"]
+        if attr.get("app_title"):
+            headers["X-Title"] = attr["app_title"]
+        if attr.get("categories"):
+            headers["X-OpenRouter-Categories"] = attr["categories"]
+
     async with httpx.AsyncClient(timeout=options.timeout) as client:
         resp = await client.post(
             options.cloud_function_url,
@@ -401,7 +424,7 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
                 "sessionId": session_id,
                 "agentRole": options.agent_role,
             },
-            headers={"X-SupraWall-SDK": f"python-{SDK_VERSION}"},
+            headers=headers,
         )
     if resp.status_code == 401:
         raise ValueError(

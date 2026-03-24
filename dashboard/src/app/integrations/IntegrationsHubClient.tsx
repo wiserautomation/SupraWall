@@ -66,6 +66,13 @@ const INTEGRATION_CARDS = [
         color: "blue"
     },
     {
+        title: "OpenRouter",
+        href: "/integrations/openrouter",
+        desc: "Automatically inject attribution headers and get ranked on the OpenRouter leaderboard.",
+        pill: "Routing",
+        color: "violet"
+    },
+    {
         title: "OpenClaw",
         href: "/integrations/openclaw",
         desc: "The native runtime for OpenClaw agents in search and social automation.",

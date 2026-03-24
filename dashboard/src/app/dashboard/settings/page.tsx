@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap, Key, ShieldCheck, Slack, Copy, ExternalLink } from "lucide-react";
+import { Database, Save, CheckCircle2, Webhook, RefreshCcw, Zap, Key, ShieldCheck, Slack, Copy, ExternalLink, TrendingUp } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
 import { doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
@@ -23,6 +23,7 @@ export default function SettingsPage() {
     const [copiedKey, setCopiedKey] = useState(false);
     const [browserNotificationsEnabled, setBrowserNotificationsEnabled] = useState(false);
     const [permissionPrompt, setPermissionPrompt] = useState(false);
+    const [savedOpenrouter, setSavedOpenrouter] = useState(false);
 
     // Form States
     const [dbType, setDbType] = useState("firebase");
@@ -32,6 +33,9 @@ export default function SettingsPage() {
     const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
     const [notificationEmail, setNotificationEmail] = useState("");
     const [masterApiKey, setMasterApiKey] = useState("");
+    const [openrouterAppUrl, setOpenrouterAppUrl] = useState("");
+    const [openrouterAppTitle, setOpenrouterAppTitle] = useState("");
+    const [openrouterCategories, setOpenrouterCategories] = useState("");
 
     const API_BASE = "/api";
 
@@ -51,6 +55,9 @@ export default function SettingsPage() {
                     setSlackWebhookUrl(data.slack_webhook_url || "");
                     setNotificationEmail(data.notification_email || "");
                     setMasterApiKey(data.master_api_key || "");
+                    setOpenrouterAppUrl(data.openrouter_app_url || "");
+                    setOpenrouterAppTitle(data.openrouter_app_title || "");
+                    setOpenrouterCategories(data.openrouter_categories || "");
                     setBrowserNotificationsEnabled(!!(data.fcmTokens && data.fcmTokens.length > 0));
                 }
             } catch (e) {
@@ -95,7 +102,10 @@ export default function SettingsPage() {
                 webhookUrl: "webhook_url",
                 slackWebhookUrl: "slack_webhook_url",
                 notificationEmail: "notification_email",
-                webhookSecret: "webhook_secret"
+                webhookSecret: "webhook_secret",
+                openrouterAppUrl: "openrouter_app_url",
+                openrouterAppTitle: "openrouter_app_title",
+                openrouterCategories: "openrouter_categories"
             };
             const dbField = fieldMap[field] || field;
 
@@ -135,6 +145,28 @@ export default function SettingsPage() {
     const handleSaveEmail = (e: React.FormEvent) => {
         e.preventDefault();
         handleSaveGeneral("notificationEmail", notificationEmail, setSavedEmail);
+    };
+    const handleSaveOpenrouter = (e: React.FormEvent) => {
+        e.preventDefault();
+        setSaving(true);
+        // Save all three fields at once
+        const save = async () => {
+            try {
+                await fetch(`${API_BASE}/v1/tenants/${user?.uid}`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        openrouter_app_url: openrouterAppUrl,
+                        openrouter_app_title: openrouterAppTitle,
+                        openrouter_categories: openrouterCategories
+                    })
+                });
+                setSavedOpenrouter(true);
+                setTimeout(() => setSavedOpenrouter(false), 2000);
+            } catch (e) { console.error(e); }
+            finally { setSaving(false); }
+        };
+        save();
     };
 
     const handleGenerateSecret = () => {
@@ -472,6 +504,109 @@ export default function SettingsPage() {
                                 {savedWebhook ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                 {savedWebhook ? "Active" : "Save Webhook"}
                             </Button>
+                        </div>
+                    </form>
+                </motion.div>
+            </section>
+
+            {/* OPENROUTER ATTRIBUTION */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-violet-500/10 rounded-xl border border-violet-500/20 shadow-[0_0_15px_rgba(139,92,246,0.1)]">
+                        <TrendingUp className="w-5 h-5 text-violet-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">OpenRouter Attribution</h2>
+                        <p className="text-sm text-neutral-400">Configure labels for OpenRouter leaderboards and rankings.</p>
+                    </div>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
+                >
+                    <form onSubmit={handleSaveOpenrouter} className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-neutral-300">Application URL</label>
+                                <input
+                                    type="url"
+                                    placeholder="https://your-app.com"
+                                    value={openrouterAppUrl}
+                                    onChange={(e) => setOpenrouterAppUrl(e.target.value)}
+                                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 shadow-inner"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-sm font-semibold text-neutral-300">Application Title</label>
+                                <input
+                                    type="text"
+                                    placeholder="My AI Agent"
+                                    value={openrouterAppTitle}
+                                    onChange={(e) => setOpenrouterAppTitle(e.target.value)}
+                                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 shadow-inner"
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-neutral-300">Categories (Comma Separated)</label>
+                            <input
+                                type="text"
+                                placeholder="cli-agent, research-agent, personal-assistant"
+                                value={openrouterCategories}
+                                onChange={(e) => setOpenrouterCategories(e.target.value)}
+                                className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 shadow-inner"
+                            />
+                        </div>
+
+                        <div className="pt-6 border-t border-white/5 space-y-6">
+                            <div className="space-y-3">
+                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Auto-Generated SDK Snippet</h4>
+                                <div className="relative group/code">
+                                    <pre className="bg-black/80 p-6 rounded-2xl border border-white/10 overflow-x-auto text-[13px] leading-relaxed">
+                                        <code className="text-violet-300">
+{`# Python SDK example
+suprawall.init(
+    policy="production-default",
+    openrouter_attribution={
+        "app_url": "${openrouterAppUrl || 'https://your-app.com'}",
+        "app_title": "${openrouterAppTitle || 'My AI Agent'}",
+        "categories": "${openrouterCategories || 'cloud-agent'}"
+    }
+)`}
+                                        </code>
+                                    </pre>
+                                    <button 
+                                        type="button"
+                                        onClick={() => {
+                                            const code = `suprawall.init(
+    policy="production-default",
+    openrouter_attribution={
+        "app_url": "${openrouterAppUrl || 'https://your-app.com'}",
+        "app_title": "${openrouterAppTitle || 'My AI Agent'}",
+        "categories": "${openrouterCategories || 'cloud-agent'}"
+    }
+)`;
+                                            navigator.clipboard.writeText(code);
+                                        }}
+                                        className="absolute top-4 right-4 p-2 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors opacity-0 group-hover/code:opacity-100"
+                                    >
+                                        <Copy className="w-4 h-4 text-neutral-400" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end pt-4">
+                                <Button
+                                    type="submit"
+                                    className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedOpenrouter ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-violet-600 hover:bg-violet-500 text-white"}`}
+                                >
+                                    {savedOpenrouter ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+                                    {savedOpenrouter ? "Saved" : "Save Attribution"}
+                                </Button>
+                            </div>
                         </div>
                     </form>
                 </motion.div>

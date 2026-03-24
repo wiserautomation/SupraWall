@@ -105,6 +105,15 @@ export class BudgetTracker {
     }
 }
 
+export interface OpenRouterAttribution {
+    /** Your app's URL for OpenRouter rankings */
+    appUrl?: string;
+    /** Your app's display name */
+    appTitle?: string;
+    /** Comma-separated list of categories (e.g. cli-agent, personal-agent) */
+    categories?: string;
+}
+
 export interface SupraWallResponse {
     decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
     reason?: string;
@@ -193,6 +202,11 @@ export interface SupraWallOptions {
      * Used for verifying identity in multi-agent workflows.
      */
     delegationChain?: string[];
+    /**
+     * Optional OpenRouter app attribution headers.
+     * When set, SupraWall automatically injects these into outbound OpenRouter calls.
+     */
+    openrouterAttribution?: OpenRouterAttribution;
 }
 
 export interface AgentInstance {
@@ -311,12 +325,26 @@ async function internalEvaluate(
             delegationChain: options.delegationChain
         };
 
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+            "X-SupraWall-SDK": `js-${SDK_VERSION}`,
+        };
+
+        if (options.openrouterAttribution) {
+            if (options.openrouterAttribution.appUrl) {
+                headers["HTTP-Referer"] = options.openrouterAttribution.appUrl;
+            }
+            if (options.openrouterAttribution.appTitle) {
+                headers["X-Title"] = options.openrouterAttribution.appTitle;
+            }
+            if (options.openrouterAttribution.categories) {
+                headers["X-OpenRouter-Categories"] = options.openrouterAttribution.categories;
+            }
+        }
+
         const response = await fetch(cloudFunctionUrl, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-SupraWall-SDK": `js-${SDK_VERSION}`,
-            },
+            headers,
             body: JSON.stringify(payload),
         });
 
