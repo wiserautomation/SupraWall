@@ -7,6 +7,9 @@ import { twMerge } from 'tailwind-merge';
 import { auth } from '@/lib/firebase';
 import { useAuthState } from 'react-firebase-hooks/auth';
 import { useRouter } from 'next/navigation';
+import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
+import Link from 'next/link';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -98,6 +101,7 @@ export default function PricingPage() {
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
+            <Navbar />
             {/* 🚀 Hero Section */}
             <div className="relative pt-32 pb-20 px-6 text-center overflow-hidden">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -321,6 +325,7 @@ export default function PricingPage() {
                 </div>
 
             </div>
+            <Footer />
         </div>
     );
 }

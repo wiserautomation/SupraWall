@@ -1,0 +1,58 @@
+import Link from "next/link";
+import { Shield, Triangle, Database, Lock } from "lucide-react";
+
+export function Footer() {
+    return (
+        <footer className="bg-black border-t border-white/5 py-32 px-6 text-neutral-500 font-bold uppercase tracking-widest text-[10px]">
+            <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-16">
+                <div className="col-span-2 space-y-8">
+                    <div className="flex items-center gap-3">
+                        <Shield className="w-8 h-8 text-emerald-400" />
+                        <span className="text-white font-black text-3xl uppercase italic tracking-tighter">SupraWall</span>
+                    </div>
+                    <p className="max-w-sm text-lg font-bold leading-tight uppercase italic opacity-60">
+                        The security standard for autonomous AI agents. Scaling the zero-trust future with deterministic safety.
+                    </p>
+                </div>
+                <div>
+                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Security Pillars</h4>
+                    <ul className="space-y-4">
+                        <li><Link href="/features/vault" className="hover:text-emerald-500 transition-colors">Credential Vault</Link></li>
+                        <li><Link href="/features/budget-limits" className="hover:text-emerald-500 transition-colors">Budget Limits</Link></li>
+                        <li><Link href="/features/policy-engine" className="hover:text-emerald-500 transition-colors">Policy Engine</Link></li>
+                        <li><Link href="/features/pii-shield" className="hover:text-emerald-500 transition-colors">PII Shield</Link></li>
+                        <li><Link href="/features/audit-trail" className="hover:text-emerald-500 transition-colors">Audit Trail</Link></li>
+                        <li><Link href="/features/prompt-shield" className="hover:text-emerald-500 transition-colors">Injection Shield</Link></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Ecosystem</h4>
+                    <ul className="space-y-4">
+                        <li><Link href="/integrations/langchain" className="hover:text-emerald-500 transition-colors">LangChain</Link></li>
+                        <li><Link href="/integrations/crewai" className="hover:text-emerald-500 transition-colors">CrewAI</Link></li>
+                        <li><Link href="/integrations/autogen" className="hover:text-emerald-500 transition-colors">AutoGen</Link></li>
+                        <li><Link href="/integrations/vercel" className="hover:text-emerald-500 transition-colors">Vercel AI</Link></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Compliance</h4>
+                    <ul className="space-y-4">
+                        <li><Link href="/compliance" className="hover:text-emerald-500 transition-colors tracking-tight">EU AI Act Dashboard</Link></li>
+                        <li><Link href="/reports" className="hover:text-emerald-500 transition-colors tracking-tight">H.O.E. Exports</Link></li>
+                        <li><Link href="/learn/what-is-agent-runtime-security" className="hover:text-emerald-500 transition-colors tracking-tight">Security Hub</Link></li>
+                    </ul>
+                </div>
+            </div>
+            <div className="max-w-7xl mx-auto pt-32 flex flex-col items-center gap-4">
+                <div className="flex gap-4 opacity-30">
+                    <Triangle className="w-5 h-5 fill-white" />
+                    <Database className="w-5 h-5 fill-white" />
+                    <Lock className="w-5 h-5 fill-white" />
+                </div>
+                <div className="text-[10px] font-black uppercase tracking-[0.6em] text-center opacity-20 italic">
+                    © 2026 SUPRAWALL • SECURING THE AUTONOMOUS FUTURE • BUILT FOR AUDITORS.
+                </div>
+            </div>
+        </footer>
+    );
+}
