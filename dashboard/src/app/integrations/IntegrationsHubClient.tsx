@@ -81,7 +81,15 @@ const INTEGRATION_CARDS = [
     }
 ];
 
+import { useState } from "react";
+
 export default function IntegrationsHubClient() {
+    const [activeFilter, setActiveFilter] = useState("All");
+
+    const filteredIntegrations = activeFilter === "All" 
+        ? INTEGRATION_CARDS 
+        : INTEGRATION_CARDS.filter(a => a.pill.includes(activeFilter) || (activeFilter === "Frameworks" && a.pill === "Framework"));
+
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -101,13 +109,26 @@ export default function IntegrationsHubClient() {
                              SupraWall is the universal safety layer for the AI ecosystem. Plug into your current stack and stabilize your agents today.
                         </p>
                     </div>
+
+                    {/* Filters */}
+                    <div className="flex flex-wrap justify-center gap-4 p-2 bg-neutral-900 border border-white/10 rounded-3xl w-fit">
+                        {["All", "Framework", "Model", "Financial", "Edge AI", "Data Framework"].map(f => (
+                            <button 
+                                key={f}
+                                onClick={() => setActiveFilter(f)}
+                                className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === f ? 'bg-purple-600 text-white shadow-[0_0_20px_rgba(147,51,234,0.4)]' : 'text-neutral-500 hover:text-white'}`}
+                            >
+                                {f === "Framework" ? "Frameworks" : f === "Model" ? "Models" : f}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </section>
 
              {/* 🎯 INTEGRATIONS GRID */}
             <section className="py-24 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {INTEGRATION_CARDS.map((art, i) => (
+                    {filteredIntegrations.map((art, i) => (
                         <Link 
                             key={art.href} 
                             href={art.href}
@@ -115,7 +136,7 @@ export default function IntegrationsHubClient() {
                         >
                             <div className="space-y-6">
                                 <div className="p-3 bg-purple-500/10 rounded-xl text-purple-500 w-fit text-[10px] font-black uppercase tracking-widest">{art.pill}</div>
-                                <h3 className="text-4xl font-black italic uppercase text-white tracking-tighter leading-none group-hover:text-purple-400 transition-colors">{art.title}</h3>
+                                <h3 className="text-4xl font-black italic uppercase text-white tracking-tighter leading-none group-hover:text-purple-400 transition-colors uppercase italic">{art.title}</h3>
                                 <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-snug">{art.desc}</p>
                             </div>
                             <div className="flex items-center gap-2 text-white/50 font-black uppercase tracking-widest text-xs group-hover:text-purple-500 transition-all">

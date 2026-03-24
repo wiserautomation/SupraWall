@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { 
     Newspaper, ArrowRight, Zap, History, FileText, Globe
@@ -53,6 +54,12 @@ const BLOG_ARTICLES = [
 ];
 
 export default function BlogHubClient() {
+    const [activeFilter, setActiveFilter] = useState("All");
+
+    const filteredArticles = activeFilter === "All" 
+        ? BLOG_ARTICLES 
+        : BLOG_ARTICLES.filter(a => a.category === activeFilter);
+
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -70,30 +77,72 @@ export default function BlogHubClient() {
                 </div>
             </section>
 
-             {/* 🎯 BLOG GRID */}
+             {/* 🎯 TABS & GRID */}
             <section className="py-20 px-6">
-                <div className="max-w-5xl mx-auto grid grid-cols-1 gap-12">
-                   {BLOG_ARTICLES.map((art, i) => (
-                       <Link 
-                            key={art.href} 
-                            href={art.href}
-                            className="group flex flex-col md:flex-row gap-10 md:items-center p-8 rounded-[3rem] bg-neutral-900/20 border border-white/5 hover:border-rose-500/30 transition-all hover:bg-neutral-900/40 translate-y-0 hover:translate-y-[-5px]"
-                       >
-                            <div className="w-full md:w-1/3 space-y-4">
-                               <div className="flex items-center gap-3">
-                                   <span className="text-[10px] font-black uppercase text-rose-500 tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-full">{art.category}</span>
-                                   <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">{art.date}</span>
-                               </div>
-                               <h3 className="text-3xl font-black italic uppercase italic tracking-tighter leading-none group-hover:text-rose-400 transition-colors uppercase italic">{art.title}</h3>
+                <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+                    {/* Main Content */}
+                    <div className="flex-1 space-y-12">
+                        {/* Filters */}
+                        <div className="flex flex-wrap gap-4 p-2 bg-neutral-900 border border-white/10 rounded-3xl w-fit">
+                            {["All", "Research", "Compliance", "Threats", "Engineering"].map(f => (
+                                <button 
+                                    key={f}
+                                    onClick={() => setActiveFilter(f)}
+                                    className={`px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${activeFilter === f ? 'bg-rose-600 text-white' : 'text-neutral-500 hover:text-white'}`}
+                                >
+                                    {f}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Article List */}
+                        <div className="grid grid-cols-1 gap-12">
+                            {filteredArticles.map((art, i) => (
+                                <Link 
+                                    key={art.href} 
+                                    href={art.href}
+                                    className="group flex flex-col md:flex-row gap-10 md:items-center p-8 rounded-[3rem] bg-neutral-900/20 border border-white/5 hover:border-rose-500/30 transition-all hover:bg-neutral-900/40 translate-y-0 hover:translate-y-[-5px]"
+                                >
+                                    <div className="w-full md:w-1/3 space-y-4">
+                                        <div className="flex items-center gap-3">
+                                            <span className="text-[10px] font-black uppercase text-rose-500 tracking-widest bg-rose-500/10 px-3 py-1.5 rounded-full">{art.category}</span>
+                                            <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">{art.date}</span>
+                                        </div>
+                                        <h3 className="text-3xl font-black italic uppercase tracking-tighter leading-none group-hover:text-rose-400 transition-colors">{art.title}</h3>
+                                    </div>
+                                    <div className="flex-1 space-y-6">
+                                        <p className="text-neutral-500 text-lg font-bold uppercase italic tracking-tighter leading-snug">{art.desc}</p>
+                                        <div className="flex items-center gap-2 text-rose-500 font-black uppercase tracking-widest text-xs group-hover:gap-4 transition-all">
+                                            Full Investigation <ArrowRight className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Sidebar - Trending */}
+                    <aside className="w-full lg:w-80 space-y-12">
+                        <div className="p-8 rounded-[3rem] bg-neutral-900/40 border border-white/5 space-y-8 sticky top-32">
+                            <div className="flex items-center gap-2 text-rose-500 font-black uppercase tracking-widest text-[10px]">
+                                <Zap className="w-4 h-4" /> Trending Now
                             </div>
-                            <div className="flex-1 space-y-6">
-                                <p className="text-neutral-500 text-lg font-bold uppercase italic tracking-tighter leading-snug">{art.desc}</p>
-                                <div className="flex items-center gap-2 text-rose-500 font-black uppercase tracking-widest text-xs group-hover:gap-4 transition-all">
-                                    Full Investigation <ArrowRight className="w-4 h-4" />
-                                </div>
+                            <div className="space-y-6">
+                                {[
+                                    { title: "What is ARS?", href: "/learn/what-is-agent-runtime-security" },
+                                    { title: "Article 12 Guide", href: "/learn/eu-ai-act-article-12-automatic-logging" },
+                                    { title: "HITL Evidence", href: "/features/audit-trail" }
+                                ].map((t, i) => (
+                                    <Link key={i} href={t.href} className="block group">
+                                        <div className="flex items-center gap-4">
+                                            <span className="text-4xl font-black italic text-white/5 group-hover:text-rose-500 transition-colors">0{i+1}</span>
+                                            <p className="text-sm font-black italic uppercase text-white group-hover:text-rose-400 transition-colors tracking-tight leading-none">{t.title}</p>
+                                        </div>
+                                    </Link>
+                                ))}
                             </div>
-                       </Link>
-                   ))}
+                        </div>
+                    </aside>
                 </div>
             </section>
 

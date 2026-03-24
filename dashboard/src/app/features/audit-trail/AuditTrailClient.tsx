@@ -147,6 +147,37 @@ export default function AuditTrailClient() {
                 </div>
             </section>
 
+             {/* 🎯 COMPARISON TABLE — The Reality Check */}
+             <section className="py-24 px-6 bg-[#030303]">
+                <div className="max-w-5xl mx-auto space-y-16">
+                    <div className="text-center space-y-6">
+                        <TagBadge>Direct Comparison</TagBadge>
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Probabilistic Logs vs. <span className="text-blue-500 font-bold italic underline decoration-white/10 uppercase italic">Deterministic Audit Trail</span></h2>
+                    </div>
+
+                    <div className="bg-neutral-900/40 border border-white/5 rounded-[3rem] overflow-hidden shadow-2xl">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/10">
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-500 italic">Audit Feature</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white italic">Standard JSON Logging</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-blue-500 italic bg-blue-500/5">SupraWall Evidence</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {COMPARISON_DATA.map((row, i) => (
+                                    <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="p-8 text-sm font-black italic text-neutral-400 uppercase tracking-tighter">{row.feature}</td>
+                                        <td className="p-8 text-sm font-bold italic text-neutral-500 uppercase tracking-tighter">{row.prompt}</td>
+                                        <td className="p-8 text-sm font-black italic text-blue-400 uppercase tracking-tighter bg-blue-500/[0.02]">{row.supra}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+             </section>
+
              {/* 🛡️ EU AI ACT ARTICLES */}
              <section className="py-40 px-6 bg-black relative overflow-hidden">
                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-blue-500/[0.03] blur-[150px] rounded-full pointer-events-none" />

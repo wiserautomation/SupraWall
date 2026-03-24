@@ -18,13 +18,21 @@ export async function GET(
       return NextResponse.json({
           id,
           name: "Default Tenant",
-          createdAt: new Date()
+          createdAt: new Date().toISOString()
       });
     }
-    
+
+    const data = docSnap.data();
+    const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
+      if (value && typeof value === 'object' && '_seconds' in value) {
+        return new Date(value._seconds * 1000).toISOString();
+      }
+      return value;
+    }));
+
     return NextResponse.json({
         id: docSnap.id,
-        ...docSnap.data()
+        ...sanitized
     });
   } catch (err: any) {
     console.error("[API Tenants GET] Error:", err);

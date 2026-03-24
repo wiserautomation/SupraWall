@@ -3,40 +3,48 @@ import { Navbar } from "@/components/Navbar";
 import IntegrationsHubClient from "./IntegrationsHubClient";
 
 export const metadata: Metadata = {
-    title: "AI Framework Integrations | Secure LangChain, CrewAI, AutoGen | SupraWall",
-    description: "SupraWall works with every major AI agent framework. Secure your Tool Calls in LangChain, CrewAI, AutoGen, and Vercel AI with one line of code.",
+    title: "AI Agent Security Integrations | SupraWall",
+    description: "One line of code adds enterprise security to LangChain, Vercel AI SDK, CrewAI, AutoGen, PydanticAI, and MCP. No rewrites. Works with your existing stack.",
     keywords: [
-        "secure langgraph agents",
-        "langchain security sdk",
-        "crewai budget limits",
-        "autogen tool call protection",
-        "pydantic ai security shield",
-        "vercel ai agent governance",
+        "ai agent security integrations",
+        "LangChain security middleware",
+        "ai framework security",
+        "Vercel AI SDK guardrails",
+        "MCP security integration",
+        "CrewAI security",
+        "AutoGen security middleware",
+        "PydanticAI security",
+        "one-line ai security"
     ],
     alternates: {
         canonical: "https://www.supra-wall.com/integrations",
-    },
-    openGraph: {
-        title: "AI Agent Framework Integrations | SupraWall Security",
-        description: "Zero-trust security for all major AI frameworks. Secure your agent tools in LangChain, CrewAI, and beyond.",
-        url: "https://www.supra-wall.com/integrations",
-        siteName: "SupraWall",
-        type: "website",
     },
 };
 
 export default function IntegrationsHubPage() {
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "SupraWall AI Framework Integrations",
-        "description": "SDK-level security integrations for autonomous agent frameworks.",
+        "@type": "SoftwareApplication",
+        "name": "SupraWall AI Agent Security Integrations",
+        "description": "Universal one-line security middleware for every major AI agent framework.",
         "url": "https://www.supra-wall.com/integrations",
-        "hasPart": [
-            { "@type": "WebPage", "name": "Secure LangChain Agents", "url": "https://www.supra-wall.com/integrations/langchain" },
-            { "@type": "WebPage", "name": "Secure CrewAI Agents", "url": "https://www.supra-wall.com/integrations/crewai" },
-            { "@type": "WebPage", "name": "Secure AutoGen Agents", "url": "https://www.supra-wall.com/integrations/autogen" }
-        ]
+        "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "LangChain", "url": "https://www.supra-wall.com/integrations/langchain" },
+                { "@type": "ListItem", "position": 2, "name": "Vercel AI SDK", "url": "https://www.supra-wall.com/integrations/vercel" },
+                { "@type": "ListItem", "position": 3, "name": "CrewAI", "url": "https://www.supra-wall.com/integrations/crewai" },
+                { "@type": "ListItem", "position": 4, "name": "AutoGen", "url": "https://www.supra-wall.com/integrations/autogen" }
+            ]
+        },
+        "breadcrumb": {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.supra-wall.com" },
+                { "@type": "ListItem", "position": 2, "name": "Integrations", "item": "https://www.supra-wall.com/integrations" }
+            ]
+        }
     };
 
     return (

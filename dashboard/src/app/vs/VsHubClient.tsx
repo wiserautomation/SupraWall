@@ -113,17 +113,67 @@ export default function VsHubClient() {
                 </div>
             </section>
 
-             {/* 🎯 COMPARISON TABLE PREVIEW */}
+             {/* 🎯 HEAD-TO-HEAD TABLE */}
+             <section className="py-24 px-6 bg-[#030303]">
+                <div className="max-w-5xl mx-auto space-y-16">
+                    <div className="text-center space-y-6">
+                        <TagBadge>Direct Comparison</TagBadge>
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Probabilistic vs. <span className="text-blue-500">Deterministic</span></h2>
+                    </div>
+
+                    <div className="bg-neutral-900/40 border border-white/5 rounded-[3rem] overflow-hidden shadow-2xl shadow-glow-blue-slow">
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-white/10">
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-500 italic">Security Metric</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white italic">Alternative Platforms</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-blue-500 italic bg-blue-500/5">SupraWall SDK</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-white/5">
+                                {[
+                                    { metric: "Primary Defense", alt: "LLM Guardrails (Probabilistic)", supra: "SDK Interception (Deterministic)" },
+                                    { metric: "Security Perimeter", alt: "Prompt Context Window", supra: "Binary Runtime Layer" },
+                                    { metric: "Secret Protection", alt: "Zero (Agents access keys)", supra: "Vault Injection (Key-less agents)" },
+                                    { metric: "Compliance Proof", alt: "Standard Logs", supra: "RSA-Signed Evidence Reports" },
+                                    { metric: "Risk Of Override", alt: "High (Jailbreaking)", supra: "Zero (Bypassing logic impossible)" }
+                                ].map((row, i) => (
+                                    <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
+                                        <td className="p-8 text-sm font-black italic text-neutral-400 uppercase tracking-tighter">{row.metric}</td>
+                                        <td className="p-8 text-sm font-bold italic text-neutral-500 uppercase tracking-tighter">{row.alt}</td>
+                                        <td className="p-8 text-sm font-black italic text-blue-400 uppercase tracking-tighter bg-blue-500/[0.02]">{row.supra}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+             </section>
+
+             {/* 🎯 FAQ SECTION */}
              <section className="py-40 px-6 bg-black relative border-y border-white/5">
-                <div className="max-w-4xl mx-auto space-y-12 relative z-10 text-center">
-                    <TagBadge>The Reality Check</TagBadge>
-                    <h2 className="text-5xl md:text-[8rem] font-black italic uppercase leading-[0.8] tracking-tighter text-glow">
-                         Safe Vibes <br />
-                         <span className="text-blue-500 underline decoration-white/20 font-bold italic">Aren&apos;t Security.</span>
-                    </h2>
-                     <p className="text-xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                        LLM Guardrails are probabilistic — they fail under stress. SupraWall is deterministic — it literally blocks the byte-code outbound tool call. That&apos;s the engineering difference.
-                     </p>
+                <div className="max-w-4xl mx-auto space-y-16 relative z-10">
+                    <div className="text-center space-y-6">
+                        <TagBadge>Questions & Answers</TagBadge>
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Still Unsure?</h2>
+                    </div>
+
+                    <div className="space-y-4">
+                        {[
+                            { q: "Is SupraWall just another LLM Guardrail?", a: "No. Guardrails rely on asking the LLM to behave. SupraWall is an SDK-level interceptor that enforces hard rules regardless of what the LLM wants." },
+                            { q: "Can I use SupraWall with LangChain?", a: "Yes. SupraWall integrates with one line of code into LangChain, CrewAI, and every major framework." },
+                            { q: "Does it add latency to tool calls?", a: "Minimal. Policy checks are performed locally on your node, typically adding <10ms to the total tool execution time." },
+                            { q: "Is there a free tier for developers?", a: "Yes. Our Community SDK is free for single-agent deployments and research use." }
+                        ].map((item, i) => (
+                            <details key={i} className="group p-8 rounded-[2rem] bg-neutral-900/40 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer">
+                                <summary className="list-none flex justify-between items-center text-xl font-black italic uppercase tracking-tighter text-white group-open:text-blue-500 transition-colors">
+                                    {item.q}
+                                    <ArrowRight className="w-5 h-5 group-open:rotate-90 transition-transform" />
+                                </summary>
+                                <p className="mt-4 text-neutral-500 font-bold uppercase italic tracking-tight leading-relaxed">{item.a}</p>
+                            </details>
+                        ))}
+                    </div>
                 </div>
             </section>
         </main>

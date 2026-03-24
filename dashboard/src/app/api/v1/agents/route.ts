@@ -34,11 +34,19 @@ export async function GET(request: NextRequest) {
 
     console.log(`[API Agents GET] Found ${snapshot.docs.length} agents for tenantId: ${tenantId}`);
 
-    const agents = snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-      createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt
-    })).sort((a: any, b: any) => {
+    const agents = snapshot.docs.map(doc => {
+      const data = doc.data();
+      const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
+        if (value && typeof value === 'object' && '_seconds' in value) {
+          return new Date(value._seconds * 1000).toISOString();
+        }
+        return value;
+      }));
+      return {
+        id: doc.id,
+        ...sanitized
+      };
+    }).sort((a: any, b: any) => {
         const dateA = new Date(a.createdAt || 0).getTime();
         const dateB = new Date(b.createdAt || 0).getTime();
         return dateB - dateA;

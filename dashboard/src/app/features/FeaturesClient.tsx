@@ -121,7 +121,7 @@ export default function FeaturesClient() {
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                          <div className="p-12 rounded-[4rem] bg-neutral-900/20 border border-white/5 space-y-8 text-left group hover:border-blue-500/30 transition-all">
                              <div className="flex items-center gap-4">
                                  <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-400 group-hover:scale-110 transition-transform">
@@ -132,7 +132,7 @@ export default function FeaturesClient() {
                              <p className="text-neutral-500 text-lg leading-relaxed font-bold italic uppercase tracking-tighter">
                                  Manage all six pillars from one central command center. See your total blocked exfiltrations, tokens scrubbed, and budget saved across your entire fleet.
                              </p>
-                             <Link href="/dashboard" className="inline-flex items-center gap-2 text-blue-500 font-black uppercase tracking-widest text-sm hover:text-blue-400 transition-colors">Go to Dashboard →</Link>
+                             <Link href="/dashboard" className="inline-flex items-center gap-2 text-blue-500 font-black uppercase tracking-widest text-sm hover:text-blue-400 transition-colors uppercase italic">Go to Dashboard →</Link>
                          </div>
                          <div className="p-12 rounded-[4rem] bg-neutral-900/20 border border-white/5 space-y-8 text-left group hover:border-purple-500/30 transition-all">
                              <div className="flex items-center gap-4">
@@ -144,8 +144,37 @@ export default function FeaturesClient() {
                              <p className="text-neutral-500 text-base leading-relaxed font-bold italic uppercase tracking-tighter">
                                  Whether you ship in LangChain, CrewAI, AutoGen, or Vercel AI, SupraWall works the same. One SDK to standardize security across your entire tech stack.
                              </p>
-                             <Link href="/integrations" className="inline-flex items-center gap-2 text-purple-500 font-black uppercase tracking-widest text-sm hover:text-purple-400 transition-colors">See Frameworks →</Link>
+                             <Link href="/integrations" className="inline-flex items-center gap-2 text-purple-500 font-black uppercase tracking-widest text-sm hover:text-purple-400 transition-colors uppercase italic">See Frameworks →</Link>
                          </div>
+                    </div>
+
+                    {/* 🛠️ TECHNICAL DEEP DIVE SECTION */}
+                    <div className="py-24 space-y-16">
+                        <div className="text-center space-y-6">
+                            <TagBadge>How it Works</TagBadge>
+                            <h2 className="text-5xl font-black italic uppercase tracking-tighter">SDK-Level <span className="text-emerald-500">Interception Point</span></h2>
+                        </div>
+                        <div className="max-w-4xl mx-auto p-12 bg-neutral-900/40 border border-white/10 rounded-[3rem] text-left space-y-10 relative overflow-hidden group">
+                             <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform"><Target className="w-48 h-48" /></div>
+                             <div className="space-y-6 relative z-10">
+                                 <p className="text-white text-xl font-bold italic uppercase tracking-tighter leading-relaxed">
+                                     SupraWall sits between the <span className="text-emerald-500 italic">LLM&apos;s request</span> and the <span className="text-emerald-500 italic">actual tool execution</span>. It is not inside the prompt. It is binary code running on your server.
+                                 </p>
+                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                     {[
+                                         { step: "01", title: "Intercept", desc: "Tool call caught by SDK." },
+                                         { step: "02", title: "Validate", desc: "Policy engine run locally." },
+                                         { step: "03", title: "Enforce", desc: "Action blocked or allowed." }
+                                     ].map(s => (
+                                         <div key={s.step} className="p-6 rounded-2xl bg-white/5 border border-white/5">
+                                             <div className="text-emerald-500 font-black text-2xl mb-2">{s.step}</div>
+                                             <div className="text-white text-xs font-black uppercase tracking-widest mb-1">{s.title}</div>
+                                             <div className="text-neutral-500 text-[10px] font-bold uppercase italic">{s.desc}</div>
+                                         </div>
+                                     ))}
+                                 </div>
+                             </div>
+                        </div>
                     </div>
                 </div>
             </section>

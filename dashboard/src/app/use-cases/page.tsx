@@ -3,39 +3,46 @@ import { Navbar } from "@/components/Navbar";
 import UseCasesHubClient from "./UseCasesHubClient";
 
 export const metadata: Metadata = {
-    title: "AI Agent Use Cases | Financial, Healthcare, & Legal | SupraWall",
-    description: "Explore how industries use SupraWall to secure autonomous AI agents. From financial cost control to legal prompt injection defense, see the real-world impact of deterministic safety.",
+    title: "AI Agent Security Use Cases | SupraWall",
+    description: "See how compliance teams, developers, and enterprises use SupraWall to secure AI agents in production. From cost control to EU AI Act compliance.",
     keywords: [
-        "AI agent use cases financial",
-        "healthcare agent compliance",
-        "legal AI agent security",
-        "cost control for ai agents",
-        "prompt injection mitigation in finance",
-        "suprawall industry solutions",
+        "ai agent security use cases",
+        "ai compliance use cases",
+        "enterprise ai agent security examples",
+        "ai agent governance examples",
+        "ai agent production safety",
+        "ai agent deployment examples",
+        "ai security workflow"
     ],
     alternates: {
         canonical: "https://www.supra-wall.com/use-cases",
-    },
-    openGraph: {
-        title: "AI Agent Industry Use Cases | SupraWall Security",
-        description: "See how SupraWall secures autonomous agents in the most regulated industries on Earth.",
-        url: "https://www.supra-wall.com/use-cases",
-        siteName: "SupraWall",
-        type: "website",
     },
 };
 
 export default function UseCasesHubPage() {
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "CollectionPage",
-        "name": "SupraWall AI Agent Industry Use Cases",
-        "description": "Real-world implementations of SupraWall in regulated industries and specific high-risk scenarios.",
+        "@type": "WebPage",
+        "name": "AI Agent Security Use Cases",
+        "description": "See how compliance teams, developers, and enterprises use SupraWall to secure AI agents in production.",
         "url": "https://www.supra-wall.com/use-cases",
-        "hasPart": [
-            { "@type": "WebPage", "name": "Financial Cost Control", "url": "https://www.supra-wall.com/use-cases/cost-control" },
-            { "@type": "WebPage", "name": "Prompt Injection Mitigation", "url": "https://www.supra-wall.com/use-cases/prompt-injection" }
-        ]
+        "mainEntity": {
+            "@type": "ItemList",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Financial Services Automation", "url": "https://www.supra-wall.com/use-cases/financial-services" },
+                { "@type": "ListItem", "position": 2, "name": "Healthcare AI Governance", "url": "https://www.supra-wall.com/use-cases/healthcare" },
+                { "@type": "ListItem", "position": 3, "name": "Legal AI Oversight", "url": "https://www.supra-wall.com/use-cases/legal" },
+                { "@type": "ListItem", "position": 4, "name": "Runaway Cost Control", "url": "https://www.supra-wall.com/use-cases/cost-control" }
+            ]
+        },
+        "breadcrumb": {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.supra-wall.com" },
+                { "@type": "ListItem", "position": 2, "name": "Use Cases", "item": "https://www.supra-wall.com/use-cases" }
+            ]
+        }
     };
 
     return (

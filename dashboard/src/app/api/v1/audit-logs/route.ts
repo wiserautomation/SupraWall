@@ -32,16 +32,24 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .get();
 
-    const logs = snapshot.docs.map((doc: any) => ({
-      id: doc.id,
-      ...doc.data(),
-      timestamp: doc.data().timestamp?.toDate?.()?.toISOString() || doc.data().timestamp
-    }));
+    const logs = snapshot.docs.map((doc: any) => {
+      const data = doc.data();
+      const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
+        if (value && typeof value === 'object' && '_seconds' in value) {
+          return new Date(value._seconds * 1000).toISOString();
+        }
+        return value;
+      }));
+      return {
+        id: doc.id,
+        ...sanitized
+      };
+    });
 
     // Sort in-memory to avoid mandatory composite index errors in new projects
     logs.sort((a: any, b: any) => {
-        const dateA = new Date(a.timestamp).getTime();
-        const dateB = new Date(b.timestamp).getTime();
+        const dateA = new Date(a.timestamp || 0).getTime();
+        const dateB = new Date(b.timestamp || 0).getTime();
         return dateB - dateA;
     });
 

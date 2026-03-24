@@ -35,11 +35,12 @@ export function Footer() {
                     </ul>
                 </div>
                 <div>
-                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Compliance</h4>
+                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Solutions</h4>
                     <ul className="space-y-4">
-                        <li><Link href="/compliance" className="hover:text-emerald-500 transition-colors tracking-tight">EU AI Act Dashboard</Link></li>
-                        <li><Link href="/reports" className="hover:text-emerald-500 transition-colors tracking-tight">H.O.E. Exports</Link></li>
-                        <li><Link href="/learn/what-is-agent-runtime-security" className="hover:text-emerald-500 transition-colors tracking-tight">Security Hub</Link></li>
+                        <li><Link href="/for-developers" className="hover:text-emerald-500 transition-colors">For Developers</Link></li>
+                        <li><Link href="/for-compliance-officers" className="hover:text-emerald-500 transition-colors">Compliance Officers</Link></li>
+                        <li><Link href="/for-enterprise" className="hover:text-emerald-500 transition-colors">For Enterprise</Link></li>
+                        <li><Link href="/gdpr" className="hover:text-emerald-500 transition-colors">GDPR & Privacy</Link></li>
                     </ul>
                 </div>
             </div>

@@ -19,10 +19,16 @@ export async function GET(
     }
     
     const data = docSnap.data();
+    const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
+      if (value && typeof value === 'object' && '_seconds' in value) {
+        return new Date(value._seconds * 1000).toISOString();
+      }
+      return value;
+    }));
+
     return NextResponse.json({
       id: docSnap.id,
-      ...data,
-      createdAt: data?.createdAt?.toDate?.()?.toISOString() || data?.createdAt
+      ...sanitized
     });
   } catch (err: any) {
     console.error("[API Agent GET] Error:", err);

@@ -6,7 +6,7 @@ import { sendGAEvent } from "@next/third-parties/google";
 import { 
     Shield, ArrowRight, ChevronDown, KeyRound, DollarSign, 
     ShieldCheck, EyeOff, FileText, Bug, Book, Workflow, 
-    Users, Globe, ShieldAlert, Zap, Layers
+    Users, Globe, ShieldAlert, Zap, Layers, Code2, Lock
 } from "lucide-react";
 import Link from "next/link";
 
@@ -33,6 +33,13 @@ export function Navbar() {
         { href: "/about", icon: <Users className="w-4 h-4 text-neutral-400" />, label: "About Us", desc: "Our mission & philosophy" },
         { href: "/security", icon: <ShieldAlert className="w-4 h-4 text-emerald-400" />, label: "Trust Center", desc: "Security & Compliance" },
         { href: "/changelog", icon: <Zap className="w-4 h-4 text-rose-500" />, label: "Changelog", desc: "Product updates" },
+    ];
+
+    const solutions = [
+        { href: "/for-developers", icon: <Code2 className="w-4 h-4 text-emerald-400" />, label: "For Developers", desc: "SDK-first security" },
+        { href: "/for-compliance-officers", icon: <ShieldCheck className="w-4 h-4 text-blue-400" />, label: "For Compliance", desc: "Regulator evidence" },
+        { href: "/for-enterprise", icon: <Globe className="w-4 h-4 text-purple-400" />, label: "For Enterprise", desc: "Fleet-wide control" },
+        { href: "/gdpr", icon: <Lock className="w-4 h-4 text-rose-400" />, label: "GDPR & Privacy", desc: "PII protection" },
     ];
 
     const integrations = [
@@ -79,6 +86,15 @@ export function Navbar() {
                         onOpen={() => setOpenMenu("integrations")} 
                         onClose={() => setOpenMenu(null)}
                         items={integrations}
+                    />
+
+                    {/* Solutions Dropdown */}
+                    <Dropdown 
+                        label="Solutions" 
+                        isOpen={openMenu === "solutions"} 
+                        onOpen={() => setOpenMenu("solutions")} 
+                        onClose={() => setOpenMenu(null)}
+                        items={solutions}
                     />
 
                     {/* Resources Dropdown */}

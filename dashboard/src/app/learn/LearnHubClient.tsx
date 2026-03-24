@@ -11,39 +11,57 @@ import { TagBadge } from "../HomeClient";
 
 const LEARN_CATEGORIES = [
     {
-        title: "Agent Runtime Security",
+        title: "Security Fundamentals",
         articles: [
             { title: "What is Agent Runtime Security?", href: "/learn/what-is-agent-runtime-security", desc: "The deterministic framework for AI safety." },
             { title: "Zero-Trust for AI Agents", href: "/learn/zero-trust-ai-agents", desc: "Why agents should never trust their context." },
             { title: "Runtime AI Governance", href: "/learn/runtime-ai-governance", desc: "Controlling decision-making in real-time." },
-            { title: "Deterministic vs Probabilistic", href: "/learn/deterministic-vs-probabilistic-ai-security", desc: "The limits of prompt-based safety." }
+            { title: "AI Agent Security Bible", href: "/learn/ai-agent-security-best-practices", desc: "The core principles of agentic safety." }
         ]
     },
     {
-        title: "EU AI Act Compliance",
+        title: "EU AI Act & Compliance",
         articles: [
-            { title: "AI Act Compliance for Agents", href: "/learn/eu-ai-act-compliance-ai-agents", desc: "A practical developer's checklist." },
-            { title: "Article 12: Automatic Logging", href: "/learn/eu-ai-act-article-12-automatic-logging", desc: "Proof of monitoring requirements." },
-            { title: "Article 14: Human Oversight", href: "/learn/eu-ai-act-article-14-human-oversight", desc: "Enforcing the &lsquo;Kill Switch&rsquo;." },
-            { title: "High-Risk AI Systems", href: "/learn/eu-ai-act-high-risk-ai-assessment", desc: "When do agents become high-risk?" }
+            { title: "AI Act Compliance Guide", href: "/learn/eu-ai-act-compliance-ai-agents", desc: "A practical developer's checklist." },
+            { title: "Article 12: Audit Logging", href: "/learn/eu-ai-act-article-12-automatic-logging", desc: "Proof of monitoring requirements." },
+            { title: "Article 14: Human Oversight", href: "/learn/eu-ai-act-article-14-human-oversight", desc: "Enforcing the 'Kill Switch'." },
+            { title: "August 2026 Deadline", href: "/learn/eu-ai-act-august-2026-deadline", desc: "Timeline for high-risk AI enforcement." }
         ]
     },
     {
-        title: "Best Practices",
+        title: "Threats & Attacks",
         articles: [
-            { title: "Governance Best Practices", href: "/learn/ai-agent-governance-best-practices", desc: "Building from prototype to production." },
-            { title: "Risk Management Framework", href: "/learn/ai-agent-risk-management-framework", desc: "Quantifying agentic security threats." },
-            { title: "Protecting API Keys", href: "/learn/protect-api-keys-from-ai-agents", desc: "The one-way secret injection pattern." },
-            { title: "Setting Token Limits", href: "/learn/how-to-set-token-limits-ai-agents", desc: "Preventing infinite cost loops." }
+            { title: "Prompt Injection Control", href: "/learn/prompt-injection-credential-theft", desc: "How agents leak secrets to attackers." },
+            { title: "Credential Theft Shield", href: "/learn/ai-agent-vault-secrets-management", desc: "Preventing tool call exfiltration." },
+            { title: "Tool Call Hijacking", href: "/learn/protect-api-keys-from-ai-agents", desc: "Hardening the identity handshake." },
+            { title: "Infinite Loop Defense", href: "/learn/ai-agent-infinite-loop-detection", desc: "Stopping runaway compute cycles." }
         ]
     },
     {
-        title: "Advanced Ecosystem",
+        title: "Cost & Operations",
+        articles: [
+            { title: "Runaway Cost Prevention", href: "/learn/ai-agent-runaway-costs", desc: "Setting hard budgetary circuit breakers." },
+            { title: "Setting Token Limits", href: "/learn/how-to-set-token-limits-ai-agents", desc: "Resource allocation for autonomous swarms." },
+            { title: "Agentic Cost Management", href: "/learn/ai-agent-risk-management-framework", desc: "Financial governance for agent fleets." },
+            { title: "Usage Scaling Guide", href: "/learn/high-risk-ai-assessment", desc: "Scaling safely without unbounded liability." }
+        ]
+    },
+    {
+        title: "Integration Guides",
         articles: [
             { title: "MCP Server Security", href: "/learn/mcp-server-security", desc: "Securing the Model Context Protocol." },
-            { title: "Prompt Injection Thefts", href: "/learn/prompt-injection-credential-theft", desc: "How agents leak secrets to attackers." },
-            { title: "What are Guardrails?", href: "/learn/what-are-ai-agent-guardrails", desc: "The differences between LLM and SDK safety." },
-            { title: "Human in the Loop (HITL)", href: "/learn/human-in-the-loop-ai-agents", desc: "Orchestrating manual approvals." }
+            { title: "LangChain Security Wrap", href: "/learn/eu-ai-act-langchain", desc: "Middleware for Python and TS agents." },
+            { title: "CrewAI Governance", href: "/learn/human-in-the-loop-ai-agents", desc: "Orchestrating manual task-level approvals." },
+            { title: "What are Guardrails?", href: "/learn/what-are-ai-agent-guardrails", desc: "LLM safety vs. SDK-level enforcement." }
+        ]
+    },
+    {
+        title: "Glossary & Docs",
+        articles: [
+            { title: "Security Glossary", href: "/learn/ai-agent-security-glossary", desc: "Key terms for AI security engineers." },
+            { title: "Risk Management", href: "/learn/ai-agent-risk-management-framework", desc: "Quantifying agentic security threats." },
+            { title: "Vault Architecture", href: "/learn/ai-agent-vault-secrets-management", desc: "Zero-trust credential injection." },
+            { title: "Audit Trail API", href: "/learn/ai-agent-audit-trail-logging", desc: "Programmatic compliance retrieval." }
         ]
     }
 ];
@@ -61,13 +79,30 @@ export default function LearnHubClient() {
                     <TagBadge>Learning Hub</TagBadge>
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
-                             The AI Agent <br />
-                             <span className="text-emerald-500 font-bold italic underline decoration-white/10">Security Bible.</span>
+                             AI Agent Security <br />
+                             <span className="text-emerald-500 font-bold italic underline decoration-white/10">Knowledge Hub.</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
                              Master the standard rules for the autonomous agent era. Research, tutorials, and regulatory compliance — all in one SDK-first center.
                         </p>
                     </div>
+
+                    {/* Featured Article - 'Start Here' */}
+                    <Link href="/learn/what-is-agent-runtime-security" className="group w-full max-w-4xl p-12 rounded-[3.5rem] bg-gradient-to-br from-neutral-900 to-black border-2 border-white/5 hover:border-emerald-500/30 transition-all text-left relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
+                         <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
+                             <ShieldCheck className="w-64 h-64" />
+                         </div>
+                         <div className="flex-1 space-y-4 relative z-10">
+                             <div className="flex items-center gap-2 text-emerald-500 font-black uppercase tracking-[0.3em] text-[10px] italic">
+                                 <Zap className="w-3 h-3" /> Start Here: Featured Guide
+                             </div>
+                             <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">What is Agent Runtime Security (ARS)?</h2>
+                             <p className="text-neutral-500 font-bold uppercase tracking-tight italic">The definitive framework for securing autonomous systems in 2026.</p>
+                         </div>
+                         <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                             <ArrowRight className="w-8 h-8" />
+                         </div>
+                    </Link>
                 </div>
             </section>
 
@@ -105,6 +140,36 @@ export default function LearnHubClient() {
                             </div>
                         </div>
                     ))}
+
+                    {/* Browse by Regulation / Framework Rows */}
+                    <div className="grid md:grid-cols-2 gap-8">
+                        <div className="p-12 rounded-[3rem] bg-neutral-900/20 border border-white/5 space-y-8">
+                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Browse by Regulation</h3>
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    { name: "EU AI Act", href: "/eu-ai-act" },
+                                    { name: "GDPR", href: "/gdpr" },
+                                    { name: "HIPAA", href: "/learn/healthcare-ai-governance" },
+                                    { name: "Article 12", href: "/learn/eu-ai-act-article-12-automatic-logging" }
+                                ].map(r => (
+                                    <Link key={r.name} href={r.href} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all">{r.name}</Link>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="p-12 rounded-[3rem] bg-neutral-900/20 border border-white/5 space-y-8">
+                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Browse by Framework</h3>
+                            <div className="flex flex-wrap gap-3">
+                                {[
+                                    { name: "LangChain", href: "/integrations/langchain" },
+                                    { name: "CrewAI", href: "/integrations/crewai" },
+                                    { name: "Vercel AI SDK", href: "/integrations/vercel" },
+                                    { name: "AutoGen", href: "/integrations/autogen" }
+                                ].map(f => (
+                                    <Link key={f.name} href={f.href} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all">{f.name}</Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
