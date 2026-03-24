@@ -78,3 +78,35 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const tenantId = searchParams.get('tenantId');
+    const all = searchParams.get('all') === 'true';
+
+    if (!tenantId && !all) {
+      return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+    }
+
+    if (all) {
+      console.log(`[API Agents DELETE] Resetting entire database (all agents)`);
+      const snapshot = await db.collection("agents").get();
+      const batch = db.batch();
+      snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+      await batch.commit();
+      return NextResponse.json({ message: `Successfully deleted all ${snapshot.docs.length} agents.` });
+    }
+
+    console.log(`[API Agents DELETE] Deleting all agents for tenantId: ${tenantId}`);
+    const snapshot = await db.collection("agents").where("userId", "==", tenantId).get();
+    const batch = db.batch();
+    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
+
+    return NextResponse.json({ message: `Successfully deleted ${snapshot.docs.length} agents for tenant: ${tenantId}` });
+  } catch (err: any) {
+    console.error("[API Agents DELETE] Error:", err);
+    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+  }
+}
