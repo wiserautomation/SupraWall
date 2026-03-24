@@ -47,27 +47,32 @@ export default function PoliciesPage() {
         if (!user) return;
         setLoading(true);
 
-        // 1. Real-time Agents
-        const qAgents = query(collection(db, "agents"), where("userId", "==", user.uid));
-        const unsubscribeAgents = onSnapshot(qAgents, (snapshot) => {
-            const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Agent[];
-            setAgents(list);
-            setLoading(false);
-        });
+        const loadData = async () => {
+            try {
+                // 1. Fetch Agents via internal API (bypasses ad-blockers)
+                const agentsRes = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                if (agentsRes.ok) {
+                    const list = await agentsRes.json();
+                    setAgents(list);
+                }
 
-        // 2. Real-time Policies
-        // We filter by userId if the field exists, or we could filter by agentId in [ids]
-        // But for consistency with how we just saw 'tenantId' used in the API, we'll assume userId is on the policy too.
-        const qPolicies = query(collection(db, "policies"), where("userId", "==", user.uid));
-        const unsubscribePolicies = onSnapshot(qPolicies, (snapshot) => {
-            const list = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as Policy[];
-            setPolicies(list);
-        });
-
-        return () => {
-            unsubscribeAgents();
-            unsubscribePolicies();
+                // 2. Fetch Policies via internal API
+                const policiesRes = await fetch(`/api/v1/policies?tenantId=${user.uid}`);
+                if (policiesRes.ok) {
+                    const list = await policiesRes.json();
+                    setPolicies(list);
+                }
+            } catch (error) {
+                console.error("[PoliciesPage] Failed to fetch data:", error);
+            } finally {
+                setLoading(false);
+            }
         };
+
+        loadData();
+        const interval = setInterval(loadData, 5000); // Polling for real-time feel
+
+        return () => clearInterval(interval);
     }, [user]);
 
     const handleCreatePolicy = async (e: React.FormEvent) => {

@@ -1,41 +1,32 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/genai';
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenAI } from "@google/genai";
 
 export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+    req: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
-  try {
-    const { id } = await params;
-    const { description } = await request.json();
+    try {
+        const { id } = await params;
+        const { description } = await req.json();
 
-    if (!description) {
-      return NextResponse.json({ error: "Missing agent description" }, { status: 400 });
-    }
-
-    if (!process.env.GEMINI_API_KEY) {
-      console.warn("GEMINI_API_KEY not found in environment. Returning fallback assessment.");
-      // Provide a smart fallback for demo purposes if key is missing, 
-      // though in real world we'd want to fail or use a default.
-    }
-
-    const model = genAI.getGenerativeModel({ 
-        model: 'gemini-1.5-flash',
-        generationConfig: {
-            responseMimeType: 'application/json'
+        if (!description) {
+            return NextResponse.json({ error: "Missing agent description" }, { status: 400 });
         }
-    });
 
-    const prompt = `
+        if (!process.env.GEMINI_API_KEY) {
+            return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
+        }
+
+        const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+        
+        const prompt = `
 Act as a Senior AI Security Architect for SupraWall. 
 Given the following description of an AI agent's functionality, suggest the most appropriate security guardrails and policies to apply.
 
 Agent Functionality: "${description}"
 
 SupraWall supports the following guardrail configuration:
-- budget: { limitUsd: number, resetPeriod: "daily" | "weekly" | "monthly" | "never" }
+- budget: { limitUsd: number, resetPeriod: "daily" | "weekly" | "monthly" | "never", tokenLimit?: number }
 - allowedTools: string[] (names of tools the agent IS allowed to call)
 - blockedTools: string[] (names of tools the agent IS NOT allowed to call)
 - piiScrubbing: { enabled: boolean, patterns: ("email" | "phone" | "ssn" | "credit_card" | "ip")[] }
@@ -47,7 +38,7 @@ Respond ONLY with a JSON object in this format:
 {
   "assessment": "Short 1-2 sentence security strategy summary",
   "guardrails": {
-    "budget": { "limitUsd": 1.00, "resetPeriod": "monthly" },
+    "budget": { "limitUsd": 1.00, "resetPeriod": "monthly", "tokenLimit": 50000 },
     "allowedTools": ["tool1", "tool2"],
     "blockedTools": ["tool3"],
     "piiScrubbing": { "enabled": true, "patterns": ["email"] }
@@ -58,14 +49,18 @@ Respond ONLY with a JSON object in this format:
 }
 `;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    return NextResponse.json(JSON.parse(text));
+        const result = await client.models.generateContent({
+            model: "gemini-2.0-flash",
+            contents: [{ role: "user", parts: [{ text: prompt }] }],
+            config: {
+                responseMimeType: "application/json"
+            }
+        });
 
-  } catch (err: any) {
-    console.error("[API Agent Assess] Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
-  }
+        return NextResponse.json(JSON.parse(result.candidates[0].content.parts[0].text || "{}"));
+
+    } catch (err: any) {
+        console.error("[API Agent Assess] Error:", err);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    }
 }

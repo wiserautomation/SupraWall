@@ -30,7 +30,6 @@ export async function GET(request: NextRequest) {
     // Support both userId and tenantId fields for maximum compatibility
     const snapshot = await db.collection("agents")
       .where("userId", "==", tenantId)
-      .orderBy("createdAt", "desc")
       .get();
 
     console.log(`[API Agents GET] Found ${snapshot.docs.length} agents for tenantId: ${tenantId}`);
@@ -39,7 +38,11 @@ export async function GET(request: NextRequest) {
       id: doc.id,
       ...doc.data(),
       createdAt: doc.data().createdAt?.toDate?.()?.toISOString() || doc.data().createdAt
-    }));
+    })).sort((a: any, b: any) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+    });
 
     return NextResponse.json(agents);
   } catch (err: any) {
