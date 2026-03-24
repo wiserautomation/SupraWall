@@ -1,3 +1,4 @@
+"use client";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -9,17 +10,7 @@ import {
     LayoutDashboard, Cpu, Network
 } from "lucide-react";
 import Link from "next/link";
-import { Metadata } from "next";
 import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints } from "./HomeClient";
-
-export const metadata: Metadata = {
-    title: "SupraWall | The Deterministic Security Layer for AI Agents",
-    description: "Vault credentials. Cap budgets. Block unauthorized actions. Scrub PII. Generate audit trails. Stop prompt injections. Six real threats. One line of code. Enterprise security for autonomous AI agents.",
-    keywords: ["agent security", "ai governance", "eu ai act compliance", "prompt injection prevention", "langchain security", "crewai monitoring", "agentic security", "ai agent firewall", "ai agent vault", "ai budget limits", "ai pii protection", "ai audit trail"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com',
-    },
-};
 
 export default function LandingPage() {
     const jsonLd = {

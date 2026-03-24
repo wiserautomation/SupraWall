@@ -78,66 +78,70 @@ export default function AgentDetailPage() {
     const [promptFramework, setPromptFramework] = useState<'python-langchain' | 'ts-vercel' | 'python-crewai'>('python-langchain');
     const [isPromptCopying, setIsPromptCopying] = useState(false);
 
+    const pollAgent = async () => {
+        if (!user || !agentId) return;
+        try {
+            const res = await fetch(`/api/v1/agents/${agentId}`);
+            if (res.ok) {
+                const data = await res.json() as Agent;
+                if (data.userId !== user.uid && data.tenantId !== user.uid) {
+                    setAgent(null);
+                } else {
+                    setAgent(data);
+                    setEditName(data.name);
+                    setEditScopes(data.scopes || []);
+                }
+            } else if (res.status === 404) {
+                setAgent(null);
+            }
+            setLoading(false);
+        } catch (e) {
+            console.error("Error polling agent:", e);
+            setLoading(false);
+        }
+    };
+
+    const pollAudit = async () => {
+        if (!user || !agentId) return;
+        try {
+            const res = await fetch(`/api/v1/audit-logs?agentId=${agentId}&tenantId=${user.uid}&limit=50`);
+            if (res.ok) {
+                const logs = await res.json();
+                setAuditLogs(logs);
+            }
+        } catch (e) {
+            console.error("Error polling audit logs:", e);
+        }
+    };
+
+    const pollPolicies = async () => {
+        if (!user || !agentId) return;
+        try {
+            const res = await fetch(`/api/v1/policies?agentId=${agentId}&tenantId=${user.uid}`);
+            if (res.ok) {
+                const data = await res.json();
+                setAgentPolicies(data);
+            }
+        } catch (e) {
+            console.error("Error polling policies:", e);
+        }
+    };
+
+    const fetchSecrets = async () => {
+        if (!user || !agentId) return;
+        try {
+            const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`);
+            if (res.ok) {
+                const allSecrets = await res.json() as VaultSecret[];
+                setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(agentId)));
+            }
+        } catch (err) {
+            console.error("Error fetching agent secrets:", err);
+        }
+    };
+
     useEffect(() => {
         if (authLoading || !user || !agentId) return;
-
-        const pollAgent = async () => {
-            try {
-                const res = await fetch(`/api/v1/agents/${agentId}`);
-                if (res.ok) {
-                    const data = await res.json() as Agent;
-                    if (data.userId !== user.uid && data.tenantId !== user.uid) {
-                        setAgent(null);
-                    } else {
-                        setAgent(data);
-                        setEditName(data.name);
-                        setEditScopes(data.scopes || []);
-                    }
-                } else if (res.status === 404) {
-                    setAgent(null);
-                }
-                setLoading(false);
-            } catch (e) {
-                console.error("Error polling agent:", e);
-                setLoading(false);
-            }
-        };
-
-        const pollAudit = async () => {
-            try {
-                const res = await fetch(`/api/v1/audit-logs?agentId=${agentId}&tenantId=${user.uid}&limit=50`);
-                if (res.ok) {
-                    const logs = await res.json();
-                    setAuditLogs(logs);
-                }
-            } catch (e) {
-                console.error("Error polling audit logs:", e);
-            }
-        };
-
-        const pollPolicies = async () => {
-            try {
-                const res = await fetch(`/api/v1/policies?agentId=${agentId}&tenantId=${user.uid}`);
-                if (res.ok) {
-                    const data = await res.json();
-                    setAgentPolicies(data);
-                }
-            } catch (e) {
-                console.error("Error polling policies:", e);
-            }
-        };
-
-        const fetchSecrets = async () => {
-            try {
-                const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`);
-                if (res.ok) {
-                    const allSecrets = await res.json() as VaultSecret[];
-                    setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(agentId)));
-                }
-            } catch (err) {
-                console.error("Error fetching agent secrets:", err);
-            }
-        };
 
         pollAgent();
         pollAudit();
@@ -405,11 +409,13 @@ export default function AgentDetailPage() {
             {activeTab === 'overview' && <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <div className="lg:col-span-2 space-y-8">
+                {user && (
                     <AiSecurityArchitect 
                         agentId={agentId} 
                         tenantId={user.uid} 
                         onApplied={() => { pollAgent(); pollPolicies(); }} 
                     />
+                )}
 
                     {/* human loop alert */}
                     {hasPendingApproval && (
@@ -515,7 +521,7 @@ export default function AgentDetailPage() {
                         {/* Integration */}
                         <div className="space-y-4">
                             <div className="flex items-center gap-2">
-                                <Code className="w-5 h-5 text-blue-400" />
+                                <Terminal className="w-5 h-5 text-blue-400" />
                                 <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white">Identity Handshake</h3>
                             </div>
                             <div className="bg-black/60 rounded-2xl border border-white/10 overflow-hidden flex flex-col">
