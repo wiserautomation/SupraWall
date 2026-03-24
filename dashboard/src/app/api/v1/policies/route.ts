@@ -1,21 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db_sql';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
+  const db = getAdminDb();
   try {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
+    const agentId = searchParams.get('agentId');
     
-    if (!tenantId) {
-      return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+    let firestoreQuery: any = db.collection("policies");
+    
+    if (agentId) {
+      firestoreQuery = firestoreQuery.where("agentId", "==", agentId);
+    } else if (tenantId) {
+        // Find policies for all agents of this tenant or global
+        firestoreQuery = firestoreQuery.where("tenantId", "==", tenantId);
+    } else {
+        return NextResponse.json({ error: "Missing tenantId or agentId" }, { status: 400 });
     }
 
-    const result = await query(
-      "SELECT * FROM policies WHERE tenantid = $1 OR tenantid = 'global' ORDER BY id DESC",
-      [tenantId]
-    );
+    const snapshot = await firestoreQuery.get();
+    const policies = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
     
-    return NextResponse.json(result.rows);
+    return NextResponse.json(policies);
   } catch (err: any) {
     console.error("[API Policies GET] Error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -23,20 +33,27 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+    const db = getAdminDb();
   try {
     const body = await request.json();
-    const { tenantId, name, toolName, ruleType, description } = body;
+    const { tenantId, name, toolName, ruleType, description, agentId } = body;
 
     if (!tenantId || !name || !ruleType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    const result = await query(
-      "INSERT INTO policies (tenantid, name, toolname, ruletype, description) VALUES ($1, $2, $3, $4, $5) RETURNING *",
-      [tenantId, name, toolName, ruleType, description || '']
-    );
+    const policyDoc = {
+      tenantId,
+      agentId: agentId || null,
+      name,
+      toolName,
+      ruleType,
+      description: description || '',
+      createdAt: new Date()
+    };
 
-    return NextResponse.json(result.rows[0]);
+    const ref = await db.collection("policies").add(policyDoc);
+    return NextResponse.json({ id: ref.id, ...policyDoc });
   } catch (err: any) {
     console.error("[API Policies POST] Error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });

@@ -44,6 +44,7 @@ import { useSearchParams } from "next/navigation";
 interface Agent {
     id: string;
     userId: string;
+    tenantId?: string;
     name: string;
     status: 'active' | 'paused' | 'revoked';
     scopes?: string[];
@@ -96,54 +97,55 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     useEffect(() => {
         if (authLoading || !user || !agentId) return;
 
-        const agentRef = doc(db, "agents", agentId);
-        const unsubscribeAgent = onSnapshot(agentRef, (snapshot) => {
-            if (snapshot.exists()) {
-                const data = { id: snapshot.id, ...snapshot.data() } as Agent;
-                if (data.userId !== user.uid) {
+        const pollAgent = async () => {
+            try {
+                const res = await fetch(`/api/v1/agents/${agentId}`);
+                if (res.ok) {
+                    const data = await res.json() as Agent;
+                    if (data.userId !== user.uid && data.tenantId !== user.uid) {
+                        setAgent(null);
+                    } else {
+                        setAgent(data);
+                        setEditName(data.name);
+                        setEditScopes(data.scopes || []);
+                    }
+                } else if (res.status === 404) {
                     setAgent(null);
-                } else {
-                    setAgent(data);
-                    setEditName(data.name);
-                    setEditScopes(data.scopes || []);
                 }
-            } else {
-                setAgent(null);
+                setLoading(false);
+            } catch (e) {
+                console.error("Error polling agent:", e);
+                setLoading(false);
             }
-            setLoading(false);
-        }, (error) => {
-            console.error("Error fetching agent:", error);
-            setLoading(false);
-        });
+        };
 
-        const qaudit = query(
-            collection(db, "audit_logs"),
-            where("agentId", "==", agentId)
-        );
+        const pollAudit = async () => {
+            try {
+                const res = await fetch(`/api/v1/audit-logs?agentId=${agentId}&tenantId=${user.uid}&limit=50`);
+                if (res.ok) {
+                    const logs = await res.json();
+                    setAuditLogs(logs);
+                }
+            } catch (e) {
+                console.error("Error polling audit logs:", e);
+            }
+        };
 
-        const unsubscribeAudit = onSnapshot(qaudit, (snapshot) => {
-            const logs = snapshot.docs.map(doc => ({
-                id: doc.id,
-                ...doc.data() as any
-            }));
-            setAuditLogs(logs.sort((a, b) => {
-                const dateA = a.timestamp?.toDate?.() || new Date(0);
-                const dateB = b.timestamp?.toDate?.() || new Date(0);
-                return dateB - dateA;
-            }).slice(0, 100));
-        });
-
-        const qPolicies = query(
-            collection(db, "policies"),
-            where("agentId", "==", agentId)
-        );
-        const unsubscribePolicies = onSnapshot(qPolicies, (snapshot) => {
-            setAgentPolicies(snapshot.docs.map(d => ({ id: d.id, ...d.data() } as Policy)));
-        });
+        const pollPolicies = async () => {
+            try {
+                const res = await fetch(`/api/v1/policies?agentId=${agentId}&tenantId=${user.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAgentPolicies(data);
+                }
+            } catch (e) {
+                console.error("Error polling policies:", e);
+            }
+        };
 
         const fetchSecrets = async () => {
             try {
-                const res = await fetch(`${(process.env.NEXT_PUBLIC_API_URL || '') + '/api'}/v1/vault/secrets?tenantId=${user.uid}`);
+                const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`);
                 if (res.ok) {
                     const allSecrets = await res.json() as VaultSecret[];
                     setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(agentId)));
@@ -152,14 +154,22 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                 console.error("Error fetching agent secrets:", err);
             }
         };
+
+        pollAgent();
+        pollAudit();
+        pollPolicies();
         fetchSecrets();
 
+        const agentInt = setInterval(pollAgent, 10000);
+        const auditInt = setInterval(pollAudit, 10000);
+        const policyInt = setInterval(pollPolicies, 15000);
+
         return () => {
-            unsubscribeAgent();
-            unsubscribeAudit();
-            unsubscribePolicies();
+            clearInterval(agentInt);
+            clearInterval(auditInt);
+            clearInterval(policyInt);
         };
-    }, [user, agentId]);
+    }, [user, agentId, authLoading]);
 
     const toggleStatus = async () => {
         if (!agent) return;
