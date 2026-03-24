@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     const snapshot = await firestoreQuery.get();
-    const policies = snapshot.docs.map(doc => ({
+    const policies = snapshot.docs.map((doc: any) => ({
       id: doc.id,
       ...doc.data()
     }));
