@@ -29,7 +29,6 @@ export async function GET(request: NextRequest) {
     }
 
     const snapshot = await firestoreQuery
-      .orderBy('timestamp', 'desc')
       .limit(limit)
       .get();
 
@@ -38,6 +37,13 @@ export async function GET(request: NextRequest) {
       ...doc.data(),
       timestamp: doc.data().timestamp?.toDate?.()?.toISOString() || doc.data().timestamp
     }));
+
+    // Sort in-memory to avoid mandatory composite index errors in new projects
+    logs.sort((a: any, b: any) => {
+        const dateA = new Date(a.timestamp).getTime();
+        const dateB = new Date(b.timestamp).getTime();
+        return dateB - dateA;
+    });
 
     return NextResponse.json(logs);
 
