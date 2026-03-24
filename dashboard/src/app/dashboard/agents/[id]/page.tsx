@@ -76,8 +76,8 @@ interface Policy {
     ruleType: string;
 }
 
-export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id: agentId } = (params as any); // Workaround for Next.js 15+ searchParams/params async
+export default function AgentDetailPage() {
+    const { id: agentId } = useParams() as { id: string };
     const [user, authLoading] = useAuthState(auth);
     const [agent, setAgent] = useState<Agent | null>(null);
     const [loading, setLoading] = useState(true);
