@@ -1,6 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
+import { sendGAEvent } from "@next/third-parties/google";
 import {
     ArrowRight, Lock, Shield, AlertTriangle,
     Users, DollarSign,
@@ -86,7 +87,10 @@ export function TechTabs() {
                 {Object.keys(techExamples).map((tech) => (
                     <button
                         key={tech}
-                        onClick={() => setActiveTechTab(tech)}
+                        onClick={() => {
+                            setActiveTechTab(tech);
+                            sendGAEvent('event', 'tech_tab_click', { tech });
+                        }}
                         className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTechTab === tech ? 'bg-emerald-600 text-white shadow-xl' : 'text-neutral-500 hover:text-white'}`}
                     >
                         {tech}
@@ -271,6 +275,7 @@ export function ThreatCardsGrid() {
                     className="group relative block"
                     onMouseEnter={() => setHoveredCard(card.id)}
                     onMouseLeave={() => setHoveredCard(null)}
+                    onClick={() => sendGAEvent('event', 'threat_card_click', { threat: card.id })}
                 >
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}

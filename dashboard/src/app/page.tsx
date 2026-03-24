@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { sendGAEvent } from "@next/third-parties/google";
 import {
     ArrowRight, Lock, Activity, CheckCircle2,
     Shield, Database, Code2, AlertTriangle,
@@ -125,6 +126,7 @@ export default function LandingPage() {
                             <Link
                                 id="cta-start-free"
                                 href="/login"
+                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'start_free' })}
                                 className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)] group flex items-center gap-3"
                             >
                                 Start Free <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
@@ -132,6 +134,7 @@ export default function LandingPage() {
                             <Link
                                 id="cta-see-threats"
                                 href="#threats"
+                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'see_threats' })}
                                 className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all"
                             >
                                 See the 6 Threats →
@@ -486,7 +489,11 @@ export default function LandingPage() {
                             Vault your credentials. Cap your budgets. Block unauthorized actions. Generate audit trails. All in one line of code. Forever free for indie developers.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                            <Link href="/login" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-pulse tracking-tighter flex items-center gap-4 group">
+                            <Link 
+                                href="/login" 
+                                onClick={() => sendGAEvent('event', 'final_cta_click', { type: 'unlock_api_key' })}
+                                className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-pulse tracking-tighter flex items-center gap-4 group"
+                            >
                                 UNLOCK API KEY <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                             </Link>
                             <Link href="/docs" className="text-white font-black uppercase tracking-[0.3em] text-sm hover:text-emerald-400 transition-colors underline decoration-white/10 underline-offset-8">

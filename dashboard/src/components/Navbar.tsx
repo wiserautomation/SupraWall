@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { sendGAEvent } from "@next/third-parties/google";
 import { 
     Shield, ArrowRight, ChevronDown, KeyRound, DollarSign, 
     ShieldCheck, EyeOff, FileText, Bug, Book, Workflow, 
@@ -50,7 +51,11 @@ export function Navbar() {
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/60 backdrop-blur-3xl">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-                <Link href="/" className="flex items-center gap-3 group">
+                <Link 
+                    href="/" 
+                    onClick={() => sendGAEvent('event', 'nav_logo_click')}
+                    className="flex items-center gap-3 group"
+                >
                     <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_20px_rgba(5,150,105,0.4)] group-hover:scale-110 transition-transform duration-500">
                         <Shield className="w-6 h-6 text-white" />
                     </div>
@@ -94,8 +99,18 @@ export function Navbar() {
                         items={company}
                     />
 
-                    <Link href="/pricing" className="text-neutral-500 hover:text-white transition-colors">Pricing</Link>
-                    <Link href="/login" className="px-6 py-3 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 group flex items-center gap-2">
+                    <Link 
+                        href="/pricing" 
+                        onClick={() => sendGAEvent('event', 'nav_link_click', { path: '/pricing' })}
+                        className="text-neutral-500 hover:text-white transition-colors"
+                    >
+                        Pricing
+                    </Link>
+                    <Link 
+                        href="/login" 
+                        onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'get_started' })}
+                        className="px-6 py-3 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 group flex items-center gap-2"
+                    >
                         Get Started <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                     </Link>
                 </div>
@@ -128,6 +143,7 @@ function Dropdown({ label, isOpen, onOpen, onClose, items }: any) {
                                 <Link
                                     key={f.href}
                                     href={f.href}
+                                    onClick={() => sendGAEvent('event', 'nav_dropdown_click', { path: f.href, category: label })}
                                     className={`flex items-start gap-4 px-5 py-3 hover:bg-emerald-500/[0.06] transition-all group rounded-2xl`}
                                 >
                                     <div className="mt-0.5 w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">

@@ -9,6 +9,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.1",
     "@google/genai": "^1.42.0",
     "@modelcontextprotocol/sdk": "^1.27.1",
     "@next/third-parties": "^16.1.6",

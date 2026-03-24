@@ -1,46 +1,30 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { 
-    Users, 
-    Shield, 
-    Activity, 
-    Search, 
-    MoreHorizontal, 
-    ExternalLink, 
-    Lock, 
-    Unlock,
-    AlertCircle,
-    CheckCircle2,
-    Clock,
-    DollarSign,
-    Terminal,
-    X,
-    BarChart3,
-    History,
-    Settings2,
-    ShieldCheck,
-    ArrowLeft,
-    Copy,
-    RefreshCw,
-    Layers,
-    Trash2,
-    PauseCircle,
-    Ban,
-    Code,
-    Sparkles,
-    Plus,
-    RotateCcw
-} from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { useParams, useRouter } from "next/navigation";
+import {
+    Shield, ShieldAlert, ShieldCheck,
+    Terminal, Lock, Unlock,
+    Copy, CheckCircle2, AlertTriangle,
+    RefreshCw, PauseCircle, Settings2,
+    Users, DollarSign, Activity,
+    BarChart3, Plus, ArrowRight,
+    Search, Filter, ExternalLink,
+    Zap, Sparkles, Brain, Wand2, Loader2,
+    Bot, Cpu, Network,
+    MoreHorizontal, AlertCircle, Clock, History, ArrowLeft, Trash2, Layers,
+    ShieldCheck as ShieldCheckIcon
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { useParams } from "next/navigation";
+import { motion, AnimatePresence } from "framer-motion";
+import { Navbar } from "@/components/Navbar";
+import AiSecurityArchitect from "@/components/AiSecurityArchitect";
 
 interface Agent {
     id: string;
@@ -421,6 +405,12 @@ export default function AgentDetailPage() {
             {activeTab === 'overview' && <main className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                 
                 <div className="lg:col-span-2 space-y-8">
+                    <AiSecurityArchitect 
+                        agentId={agentId} 
+                        tenantId={user.uid} 
+                        onApplied={() => { pollAgent(); pollPolicies(); }} 
+                    />
+
                     {/* human loop alert */}
                     {hasPendingApproval && (
                         <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-amber-500/10 border border-amber-500/30 rounded-3xl p-6 flex items-start gap-6 shadow-[0_0_50px_rgba(245,158,11,0.05)]">
