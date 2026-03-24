@@ -28,18 +28,19 @@ import {
     PauseCircle,
     Ban,
     Code,
-    Sparkles
+    Sparkles,
+    Plus,
+    RotateCcw
 } from "lucide-react";
-import { useState, useEffect, use } from "react";
-import { auth, db } from "@/lib/firebase";
-import { collection, query, where, onSnapshot, doc, updateDoc, serverTimestamp, getDoc } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 
 interface Agent {
     id: string;
@@ -76,7 +77,7 @@ interface Policy {
 }
 
 export default function AgentDetailPage({ params }: { params: Promise<{ id: string }> }) {
-    const { id: agentId } = use(params);
+    const { id: agentId } = (params as any); // Workaround for Next.js 15+ searchParams/params async
     const [user, authLoading] = useAuthState(auth);
     const [agent, setAgent] = useState<Agent | null>(null);
     const [loading, setLoading] = useState(true);
@@ -86,7 +87,6 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const [isEditing, setIsEditing] = useState(false);
     const [editName, setEditName] = useState("");
     const [editScopes, setEditScopes] = useState<string[]>([]);
-    const [customScope, setCustomScope] = useState("");
     const [isRotatingKey, setIsRotatingKey] = useState(false);
     const [isCopying, setIsCopying] = useState(false);
     const [integrationTab, setIntegrationTab] = useState<'python' | 'ts' | 'go'>('python');
@@ -175,10 +175,14 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
         if (!agent) return;
         const newStatus = agent.status === 'active' ? 'paused' : 'active';
         try {
-            await updateDoc(doc(db, "agents", agent.id), {
-                status: newStatus,
-                updatedAt: serverTimestamp()
+            const res = await fetch(`/api/v1/agents/${agentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: newStatus }),
             });
+            if (res.ok) {
+                // Polling will pick it up
+            }
         } catch (error) {
             console.error("Error updating agent status:", error);
         }
@@ -187,15 +191,26 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
     const handleUpdateAgent = async () => {
         if (!agent) return;
         try {
-            await updateDoc(doc(db, "agents", agent.id), {
-                name: editName,
-                scopes: editScopes,
-                updatedAt: serverTimestamp()
+            const res = await fetch(`/api/v1/agents/${agentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: editName,
+                    scopes: editScopes
+                }),
             });
-            setIsEditing(false);
+            if (res.ok) {
+                setIsEditing(false);
+            }
         } catch (error) {
             console.error("Error updating agent:", error);
         }
+    };
+
+    const toggleScope = (scope: string) => {
+        setEditScopes(prev => 
+            prev.includes(scope) ? prev.filter(s => s !== scope) : [...prev, scope]
+        );
     };
 
     const generateApiKey = () => {
@@ -212,11 +227,14 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
         setIsRotatingKey(true);
         const newKey = generateApiKey();
         try {
-            await updateDoc(doc(db, "agents", agent.id), {
-                apiKey: newKey,
-                updatedAt: serverTimestamp()
+            const res = await fetch(`/api/v1/agents/${agentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ apiKey: newKey }),
             });
-            alert(`New API Key generated: ${newKey}\nPlease save it securely as it won't be shown again.`);
+            if (res.ok) {
+                alert(`New API Key generated: ${newKey}\nPlease save it securely as it won't be shown again.`);
+            }
         } catch (error) {
             console.error("Error rotating key:", error);
         } finally {
@@ -287,19 +305,70 @@ export default function AgentDetailPage({ params }: { params: Promise<{ id: stri
                         </div>
                         <div>
                             {isEditing ? (
-                                <div className="flex items-center gap-3">
-                                    <Input 
-                                        value={editName}
-                                        onChange={(e) => setEditName(e.target.value)}
-                                        className="bg-white/5 border-white/10 text-3xl font-black text-white p-2 h-auto max-w-[300px]"
-                                    />
-                                    <Button size="sm" onClick={handleUpdateAgent} className="h-10 bg-emerald-500 text-black font-bold uppercase text-xs hover:bg-emerald-400">Save</Button>
-                                    <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)} className="h-10 text-neutral-400">Cancel</Button>
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Input 
+                                            value={editName}
+                                            onChange={(e) => setEditName(e.target.value)}
+                                            className="bg-white/5 border-white/10 text-3xl font-black text-white p-2 h-auto max-w-[300px]"
+                                        />
+                                        <Button size="sm" onClick={handleUpdateAgent} className="h-10 bg-emerald-500 text-black font-bold uppercase text-xs hover:bg-emerald-400">Save</Button>
+                                        <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)} className="h-10 text-neutral-400">Cancel</Button>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-black">Authorized Scopes</label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {['read', 'write', 'admin', 'payment', 'tools'].map(s => (
+                                                <button
+                                                    key={s}
+                                                    onClick={() => toggleScope(s)}
+                                                    className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                                                        editScopes.includes(s)
+                                                            ? "bg-indigo-500/20 border-indigo-500/50 text-indigo-400"
+                                                            : "bg-white/5 border-white/5 text-neutral-600 hover:border-white/10"
+                                                    }`}
+                                                >
+                                                    {s}
+                                                </button>
+                                            ))}
+                                            <div className="flex items-center gap-2 ml-2">
+                                                <input 
+                                                    type="text"
+                                                    placeholder="Custom scope..."
+                                                    className="bg-white/5 border-white/5 rounded-full px-3 py-1 text-[10px] text-white focus:outline-none focus:border-indigo-500/50"
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === 'Enter') {
+                                                            const val = e.currentTarget.value.trim().toLowerCase();
+                                                            if (val && !editScopes.includes(val)) {
+                                                                setEditScopes([...editScopes, val]);
+                                                                e.currentTarget.value = '';
+                                                            }
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 <h1 className="text-5xl font-black text-white tracking-tighter flex items-center gap-4">
                                     {agent.name}
-                                    <Badge onClick={() => setIsEditing(true)} variant="outline" className="cursor-pointer text-[10px] bg-white/5 hover:bg-white/10 transition-colors border-white/10 py-1 uppercase tracking-[0.2em]">{agent.status}</Badge>
+                                    <div className="flex gap-2">
+                                        <Badge 
+                                            onClick={() => setIsEditing(true)} 
+                                            className={`cursor-pointer uppercase tracking-widest text-[10px] font-black px-3 py-1 ${
+                                                agent.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                                            }`}
+                                        >
+                                            {agent.status}
+                                        </Badge>
+                                        <button 
+                                            onClick={() => setIsEditing(true)}
+                                            className="p-1 text-neutral-500 hover:text-white transition-colors"
+                                        >
+                                            <Plus className="w-4 h-4 rotate-45" /> 
+                                        </button>
+                                    </div>
                                 </h1>
                             )}
                             <div className="flex items-center gap-3 mt-2">

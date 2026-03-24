@@ -94,6 +94,7 @@ export default function VaultPage() {
     const [rotateValue, setRotateValue] = useState("");
     const [error, setError] = useState<string | null>(null);
     const [agentSearch, setAgentSearch] = useState("");
+    const [editingSecretId, setEditingSecretId] = useState<string | null>(null);
 
     const getAuthHeaders = async (): Promise<Record<string, string>> => {
         if (!user) return {};
@@ -128,17 +129,26 @@ export default function VaultPage() {
     useEffect(() => {
         if (!user) return;
 
-        // Fetch agents for selection
-        const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-        const unsub = onSnapshot(q, (snap) => {
-            setAgents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-        });
+        const pollAgents = async () => {
+            try {
+                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setAgents(data);
+                }
+            } catch (err) {
+                console.error("Error polling agents:", err);
+            }
+        };
+
+        pollAgents();
+        const int = setInterval(pollAgents, 10000);
 
         if (tab === "secrets") fetchSecrets();
         else if (tab === "rules") { fetchRules(); fetchSecrets(); }
         else if (tab === "log") fetchLog();
 
-        return () => unsub();
+        return () => clearInterval(int);
     }, [tab, user]);
 
     if (authLoading) {
@@ -171,42 +181,52 @@ export default function VaultPage() {
         setTimeout(() => setCopied(null), 2000);
     };
 
-    const handleCreateSecret = async () => {
+    const handleCreateOrUpdateSecret = async () => {
         setError(null);
         setLoading(true);
         try {
             let finalValue = newSecretValue;
             
-            if (newSecretType === "credentials") {
-                finalValue = JSON.stringify({
-                    username: templateFields.username || "",
-                    password: templateFields.password || ""
-                });
-            } else if (newSecretType === "oauth") {
-                finalValue = JSON.stringify({
-                    access_token: templateFields.access_token || "",
-                    refresh_token: templateFields.refresh_token || "",
-                    expires_at: templateFields.oauth_expiry || ""
-                });
-            } else if (newSecretType === "custom") {
-                const obj: Record<string, string> = {};
-                customFields.forEach(f => { if (f.key) obj[f.key] = f.value; });
-                finalValue = JSON.stringify(obj);
+            if (!editingSecretId) {
+                if (newSecretType === "credentials") {
+                    finalValue = JSON.stringify({
+                        username: templateFields.username || "",
+                        password: templateFields.password || ""
+                    });
+                } else if (newSecretType === "oauth") {
+                    finalValue = JSON.stringify({
+                        access_token: templateFields.access_token || "",
+                        refresh_token: templateFields.refresh_token || "",
+                        expires_at: templateFields.oauth_expiry || ""
+                    });
+                } else if (newSecretType === "custom") {
+                    const obj: Record<string, string> = {};
+                    customFields.forEach(f => { if (f.key) obj[f.key] = f.value; });
+                    finalValue = JSON.stringify(obj);
+                }
             }
 
             const headers = await getAuthHeaders();
-            const res = await fetch(`${API_BASE}/secrets`, {
-                method: "POST",
+            const url = editingSecretId ? `${API_BASE}/secrets/${editingSecretId}?tenantId=${user?.uid}` : `${API_BASE}/secrets`;
+            const method = editingSecretId ? "PATCH" : "POST";
+            
+            const body: any = {
+                tenantId: user?.uid,
+                secretName: newSecretName,
+                secretType: newSecretType,
+                description: newSecretDesc || undefined,
+                expiresAt: newSecretExpiry || undefined,
+                assignedAgents: newSecretAgents,
+            };
+
+            if (!editingSecretId) {
+                body.secretValue = finalValue;
+            }
+
+            const res = await fetch(url, {
+                method,
                 headers,
-                body: JSON.stringify({
-                    tenantId: user?.uid,
-                    secretName: newSecretName,
-                    secretValue: finalValue,
-                    secretType: newSecretType,
-                    description: newSecretDesc || undefined,
-                    expiresAt: newSecretExpiry || undefined,
-                    assignedAgents: newSecretAgents,
-                }),
+                body: JSON.stringify(body),
             });
             const data = await res.json();
             if (!res.ok) { 
@@ -214,6 +234,7 @@ export default function VaultPage() {
               return; 
             }
             setShowCreateSecret(false);
+            setEditingSecretId(null);
             setNewSecretName(""); setNewSecretValue(""); setNewSecretDesc(""); setNewSecretExpiry("");
             setNewSecretAgents([]);
             await fetchSecrets();
@@ -448,8 +469,23 @@ export default function VaultPage() {
                                                         {copied === s.secret_name ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
                                                         Token
                                                     </button>
-                                                    <button
-                                                        onClick={() => { setShowRotate(s.id); setRotateValue(""); setError(null); }}
+                                                     <button
+                                                         onClick={() => {
+                                                             setEditingSecretId(s.id);
+                                                             setNewSecretName(s.secret_name);
+                                                             setNewSecretType(s.secret_type || "api_key");
+                                                             setNewSecretDesc(s.description || "");
+                                                             setNewSecretExpiry(s.expires_at || "");
+                                                             setNewSecretAgents(s.assigned_agents || []);
+                                                             setShowCreateSecret(true);
+                                                             setError(null);
+                                                         }}
+                                                         className="flex items-center gap-1 px-2 py-1 text-xs text-neutral-400 hover:text-emerald-400 bg-white/5 hover:bg-emerald-500/10 rounded transition-colors"
+                                                     >
+                                                         <Shield className="w-3 h-3" /> Edit
+                                                     </button>
+                                                     <button
+                                                         onClick={() => { setShowRotate(s.id); setRotateValue(""); setError(null); }}
                                                         className="flex items-center gap-1 px-2 py-1 text-xs text-neutral-400 hover:text-yellow-400 bg-white/5 hover:bg-yellow-500/10 rounded transition-colors"
                                                     >
                                                         <RotateCcw className="w-3 h-3" /> Rotate
@@ -568,9 +604,18 @@ export default function VaultPage() {
             {showCreateSecret && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
                     <div className="w-full max-w-md bg-neutral-900 border border-white/10 rounded-2xl p-6 space-y-4 shadow-2xl">
-                        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Lock className="w-5 h-5 text-emerald-400" /> Create Secret
+                        <h2 className="text-lg font-bold text-white flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Lock className="w-5 h-5 text-emerald-400" /> {editingSecretId ? "Update Secret Metadata" : "Create Secret"}
+                            </div>
+                            <button onClick={() => { setShowCreateSecret(false); setEditingSecretId(null); }} className="text-neutral-500 hover:text-white"><X className="w-5 h-5" /></button>
                         </h2>
+
+                        {editingSecretId && (
+                            <div className="rounded-lg bg-emerald-500/10 border border-emerald-500/20 p-3 text-xs text-emerald-400">
+                                Note: You are updating the name, type, and assigned agents. To change the actual secret value (like a password), use the <strong>Rotate</strong> action in the main table.
+                            </div>
+                        )}
 
                         {error && (
                             <div className="flex items-center gap-2 text-red-400 text-sm bg-red-500/10 rounded-lg px-3 py-2">
@@ -605,117 +650,119 @@ export default function VaultPage() {
                             </div>
 
                             {/* Dynamic Fields based on Type */}
-                            <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
-                                {newSecretType === "api_key" && (
-                                    <div>
-                                        <label className="text-xs text-neutral-400 mb-1 block">Secret Value / Key <span className="text-red-400">*</span></label>
-                                        <input
-                                            type="password"
-                                            value={newSecretValue}
-                                            onChange={e => setNewSecretValue(e.target.value)}
-                                            placeholder="Paste value here..."
-                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
-                                        />
-                                    </div>
-                                )}
-
-                                {newSecretType === "credentials" && (
-                                    <div className="grid grid-cols-1 gap-3">
+                            {!editingSecretId && (
+                                <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                                    {newSecretType === "api_key" && (
                                         <div>
-                                            <label className="text-xs text-neutral-400 mb-1 block">Username</label>
-                                            <input
-                                                value={templateFields.username || ""}
-                                                onChange={e => setTemplateFields({...templateFields, username: e.target.value})}
-                                                placeholder="admin"
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-neutral-400 mb-1 block">Password / Secret</label>
+                                            <label className="text-xs text-neutral-400 mb-1 block">Secret Value / Key <span className="text-red-400">*</span></label>
                                             <input
                                                 type="password"
-                                                value={templateFields.password || ""}
-                                                onChange={e => setTemplateFields({...templateFields, password: e.target.value})}
-                                                placeholder="••••••••"
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                                {newSecretType === "oauth" && (
-                                    <div className="space-y-3">
-                                        <div>
-                                            <label className="text-xs text-neutral-400 mb-1 block">Access Token</label>
-                                            <input
-                                                type="password"
-                                                value={templateFields.access_token || ""}
-                                                onChange={e => setTemplateFields({...templateFields, access_token: e.target.value})}
+                                                value={newSecretValue}
+                                                onChange={e => setNewSecretValue(e.target.value)}
+                                                placeholder="Paste value here..."
                                                 className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
                                             />
                                         </div>
-                                        <div className="grid grid-cols-2 gap-3">
+                                    )}
+
+                                    {newSecretType === "credentials" && (
+                                        <div className="grid grid-cols-1 gap-3">
                                             <div>
-                                                <label className="text-xs text-neutral-400 mb-1 block">Refresh Token</label>
+                                                <label className="text-xs text-neutral-400 mb-1 block">Username</label>
                                                 <input
-                                                    type="password"
-                                                    value={templateFields.refresh_token || ""}
-                                                    onChange={e => setTemplateFields({...templateFields, refresh_token: e.target.value})}
-                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                                                    value={templateFields.username || ""}
+                                                    onChange={e => setTemplateFields({...templateFields, username: e.target.value})}
+                                                    placeholder="admin"
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
                                                 />
                                             </div>
                                             <div>
-                                                <label className="text-xs text-neutral-400 mb-1 block">Expires (optional)</label>
+                                                <label className="text-xs text-neutral-400 mb-1 block">Password / Secret</label>
                                                 <input
-                                                    value={templateFields.oauth_expiry || ""}
-                                                    onChange={e => setTemplateFields({...templateFields, oauth_expiry: e.target.value})}
-                                                    placeholder="3600"
+                                                    type="password"
+                                                    value={templateFields.password || ""}
+                                                    onChange={e => setTemplateFields({...templateFields, password: e.target.value})}
+                                                    placeholder="••••••••"
                                                     className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
                                                 />
                                             </div>
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {newSecretType === "custom" && (
-                                    <div className="space-y-2">
-                                        {customFields.map((f, i) => (
-                                            <div key={i} className="flex gap-2">
+                                    {newSecretType === "oauth" && (
+                                        <div className="space-y-3">
+                                            <div>
+                                                <label className="text-xs text-neutral-400 mb-1 block">Access Token</label>
                                                 <input
-                                                    placeholder="Field Name"
-                                                    value={f.key}
-                                                    onChange={e => {
-                                                        const next = [...customFields];
-                                                        next[i].key = e.target.value;
-                                                        setCustomFields(next);
-                                                    }}
-                                                    className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                                    type="password"
+                                                    value={templateFields.access_token || ""}
+                                                    onChange={e => setTemplateFields({...templateFields, access_token: e.target.value})}
+                                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
                                                 />
-                                                <input
-                                                    type={f.key.toLowerCase().includes("key") || f.key.toLowerCase().includes("pass") ? "password" : "text"}
-                                                    placeholder="Value"
-                                                    value={f.value}
-                                                    onChange={e => {
-                                                        const next = [...customFields];
-                                                        next[i].value = e.target.value;
-                                                        setCustomFields(next);
-                                                    }}
-                                                    className="flex-[2] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
-                                                />
-                                                <button onClick={() => setCustomFields(customFields.filter((_, idx) => idx !== i))} className="text-red-400 p-1">
-                                                    <Trash2 className="w-3 h-3" />
-                                                </button>
                                             </div>
-                                        ))}
-                                        <button
-                                            onClick={() => setCustomFields([...customFields, {key: "", value: ""}])}
-                                            className="text-[10px] text-emerald-400 font-bold uppercase hover:bg-emerald-500/10 px-2 py-1 rounded transition-colors"
-                                        >
-                                            + Add Field
-                                        </button>
-                                    </div>
-                                )}
-                            </div>
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div>
+                                                    <label className="text-xs text-neutral-400 mb-1 block">Refresh Token</label>
+                                                    <input
+                                                        type="password"
+                                                        value={templateFields.refresh_token || ""}
+                                                        onChange={e => setTemplateFields({...templateFields, refresh_token: e.target.value})}
+                                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-emerald-500"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="text-xs text-neutral-400 mb-1 block">Expires (optional)</label>
+                                                    <input
+                                                        value={templateFields.oauth_expiry || ""}
+                                                        onChange={e => setTemplateFields({...templateFields, oauth_expiry: e.target.value})}
+                                                        placeholder="3600"
+                                                        className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-emerald-500"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {newSecretType === "custom" && (
+                                        <div className="space-y-2">
+                                            {customFields.map((f, i) => (
+                                                <div key={i} className="flex gap-2">
+                                                    <input
+                                                        placeholder="Field Name"
+                                                        value={f.key}
+                                                        onChange={e => {
+                                                            const next = [...customFields];
+                                                            next[i].key = e.target.value;
+                                                            setCustomFields(next);
+                                                        }}
+                                                        className="flex-1 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                                    />
+                                                    <input
+                                                        type={f.key.toLowerCase().includes("key") || f.key.toLowerCase().includes("pass") ? "password" : "text"}
+                                                        placeholder="Value"
+                                                        value={f.value}
+                                                        onChange={e => {
+                                                            const next = [...customFields];
+                                                            next[i].value = e.target.value;
+                                                            setCustomFields(next);
+                                                        }}
+                                                        className="flex-[2] bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[11px] text-white focus:outline-none focus:border-emerald-500"
+                                                    />
+                                                    <button onClick={() => setCustomFields(customFields.filter((_, idx) => idx !== i))} className="text-red-400 p-1">
+                                                        <Trash2 className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            <button
+                                                onClick={() => setCustomFields([...customFields, {key: "", value: ""}])}
+                                                className="text-[10px] text-emerald-400 font-bold uppercase hover:bg-emerald-500/10 px-2 py-1 rounded transition-colors"
+                                            >
+                                                + Add Field
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
 
                             <div>
                                 <label className="text-xs text-neutral-400 mb-1 block">Description</label>
@@ -778,6 +825,22 @@ export default function VaultPage() {
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => { setShowCreateSecret(false); setEditingSecretId(null); }}
+                                    className="flex-1 px-4 py-3 bg-white/5 hover:bg-white/10 text-white text-xs font-black uppercase tracking-widest rounded-xl transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleCreateOrUpdateSecret}
+                                    disabled={loading || !newSecretName || (!editingSecretId && !isSecretValueValid())}
+                                    className="flex-1 px-4 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-black uppercase tracking-widest rounded-xl transition-colors shadow-lg shadow-emerald-900/20"
+                                >
+                                    {loading ? "Processing..." : editingSecretId ? "Update Secret" : "Create Secret"}
+                                </button>
+                            </div>
                         </div>
 
                         {newSecretName && (
@@ -796,22 +859,6 @@ export default function VaultPage() {
                                 </div>
                             </div>
                         )}
-
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => { setShowCreateSecret(false); setError(null); }}
-                                className="flex-1 px-4 py-2 text-sm text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-lg transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleCreateSecret}
-                                disabled={loading || !newSecretName || !isSecretValueValid()}
-                                className="flex-1 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
-                            >
-                                {loading ? "Creating…" : "Create Secret"}
-                            </button>
-                        </div>
                     </div>
                 </div>
             )}
