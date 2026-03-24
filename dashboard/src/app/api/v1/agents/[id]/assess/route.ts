@@ -57,7 +57,8 @@ Respond ONLY with a JSON object in this format:
             }
         });
 
-        return NextResponse.json(JSON.parse(result.candidates[0].content.parts[0].text || "{}"));
+        const analysisText = result.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
+        return NextResponse.json(JSON.parse(analysisText));
 
     } catch (err: any) {
         console.error("[API Agent Assess] Error:", err);
