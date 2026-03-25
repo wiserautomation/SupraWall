@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
     Users, 
     Shield, 
@@ -21,7 +21,8 @@ import {
     Settings2,
     ShieldCheck,
     ArrowRight,
-    Loader2
+    Loader2,
+    AlertOctagon
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
@@ -183,6 +184,9 @@ export default function AgentsPage() {
     const [showSuccess, setShowSuccess] = useState(false);
     const [createError, setCreateError] = useState("");
     const router = useRouter();
+    const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
+    const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+    const [showBulkConfirm, setShowBulkConfirm] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -354,6 +358,43 @@ export default function AgentsPage() {
             });
         } catch (error) {
             console.error("Error revoking agent:", error);
+        }
+    };
+
+    const toggleSelectAgent = (agentId: string) => {
+        setSelectedAgentIds(prev => {
+            const next = new Set(prev);
+            if (next.has(agentId)) next.delete(agentId);
+            else next.add(agentId);
+            return next;
+        });
+    };
+
+    const toggleSelectAll = () => {
+        if (selectedAgentIds.size === filteredAgents.length) {
+            setSelectedAgentIds(new Set());
+        } else {
+            setSelectedAgentIds(new Set(filteredAgents.map(a => a.id)));
+        }
+    };
+
+    const bulkDeleteAgents = async () => {
+        setIsBulkDeleting(true);
+        try {
+            await Promise.all(
+                Array.from(selectedAgentIds).map(id =>
+                    updateDoc(doc(db, "agents", id), {
+                        status: 'revoked',
+                        updatedAt: serverTimestamp()
+                    })
+                )
+            );
+            setSelectedAgentIds(new Set());
+        } catch (error) {
+            console.error("Error bulk revoking agents:", error);
+        } finally {
+            setIsBulkDeleting(false);
+            setShowBulkConfirm(false);
         }
     };
 
@@ -541,6 +582,25 @@ export default function AgentsPage() {
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="border-b border-white/5 bg-white/[0.05]">
+                                <th className="pl-4 pr-0 py-4 w-10">
+                                    <button
+                                        onClick={toggleSelectAll}
+                                        className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                            selectedAgentIds.size > 0 && selectedAgentIds.size === filteredAgents.length
+                                                ? 'bg-emerald-500 border-emerald-400'
+                                                : selectedAgentIds.size > 0
+                                                ? 'bg-emerald-500/30 border-emerald-500/50'
+                                                : 'border-white/20 hover:border-white/40'
+                                        }`}
+                                    >
+                                        {selectedAgentIds.size > 0 && selectedAgentIds.size === filteredAgents.length && (
+                                            <CheckCircle2 className="w-3 h-3 text-black" />
+                                        )}
+                                        {selectedAgentIds.size > 0 && selectedAgentIds.size < filteredAgents.length && (
+                                            <div className="w-2 h-0.5 bg-emerald-200 rounded-full" />
+                                        )}
+                                    </button>
+                                </th>
                                 <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest">Identity & Scopes</th>
                                 <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest text-center">Status</th>
                                 <th className="px-6 py-4 text-xs font-bold text-neutral-400 uppercase tracking-widest">Usage Metrics</th>
@@ -551,7 +611,7 @@ export default function AgentsPage() {
                         <tbody className="divide-y divide-white/[0.03]">
                             {filteredAgents.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-neutral-400 italic">
+                                    <td colSpan={6} className="px-6 py-12 text-center text-neutral-400 italic">
                                         No agents found. Register your first agent using the SDK.
                                     </td>
                                 </tr>
@@ -559,11 +619,26 @@ export default function AgentsPage() {
                                 filteredAgents.map((agent) => (
                                         <tr 
                                             key={agent.id} 
-                                            className="hover:bg-white/[0.04] transition-colors group cursor-pointer"
+                                            className={`hover:bg-white/[0.04] transition-colors group cursor-pointer ${selectedAgentIds.has(agent.id) ? 'bg-emerald-500/[0.04]' : ''}`}
                                             onClick={() => {
                                                 router.push(`/dashboard/agents/${agent.id}`);
                                             }}
                                         >
+                                        <td className="pl-4 pr-0 py-5 w-10">
+                                            <button
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    toggleSelectAgent(agent.id);
+                                                }}
+                                                className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
+                                                    selectedAgentIds.has(agent.id)
+                                                        ? 'bg-emerald-500 border-emerald-400'
+                                                        : 'border-white/20 hover:border-white/40'
+                                                }`}
+                                            >
+                                                {selectedAgentIds.has(agent.id) && <CheckCircle2 className="w-3 h-3 text-black" />}
+                                            </button>
+                                        </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col gap-1.5">
                                                 <span className="text-white font-bold tracking-tight text-base group-hover:text-blue-400 transition-colors">
@@ -661,6 +736,94 @@ export default function AgentsPage() {
                     </table>
                 </div>
             </motion.div>
+
+            {/* Bulk Action Bar */}
+            <AnimatePresence>
+                {selectedAgentIds.size > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 40 }}
+                        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+                        className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-neutral-900/95 backdrop-blur-xl border border-white/10 rounded-2xl px-6 py-4 flex items-center gap-6 shadow-[0_20px_60px_rgba(0,0,0,0.6)]"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                                <span className="text-emerald-400 font-black text-sm">{selectedAgentIds.size}</span>
+                            </div>
+                            <span className="text-sm text-neutral-300 font-medium">
+                                agent{selectedAgentIds.size > 1 ? 's' : ''} selected
+                            </span>
+                        </div>
+                        <div className="w-px h-8 bg-white/10" />
+                        <button
+                            onClick={() => setSelectedAgentIds(new Set())}
+                            className="text-xs text-neutral-400 hover:text-white transition-colors font-bold uppercase tracking-wider"
+                        >
+                            Clear
+                        </button>
+                        <Button
+                            onClick={() => setShowBulkConfirm(true)}
+                            className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2"
+                        >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            Delete Selected
+                        </Button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            {/* Bulk Delete Confirmation Dialog */}
+            <Dialog open={showBulkConfirm} onOpenChange={setShowBulkConfirm}>
+                <DialogContent className="bg-neutral-950 border-white/10 shadow-2xl sm:max-w-[420px]">
+                    <DialogHeader>
+                        <div className="w-14 h-14 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center mx-auto mb-4">
+                            <AlertOctagon className="w-7 h-7 text-rose-400" />
+                        </div>
+                        <DialogTitle className="text-xl font-black text-white text-center uppercase tracking-tight">
+                            Confirm Bulk Delete
+                        </DialogTitle>
+                        <DialogDescription className="text-center text-neutral-400 text-sm leading-relaxed">
+                            You are about to revoke <strong className="text-white">{selectedAgentIds.size} agent{selectedAgentIds.size > 1 ? 's' : ''}</strong>. This will immediately invalidate their API keys and prevent any further operations.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="max-h-40 overflow-y-auto bg-black/30 rounded-xl border border-white/5 p-3 space-y-1">
+                        {Array.from(selectedAgentIds).map(id => {
+                            const ag = agents.find(a => a.id === id);
+                            return (
+                                <div key={id} className="flex items-center gap-2 text-xs text-neutral-400 py-1">
+                                    <Trash2 className="w-3 h-3 text-rose-400/60 flex-shrink-0" />
+                                    <span className="font-medium text-white">{ag?.name || id}</span>
+                                    <code className="ml-auto text-[10px] text-neutral-500 font-mono">{id.slice(0, 12)}…</code>
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <DialogFooter className="flex gap-3 sm:justify-center">
+                        <Button
+                            onClick={() => setShowBulkConfirm(false)}
+                            variant="outline"
+                            className="border-white/10 text-neutral-400 hover:text-white font-bold uppercase tracking-wider text-[11px] h-12 px-6 rounded-xl"
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={bulkDeleteAgents}
+                            disabled={isBulkDeleting}
+                            className="bg-rose-600 hover:bg-rose-500 text-white font-black uppercase tracking-wider text-[11px] h-12 px-6 rounded-xl flex items-center gap-2"
+                        >
+                            {isBulkDeleting ? (
+                                <RefreshCw className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <>
+                                    <Trash2 className="w-3.5 h-3.5" />
+                                    Delete {selectedAgentIds.size} Agent{selectedAgentIds.size > 1 ? 's' : ''}
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
             {/* Create Agent Modal */}
             <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
