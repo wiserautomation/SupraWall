@@ -8,7 +8,7 @@ import { useParams, useRouter } from "next/navigation";
 import {
     Shield, ShieldAlert, ShieldCheck,
     Terminal, Lock, Unlock,
-    Copy, CheckCircle2, AlertTriangle,
+    Copy, CheckCircle2, AlertTriangle, Eye, EyeOff,
     RefreshCw, PauseCircle, Settings2,
     Users, DollarSign, Activity,
     BarChart3, Plus, ArrowRight,
@@ -77,6 +77,8 @@ export default function AgentDetailPage() {
     const [activeTab, setActiveTab] = useState<'overview' | 'guardrails'>('overview');
     const [promptFramework, setPromptFramework] = useState<'python-langchain' | 'ts-vercel' | 'python-crewai'>('python-langchain');
     const [isPromptCopying, setIsPromptCopying] = useState(false);
+    const [showApiKey, setShowApiKey] = useState(false);
+    const [isApiKeyCopying, setIsApiKeyCopying] = useState(false);
 
     const pollAgent = async () => {
         if (!user || !agentId) return;
@@ -359,11 +361,36 @@ export default function AgentDetailPage() {
                                     </div>
                                 </h1>
                             )}
-                            <div className="flex items-center gap-3 mt-2">
+                            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
                                 <span className="text-xs font-mono text-neutral-600 tracking-wider flex items-center gap-1" title="Unique database identifier for management">
                                     DATABASE ID: {agentId}
                                 </span>
-                                <span className="w-1 h-1 bg-neutral-800 rounded-full" />
+                                <span className="w-1.5 h-1.5 bg-neutral-800 rounded-full hidden md:block" />
+                                <div className="flex items-center gap-2 group/key">
+                                    <span className="text-xs font-mono text-neutral-500 tracking-wider">API KEY:</span>
+                                    <span className="text-xs font-mono text-emerald-500/80 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 flex items-center gap-2">
+                                        {showApiKey ? agent.apiKey : "••••••••••••••••"}
+                                        <button 
+                                            onClick={() => setShowApiKey(!showApiKey)}
+                                            className="p-0.5 text-neutral-500 hover:text-white transition-colors"
+                                            title={showApiKey ? "Hide Key" : "Show Key"}
+                                        >
+                                            {showApiKey ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(agent.apiKey);
+                                                setIsApiKeyCopying(true);
+                                                setTimeout(() => setIsApiKeyCopying(false), 2000);
+                                            }}
+                                            className="p-0.5 text-neutral-500 hover:text-white transition-colors"
+                                            title="Copy Key"
+                                        >
+                                            {isApiKeyCopying ? <CheckCircle2 className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
+                                        </button>
+                                    </span>
+                                </div>
+                                <span className="w-1.5 h-1.5 bg-neutral-800 rounded-full hidden md:block" />
                                 <span className="text-xs text-neutral-400 italic">Established {agent.createdAt?.toDate?.().toLocaleDateString()}</span>
                             </div>
                         </div>
