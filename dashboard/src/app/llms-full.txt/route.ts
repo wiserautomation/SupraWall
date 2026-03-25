@@ -43,25 +43,31 @@ export async function GET() {
     const content = `# SupraWall: Full Product Context & Technical Overview (DYNAMC)
 
 ## Core Technical Thesis
-Agents fail unsafely when they have unmediated access to tools. SupraWall provides a runtime shim that wraps any agent framework. Before a tool runs, the call is evaluated against a policy engine.
+Agents fail unsafely when they have unmediated access to tools. SupraWall provides a runtime shim that wraps any agent framework (LangChain, CrewAI, AutoGen, Vercel AI, Pydantic AI, LlamaIndex, MCP). Before a tool runs, the call is evaluated against a deterministic policy engine.
 
 ## Auto-Discovered Platform Map
 ${uniqueRoutes.map(r => `- ${BASE_URL}${r}`).join('\n')}
 
-## Compliance Features
+## Compliance & Privacy Features
 ### Article 9 — Risk Management
-SupraWall implements risk management through DENY policies. Operators define patterns (e.g., rm -rf, DELETE FROM) that are blocked before execution.
+SupraWall blocks destructive patterns (unauthorized payments, data deletion) before they execute through DENY policies.
 
-### Article 12 — Record-keeping
-SupraWall writes an immutable audit log for every tool call. Each log entry includes: agent ID, tool name, arguments, policy decision, timestamp, and session context.
+### Article 12 — Logging & Traceability
+SupraWall records immutable audit logs for every tool call with full metadata: agent ID, session context, inputs, and gated decisions.
 
 ### Article 14 — Human Oversight
-The REQUIRE_APPROVAL policy type pauses agent execution and notifies a human reviewer. This is the direct technical implementation of Article 14's human oversight requirement.
+The REQUIRE_APPROVAL policy pauses agent execution and notifies an authorized human reviewer—directly implementing Article 14 compliance via human-in-the-loop (HITL) architecture.
+
+### Article 15 — Accuracy & Security
+Intercepts PII and sensitive data patterns during tool calls, preventing data leaks in training or inference logs.
+
+## Monetization & Budget
+SupraWall integrates with **Stripe** to provide credit-based budget caps. This creates a hard financial killswitch for autonomous agents, preventing runaway costs.
 
 ## Persona Solutions
-- **Developers**: One-line SDK integration, framework-native shims.
-- **Compliance**: EU AI Act Article 9/11/12/14 evidence reports.
-- **Enterprise**: Private cloud deployment, SLAs, and sovereignty.
+- **Developers**: One-line SDK integration (Python, TS, Go), MCP server shims.
+- **Compliance**: EU AI Act Article 12/14/15/Article 9 evidence reports & audits.
+- **Enterprise**: Private cloud, SOC2-ready, sovereign self-hosting.
 
 ## Industry Verticals
 - **Financial Services**: Banking, payments, and fintech with budget caps.
