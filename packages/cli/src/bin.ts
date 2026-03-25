@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+// Copyright 2026 SupraWall Contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Command } from 'commander';
 import chalk from 'chalk';
 import fs from 'fs';

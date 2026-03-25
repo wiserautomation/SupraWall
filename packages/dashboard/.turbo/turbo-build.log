@@ -1,0 +1,252 @@
+
+> @suprawall/dashboard@0.1.0 build
+> next build
+
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /Users/alejandropeghin/Desktop/AntiG/SupraWall/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /Users/alejandropeghin/Desktop/AntiG/SupraWall/packages/dashboard/package-lock.json
+
+▲ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local, .env.production
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 26.8s
+  Running TypeScript ...
+  Finished TypeScript in 21.3s ...
+  Collecting page data using 9 workers ...
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
+[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
+MI, endsWith=END PRIVATE KEY-----
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
+[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
+MI, endsWith=END PRIVATE KEY-----
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
+[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
+MI, endsWith=END PRIVATE KEY-----
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
+[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
+MI, endsWith=END PRIVATE KEY-----
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
+[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
+MI, endsWith=END PRIVATE KEY-----
+  Generating static pages using 9 workers (0/177) ...
+  Generating static pages using 9 workers (44/177) 
+  Generating static pages using 9 workers (88/177) 
+  Generating static pages using 9 workers (132/177) 
+✓ Generating static pages using 9 workers (177/177) in 1521ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /about
+├ ○ /admin
+├ ○ /admin/agents
+├ ○ /admin/analytics
+├ ○ /admin/audit
+├ ○ /admin/funnel
+├ ○ /admin/intelligence
+├ ○ /admin/published
+├ ○ /admin/queue
+├ ○ /admin/revenue
+├ ○ /admin/settings
+├ ○ /admin/tasks
+├ ○ /admin/users
+├ ƒ /api/admin/funnel
+├ ƒ /api/admin/ga-data
+├ ƒ /api/admin/overview
+├ ƒ /api/admin/revenue
+├ ƒ /api/admin/traffic
+├ ƒ /api/admin/users/stats
+├ ƒ /api/agents/register
+├ ƒ /api/approvals
+├ ƒ /api/approvals/[id]
+├ ƒ /api/approvals/[id]/respond
+├ ƒ /api/audit
+├ ƒ /api/audit/export
+├ ƒ /api/audit/scan
+├ ƒ /api/badge/[agentId]
+├ ƒ /api/compliance/certificate
+├ ƒ /api/cron/generate-content
+├ ƒ /api/generate
+├ ƒ /api/generate-key
+├ ƒ /api/intelligence
+├ ƒ /api/mcp
+├ ƒ /api/mcp/auth/authorize
+├ ƒ /api/mcp/auth/callback
+├ ƒ /api/mcp/auth/token
+├ ƒ /api/mcp/sse
+├ ƒ /api/stripe/checkout
+├ ƒ /api/stripe/report-usage
+├ ƒ /api/stripe/setup-stripe
+├ ƒ /api/stripe/webhook
+├ ƒ /api/tasks
+├ ƒ /api/tasks/[id]
+├ ƒ /api/tasks/[id]/published
+├ ƒ /api/tasks/pending
+├ ƒ /api/v1/agents
+├ ƒ /api/v1/agents/[id]
+├ ƒ /api/v1/agents/[id]/assess
+├ ƒ /api/v1/agents/[id]/guardrails
+├ ƒ /api/v1/approvals
+├ ƒ /api/v1/approvals/[id]
+├ ƒ /api/v1/audit-logs
+├ ƒ /api/v1/evaluate
+├ ƒ /api/v1/policies
+├ ƒ /api/v1/policies/[id]
+├ ƒ /api/v1/scrub
+├ ƒ /api/v1/stats
+├ ƒ /api/v1/tenants/[id]
+├ ƒ /api/v1/vault/log
+├ ƒ /api/v1/vault/rules
+├ ƒ /api/v1/vault/rules/[id]
+├ ƒ /api/v1/vault/secrets
+├ ƒ /api/v1/vault/secrets/[id]
+├ ƒ /api/v1/vault/secrets/[id]/rotate
+├ ƒ /api/vault/[...path]
+├ ƒ /api/widget/countdown
+├ ○ /apple-icon.png
+├ ○ /audit
+├ ○ /blog
+├ ○ /blog/agent-to-agent-commerce-eu-ai-act
+├ ○ /blog/agentic-ai-security-checklist-2026
+├ ○ /blog/ai-gateway-vs-compliance-layer
+├ ○ /blog/build-vs-buy-ai-agent-security
+├ ○ /blog/eu-ai-act-high-risk-deadline-delayed-2027
+├ ○ /blog/eu-ai-act-langchain
+├ ○ /blog/hitl-comparison
+├ ○ /blog/meta-rogue-ai-agent-hitl-governance
+├ ○ /blog/prevent-agent-infinite-loops
+├ ○ /blog/state-of-ai-agent-security-2026
+├ ƒ /certificate/[certId]
+├ ○ /changelog
+├ ○ /compliance
+├ ○ /connect
+├ ○ /connect/analytics
+├ ○ /connect/events
+├ ○ /connect/keys
+├ ○ /dashboard
+├ ○ /dashboard/agents
+├ ƒ /dashboard/agents/[id]
+├ ○ /dashboard/approvals
+├ ○ /dashboard/audit
+├ ○ /dashboard/compliance
+├ ○ /dashboard/integrations
+├ ○ /dashboard/integrations/connect
+├ ○ /dashboard/monitoring
+├ ○ /dashboard/policies
+├ ○ /dashboard/settings
+├ ○ /dashboard/simulation
+├ ○ /dashboard/team
+├ ○ /dashboard/threats
+├ ○ /dashboard/vault
+├ ○ /docs
+├ ○ /docs/ai-assistants
+├ ○ /docs/api
+├ ○ /docs/examples
+├ ○ /docs/frameworks/autogen
+├ ○ /docs/frameworks/crewai
+├ ○ /docs/frameworks/langchain
+├ ○ /docs/frameworks/llamaindex
+├ ○ /docs/frameworks/vercel-ai
+├ ○ /docs/integrations/openclaw
+├ ○ /docs/integrations/stripe
+├ ○ /docs/mcp
+├ ○ /docs/python
+├ ○ /docs/quickstart
+├ ○ /eu-ai-act
+├ ○ /eu-ai-act/article-12
+├ ○ /eu-ai-act/article-14
+├ ○ /features
+├ ○ /features/audit-trail
+├ ○ /features/budget-limits
+├ ○ /features/human-in-the-loop
+├ ○ /features/pii-shield
+├ ○ /features/policy-engine
+├ ○ /features/prompt-shield
+├ ○ /features/vault
+├ ○ /for-compliance-officers
+├ ○ /for-developers
+├ ○ /for-enterprise
+├ ○ /gdpr
+├ ○ /icon.png
+├ ○ /integrations
+├ ○ /integrations/autogen
+├ ○ /integrations/claude
+├ ○ /integrations/crewai
+├ ○ /integrations/langchain
+├ ○ /integrations/llamaindex
+├ ○ /integrations/openclaw
+├ ○ /integrations/openrouter
+├ ○ /integrations/pydanticai
+├ ○ /integrations/stripe
+├ ○ /integrations/vercel
+├ ○ /learn
+├ ○ /learn/ai-agent-audit-trail-logging
+├ ○ /learn/ai-agent-firewall
+├ ○ /learn/ai-agent-infinite-loop-detection
+├ ○ /learn/ai-agent-pii-protection
+├ ○ /learn/ai-agent-runaway-costs
+├ ○ /learn/ai-agent-secrets-management
+├ ○ /learn/ai-agent-security-best-practices
+├ ○ /learn/ai-agent-security-glossary
+├ ○ /learn/ai-agent-vault-secrets-management
+├ ○ /learn/eu-ai-act-article-14-human-oversight
+├ ○ /learn/eu-ai-act-article-9-risk-management
+├ ○ /learn/eu-ai-act-august-2026-deadline
+├ ○ /learn/eu-ai-act-compliance-ai-agents
+├ ○ /learn/eu-ai-act-high-risk-ai-assessment
+├ ○ /learn/how-to-set-token-limits-ai-agents
+├ ○ /learn/human-in-the-loop-ai-agents
+├ ○ /learn/mcp-server-security
+├ ○ /learn/prompt-injection-credential-theft
+├ ○ /learn/protect-api-keys-from-ai-agents
+├ ○ /learn/runtime-ai-governance
+├ ○ /learn/what-are-ai-agent-guardrails
+├ ○ /learn/what-is-agent-runtime-security
+├ ○ /learn/zero-trust-ai-agents
+├ ƒ /llms-full.txt
+├ ƒ /llms.txt
+├ ○ /login
+├ ○ /mcp/consent
+├ ○ /news
+├ ● /news/[slug]
+│ ├ /news/eu-commission-misses-guidance-deadline-august-enforcement-stands
+│ ├ /news/80-percent-organizations-risky-ai-agent-behaviors-2026-report
+│ ├ /news/token-security-launches-intent-based-ai-agent-controls
+│ └ /news/openai-aardvark-ai-security-agent-research-preview
+├ ○ /news/sitemap.xml
+├ ○ /partner
+├ ○ /pricing
+├ ○ /privacy
+├ ○ /quickstart
+├ ○ /security
+├ ƒ /share/compliance/[orgId]
+├ ○ /sitemap.xml
+├ ○ /spec
+├ ○ /stripe
+├ ○ /tools/llm-cost-calculator
+├ ○ /use-cases
+├ ○ /use-cases/cost-control
+├ ○ /use-cases/financial-services
+├ ○ /use-cases/healthcare
+├ ○ /use-cases/legal
+├ ○ /use-cases/prompt-injection
+├ ○ /vs
+├ ○ /vs/accuknox
+├ ○ /vs/galileo
+├ ○ /vs/guardrails-ai
+├ ○ /vs/jozu
+├ ○ /vs/lakera
+├ ○ /vs/nemo-guardrails
+├ ○ /vs/portkey
+└ ○ /vs/straiker
+
+
+○  (Static)   prerendered as static content
+●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+ƒ  (Dynamic)  server-rendered on demand
+

@@ -1,0 +1,5 @@
+npm warn config ignoring workspace config at /Users/alejandropeghin/Desktop/AntiG/SupraWall/packages/sdk-ts/.npmrc
+
+> suprawall@0.1.0 build
+> tsc
+

@@ -1,14 +1,46 @@
+# Dependencies
 node_modules/
-.env
-.env.local
-.env.*.local
-.firebase/
+venv/
+__pycache__/
+*.pyc
+
+# Build output
 dist/
 build/
 .next/
-*~
+*.egg-info/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.*
+!.env.example
+
+# IDE
 .DS_Store
-.vercel
-.env*.local
-test_firebase_prod.js
-firebase/firebase-debug.log
+*.swp
+*~
+.idea/
+.vscode/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Vercel
+.vercel/
+
+# Keys and certificates
+*.pem
+*.key
+serviceAccountKey*.json
+
+# OS
+Thumbs.db
+
+# Test artifacts
+coverage/
+.pytest_cache/
+
+# Proprietary (these should be in suprawall-cloud repo)
+suprawall-cloud/

@@ -1,0 +1,20 @@
+{
+  "name": "@suprawall/core",
+  "version": "0.1.0",
+  "description": "Database-agnostic core for SupraWall",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "firebase": "^12.9.0"
+  },
+  "peerDependencies": {
+    "firebase": "^12.9.0"
+  },
+  "author": "SupraWall",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,25 @@
+// Copyright 2026 SupraWall Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import * as admin from "firebase-admin";
+import dotenv from "dotenv";
+
+dotenv.config();
+
+const serviceAccount = JSON.parse(
+    process.env.FIREBASE_SERVICE_ACCOUNT || "{}"
+);
+
+if (admin.apps.length === 0) {
+    if (Object.keys(serviceAccount).length > 0) {
+        admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+            projectId: "suprawall-1b9e9",
+        });
+    } else {
+        // Fallback or skip if not provided (useful for local dev without firebase)
+        console.warn("[Firebase] No service account provided. Firestore auth will be disabled.");
+    }
+}
+
+export const db = admin.apps.length > 0 ? admin.firestore() : null;

@@ -1,0 +1,16 @@
+{
+    "name": "@suprawall/langchain",
+    "version": "0.1.0",
+    "description": "Official suprawall security integration for LangChain TS",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc"
+    },
+    "dependencies": {
+        "@langchain/core": "^1.1.36"
+    },
+    "devDependencies": {
+        "typescript": "^5.0.0"
+    }
+}

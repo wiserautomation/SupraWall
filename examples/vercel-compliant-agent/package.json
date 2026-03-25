@@ -1,17 +1,14 @@
 {
-  "name": "suprawall-compliant-agent",
-  "version": "1.0.0",
-  "description": "Vercel AI SDK Agent with EU AI Act compliance middleware",
+  "name": "vercel-compliant-agent",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start"
+    "dev": "next dev"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^1.0.0",
-    "@suprawall/vercel-ai": "latest",
-    "ai": "^4.0.0",
+    "@langchain/core": "1.1.36",
+    "@suprawall/vercel-ai": "*",
+    "ai": "^6.0.138",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest"
