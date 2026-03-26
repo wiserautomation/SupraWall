@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd packages/dashboard && npm run build",
+  "buildCommand": "npx turbo run build --filter=@suprawall/dashboard",
   "outputDirectory": "packages/dashboard/.next",
   "installCommand": "npm install",
   "framework": "nextjs"
