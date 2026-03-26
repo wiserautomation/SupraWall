@@ -1,0 +1,29 @@
+# SupraWall Code Owners
+# These owners will be automatically requested for review on PRs.
+
+# Global owner (all files)
+* @suprawall/core-team
+
+# SDKs
+packages/sdk-ts/          @suprawall/core-team
+packages/sdk-python/      @suprawall/core-team
+packages/sdk-go/          @suprawall/core-team
+
+# Server & Core
+packages/server/          @suprawall/core-team
+packages/core/            @suprawall/core-team
+
+# Dashboard
+packages/dashboard/       @suprawall/core-team
+
+# Security-sensitive files
+packages/server/src/vault.ts    @suprawall/core-team
+packages/server/src/auth.ts     @suprawall/core-team
+packages/server/src/policy.ts   @suprawall/core-team
+SECURITY.md                     @suprawall/core-team
+
+# CI/CD
+.github/                  @suprawall/core-team
+
+# Framework Plugins (open for community contributions)
+plugins/                  @suprawall/core-team

@@ -1,41 +1,185 @@
 # Contributing to SupraWall
 
-First off, thank you for considering contributing to SupraWall! It's people like you that make SupraWall such a great tool for the AI community.
+Thank you for your interest in contributing to SupraWall! Whether it's a bug fix, new feature, documentation improvement, or framework plugin — every contribution makes AI agent security better for everyone.
 
 ## Code of Conduct
 
-By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md).
+By participating in this project, you agree to abide by our [Code of Conduct](CODE_OF_CONDUCT.md). We are committed to providing a welcoming and inclusive experience for everyone.
 
-## How Can I Contribute?
+## How to Contribute
 
 ### Reporting Bugs
 
-* Check the GitHub Issues to see if the bug has already been reported.
-* If you can't find an open issue addressing the problem, open a new one.
-* Use a clear and descriptive title.
-* Describe the exact steps which reproduce the problem.
+- Check [GitHub Issues](https://github.com/suprawall/suprawall/issues) to see if the bug has already been reported
+- If not, [open a new issue](https://github.com/suprawall/suprawall/issues/new?template=bug_report.md) with a clear title and detailed description
+- Include your SupraWall version, SDK language, framework, and deployment type
+- Provide steps to reproduce and any relevant error output or audit logs
 
-### Suggesting Enhancements
+### Suggesting Features
 
-* Check the GitHub Issues to see if the enhancement has already been suggested.
-* Open a new issue with a clear and descriptive title.
-* Provide a step-by-step description of the suggested enhancement.
-* Explain why this enhancement would be useful to most SupraWall users.
+- Check existing issues and the [public roadmap](https://github.com/orgs/suprawall/projects) first
+- [Open a feature request](https://github.com/suprawall/suprawall/issues/new?template=feature_request.md) with your use case
+- Describe the problem you're solving, not just the solution you want
+
+### Security Vulnerabilities
+
+**Do NOT open a public issue for security vulnerabilities.** Email **security@suprawall.dev** directly. See [SECURITY.md](SECURITY.md) for our full security policy.
 
 ### Pull Requests
 
-* Fill in the PR template.
-* Ensure the PR includes tests for the new feature or bug fix.
-* Documentation should be updated if necessary.
-* Follow the existing code style.
+1. Fork the repository
+2. Create a feature branch from `main` (`git checkout -b feature/my-feature`)
+3. Make your changes
+4. Ensure all tests pass (`npm test` from root)
+5. Ensure the full build passes (`npm run build` from root)
+6. Commit with a descriptive message
+7. Push to your fork and submit a Pull Request
 
 ## Development Setup
 
-We use a monorepo structure managed by Turborepo.
+### Prerequisites
 
-1. Clone the repository: `git clone https://github.com/suprawall/suprawall.git`
-2. Install dependencies: `npm install`
-3. Build all packages: `npm run build`
-4. Run tests: `npm test`
+- Node.js 18+ (20 recommended)
+- npm 10+
+- PostgreSQL 15+ (for server development)
+- Python 3.9+ (for Python SDK/plugin development)
+- Go 1.21+ (for Go SDK development)
 
-See our [Documentation](https://docs.suprawall.dev) for more details.
+### Getting Started
+
+```bash
+# Clone the repository
+git clone https://github.com/suprawall/suprawall.git
+cd suprawall
+
+# Install all dependencies
+npm install
+
+# Build all packages
+npm run build
+
+# Run tests
+npm test
+
+# Start development mode (watches for changes)
+npm run dev
+```
+
+### Monorepo Structure
+
+The project uses [Turborepo](https://turbo.build) to manage the monorepo:
+
+```
+packages/
+  core/         - Shared types & configuration
+  server/       - Backend policy engine (Express/PostgreSQL)
+  sdk-ts/       - TypeScript SDK
+  sdk-python/   - Python SDK
+  sdk-go/       - Go SDK
+  dashboard/    - Next.js admin UI
+  cli/          - CLI tool
+  webhooks/     - Async event workers
+
+plugins/
+  langchain-ts/ - LangChain TypeScript plugin
+  langchain-py/ - LangChain Python plugin
+  autogen/      - AutoGen plugin
+  crewai/       - CrewAI plugin
+  llama-index/  - LlamaIndex plugin
+  vercel-ai/    - Vercel AI SDK plugin
+  openclaw/     - OpenClaw plugin
+```
+
+### Working on a Specific Package
+
+```bash
+# Build only the TypeScript SDK
+cd packages/sdk-ts
+npm run build
+
+# Work on the Python SDK
+cd packages/sdk-python
+pip install -e ".[dev]"
+python -m pytest tests/
+
+# Work on the Go SDK
+cd packages/sdk-go
+go build ./...
+go test ./...
+```
+
+### Running the Server Locally
+
+```bash
+# Start PostgreSQL (via Docker)
+docker compose up postgres -d
+
+# Start the server in development mode
+cd packages/server
+npm run dev
+```
+
+### Running the Dashboard
+
+```bash
+cd packages/dashboard
+npm run dev
+# Visit http://localhost:3000
+```
+
+## Contribution Guidelines
+
+### Code Style
+
+- **TypeScript:** Follow the existing ESLint configuration
+- **Python:** Follow PEP 8, use type hints
+- **Go:** Follow standard Go formatting (`gofmt`)
+- Write clear, descriptive variable and function names
+- Add comments for complex logic, especially in security-sensitive code
+
+### Testing
+
+- All new features must include tests
+- Bug fixes should include a regression test
+- Run the full test suite before submitting: `npm test`
+- For security-sensitive changes (vault, auth, policy engine), add extra test coverage
+
+### Commit Messages
+
+Use clear, descriptive commit messages:
+
+```
+feat(sdk-ts): add support for delegation chain authorization
+fix(vault): prevent rate limit bypass on concurrent requests
+docs(readme): add Go SDK quickstart example
+chore(ci): add Python 3.12 to test matrix
+```
+
+### Documentation
+
+- Update relevant documentation for any user-facing changes
+- Add JSDoc/docstring comments to public APIs
+- Update the README if adding new features or integrations
+
+## Areas We Especially Welcome Contributions
+
+- **New framework plugins** (PydanticAI, Haystack, Semantic Kernel, etc.)
+- **Language SDKs** (Ruby, PHP, Java, Rust, C# need community love)
+- **Database adapters** (DynamoDB, CockroachDB, etc.)
+- **Documentation improvements** (tutorials, guides, translations)
+- **Bug fixes** with clear reproduction steps
+- **Performance improvements** with benchmarks
+
+## Getting Help
+
+- **Discord:** [Join our community](https://discord.gg/suprawall) for questions and discussion
+- **GitHub Discussions:** For longer-form conversations and RFCs
+- **Issues:** For bug reports and feature requests
+
+## Recognition
+
+All contributors are recognized in our release notes. Significant contributors are invited to the SupraWall Ambassador program.
+
+---
+
+Thank you for helping make AI agent security accessible to everyone.
