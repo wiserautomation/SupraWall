@@ -10,6 +10,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { collection, query, where, onSnapshot } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
 import { parseEnvFile, ParsedSecret } from "@/lib/parse-env";
+import { TierBanner } from "@/components/TierBanner";
 
 const API_BASE = "/api/v1/vault";
 
@@ -374,6 +375,14 @@ export default function VaultPage() {
                     <code className="font-mono text-emerald-200">$SUPRAWALL_VAULT_*</code> tokens and scrubs all traces from responses.
                 </p>
             </div>
+
+            {/* Tier Upgrade Nudge */}
+            <TierBanner
+                tier="free"
+                usages={[
+                    { current: secrets.length, max: 5, label: 'Vault Secrets', upgradeFeature: 'Unlimited + HSM on Cloud' },
+                ]}
+            />
 
             {/* Tabs */}
             <div className="flex gap-1 border-b border-emerald-500/10">

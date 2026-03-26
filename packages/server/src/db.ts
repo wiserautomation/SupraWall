@@ -82,7 +82,28 @@ export const initDb = async () => {
             name VARCHAR(255),
             master_api_key VARCHAR(255),
             slack_webhook_url TEXT,
+            tier VARCHAR(20) DEFAULT 'free',
+            subscription_id VARCHAR(255),
+            tier_expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT NOW()
+        );
+
+        -- Ensure tier column exists for existing deployments
+        DO $$ BEGIN
+            IF NOT EXISTS (
+                SELECT 1 FROM information_schema.columns
+                WHERE table_name='tenants' AND column_name='tier'
+            ) THEN
+                ALTER TABLE tenants ADD COLUMN tier VARCHAR(20) DEFAULT 'free';
+            END IF;
+        END $$;
+
+        -- Monthly operation counters for free-tier metering
+        CREATE TABLE IF NOT EXISTS usage_counters (
+            tenant_id VARCHAR(255) NOT NULL,
+            month VARCHAR(7) NOT NULL,
+            operation_count INTEGER DEFAULT 0,
+            PRIMARY KEY (tenant_id, month)
         );
 
         -- Enable encryption (pgcrypto)

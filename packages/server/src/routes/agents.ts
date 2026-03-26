@@ -6,6 +6,7 @@ import { pool } from "../db";
 import { adminAuth, AuthenticatedRequest } from "../auth";
 import { db } from "../firebase";
 import crypto from "crypto";
+import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
 
 const router = express.Router();
 
@@ -31,14 +32,29 @@ router.get("/", adminAuth, async (req: Request, res: Response) => {
     }
 });
 
-// POST create agent (Admin Protected)
-router.post("/", adminAuth, async (req: Request, res: Response) => {
+// POST create agent (Admin Protected + Tier Enforced)
+router.post("/", adminAuth, resolveTier, async (req: Request, res: Response) => {
     const client = await pool.connect();
     try {
         const tenantId = (req as AuthenticatedRequest).tenantId;
         const { name, scopes, guardrails } = req.body;
+        const tierLimits = (req as TieredRequest).tierLimits!;
 
         if (!name) return res.status(400).json({ error: "Missing agent name" });
+
+        // --- Tier Enforcement: Agent Count ---
+        if (isFinite(tierLimits.maxAgents)) {
+            const countResult = await pool.query(
+                "SELECT COUNT(*) FROM agents WHERE tenantid = $1",
+                [tenantId]
+            );
+            const currentCount = parseInt(countResult.rows[0].count, 10);
+            if (currentCount >= tierLimits.maxAgents) {
+                return res.status(403).json(
+                    tierLimitError("Agent", currentCount, tierLimits.maxAgents)
+                );
+            }
+        }
 
         const agentId = crypto.randomUUID();
         const apiKey = generateApiKey();

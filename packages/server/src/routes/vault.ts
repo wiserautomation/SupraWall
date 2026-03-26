@@ -3,18 +3,34 @@
 
 import { Router, Request, Response } from "express";
 import { pool } from "../db";
+import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
 
 const router = Router();
 
 const SECRET_NAME_PATTERN = /^[A-Z][A-Z0-9_]{2,63}$/;
 
 // POST /v1/vault/secrets — Create a secret
-router.post("/secrets", async (req: Request, res: Response) => {
+router.post("/secrets", resolveTier, async (req: Request, res: Response) => {
     try {
         const { tenantId, secretName, secretValue, description, expiresAt, assignedAgents } = req.body;
+        const tierLimits = (req as TieredRequest).tierLimits!;
 
         if (!tenantId || !secretName || !secretValue) {
             return res.status(400).json({ error: "Missing required fields: tenantId, secretName, secretValue" });
+        }
+
+        // --- Tier Enforcement: Vault Secret Count ---
+        if (isFinite(tierLimits.maxVaultSecrets)) {
+            const countResult = await pool.query(
+                "SELECT COUNT(*) FROM vault_secrets WHERE tenant_id = $1",
+                [tenantId]
+            );
+            const currentCount = parseInt(countResult.rows[0].count, 10);
+            if (currentCount >= tierLimits.maxVaultSecrets) {
+                return res.status(403).json(
+                    tierLimitError("Vault secrets", currentCount, tierLimits.maxVaultSecrets)
+                );
+            }
         }
 
         if (!SECRET_NAME_PATTERN.test(secretName)) {

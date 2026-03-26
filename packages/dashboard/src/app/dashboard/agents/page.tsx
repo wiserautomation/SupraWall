@@ -53,6 +53,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Copy, Plus, Key as KeyIcon, Trash2, Ban, PauseCircle, Code, Server, Play, RefreshCw, Layers } from "lucide-react";
+import { TierBanner } from "@/components/TierBanner";
 
 const SCOPE_PRESETS = [
     { label: "Full Access", value: "*:*" },
@@ -574,6 +575,14 @@ export default function AgentsPage() {
                     subtext="Estimated API overhead"
                 />
             </div>
+
+            {/* Tier Upgrade Nudge */}
+            <TierBanner
+                tier="free"
+                usages={[
+                    { current: agents.filter(a => a.status !== 'revoked').length, max: 3, label: 'Agents', upgradeFeature: 'Unlimited on Cloud' },
+                ]}
+            />
 
             {/* Agents Table */}
             <motion.div 

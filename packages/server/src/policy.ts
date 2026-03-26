@@ -7,6 +7,8 @@ import { resolveVaultTokens, VaultResolutionResult } from "./vault";
 import { scrubResponse } from "./scrubber";
 import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
+import { TIER_LIMITS, currentMonth } from "./tier-config";
+import type { Tier } from "./tier-config";
 
 export interface EvaluationRequest {
     agentId: string;
@@ -27,6 +29,32 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
 
         if (!agentId || !toolName) {
             return res.status(400).json({ error: "Missing agentId or toolName" });
+        }
+
+        // 0a. Resolve tenant tier
+        let tenantTier: Tier = "free";
+        try {
+            const tierResult = await pool.query("SELECT tier FROM tenants WHERE id = $1", [tenantId]);
+            tenantTier = (tierResult.rows[0]?.tier as Tier) || "free";
+        } catch { /* default to free */ }
+        const tierLimits = TIER_LIMITS[tenantTier];
+
+        // 0b. Monthly Operation Limit (free tier only)
+        if (isFinite(tierLimits.maxOpsPerMonth)) {
+            const month = currentMonth();
+            const opsResult = await pool.query(
+                `SELECT operation_count FROM usage_counters WHERE tenant_id = $1 AND month = $2`,
+                [tenantId, month]
+            );
+            const currentOps = opsResult.rows[0]?.operation_count || 0;
+            if (currentOps >= tierLimits.maxOpsPerMonth) {
+                return res.status(429).json({
+                    decision: "DENY",
+                    reason: `Monthly operation limit reached (${currentOps.toLocaleString()}/${tierLimits.maxOpsPerMonth.toLocaleString()}). Upgrade to Cloud for unlimited operations.`,
+                    upgradeUrl: "https://www.supra-wall.com/pricing",
+                    code: "TIER_LIMIT_EXCEEDED",
+                });
+            }
         }
 
         // 0. Budget Enforcement
@@ -210,6 +238,18 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             }
 
             resolvedArgs = vaultResult.resolvedArgs;
+        }
+
+        // 3b. Increment monthly operation counter
+        if (decision === "ALLOW") {
+            const month = currentMonth();
+            pool.query(
+                `INSERT INTO usage_counters (tenant_id, month, operation_count)
+                 VALUES ($1, $2, 1)
+                 ON CONFLICT (tenant_id, month)
+                 DO UPDATE SET operation_count = usage_counters.operation_count + 1`,
+                [tenantId, month]
+            ).catch(err => console.error("[UsageCounter] Failed to increment:", err));
         }
 
         // 4. Audit Logging
