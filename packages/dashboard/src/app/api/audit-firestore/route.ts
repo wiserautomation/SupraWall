@@ -17,9 +17,16 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "userId is required" }, { status: 400 });
         }
 
-        // Step 1: Get the user's agent IDs
+        // Step 1a: Get the user's regular agent IDs
         const agentsSnap = await db.collection("agents").where("userId", "==", userId).get();
         const agentIds = agentsSnap.docs.map(doc => doc.id);
+
+        // Step 1b: Get the user's Connect Platform sub-key IDs (API keys starting with agc_)
+        const platformsSnap = await db.collection("platforms").where("ownerId", "==", userId).get();
+        for (const pDoc of platformsSnap.docs) {
+            const keysSnap = await db.collection("connect_keys").where("platformId", "==", pDoc.id).get();
+            keysSnap.docs.forEach(kDoc => agentIds.push(kDoc.id));
+        }
 
         if (agentIds.length === 0) {
             return NextResponse.json({ logs: [], stats: { total: 0, allowed: 0, denied: 0, approvals: 0, avgRisk: 0, totalCost: 0 } });
