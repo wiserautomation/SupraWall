@@ -3,6 +3,7 @@
 
 import { Request, Response } from "express";
 import { pool } from "./db";
+import { logger } from "./logger";
 import { resolveVaultTokens, VaultResolutionResult } from "./vault";
 import { scrubResponse } from "./scrubber";
 import { getAgentById } from "./auth";
@@ -57,48 +58,148 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             }
         }
 
-        // 0. Budget Enforcement
-        const maxBudget = agent?.max_cost_usd || 10;
-        const spendResult = await pool.query(
-            "SELECT SUM(cost_usd) as total FROM audit_logs WHERE agentid = $1 AND decision = 'ALLOW'",
-            [agentId]
-        );
-        const currentSpend = parseFloat(spendResult.rows[0].total || 0);
-
-        if (currentSpend >= maxBudget) {
-            await pool.query(
-                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
-                 JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
+        // 0. Budget Enforcement (Cloud/Enterprise only)
+        if (tierLimits.budgetEnforcement) {
+            const maxBudget = agent?.max_cost_usd || 10;
+            const spendResult = await pool.query(
+                "SELECT SUM(cost_usd) as total FROM audit_logs WHERE agentid = $1 AND decision = 'ALLOW'",
+                [agentId]
             );
+            const currentSpend = parseFloat(spendResult.rows[0].total || 0);
 
-            return res.status(403).json({
-                decision: "DENY",
-                reason: `Budget exceeded: Current spend $${currentSpend.toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
-            });
+            if (currentSpend >= maxBudget) {
+                await pool.query(
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                     JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
+                );
+
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: `Budget exceeded: Current spend $${currentSpend.toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
+                });
+            }
         }
 
-        // 0. Threat Detection (Fire-and-forget)
+        // 0. Threat Detection (Blocking — returns DENY on match)
         const argsString = JSON.stringify(args || {});
-        (async () => {
-            // SQL Injection Check
-            const sqlInjections = [/' OR '1'='1/i, /UNION SELECT/i, /--;/];
-            for (const pattern of sqlInjections) {
-                if (pattern.test(argsString)) {
-                    pool.query(
-                        "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                        [tenantId, agentId, "sql_injection_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
-                    ).catch(console.error);
-                }
-            }
-            // Prompt Injection Check
-            if (argsString.includes("Ignore all previous instructions") || argsString.includes("System bypass")) {
+
+        // SQL Injection Patterns
+        const sqlPatterns = [
+            { pattern: /DROP\s+TABLE/i, label: "DROP TABLE" },
+            { pattern: /DELETE\s+FROM/i, label: "DELETE FROM" },
+            { pattern: /INSERT\s+INTO/i, label: "INSERT INTO" },
+            { pattern: /UPDATE\s+\S+\s+SET/i, label: "UPDATE SET" },
+            { pattern: /UNION\s+SELECT/i, label: "UNION SELECT" },
+            { pattern: /OR\s+['"]?1['"]?\s*=\s*['"]?1/i, label: "OR 1=1" },
+            { pattern: /'\s*OR\s+'[^']*'\s*=\s*'/i, label: "OR tautology" },
+            { pattern: /;\s*--/i, label: "comment terminator" },
+            { pattern: /'\s*;\s*DROP/i, label: "chained DROP" },
+            { pattern: /EXEC(\s+|\()sp_/i, label: "EXEC stored procedure" },
+            { pattern: /xp_cmdshell/i, label: "xp_cmdshell" },
+        ];
+
+        for (const { pattern, label } of sqlPatterns) {
+            if (pattern.test(argsString)) {
+                logger.warn(`[ThreatEngine] SQL Injection blocked: ${label}`, { agentId, toolName });
                 pool.query(
                     "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                    [tenantId, agentId, "prompt_injection_attempt", "medium", JSON.stringify({ toolName })]
-                ).catch(console.error);
+                    [tenantId, agentId, "sql_injection_attempt", "critical", JSON.stringify({ toolName, pattern: label })]
+                ).catch(err => logger.error("Failed to log SQL injection threat", { error: err }));
+                await pool.query(
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100,
+                     JSON.stringify({ reason: `Threat blocked: SQL injection (${label})`, matchedRule: "threat_engine" })]
+                );
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: `Threat detected: SQL injection pattern (${label}) blocked by SupraWall Threat Engine.`,
+                    threatType: "sql_injection",
+                });
             }
-        })();
+        }
+
+        // Prompt Injection Patterns
+        const promptPatterns = [
+            /Ignore\s+(all\s+)?previous\s+instructions/i,
+            /System\s+bypass/i,
+            /You\s+are\s+now\s+(a|an|the)\s/i,
+            /Forget\s+(all\s+)?(your|previous)\s+instructions/i,
+            /IGNORE\s+PREVIOUS/i,
+            /Do\s+not\s+follow\s+(your|the|any)\s+(previous|original)/i,
+            /Override\s+(system|safety|security)/i,
+            /Disregard\s+(all|any|your)\s+(previous|prior|safety)/i,
+            /Act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i,
+            /Reveal\s+(your|the)\s+(system\s+)?prompt/i,
+        ];
+
+        for (const pattern of promptPatterns) {
+            if (pattern.test(argsString)) {
+                logger.warn(`[ThreatEngine] Prompt Injection blocked`, { agentId, toolName, pattern: pattern.source });
+                pool.query(
+                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
+                    [tenantId, agentId, "prompt_injection_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
+                ).catch(err => logger.error("Failed to log prompt injection threat", { error: err }));
+                await pool.query(
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                     JSON.stringify({ reason: "Threat blocked: Prompt injection attempt", matchedRule: "threat_engine" })]
+                );
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: "Threat detected: Prompt injection attempt blocked by SupraWall Threat Engine.",
+                    threatType: "prompt_injection",
+                });
+            }
+        }
+
+        // XSS / Script Injection Patterns
+        const xssPatterns = [
+            /<script[\s>]/i,
+            /javascript\s*:/i,
+            /on(error|load|click|mouseover)\s*=/i,
+            /<iframe[\s>]/i,
+            /<img[^>]+onerror/i,
+        ];
+
+        for (const pattern of xssPatterns) {
+            if (pattern.test(argsString)) {
+                logger.warn(`[ThreatEngine] XSS attempt blocked`, { agentId, toolName });
+                pool.query(
+                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
+                    [tenantId, agentId, "xss_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
+                ).catch(err => logger.error("Failed to log XSS threat", { error: err }));
+                await pool.query(
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                     JSON.stringify({ reason: "Threat blocked: XSS/script injection attempt", matchedRule: "threat_engine" })]
+                );
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: "Threat detected: XSS/script injection attempt blocked by SupraWall Threat Engine.",
+                    threatType: "xss_injection",
+                });
+            }
+        }
+
+        // Path Traversal Patterns
+        if (/\.\.[\/\\]/.test(argsString)) {
+            logger.warn(`[ThreatEngine] Path traversal blocked`, { agentId, toolName });
+            pool.query(
+                "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
+                [tenantId, agentId, "path_traversal_attempt", "high", JSON.stringify({ toolName })]
+            ).catch(err => logger.error("Failed to log path traversal threat", { error: err }));
+            await pool.query(
+                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 90,
+                 JSON.stringify({ reason: "Threat blocked: Path traversal attempt", matchedRule: "threat_engine" })]
+            );
+            return res.status(403).json({
+                decision: "DENY",
+                reason: "Threat detected: Path traversal attempt blocked by SupraWall Threat Engine.",
+                threatType: "path_traversal",
+            });
+        }
 
         // 1. Gatekeeper: Scope Verification (Delegation Chain)
         const { delegationChain } = req.body as EvaluationRequest;
@@ -109,7 +210,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             const actor = (agent && agent.id === actorId) ? agent : await getAgentById(actorId);
             
             if (!actor) {
-                console.warn(`[Gatekeeper] Actor ${actorId} in chain not found.`);
+                logger.warn(`[Gatekeeper] Actor ${actorId} in chain not found.`);
                 continue; 
             }
 
@@ -120,7 +221,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             
             if (!isAllowedByScope) {
                 await pool.query(
-                    "INSERT INTO auditlogs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
                     [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
                      JSON.stringify({ reason: "Chain scope failure", actorId, requiredScope: toolName, agentScopes: scopes })]
                 );
@@ -183,9 +284,9 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     );
                     const approvalId = approvalRes.rows[0].id;
                     
-                    // Send Slack notification if agent has webhook
+                    // Send Slack notification (Cloud/Enterprise only)
                     const agentDetails = await getAgentById(agentId);
-                    if (agentDetails?.slack_webhook) {
+                    if (tierLimits.approvals !== 'api-polling' && agentDetails?.slack_webhook) {
                         await sendSlackNotification(
                             agentDetails.slack_webhook,
                             agentDetails.name || agentId,
@@ -198,7 +299,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     // Attach ID to response for tracking
                     response.approvalId = approvalId;
                 } catch (err) {
-                    console.error("Failed to create approval request", err);
+                    logger.error("Failed to create approval request", { error: err, agentId, toolName });
                     // Fallback to DENY if we can't create the approval request
                     decision = "DENY";
                     matchedRule = "approval_system_error";
@@ -249,7 +350,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                  ON CONFLICT (tenant_id, month)
                  DO UPDATE SET operation_count = usage_counters.operation_count + 1`,
                 [tenantId, month]
-            ).catch(err => console.error("[UsageCounter] Failed to increment:", err));
+            ).catch(err => logger.error("[UsageCounter] Failed to increment:", { error: err, tenantId }));
         }
 
         // 4. Audit Logging
@@ -276,15 +377,17 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
 
         res.json(response);
     } catch (e) {
-        console.error("Evaluation error:", e);
+        logger.error("Evaluation error:", { error: e });
         res.status(500).json({ decision: "DENY", reason: "Internal Server Error" });
     }
 };
 
 export const scrubToolResponse = async (req: Request, res: Response) => {
+    let tenantId = "default-tenant";
     try {
-        const { tenantId, secretNames, toolResponse } = req.body;
-
+        const { tenantId: reqTenantId, secretNames, toolResponse } = req.body;
+        tenantId = reqTenantId || "default-tenant";
+        
         if (!secretNames || secretNames.length === 0) {
             return res.json({ scrubbedResponse: toolResponse });
         }
@@ -305,7 +408,7 @@ export const scrubToolResponse = async (req: Request, res: Response) => {
         const scrubbed = scrubResponse(toolResponse, secretValues);
         res.json({ scrubbedResponse: scrubbed });
     } catch (e) {
-        console.error("Scrub error:", e);
+        logger.error("Scrub error:", { error: e, tenantId });
         res.json({ scrubbedResponse: "[SCRUB_ERROR: Response redacted for safety]" });
     }
 };

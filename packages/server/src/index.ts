@@ -12,10 +12,12 @@ import threatRouter from "./routes/threat";
 import policiesRouter from "./routes/policies";
 import approvalsRouter from "./routes/approvals";
 import agentsRouter from "./routes/agents";
+import { logger } from "./logger";
 import auditLogsRouter from "./routes/audit_logs";
 import tenantsRouter from "./routes/tenants";
 import statsRouter from "./routes/stats";
 import contentRouter from "./routes/content";
+import shieldRouter from "./routes/shield";
 import { gatekeeperAuth } from "./auth";
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
@@ -76,6 +78,9 @@ app.use("/v1/stats", statsRouter);
 // Content Migration Routes
 app.use("/v1/content", contentRouter);
 
+// Shield Status Route
+app.use("/v1/shield", shieldRouter);
+
 // Export the app for Vercel
 export default app;
 
@@ -84,12 +89,23 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
     const startServer = async () => {
         try {
             await initDb();
-            console.log("Database initialized");
+            logger.info("Database initialized");
             app.listen(port, () => {
-                console.log(`SupraWall Server running on port ${port}`);
+                const banner = `
+╔══════════════════════════════════════════╗
+║           SUPRAWALL v1.0.0               ║
+║                                          ║
+║  Status:     🟢 ACTIVE                   ║
+║  Database:   ✅ PostgreSQL connected     ║
+║  API:        http://localhost:${port.toString().padEnd(15, " ")}║
+║                                          ║
+║  Ready to protect your AI agents.        ║
+╚══════════════════════════════════════════╝`;
+                logger.info(banner);
+                logger.info(`SupraWall Server running on port ${port}`);
             });
         } catch (e) {
-            console.error("Failed to start server", e);
+            logger.error("Failed to start server", { error: e });
             process.exit(1);
         }
     };
@@ -98,5 +114,5 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
     // On Vercel, we still need to ensure DB is initialized
     // We can do this at the top level or per-request. 
     // Top-level await is supported in modern Node on Vercel.
-    initDb().catch(err => console.error("Database initialization failed", err));
+    initDb().catch(err => logger.error("Database initialization failed", { error: err }));
 }

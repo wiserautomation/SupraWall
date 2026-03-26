@@ -2,59 +2,52 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
-  const db = getAdminDb();
   try {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
     const agentId = searchParams.get('agentId');
-    const limit = parseInt(searchParams.get('limit') || '50');
+    const limit = searchParams.get('limit') || '50';
     
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    let firestoreQuery: any = db.collection('audit_logs');
-    
-    if (agentId) {
-      firestoreQuery = firestoreQuery.where('agentId', '==', agentId);
-    } else {
-      // Get all agents for this tenant to filter logs
-      const agentsSnap = await db.collection('agents').where('userId', '==', tenantId).get();
-      const agentIds = agentsSnap.docs.map(d => d.id);
-      
-      if (agentIds.length === 0) return NextResponse.json([]);
-      
-      // Firestore 'in' query limit is 30 in recent versions
-      firestoreQuery = firestoreQuery.where('agentId', 'in', agentIds.slice(0, 30));
+    const serverBaseUrl = process.env.SUPRAWALL_API_URL || "http://localhost:3000";
+    const url = new URL(`${serverBaseUrl}/v1/audit-logs`);
+    url.searchParams.set("tenantId", tenantId);
+    url.searchParams.set("limit", limit);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) {
+        const errorText = await response.text();
+        return NextResponse.json({ error: "Server API error", details: errorText }, { status: response.status });
     }
 
-    const snapshot = await firestoreQuery
-      .limit(limit)
-      .get();
+    const data = await response.json();
+    const rows = data.rows || [];
 
-    const logs = snapshot.docs.map((doc: any) => {
-      const data = doc.data();
-      const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
-        if (value && typeof value === 'object' && '_seconds' in value) {
-          return new Date(value._seconds * 1000).toISOString();
-        }
-        return value;
-      }));
-      return {
-        id: doc.id,
-        ...sanitized
-      };
+    let logs = rows.map((row: any) => {
+        const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : (row.metadata || {});
+        return {
+            id: row.id,
+            agentId: row.agentid,
+            toolName: row.toolname,
+            decision: row.decision,
+            riskScore: row.riskscore,
+            cost_usd: row.cost_usd,
+            timestamp: row.timestamp,
+            createdAt: row.timestamp, // Alias for page.tsx compatibility
+            arguments: row.parameters,
+            reason: row.reason || metadata.reason,
+            metadata: metadata
+        };
     });
 
-    // Sort in-memory to avoid mandatory composite index errors in new projects
-    logs.sort((a: any, b: any) => {
-        const dateA = new Date(a.timestamp || 0).getTime();
-        const dateB = new Date(b.timestamp || 0).getTime();
-        return dateB - dateA;
-    });
+    if (agentId) {
+        logs = logs.filter((l: any) => l.agentId === agentId);
+    }
 
     return NextResponse.json(logs);
 

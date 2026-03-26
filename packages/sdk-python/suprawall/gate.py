@@ -47,6 +47,12 @@ class BudgetExceededError(Exception):
             f"(session spend: {format_cost(actual_usd)}). Agent halted."
         )
 
+class SupraWallConnectionError(Exception):
+    def __init__(self, message: str):
+        super().__init__(f"\n[SupraWallConnectionError] {message}\n  → Docs: https://docs.suprawall.dev/troubleshooting/connection\n")
+
+_has_verified_connection = False
+
 
 class BudgetTracker:
     """
@@ -360,20 +366,30 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
         if attr.get("categories"):
             headers["X-OpenRouter-Categories"] = attr["categories"]
 
-    with httpx.Client(timeout=options.timeout) as client:
-        resp = client.post(
-            options.cloud_function_url,
-            json={
-                "apiKey": options.api_key,
-                "toolName": tool_name,
-                "arguments": args or {},
-                "agentId": session_id,
-                "tenantId": options.tenant_id,
-                "sessionId": session_id,
-                "agentRole": options.agent_role,
-            },
-            headers=headers,
-        )
+    global _has_verified_connection
+    try:
+        with httpx.Client(timeout=options.timeout) as client:
+            resp = client.post(
+                options.cloud_function_url,
+                json={
+                    "apiKey": options.api_key,
+                    "toolName": tool_name,
+                    "arguments": args or {},
+                    "agentId": session_id,
+                    "tenantId": options.tenant_id,
+                    "sessionId": session_id,
+                    "agentRole": options.agent_role,
+                },
+                headers=headers,
+            )
+    except httpx.RequestError as e:
+        if not _has_verified_connection:
+            raise SupraWallConnectionError(f"Cannot reach SupraWall server at {options.cloud_function_url}.")
+        raise e
+
+    if resp.status_code == 401 and not _has_verified_connection:
+        raise SupraWallConnectionError(f"Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: {options.api_key[:8]}...")
+        
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
@@ -384,6 +400,8 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     if resp.status_code == 403:
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
+    
+    _has_verified_connection = True
     data = resp.json()
     _record_cost(options, data)
 
@@ -415,20 +433,30 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
         if attr.get("categories"):
             headers["X-OpenRouter-Categories"] = attr["categories"]
 
-    async with httpx.AsyncClient(timeout=options.timeout) as client:
-        resp = await client.post(
-            options.cloud_function_url,
-            json={
-                "apiKey": options.api_key,
-                "toolName": tool_name,
-                "arguments": args or {},
-                "agentId": session_id,
-                "tenantId": options.tenant_id,
-                "sessionId": session_id,
-                "agentRole": options.agent_role,
-            },
-            headers=headers,
-        )
+    global _has_verified_connection
+    try:
+        async with httpx.AsyncClient(timeout=options.timeout) as client:
+            resp = await client.post(
+                options.cloud_function_url,
+                json={
+                    "apiKey": options.api_key,
+                    "toolName": tool_name,
+                    "arguments": args or {},
+                    "agentId": session_id,
+                    "tenantId": options.tenant_id,
+                    "sessionId": session_id,
+                    "agentRole": options.agent_role,
+                },
+                headers=headers,
+            )
+    except httpx.RequestError as e:
+        if not _has_verified_connection:
+            raise SupraWallConnectionError(f"Cannot reach SupraWall server at {options.cloud_function_url}.")
+        raise e
+
+    if resp.status_code == 401 and not _has_verified_connection:
+        raise SupraWallConnectionError(f"Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: {options.api_key[:8]}...")
+        
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
@@ -439,6 +467,8 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
     if resp.status_code == 403:
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
+    
+    _has_verified_connection = True
     data = resp.json()
     _record_cost(options, data)
 
@@ -800,6 +830,59 @@ class SupraWall:
                 }
         except Exception as e:
             return {"status": "error", "message": str(e), "version": self.__version__}
+
+    def verify_connection(self) -> dict:
+        """
+        Programmatic health check to verify connection, API keys, and active policies.
+        """
+        import time
+        start = time.time()
+        url = self.options.cloud_function_url.replace("/v1/evaluate", "/v1/shield/status")
+        
+        try:
+            with httpx.Client(timeout=5.0) as client:
+                resp = client.get(
+                    url,
+                    headers={
+                        "Authorization": f"Bearer {self.options.api_key}",
+                        "X-SupraWall-SDK": f"python-{SDK_VERSION}"
+                    }
+                )
+            
+            latency_ms = int((time.time() - start) * 1000)
+            
+            if resp.status_code == 401:
+                return {
+                    "status": "ERROR", 
+                    "connected": False, 
+                    "error": "Invalid API key. Check your SUPRAWALL_API_KEY."
+                }
+                
+            resp.raise_for_status()
+                
+            data = resp.json()
+            data["latencyMs"] = latency_ms
+            
+            policies_loaded = data.get("policiesLoaded", 0)
+            log.info(f"[SupraWall] ✅ Connected. {policies_loaded} policies active. Shield is UP. ({latency_ms}ms)")
+            
+            global _has_verified_connection
+            _has_verified_connection = True
+            
+            return data
+            
+        except httpx.RequestError as e:
+            return {
+                "status": "ERROR", 
+                "connected": False, 
+                "error": f"Cannot reach SupraWall server at {url}: {e}"
+            }
+        except httpx.HTTPStatusError as e:
+            return {
+                "status": "ERROR", 
+                "connected": False, 
+                "error": f"Server responded with error: {e.response.status_code}"
+            }
 
     @property
     def guard(self):

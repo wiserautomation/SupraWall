@@ -5,6 +5,7 @@ import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { resolveTier, TieredRequest } from "../tier-guard";
 import { retentionCutoff } from "../tier-config";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ router.get("/", resolveTier, async (req: Request, res: Response) => {
             upgradeUrl: tier === "free" ? "https://www.supra-wall.com/pricing" : undefined,
         });
     } catch (e) {
-        console.error(e);
+        logger.error("[AuditLogs] Error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

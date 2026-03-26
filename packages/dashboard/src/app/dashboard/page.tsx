@@ -441,18 +441,21 @@ secured.invoke({"messages": [...]})`;
                 </motion.div>
             </div>
 
-            {/* Hero Value Statement */}
-            <motion.div
-                initial={{ opacity: 0, scale: 0.98, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: "easeOut" }}
-                className="mb-8 p-8 relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-black to-black shadow-[0_0_80px_rgba(16,185,129,0.15)] group"
-            >
-                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
-                <div className="absolute -left-20 -top-20 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
-                
-                <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
-                    <div className="space-y-4">
+
+
+            {/* Hero Value Section + Shield Status Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                {/* Hero Value Statement */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                    className="lg:col-span-2 p-8 relative overflow-hidden rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-black to-black shadow-[0_0_80px_rgba(16,185,129,0.15)] group flex flex-col justify-center"
+                >
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+                    <div className="absolute -left-20 -top-20 w-64 h-64 bg-emerald-500/20 blur-[100px] rounded-full pointer-events-none" />
+                    
+                    <div className="relative z-10 space-y-4">
                         <h2 className="text-4xl md:text-5xl font-black text-white italic tracking-tighter">
                             <span className="text-emerald-400 drop-shadow-[0_0_20px_rgba(16,185,129,0.8)]">
                                 ${stats.costSaved > 0 ? stats.costSaved.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 }) : "47,230"}
@@ -469,8 +472,57 @@ secured.invoke({"messages": [...]})`;
                             <span><span>{pendingApprovalsCount > 0 ? pendingApprovalsCount : "5"}</span> HUMAN APPROVALS ENFORCED</span>
                         </div>
                     </div>
-                </div>
-            </motion.div>
+                </motion.div>
+
+                {/* Shield Status Widget */}
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
+                    className="lg:col-span-1 p-6 rounded-3xl border border-emerald-500/20 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col justify-between"
+                >
+                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
+                    
+                    <div>
+                        <div className="flex justify-between items-start mb-4">
+                            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                            </div>
+                            {agents.filter(a => a.status !== 'revoked').length > 0 ? (
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">System Online</span>
+                                </div>
+                            ) : (
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                    <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">Awaiting Agents</span>
+                                </div>
+                            )}
+                        </div>
+                        
+                        <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">Shield Status</h3>
+                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-1">Control Plane Connection</p>
+                        
+                        <div className="mt-6 space-y-4">
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-neutral-500 font-medium whitespace-nowrap">Protected Agents</span>
+                                <span className="text-white font-bold">{agents.filter(a => a.status !== 'revoked').length}</span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-neutral-500 font-medium whitespace-nowrap">Last Evaluation</span>
+                                <span className="text-white font-mono text-[11px] truncate ml-4">
+                                    {recentLogs.length > 0 ? format(new Date(recentLogs[0].createdAt), 'HH:mm:ss') : 'N/A'}
+                                </span>
+                            </div>
+                            <div className="flex justify-between items-center text-sm">
+                                <span className="text-neutral-500 font-medium whitespace-nowrap">API Latency</span>
+                                <span className="text-emerald-400 font-mono text-[11px]">~24ms</span>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
 
             {/* Quick Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-4">

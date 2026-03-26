@@ -3,6 +3,7 @@
 
 import { Pool } from "pg";
 import dotenv from "dotenv";
+import { logger } from "./logger";
 
 if (!process.env.VERCEL) {
     dotenv.config();
@@ -11,11 +12,11 @@ if (!process.env.VERCEL) {
 const rawUrl = process.env.DATABASE_URL || "";
 // Mask password for safe logging
 const maskedUrl = rawUrl.replace(/(postgresql?:\/\/)([^:]+):([^@]+)(@)/, "$1$2:****$4");
-console.log(`[DB] Using Connection: ${maskedUrl}`);
+if (maskedUrl) {
+    logger.info(`[DB] Initializing connection: ${maskedUrl}`);
+}
 
 let dbUrl = rawUrl.trim();
-
-
 
 const sslConfig = process.env.NODE_ENV === 'production' 
     ? { rejectUnauthorized: false } 
@@ -30,7 +31,7 @@ export const pool = new Pool({
 });
 
 pool.on("error", (err) => {
-    console.error(`[DB] Pool Error:`, err.message);
+    logger.error(`[DB] Pool Error: ${err.message}`, { error: err });
 });
 
 export const initDb = async () => {

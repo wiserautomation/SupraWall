@@ -3,6 +3,7 @@
 
 import express, { Request, Response } from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -17,7 +18,7 @@ router.get("/:id", async (req: Request, res: Response) => {
         }
         res.json(result.rows[0]);
     } catch (e) {
-        console.error(e);
+        logger.error("[Tenants] Fetch error:", { error: e, tenantId: req.params.id });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -26,24 +27,29 @@ router.get("/:id", async (req: Request, res: Response) => {
 router.post("/:id", async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const fields = req.body;
-        
-        // Dynamic update query
-        const sets = Object.keys(fields).map((key, i) => `${key} = $${i + 2}`);
-        const values = Object.values(fields);
-        
-        if (sets.length === 0) return res.status(400).json({ error: "No fields to update" });
+        const body = req.body;
+
+        // Whitelist allowed columns to prevent SQL injection
+        const ALLOWED_COLUMNS = ["name", "slack_webhook_url", "tier"];
+        const entries = Object.entries(body).filter(([key]) => ALLOWED_COLUMNS.includes(key));
+
+        if (entries.length === 0) return res.status(400).json({ error: "No valid fields to update" });
+
+        const columns = entries.map(([key]) => key);
+        const values = entries.map(([, val]) => val);
+        const sets = columns.map((col, i) => `${col} = $${i + 2}`);
+        const placeholders = values.map((_, i) => `$${i + 2}`);
 
         await pool.query(
-            `INSERT INTO tenants (id, ${Object.keys(fields).join(", ")}) 
-             VALUES ($1, ${Object.values(fields).map((_, i) => `$${i + 2}`).join(", ")})
-             ON CONFLICT (id) DO UPDATE SET ${sets.join(", ")}, updated_at = CURRENT_TIMESTAMP`,
+            `INSERT INTO tenants (id, ${columns.join(", ")})
+             VALUES ($1, ${placeholders.join(", ")})
+             ON CONFLICT (id) DO UPDATE SET ${sets.join(", ")}`,
             [id, ...values]
         );
-        
+
         res.json({ success: true });
     } catch (e) {
-        console.error(e);
+        logger.error("[Tenants] Update error:", { error: e, tenantId: req.params.id });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

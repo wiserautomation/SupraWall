@@ -356,12 +356,18 @@ export default function AgentsPage() {
     const deleteAgent = async (agentId: string) => {
         if (!confirm("Are you sure you want to delete this agent? This action is irreversible.")) return;
         try {
-            await updateDoc(doc(db, "agents", agentId), {
-                status: 'revoked',
-                updatedAt: serverTimestamp()
+            const res = await fetch(`/api/v1/agents/${agentId}`, {
+                method: 'DELETE',
             });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to delete agent");
+            }
+            // Also update local state for immediate feedback
+            setAgents(prev => prev.filter(a => a.id !== agentId));
         } catch (error) {
             console.error("Error revoking agent:", error);
+            alert("Failed to delete agent. Please try again.");
         }
     };
 
@@ -383,25 +389,27 @@ export default function AgentsPage() {
     };
 
     const bulkDeleteAgents = async () => {
+        if (!confirm(`Are you sure you want to delete ${selectedAgentIds.size} agents?`)) return;
         setIsBulkDeleting(true);
         try {
             await Promise.all(
                 Array.from(selectedAgentIds).map(id =>
-                    updateDoc(doc(db, "agents", id), {
-                        status: 'revoked',
-                        updatedAt: serverTimestamp()
+                    fetch(`/api/v1/agents/${id}`, {
+                        method: 'DELETE',
                     })
                 )
             );
+            // Update local state
+            setAgents(prev => prev.filter(a => !selectedAgentIds.has(a.id)));
             setSelectedAgentIds(new Set());
         } catch (error) {
             console.error("Error bulk revoking agents:", error);
+            alert("Some agents could not be deleted.");
         } finally {
             setIsBulkDeleting(false);
             setShowBulkConfirm(false);
         }
     };
-
     const handleUpdateAgent = async () => {
         if (!selectedAgent) return;
         try {
@@ -674,11 +682,19 @@ export default function AgentsPage() {
                                             <div className="flex justify-center">
                                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border ${
                                                     agent.status === 'active' 
-                                                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
-                                                        : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                                        ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_10px_rgba(16,185,129,0.1)]' 
+                                                        : agent.status === 'paused'
+                                                            ? 'bg-amber-500/10 text-amber-500 border-amber-500/20 shadow-[0_0_10px_rgba(245,158,11,0.1)]'
+                                                            : 'bg-rose-500/10 text-rose-500 border-rose-500/20 shadow-[0_0_10px_rgba(244,63,94,0.1)]'
                                                 }`}>
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${agent.status === 'active' ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`} />
-                                                    {agent.status}
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${
+                                                        agent.status === 'active' 
+                                                            ? 'bg-emerald-400 animate-pulse' 
+                                                            : agent.status === 'paused'
+                                                                ? 'bg-amber-400'
+                                                                : 'bg-rose-400'
+                                                    }`} />
+                                                    {agent.status === 'paused' ? 'Suspended' : agent.status === 'active' ? 'Active' : 'Deactivated'}
                                                 </span>
                                             </div>
                                         </td>
@@ -1079,8 +1095,10 @@ export default function AgentsPage() {
                                                             {selectedAgent.name}
                                                             {selectedAgent.status === 'active' ? (
                                                                 <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 text-[10px] tracking-widest font-bold uppercase transition-colors hover:bg-emerald-500/20">Active</Badge>
-                                                            ) : (
+                                                            ) : selectedAgent.status === 'paused' ? (
                                                                 <Badge className="bg-amber-500/10 text-amber-400 border-amber-500/20 text-[10px] tracking-widest font-bold uppercase transition-colors hover:bg-amber-500/20">Suspended</Badge>
+                                                            ) : (
+                                                                <Badge className="bg-rose-500/10 text-rose-400 border-rose-500/20 text-[10px] tracking-widest font-bold uppercase transition-colors hover:bg-rose-500/20">Deactivated</Badge>
                                                             )}
                                                         </SheetTitle>
                                                     )}

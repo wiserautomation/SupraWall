@@ -3,6 +3,7 @@
 
 import express, { Request, Response } from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get("/", async (req: Request, res: Response) => {
         );
         res.json(result.rows);
     } catch (e) {
-        console.error(e);
+        logger.error("[Policies] Error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -37,7 +38,7 @@ router.post("/", async (req: Request, res: Response) => {
         );
         res.json(result.rows[0]);
     } catch (e) {
-        console.error(e);
+        logger.error("[Policies] Error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -55,7 +56,7 @@ router.delete("/:id", async (req: Request, res: Response) => {
         );
         res.json({ status: "deleted" });
     } catch (e) {
-        console.error(e);
+        logger.error("[Policies] Error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

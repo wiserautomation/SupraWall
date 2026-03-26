@@ -3,6 +3,7 @@
 
 import { Router, Request, Response } from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = Router();
 
@@ -20,11 +21,11 @@ router.post("/log", async (req: Request, res: Response) => {
         pool.query(
             "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
             [tenantId, agentId, eventType, severity || "medium", JSON.stringify(details || {})]
-        ).catch(err => console.error("[Threat] Write Error:", err));
+        ).catch(err => logger.error("[Threat] Write Error:", err));
 
         res.json({ status: "logged" });
     } catch (e) {
-        console.error("Threat log error:", e);
+        logger.error("Threat log error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -42,7 +43,7 @@ router.get("/events", async (req: Request, res: Response) => {
 
         res.json(result.rows);
     } catch (e) {
-        console.error("Threat events error:", e);
+        logger.error("[Threat] Events error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -60,7 +61,7 @@ router.get("/summary", async (req: Request, res: Response) => {
 
         res.json(result.rows);
     } catch (e) {
-        console.error("Threat summary error:", e);
+        logger.error("[Threat] Summary error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -102,7 +103,7 @@ router.post("/aggregate", async (req: Request, res: Response) => {
 
         res.json({ status: "aggregated", processed: events.rows.length });
     } catch (e) {
-        console.error("Threat aggregation error:", e);
+        logger.error("[Threat] Aggregation error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

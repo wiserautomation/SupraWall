@@ -4,6 +4,9 @@
   "description": "Official TypeScript SDK for SupraWall AI security and compliance",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "bin": {
+    "suprawall": "dist/cli.js"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",

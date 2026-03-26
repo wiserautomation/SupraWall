@@ -3,6 +3,7 @@
 
 import express from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -18,7 +19,7 @@ router.get("/published", async (req, res) => {
         );
         res.json(result.rows);
     } catch (error: any) {
-        console.error(`[Content API] Error fetching published`, error);
+        logger.error("[Content] Error:", { error });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -37,7 +38,7 @@ router.post("/task", async (req, res) => {
         
         res.json({ success: true, id: result.rows[0].id });
     } catch (error: any) {
-        console.error(`[Content API] Error creating task`, error);
+        logger.error("[Content] Create task error:", { error });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

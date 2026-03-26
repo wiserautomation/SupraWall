@@ -3,6 +3,7 @@
 
 import express, { Request, Response } from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -54,7 +55,7 @@ router.get("/", async (req: Request, res: Response) => {
             chartData: chartRes.rows
         });
     } catch (e) {
-        console.error(e);
+        logger.error("[Stats] Error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

@@ -9,11 +9,15 @@ dist/
 build/
 .next/
 *.egg-info/
+.turbo/
 
-# Environment files (NEVER commit secrets)
+# Environment files
 .env
 .env.*
 !.env.example
+
+# Local development
+.vercel/
 
 # IDE
 .DS_Store
@@ -27,9 +31,6 @@ build/
 firebase-debug.log
 firestore-debug.log
 
-# Vercel
-.vercel/
-
 # Keys and certificates
 *.pem
 *.key
@@ -42,5 +43,34 @@ Thumbs.db
 coverage/
 .pytest_cache/
 
-# Proprietary (these should be in suprawall-cloud repo)
+# Internal / Documentation
+Marketing/
+PR_DRAFTS/
+Blog/
+agent-skills/
+agent-plan/
+admin/
+Implementation Plan/
+mcp-publisher
+supra-wall.plugin
+*.docx
+SEO_*.md
+GSC_*.md
+SUBMISSION_*.md
+QUICK_SUBMIT.md
+MCP_SUBMISSION_README.md
+github-outreach-report-*.md
+blog-post-eu-ai-act-langchain.md
+dev-prompt-compliance-features.md
+agent-automation-tasks.md
+build_pricing_explanation.js
+VAULT-IMPLEMENTATION-PLAN.md
+TESTING_CHECKLIST.md
+server*.json
+
+# Proprietary (keep separate)
 suprawall-cloud/
+cloudflare-edge/
+claude-plugins-official/
+.vercel
+.env*.local

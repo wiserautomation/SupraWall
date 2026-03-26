@@ -1,13 +1,11 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Copyright 2026 SupraWall Contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./db";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
+import { logger } from "./logger";
 
 // Re-export types for backward compatibility
 export type { AgentInfo } from "./auth/types";
@@ -32,15 +30,15 @@ function createAuthProvider(): AuthProvider {
     if (providerType === "firebase") {
         try {
             const { FirebaseAuthProvider } = require("./auth/firebase");
-            console.log("[Auth] Using FirebaseAuthProvider");
+            logger.info("[Auth] Using FirebaseAuthProvider");
             return new FirebaseAuthProvider();
         } catch (e) {
-            console.warn("[Auth] Firebase provider requested but failed to load. Falling back to PostgreSQL.");
+            logger.warn("[Auth] Firebase provider requested but failed to load. Falling back to PostgreSQL.");
             return new PostgresAuthProvider();
         }
     }
 
-    console.log("[Auth] Using PostgresAuthProvider");
+    logger.info("[Auth] Using PostgresAuthProvider");
     return new PostgresAuthProvider();
 }
 
@@ -79,7 +77,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
         (req as AuthenticatedRequest).tenantId = result.rows[0].id;
         next();
     } catch (error) {
-        console.error("[AdminAuth] Error:", error);
+        logger.error("[AdminAuth] Error:", { error });
         res.status(500).json({ error: "Internal authentication error" });
     }
 };
@@ -110,10 +108,10 @@ export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunc
             });
         }
 
-        if (agent.status === "inactive") {
+        if (agent.status && agent.status !== "active") {
             return res.status(403).json({
                 decision: "DENY",
-                reason: "Unauthorized: Agent is inactive."
+                reason: `Unauthorized: Agent is ${agent.status}.`
             });
         }
 
@@ -121,7 +119,7 @@ export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunc
         (req as AuthenticatedRequest).agent = agent;
         next();
     } catch (error) {
-        console.error("[Gatekeeper] Auth error:", error);
+        logger.error("[Gatekeeper] Auth error:", { error });
         res.status(500).json({ decision: "DENY", reason: "Internal authentication error" });
     }
 };

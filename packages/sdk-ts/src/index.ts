@@ -59,6 +59,13 @@ export class BudgetExceededError extends Error {
     }
 }
 
+export class SupraWallConnectionError extends Error {
+    constructor(message: string) {
+        super(`\n[SupraWallConnectionError] ${message}\n  → Docs: https://docs.suprawall.dev/troubleshooting/connection\n`);
+        this.name = "SupraWallConnectionError";
+    }
+}
+
 export class BudgetTracker {
     private sessionCost = 0;
     private alertFired = false;
@@ -248,6 +255,7 @@ function appendBranding(content: string, branding: SupraWallResponse["branding"]
 /**
  * Core internal evaluator that handles budget, loops, and network policy checks.
  */
+let _hasVerifiedConnection = false;
 async function internalEvaluate(
     toolName: string,
     args: any,
@@ -352,11 +360,15 @@ async function internalEvaluate(
         });
 
         if (!response.ok) {
+            if (response.status === 401 && !_hasVerifiedConnection) {
+                throw new SupraWallConnectionError(`Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: ${apiKey.slice(0, 8)}...`);
+            }
             if (response.status === 403) {
                 return { decision: "DENY", reason: "Action blocked by SupraWall security policy." };
             }
             throw new Error(`SupraWall server error: ${response.status}`);
         }
+        _hasVerifiedConnection = true;
 
         const data = (await response.json()) as SupraWallResponse & { approvalId?: string };
 
@@ -428,6 +440,11 @@ async function internalEvaluate(
         };
     } catch (e: any) {
         if (e instanceof Error && e.message.includes("[SupraWall]")) throw e;
+        if (e instanceof SupraWallConnectionError) throw e;
+
+        if (!_hasVerifiedConnection && (e.message.includes("fetch") || e.message.includes("network"))) {
+            throw new SupraWallConnectionError(`Cannot reach SupraWall server at ${cloudFunctionUrl}.`);
+        }
 
         logger.error("[SupraWall] Network error reaching control plane.", e);
         if (onNetworkError === "fail-closed") {
@@ -796,6 +813,94 @@ export class AgentIdentity {
     /** The granted scopes */
     get scopes(): string[] {
         return this.credentials.scopes || [];
+    }
+}
+
+export interface ShieldStatus {
+    status: "ACTIVE" | "ERROR";
+    connected: boolean;
+    error?: string;
+    agentId?: string;
+    agentName?: string;
+    policiesLoaded?: number;
+    vaultSecretsAvailable?: number;
+    threatDetection?: string;
+    lastEvaluation?: string;
+    version?: string;
+    latencyMs?: number;
+}
+
+export async function verifyConnection(options: SupraWallOptions): Promise<ShieldStatus> {
+    const start = Date.now();
+    const url = (options.cloudFunctionUrl || DEFAULT_CLOUD_FUNCTION_URL).replace("/v1/evaluate", "/v1/shield/status");
+
+    try {
+        const response = await fetch(url, {
+            headers: {
+                "Authorization": `Bearer ${options.apiKey}`,
+                "X-SupraWall-SDK": `js-${SDK_VERSION}`
+            }
+        });
+
+        const latencyMs = Date.now() - start;
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                return {
+                    status: "ERROR",
+                    connected: false,
+                    error: "Invalid API key. Check your SUPRAWALL_API_KEY."
+                };
+            }
+            return {
+                status: "ERROR",
+                connected: false,
+                error: `Server responded with ${response.status}: ${response.statusText}`
+            };
+        }
+
+        const data = (await response.json()) as any;
+        
+        // Log friendly confirmation
+        if (options.logger && options.logger.log) {
+            options.logger.log(`[SupraWall] ✅ Connected. ${data.policiesLoaded || 0} policies active. Shield is UP. (${latencyMs}ms)`);
+        }
+
+        return {
+            ...data,
+            latencyMs
+        };
+    } catch (err: any) {
+        return {
+            status: "ERROR",
+            connected: false,
+            error: `Cannot reach SupraWall server at ${url}: ${err.message}`
+        };
+    }
+}
+
+/**
+ * Universal SupraWall Client.
+ */
+export class SupraWall {
+    private options: SupraWallOptions;
+
+    constructor(options: SupraWallOptions) {
+        this.options = options;
+    }
+
+    /**
+     * Wrap any AI agent to enforce SupraWall policies natively.
+     */
+    protect<T>(agent: T): T {
+        return protect(agent, this.options);
+    }
+
+    /**
+     * Programmatic health check to verify connection, API keys, and active policies.
+     */
+    async verifyConnection(): Promise<ShieldStatus> {
+        return verifyConnection(this.options);
     }
 }
 

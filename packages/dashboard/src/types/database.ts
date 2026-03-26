@@ -72,6 +72,7 @@ export interface AuditLog {
   agentRole?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   timestamp: any; 
+  createdAt?: any;
   cost_usd?: number;
   estimated_cost_usd?: number;
   isLoop?: boolean;

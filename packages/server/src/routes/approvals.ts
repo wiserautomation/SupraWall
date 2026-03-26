@@ -3,6 +3,7 @@
 
 import { Router } from "express";
 import { pool } from "../db";
+import { logger } from "../logger";
 
 const router = Router();
 
@@ -10,20 +11,17 @@ const router = Router();
 router.get("/status/:id", async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(`[Status Check] ID: ${id}`);
         const result = await pool.query(
             "SELECT status, decision_at, decision_comment FROM approval_requests WHERE id = $1",
             [id]
         );
-        console.log(`[Status Check] Result: ${result.rows[0]?.status}`);
-
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Approval request not found" });
         }
 
         res.json(result.rows[0]);
     } catch (e) {
-        console.error("Status check error:", e);
+        logger.error("[Approvals] Status check error:", { error: e });
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -48,7 +46,7 @@ router.post("/respond", async (req, res) => {
 
         res.json({ success: true, request: result.rows[0] });
     } catch (e) {
-        console.error("Respond error:", e);
+        logger.error("[Approvals] Respond error:", { error: e });
         res.status(500).json({ error: "Internal server error" });
     }
 });
@@ -63,7 +61,7 @@ router.get("/pending/:tenantId", async (req, res) => {
         );
         res.json(result.rows);
     } catch (e) {
-        console.error("Fetch pending error:", e);
+        logger.error("[Approvals] Fetch pending error:", { error: e });
         res.status(500).json({ error: "Internal server error" });
     }
 });

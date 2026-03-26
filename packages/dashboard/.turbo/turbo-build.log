@@ -1,41 +1,39 @@
 
+
 > @suprawall/dashboard@0.1.0 build
 > next build
 
-▲ Next.js 16.2.1 (Turbopack)
-- Environments: .env.local, .env.production
+[1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.1[39m[22m (Turbopack)
 
-  Creating an optimized production build ...
-✓ Compiled successfully in 10.2s
-  Running TypeScript ...
-  Finished TypeScript in 10.5s ...
-  Collecting page data using 9 workers ...
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-  Generating static pages using 9 workers (0/178) ...
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: firebase-adminsdk-fb...
-[Firebase Admin] Private Key Info: length=1703, startsWith=-----BEGIN PRIVATE KEY-----
-MI, endsWith=END PRIVATE KEY-----
-  Generating static pages using 9 workers (44/178) 
-  Generating static pages using 9 workers (88/178) 
-  Generating static pages using 9 workers (133/178) 
-✓ Generating static pages using 9 workers (178/178) in 769ms
-  Finalizing page optimization ...
+[37m[1m [22m[39m Creating an optimized production build ...
+[32m[1m✓[22m[39m Compiled successfully in 6.2s
+[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 7.5s  [36m.[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 7.5s    [32m[1m✓[22m[39m Finished TypeScript in 7.5s 
+[?25l[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[1A[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[2K[1G[1A[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m...[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 9 workers in 525ms    [32m[1m✓[22m[39m Collecting page data using 9 workers in 525ms 
+[?25l[37m[1m [22m[39m Generating static pages using 9 workers (0/177)  [36m[    ][39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[2K[1G[1A[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (21/177)  [36m[=   ][39m[2K[1G[1A[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (87/177)  [36m[==  ][39m[2K[1G[1A[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 9 workers (177/177) in 604ms
+[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 8ms    [32m[1m✓[22m[39m Finalizing page optimization in 8ms 
 
-Route (app)
+[4mRoute (app)[24m
 ┌ ○ /
 ├ ○ /_not-found
 ├ ○ /about
@@ -246,6 +244,7 @@ Route (app)
 
 
 ○  (Static)   prerendered as static content
-●  (SSG)      prerendered as static HTML (uses generateStaticParams)
+●  (SSG)      prerendered as static HTML (uses [36mgenerateStaticParams[39m)
 ƒ  (Dynamic)  server-rendered on demand
 
+[?25h[1G[0K⠙[1G[0K

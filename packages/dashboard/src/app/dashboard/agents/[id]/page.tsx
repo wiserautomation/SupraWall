@@ -18,7 +18,7 @@ import {
     Search, Filter, ExternalLink,
     Zap, Sparkles, Brain, Wand2, Loader2,
     Bot, Cpu, Network,
-    MoreHorizontal, AlertCircle, Clock, History, ArrowLeft, Trash2, Layers,
+    MoreHorizontal, AlertCircle, Clock, History, ArrowLeft, Trash2, Layers, Ban,
     ShieldCheck as ShieldCheckIcon
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -350,10 +350,14 @@ export default function AgentDetailPage() {
                                         <Badge 
                                             onClick={() => setIsEditing(true)} 
                                             className={`cursor-pointer uppercase tracking-widest text-[10px] font-black px-3 py-1 ${
-                                                agent.status === 'active' ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                                                agent.status === 'active' 
+                                                    ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20' 
+                                                    : agent.status === 'paused'
+                                                        ? 'bg-amber-500/10 text-amber-500 border-amber-500/20'
+                                                        : 'bg-rose-500/10 text-rose-500 border-rose-500/20'
                                             }`}
                                         >
-                                            {agent.status}
+                                            {agent.status === 'paused' ? 'Suspended' : agent.status === 'active' ? 'Active' : 'Deactivated'}
                                         </Badge>
                                         <button 
                                             onClick={() => setIsEditing(true)}
@@ -404,13 +408,22 @@ export default function AgentDetailPage() {
                     <Button 
                         onClick={toggleStatus}
                         variant="outline"
+                        disabled={agent.status === 'revoked'}
                         className={`h-14 rounded-2xl px-8 font-black uppercase tracking-widest text-xs transition-all ${
                             agent.status === 'active' 
                                 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500 hover:bg-amber-500/20' 
-                                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'
+                                : agent.status === 'paused'
+                                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/20'
+                                    : 'bg-neutral-500/10 border-white/5 text-neutral-500'
                         }`}
                     >
-                        {agent.status === 'active' ? <><Lock className="w-4 h-4 mr-2" /> Suspend Operations</> : <><Unlock className="w-4 h-4 mr-2" /> Resume Operations</>}
+                        {agent.status === 'active' ? (
+                            <><Lock className="w-4 h-4 mr-2" /> Suspend Operations</>
+                        ) : agent.status === 'paused' ? (
+                            <><Unlock className="w-4 h-4 mr-2" /> Resume Operations</>
+                        ) : (
+                            <><Ban className="w-4 h-4 mr-2" /> Permanently Deactivated</>
+                        )}
                     </Button>
                 </div>
             </header>

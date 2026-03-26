@@ -4,6 +4,7 @@
 import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
+import { logger } from "../logger";
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.post("/secrets", resolveTier, async (req: Request, res: Response) => {
         if (e.code === "23505") {
             return res.status(409).json({ error: `Secret '${req.body.secretName}' already exists for this tenant` });
         }
-        console.error("Vault create secret error:", e);
+        logger.error("Vault create secret error:", { error: e, tenantId: req.body.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -99,7 +100,7 @@ router.post("/secrets/bulk", async (req: Request, res: Response) => {
                 if (e.code === "23505") {
                     skipped.push({ secretName, reason: "Already exists" });
                 } else {
-                    console.error(`Bulk import error for ${secretName}:`, e);
+                    logger.error(`Bulk import error for ${secretName}:`, { error: e, tenantId });
                     errors.push({ secretName, error: "Database error" });
                 }
             }
@@ -107,7 +108,7 @@ router.post("/secrets/bulk", async (req: Request, res: Response) => {
 
         res.status(207).json({ created, skipped, errors });
     } catch (e: any) {
-        console.error("Vault bulk import error:", e);
+        logger.error("Vault bulk import error:", { error: e, tenantId: req.body.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -130,7 +131,7 @@ router.get("/secrets", async (req: Request, res: Response) => {
 
         res.json(result.rows);
     } catch (e) {
-        console.error("Vault list secrets error:", e);
+        logger.error("Vault list secrets error:", { error: e, tenantId: req.query.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -169,7 +170,7 @@ router.put("/secrets/:id/rotate", async (req: Request, res: Response) => {
 
         res.json(result.rows[0]);
     } catch (e) {
-        console.error("Vault rotate secret error:", e);
+        logger.error("Vault rotate secret error:", { error: e, id: req.params.id, tenantId: req.body.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -203,7 +204,7 @@ router.delete("/secrets/:id", async (req: Request, res: Response) => {
 
         res.json({ deleted: true });
     } catch (e) {
-        console.error("Vault delete secret error:", e);
+        logger.error("Vault delete secret error:", { error: e, id: req.params.id, tenantId: req.query.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -226,7 +227,7 @@ router.post("/rules", async (req: Request, res: Response) => {
 
         res.status(201).json(result.rows[0]);
     } catch (e) {
-        console.error("Vault create rule error:", e);
+        logger.error("Vault create rule error:", { error: e, tenantId: req.body.tenantId, agentId: req.body.agentId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -250,7 +251,7 @@ router.get("/rules", async (req: Request, res: Response) => {
 
         res.json(result.rows);
     } catch (e) {
-        console.error("Vault list rules error:", e);
+        logger.error("Vault list rules error:", { error: e, tenantId: req.query.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -276,7 +277,7 @@ router.delete("/rules/:id", async (req: Request, res: Response) => {
 
         res.json({ deleted: true });
     } catch (e) {
-        console.error("Vault delete rule error:", e);
+        logger.error("Vault delete rule error:", { error: e, id: req.params.id, tenantId: req.query.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -311,7 +312,7 @@ router.get("/log", async (req: Request, res: Response) => {
 
         res.json(result.rows);
     } catch (e) {
-        console.error("Vault log error:", e);
+        logger.error("Vault log error:", { error: e, tenantId: req.query.tenantId });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

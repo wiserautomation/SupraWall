@@ -68,44 +68,41 @@ export default function ForensicAuditPage() {
         fetchAgents();
     }, [user]);
 
-    // Listen to audit logs real-time
-    useEffect(() => {
-        if (!user || agents.length === 0) {
-            const timeoutId = setTimeout(() => setLoading(false), 0);
-            return () => clearTimeout(timeoutId);
-        }
-
-        const agentIds = agents.map(a => a.id!).slice(0, 10);
-        if (agentIds.length === 0) return;
-
-        const qLogs = query(
-            collection(db, "audit_logs"),
-            where("agentId", "in", agentIds),
-            orderBy("timestamp", "desc"),
-            limit(200)
-        );
-
-        const unsubscribe = onSnapshot(qLogs, (snapshot) => {
-            const logsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuditLog));
-            setLogs(logsData);
+    // Fetch audit logs via local proxy (PostgreSQL)
+    const fetchLogs = useCallback(async () => {
+        if (!user) return;
+        try {
+            const url = new URL("/api/audit", window.location.origin);
+            url.searchParams.set("userId", user.uid);
+            url.searchParams.set("limit", "200");
+            
+            const response = await fetch(url.toString());
+            if (response.ok) {
+                const data = await response.json();
+                // Map timestamp strings to something the UI can use
+                const processedLogs = data.logs.map((l: any) => ({
+                    ...l,
+                    // Mock the toDate() method for compatibility with existing UI helpers
+                    timestamp: { toDate: () => new Date(l.timestamp) }
+                }));
+                setLogs(processedLogs);
+            }
+        } catch (error) {
+            console.error("Failed to fetch audit logs:", error);
+        } finally {
             setLoading(false);
-        }, (error) => {
-            console.error("Error listening to logs:", error);
-            // Fallback: try without ordering
-            const fallbackQ = query(
-                collection(db, "auditLogs"),
-                where("agentId", "in", agentIds),
-                limit(200)
-            );
-            onSnapshot(fallbackQ, (snap) => {
-                const logsData = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuditLog));
-                setLogs(logsData);
-                setLoading(false);
-            });
-        });
+        }
+    }, [user]);
 
-        return () => unsubscribe();
-    }, [user, agents]);
+    // Initial fetch and polling
+    useEffect(() => {
+        if (!user) return;
+        
+        fetchLogs();
+        const interval = setInterval(fetchLogs, 5000); // 5s polling for near-real-time
+        
+        return () => clearInterval(interval);
+    }, [user, fetchLogs]);
 
     const getAgentName = useCallback((id: string) => agents.find(a => a.id === id)?.name || "Unknown Agent", [agents]);
 

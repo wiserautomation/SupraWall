@@ -56,9 +56,7 @@ export class FirebaseAuthProvider implements AuthProvider {
 
             const agentData = snapshot.docs[0].data();
 
-            if (agentData.status === "inactive") {
-                return null;
-            }
+            // We return the agent data and let gatekeeperAuth handle the status check
 
             return {
                 id: snapshot.docs[0].id,

@@ -5,6 +5,7 @@ import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import PDFDocument from "pdfkit";
 import { randomUUID } from "crypto";
+import { logger } from "../logger";
 
 const router = Router();
 
@@ -79,7 +80,7 @@ router.get("/status", async (_req: Request, res: Response) => {
 
         res.json({ overall, checks, lastChecked: new Date().toISOString() });
     } catch (e) {
-        console.error("Compliance status error:", e);
+        logger.error("[Compliance] Status error:", { error: e });
         res.status(500).json({ 
             error: "Internal Server Error", 
             message: e instanceof Error ? e.message : String(e) 
@@ -352,7 +353,7 @@ router.get("/report", async (req: Request, res: Response) => {
 
         doc.end();
     } catch (e) {
-        console.error("Compliance report error:", e);
+        logger.error("[Compliance] Report error:", { error: e });
         if (!res.headersSent) {
             res.status(500).json({ error: "Internal Server Error" });
         }

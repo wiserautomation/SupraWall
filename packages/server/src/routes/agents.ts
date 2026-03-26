@@ -7,6 +7,7 @@ import { adminAuth, AuthenticatedRequest } from "../auth";
 import { db } from "../firebase";
 import crypto from "crypto";
 import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
+import { logger } from "../logger";
 
 const router = express.Router();
 
@@ -27,7 +28,7 @@ router.get("/", adminAuth, async (req: Request, res: Response) => {
         );
         res.json(result.rows);
     } catch (e) {
-        console.error(e);
+        logger.error("[Agents] Failed to fetch agents:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -138,7 +139,7 @@ router.post("/", adminAuth, resolveTier, async (req: Request, res: Response) => 
         });
     } catch (e) {
         await client.query("ROLLBACK");
-        console.error(e);
+        logger.error("[Agents] Create error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     } finally {
         client.release();
@@ -154,7 +155,7 @@ router.get("/:id", adminAuth, async (req: Request, res: Response) => {
         if (result.rows.length === 0) return res.status(404).json({ error: "Agent not found" });
         res.json(result.rows[0]);
     } catch (e) {
-        console.error(e);
+        logger.error("[Agents] Fetch agent error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -188,7 +189,7 @@ router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
         res.json({ success: true, message: "Agent revoked successfully" });
     } catch (e) {
         await client.query("ROLLBACK");
-        console.error(e);
+        logger.error("[Agents] Delete error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     } finally {
         client.release();
@@ -219,7 +220,7 @@ router.patch("/:id/guardrails", adminAuth, async (req: Request, res: Response) =
         if (result.rows.length === 0) return res.status(404).json({ error: "Agent not found" });
         res.json(result.rows[0]);
     } catch (e) {
-        console.error(e);
+        logger.error("[Agents] Guardrails update error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
