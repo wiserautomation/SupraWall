@@ -42,7 +42,6 @@ export async function GET(req: NextRequest) {
         for (const batch of batches) {
             const logsSnap = await db.collection("audit_logs")
                 .where("agentId", "in", batch)
-                .orderBy("timestamp", "desc")
                 .limit(limitParam)
                 .get();
             
