@@ -4,7 +4,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+// Removed Supabase import
 import { ExternalLink, Search, Layout } from "lucide-react";
 
 export default function PublishedPages() {
@@ -17,14 +17,17 @@ export default function PublishedPages() {
     }, []);
 
     async function fetchPublished() {
-        const { data } = await supabase
-            .from('tasks')
-            .select('*')
-            .eq('status', 'published')
-            .order('published_at', { ascending: false });
-
-        if (data) setPages(data);
-        setLoading(false);
+        try {
+            const res = await fetch('/api/v1/content/published?tenantId=default-tenant');
+            if (res.ok) {
+                const data = await res.json();
+                setPages(data);
+            }
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const filtered = pages.filter(p =>

@@ -15,6 +15,7 @@ import agentsRouter from "./routes/agents";
 import auditLogsRouter from "./routes/audit_logs";
 import tenantsRouter from "./routes/tenants";
 import statsRouter from "./routes/stats";
+import contentRouter from "./routes/content";
 import { gatekeeperAuth } from "./auth";
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
@@ -71,6 +72,9 @@ app.use("/v1/tenants", tenantsRouter);
 
 // Stats Routes
 app.use("/v1/stats", statsRouter);
+
+// Content Migration Routes
+app.use("/v1/content", contentRouter);
 
 // Export the app for Vercel
 export default app;

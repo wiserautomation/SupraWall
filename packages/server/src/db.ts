@@ -149,6 +149,18 @@ export const initDb = async () => {
             metadata JSONB,
             created_at TIMESTAMP DEFAULT NOW()
         );
+
+        -- Content/SEO Tasks (Migrated from Supabase)
+        CREATE TABLE IF NOT EXISTS content_tasks (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            url VARCHAR(555) NOT NULL,
+            type VARCHAR(100),
+            primary_keyword VARCHAR(255),
+            status VARCHAR(50) DEFAULT 'draft',
+            published_at TIMESTAMP,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
     `;
     await pool.query(query);
 };

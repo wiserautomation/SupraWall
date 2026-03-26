@@ -20,21 +20,21 @@ export function Footer() {
                 <div>
                     <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Security Pillars</h4>
                     <ul className="space-y-4">
-                        <li><Link href="/features/vault" className="hover:text-emerald-500 transition-colors">Credential Vault</Link></li>
-                        <li><Link href="/features/budget-limits" className="hover:text-emerald-500 transition-colors">Budget Limits</Link></li>
-                        <li><Link href="/features/policy-engine" className="hover:text-emerald-500 transition-colors">Policy Engine</Link></li>
-                        <li><Link href="/features/pii-shield" className="hover:text-emerald-500 transition-colors">PII Shield</Link></li>
-                        <li><Link href="/features/audit-trail" className="hover:text-emerald-500 transition-colors">Audit Trail</Link></li>
-                        <li><Link href="/features/prompt-shield" className="hover:text-emerald-500 transition-colors">Injection Shield</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">Credential Vault</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">Budget Limits</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">Policy Engine</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">PII Shield</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">Audit Trail</Link></li>
+                        <li><Link href="/docs" className="hover:text-emerald-500 transition-colors">Injection Shield</Link></li>
                     </ul>
                 </div>
                 <div>
                     <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Ecosystem</h4>
                     <ul className="space-y-4">
+                        <li><Link href="/integrations" className="hover:text-emerald-500 transition-colors">All Integrations</Link></li>
                         <li><Link href="/integrations/langchain" className="hover:text-emerald-500 transition-colors">LangChain</Link></li>
                         <li><Link href="/integrations/crewai" className="hover:text-emerald-500 transition-colors">CrewAI</Link></li>
                         <li><Link href="/integrations/autogen" className="hover:text-emerald-500 transition-colors">AutoGen</Link></li>
-                        <li><Link href="/integrations/vercel" className="hover:text-emerald-500 transition-colors">Vercel AI</Link></li>
                     </ul>
                 </div>
                 <div>
@@ -44,6 +44,15 @@ export function Footer() {
                         <li><Link href="/for-compliance-officers" className="hover:text-emerald-500 transition-colors">Compliance Officers</Link></li>
                         <li><Link href="/for-enterprise" className="hover:text-emerald-500 transition-colors">For Enterprise</Link></li>
                         <li><Link href="/gdpr" className="hover:text-emerald-500 transition-colors">GDPR & Privacy</Link></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Open Source</h4>
+                    <ul className="space-y-4">
+                        <li><Link href="https://github.com/suprawall/suprawall" className="hover:text-emerald-500 transition-colors">GitHub Repository</Link></li>
+                        <li><Link href="/self-host" className="hover:text-emerald-500 transition-colors">Self-Host Guide</Link></li>
+                        <li><Link href="/docs/contributing" className="hover:text-emerald-500 transition-colors">Contributing</Link></li>
+                        <li><Link href="/docs/license" className="hover:text-emerald-500 transition-colors">Apache 2.0</Link></li>
                     </ul>
                 </div>
             </div>

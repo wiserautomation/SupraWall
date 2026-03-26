@@ -10,7 +10,7 @@ import {
     Shield, Database, Code2, AlertTriangle,
     Users, DollarSign,
     Zap, Layers, Triangle, Coins, FileText,
-    LayoutDashboard, Cpu, Network
+    LayoutDashboard, Cpu, Network, Github
 } from "lucide-react";
 import Link from "next/link";
 import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints } from "./HomeClient";
@@ -92,7 +92,7 @@ export default function LandingPage() {
                     <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
                         <div className="animate-fade-in inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-black tracking-[0.2em] text-emerald-400 uppercase">
                             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                            Enterprise Agent Security Platform
+                            Open-Source Agent Security Platform
                         </div>
 
                         <div className="space-y-8">
@@ -114,37 +114,44 @@ export default function LandingPage() {
                                 <br className="hidden md:block" />
                                 <span className="text-emerald-400 italic">Six real threats. One line of code.</span>
                             </p>
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
+                                     <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                             <Link
-                                id="cta-start-free"
+                                id="cta-deploy-cloud"
                                 href="/login"
-                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'start_free' })}
-                                className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)] group flex items-center gap-3"
+                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
+                                className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.15)] group flex items-center gap-3"
                             >
-                                Start Free <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                                Deploy on Cloud <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                             </Link>
                             <Link
-                                id="cta-see-threats"
-                                href="#threats"
-                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'see_threats' })}
-                                className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all"
+                                id="cta-star-github"
+                                href="https://github.com/suprawall/suprawall"
+                                target="_blank"
+                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
+                                className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"
                             >
-                                See the 6 Threats →
+                                <Github className="w-6 h-6" /> Star on GitHub
                             </Link>
                         </div>
+              </div>
 
-                        <div className="pt-12 flex flex-col items-center gap-4">
-                            <div className="flex -space-x-4 opacity-80">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className={`w-12 h-12 rounded-full border-2 border-black bg-neutral-800 flex items-center justify-center overflow-hidden`}>
-                                        <Users className="w-6 h-6 text-neutral-500" />
-                                    </div>
-                                ))}
+                        <div className="pt-12 flex flex-col items-center gap-6">
+                            <div className="flex items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
+                                <div className="flex items-center gap-2">
+                                    <Github className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Apache 2.0</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Activity className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">1.2ms Latency</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">Audit Ready</span>
+                                </div>
                             </div>
-                            <p className="text-[11px] font-medium text-neutral-500 uppercase tracking-[0.3em]">
-                                Trusted by AI engineers shipping <span className="text-white">LangChain, CrewAI, AutoGen, and Vercel AI</span> to production.
+                            <p className="text-[11px] font-medium text-neutral-500 uppercase tracking-[0.3em] text-center max-w-2xl px-6 leading-relaxed">
+                                Securely used with <span className="text-white">LangChain, CrewAI, AutoGen, and Vercel AI</span> in production environments worldwide.
                             </p>
                         </div>
                     </div>

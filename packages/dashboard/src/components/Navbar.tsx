@@ -9,7 +9,7 @@ import { sendGAEvent } from "@next/third-parties/google";
 import { 
     Shield, ArrowRight, ChevronDown, KeyRound, DollarSign, 
     ShieldCheck, EyeOff, FileText, Bug, Book, Workflow, 
-    Users, Globe, ShieldAlert, Zap, Layers, Code2, Lock
+    Users, Globe, ShieldAlert, Zap, Layers, Code2, Lock, Github
 } from "lucide-react";
 import Link from "next/link";
 
@@ -124,6 +124,15 @@ export function Navbar() {
                         className="text-neutral-500 hover:text-white transition-colors"
                     >
                         Pricing
+                    </Link>
+                    <Link 
+                        href="https://github.com/suprawall/suprawall" 
+                        target="_blank"
+                        onClick={() => sendGAEvent('event', 'nav_link_click', { path: 'github' })}
+                        className="text-neutral-500 hover:text-white transition-colors flex items-center gap-2"
+                    >
+                        <Github className="w-4 h-4" />
+                        GitHub
                     </Link>
                     <Link 
                         href="/login" 
