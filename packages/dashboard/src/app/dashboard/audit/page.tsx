@@ -80,7 +80,6 @@ export default function ForensicAuditPage() {
             const logsQuery = query(
                 collection(db, "audit_logs"),
                 where("agentId", "in", batchIds),
-                orderBy("timestamp", "desc"),
                 limit(200)
             );
 
@@ -101,7 +100,15 @@ export default function ForensicAuditPage() {
                         is_loop: data.is_loop || false,
                     } as AuditLog;
                 });
-                setLogs(fetchedLogs);
+                
+                // Sort client-side to avoid Firestore index requirement
+                const sortedLogs = fetchedLogs.sort((a, b) => {
+                    const timeA = a.timestamp?.seconds ?? 0;
+                    const timeB = b.timestamp?.seconds ?? 0;
+                    return timeB - timeA;
+                });
+                
+                setLogs(sortedLogs);
                 setLoading(false);
             }, err => {
                 console.error("Firestore audit log subscription error:", err);
