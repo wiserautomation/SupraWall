@@ -52,8 +52,61 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(logs);
     } else {
-        // If no agentId, just return empty list to prevent unindexed queries over ALL logs
-        return NextResponse.json([]);
+        // Step 1: Get the user's agent IDs (both regular and platform keys)
+        const agentsSnap = await db.collection("agents").where("userId", "==", tenantId).get();
+        const agentIds = agentsSnap.docs.map(doc => doc.id);
+
+        const platformsSnap = await db.collection("platforms").where("ownerId", "==", tenantId).get();
+        for (const pDoc of platformsSnap.docs) {
+            const keysSnap = await db.collection("connect_keys").where("platformId", "==", pDoc.id).get();
+            keysSnap.docs.forEach(kDoc => agentIds.push(kDoc.id));
+        }
+
+        if (agentIds.length === 0) {
+            return NextResponse.json([]);
+        }
+
+        // Step 2: Query audit_logs for those agent IDs (batch in groups of 30 for Firestore "in" limit)
+        const batches: string[][] = [];
+        for (let i = 0; i < agentIds.length; i += 30) {
+            batches.push(agentIds.slice(i, i + 30));
+        }
+
+        let allLogs: any[] = [];
+        for (const batch of batches) {
+            const logsSnap = await db.collection("audit_logs")
+                .where("agentId", "in", batch)
+                .limit(limitParam)
+                .get();
+            
+            for (const doc of logsSnap.docs) {
+                const data = doc.data();
+                allLogs.push({
+                    id: doc.id,
+                    agentId: data.agentId,
+                    toolName: data.toolName,
+                    decision: data.decision,
+                    reason: data.reason || null,
+                    cost_usd: data.cost_usd || 0,
+                    riskScore: data.riskScore ?? null,
+                    timestamp: data.timestamp?.toDate?.()?.toISOString() || null,
+                    createdAt: data.timestamp?.toDate?.()?.toISOString() || null,
+                    arguments: typeof data.arguments === 'string' ? data.arguments : JSON.stringify(data.arguments || {}),
+                    sessionId: data.sessionId || null,
+                    is_loop: data.is_loop || false,
+                    agentRole: data.agentRole || null,
+                });
+            }
+        }
+
+        // Sort by timestamp descending
+        allLogs.sort((a, b) => {
+            const ta = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+            const tb = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+            return tb - ta;
+        });
+
+        return NextResponse.json(allLogs.slice(0, limitParam));
     }
 
   } catch (err: any) {

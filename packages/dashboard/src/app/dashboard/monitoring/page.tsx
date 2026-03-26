@@ -40,8 +40,9 @@ export default function MonitoringPage() {
     const API_BASE = "/api";
 
     const fetchAgents = async () => {
+        if (!user) return;
         try {
-            const res = await fetch(`${API_BASE}/v1/agents?tenantId=default-tenant`);
+            const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`);
             if (res.ok) {
                 const list = await res.json();
                 setAgents(list);
@@ -52,8 +53,9 @@ export default function MonitoringPage() {
     };
 
     const fetchLogs = async () => {
+        if (!user) return;
         try {
-            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=default-tenant&limit=50`);
+            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=50`);
             if (res.ok) {
                 const data = await res.json();
                 setLogs(data);
@@ -229,7 +231,7 @@ export default function MonitoringPage() {
                                                 </div>
                                                 <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
                                                     <Clock className="w-3 h-3" />
-                                                    {log.timestamp ? format(log.timestamp.toDate(), 'HH:mm:ss.SSS') : 'Just now'}
+                                                    {log.timestamp ? (typeof log.timestamp === 'string' ? format(new Date(log.timestamp), 'HH:mm:ss.SSS') : format(log.timestamp.toDate(), 'HH:mm:ss.SSS')) : 'Just now'}
                                                 </p>
                                             </div>
                                             <div className="text-right">
