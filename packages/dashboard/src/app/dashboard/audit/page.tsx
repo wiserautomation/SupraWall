@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react"; // useCallback kept for getAgentName memoization
 import { collection, query, where, getDocs, onSnapshot, orderBy, limit } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -57,52 +57,63 @@ export default function ForensicAuditPage() {
         setShowExportModal(false);
     };
 
-    // Fetch agents
+    // Fetch audit logs directly from Firestore (where evaluate route writes)
     useEffect(() => {
         if (!user) return;
-        const fetchAgents = async () => {
-            const q = query(collection(db, "agents"), where("userId", "==", user.uid));
-            const snap = await getDocs(q);
-            setAgents(snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent)));
-        };
-        fetchAgents();
-    }, [user]);
+        setLoading(true);
 
-    // Fetch audit logs via local proxy (PostgreSQL)
-    const fetchLogs = useCallback(async () => {
-        if (!user) return;
-        try {
-            const url = new URL("/api/audit", window.location.origin);
-            url.searchParams.set("userId", user.uid);
-            url.searchParams.set("limit", "200");
-            
-            const response = await fetch(url.toString());
-            if (response.ok) {
-                const data = await response.json();
-                // Map timestamp strings to something the UI can use
-                const processedLogs = data.logs.map((l: any) => ({
-                    ...l,
-                    // Mock the toDate() method for compatibility with existing UI helpers
-                    timestamp: { toDate: () => new Date(l.timestamp) }
-                }));
-                setLogs(processedLogs);
+        // First get the agent IDs for this user so we can filter logs
+        const agentsQuery = query(collection(db, "agents"), where("userId", "==", user.uid));
+        getDocs(agentsQuery).then(agentSnap => {
+            const userAgents = agentSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Agent));
+            setAgents(userAgents);
+            const agentIds = userAgents.map(a => a.id);
+
+            if (agentIds.length === 0) {
+                setLogs([]);
+                setLoading(false);
+                return;
             }
-        } catch (error) {
-            console.error("Failed to fetch audit logs:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, [user]);
 
-    // Initial fetch and polling
-    useEffect(() => {
-        if (!user) return;
-        
-        fetchLogs();
-        const interval = setInterval(fetchLogs, 5000); // 5s polling for near-real-time
-        
-        return () => clearInterval(interval);
-    }, [user, fetchLogs]);
+            // Firestore "in" query supports up to 30 items
+            const batchIds = agentIds.slice(0, 30);
+            const logsQuery = query(
+                collection(db, "audit_logs"),
+                where("agentId", "in", batchIds),
+                orderBy("timestamp", "desc"),
+                limit(200)
+            );
+
+            const unsub = onSnapshot(logsQuery, snap => {
+                const fetchedLogs = snap.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        agentId: data.agentId,
+                        toolName: data.toolName,
+                        arguments: typeof data.arguments === 'string' ? data.arguments : JSON.stringify(data.arguments || {}),
+                        decision: data.decision,
+                        reason: data.reason || null,
+                        cost_usd: data.cost_usd || 0,
+                        riskScore: data.riskScore ?? null,
+                        timestamp: data.timestamp,
+                        sessionId: data.sessionId,
+                        is_loop: data.is_loop || false,
+                    } as AuditLog;
+                });
+                setLogs(fetchedLogs);
+                setLoading(false);
+            }, err => {
+                console.error("Firestore audit log subscription error:", err);
+                setLoading(false);
+            });
+
+            return () => unsub();
+        }).catch(err => {
+            console.error("Failed to load agents for audit log filter:", err);
+            setLoading(false);
+        });
+    }, [user]);
 
     const getAgentName = useCallback((id: string) => agents.find(a => a.id === id)?.name || "Unknown Agent", [agents]);
 

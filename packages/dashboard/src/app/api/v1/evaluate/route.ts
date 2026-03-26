@@ -116,6 +116,25 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ decision: "DENY", reason: `Agent is ${agentData.status}.` }, { status: 403 });
             }
 
+            // ── Threat Detection — blocks before any policy evaluation ──
+            const threatResult = detectThreats(toolName, args);
+            if (threatResult.blocked) {
+                await logAudit(agentId, toolName, JSON.stringify(args), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
+                // Fire-and-forget threat event log
+                db.collection("threat_events").add({
+                    agentId, tenantId, toolName,
+                    event_type: threatResult.threatType,
+                    severity: threatResult.severity,
+                    details: threatResult.detail,
+                    timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                }).catch(() => {});
+                return NextResponse.json({
+                    decision: "DENY",
+                    reason: threatResult.reason,
+                    threatType: threatResult.threatType,
+                }, { status: 403 });
+            }
+
             // ── Guardrail Evaluation — hard stops before policy evaluation ──
             const guardrailResult = evaluateGuardrailsSync(agentData, toolName, args);
             if (guardrailResult.blocked) {
@@ -265,6 +284,97 @@ export async function POST(req: NextRequest) {
 }
 
 // ── Helpers ──
+
+// ── Threat Detection Engine ──
+
+interface ThreatResult {
+    blocked: boolean;
+    reason?: string;
+    threatType?: string;
+    severity?: string;
+    detail?: string;
+}
+
+function detectThreats(toolName: string, args: any): ThreatResult {
+    const payload = `${toolName} ${JSON.stringify(args || {})}`.toLowerCase();
+    const rawPayload = JSON.stringify(args || {});
+
+    // SQL Injection Patterns
+    const sqlPatterns: Array<{ re: RegExp; label: string }> = [
+        { re: /drop\s+table/i,                        label: "DROP TABLE" },
+        { re: /delete\s+from/i,                       label: "DELETE FROM" },
+        { re: /insert\s+into/i,                       label: "INSERT INTO" },
+        { re: /update\s+\S+\s+set/i,                  label: "UPDATE SET" },
+        { re: /union\s+select/i,                      label: "UNION SELECT" },
+        { re: /or\s+['"]?1['"]?\s*=\s*['"]?1/i,      label: "OR 1=1" },
+        { re: /;\s*--/i,                              label: "comment terminator" },
+        { re: /exec(\s+|\()sp_/i,                     label: "EXEC stored procedure" },
+        { re: /xp_cmdshell/i,                         label: "xp_cmdshell" },
+        { re: /\bsleep\s*\(\s*\d+\s*\)/i,             label: "SLEEP() time-based" },
+        { re: /benchmark\s*\(/i,                      label: "BENCHMARK() DoS" },
+    ];
+
+    for (const { re, label } of sqlPatterns) {
+        if (re.test(rawPayload)) {
+            return {
+                blocked: true,
+                reason: `Threat detected: SQL injection pattern (${label}) blocked by SupraWall Threat Engine.`,
+                threatType: "sql_injection",
+                severity: "critical",
+                detail: label,
+            };
+        }
+    }
+
+    // Prompt Injection Patterns
+    const promptPatterns: Array<{ re: RegExp; label: string }> = [
+        { re: /ignore\s+(all\s+)?previous\s+instructions/i,   label: "ignore previous instructions" },
+        { re: /system\s+bypass/i,                             label: "system bypass" },
+        { re: /you\s+are\s+now\s+(a|an|the)\s/i,             label: "persona override" },
+        { re: /forget\s+(all\s+)?(your|previous)\s+instructions/i, label: "forget instructions" },
+        { re: /ignore\s+previous/i,                          label: "ignore previous" },
+        { re: /override\s+(system|safety|security)/i,        label: "override safety" },
+        { re: /disregard\s+(all|any|your)\s+(previous|prior|safety)/i, label: "disregard safety" },
+        { re: /act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i, label: "no restrictions" },
+        { re: /reveal\s+(your|the)\s+(system\s+)?prompt/i,   label: "reveal system prompt" },
+        { re: /do\s+not\s+follow\s+(your|the|any)\s+(previous|original)/i, label: "do not follow instructions" },
+    ];
+
+    for (const { re, label } of promptPatterns) {
+        if (re.test(rawPayload)) {
+            return {
+                blocked: true,
+                reason: "Threat detected: Prompt injection attempt blocked by SupraWall Threat Engine.",
+                threatType: "prompt_injection",
+                severity: "high",
+                detail: label,
+            };
+        }
+    }
+
+    // XSS Patterns
+    const xssPatterns: Array<{ re: RegExp; label: string }> = [
+        { re: /<script[\s>]/i,                    label: "<script> tag" },
+        { re: /javascript\s*:/i,                  label: "javascript: URI" },
+        { re: /on(error|load|click|mouseover)\s*=/i, label: "inline event handler" },
+        { re: /eval\s*\(/i,                       label: "eval()" },
+        { re: /<iframe/i,                         label: "<iframe>" },
+    ];
+
+    for (const { re, label } of xssPatterns) {
+        if (re.test(rawPayload)) {
+            return {
+                blocked: true,
+                reason: `Threat detected: XSS pattern (${label}) blocked by SupraWall Threat Engine.`,
+                threatType: "xss_injection",
+                severity: "high",
+                detail: label,
+            };
+        }
+    }
+
+    return { blocked: false };
+}
 
 function matchesWildcard(toolName: string, pattern: string): boolean {
     if (!pattern.includes('*')) return toolName === pattern;
