@@ -532,7 +532,7 @@ export default function AgentDetailPage() {
                                         auditLogs.map((log) => (
                                             <tr key={log.id} className="hover:bg-white/[0.05] transition-colors group">
                                                 <td className="px-6 py-5 whitespace-nowrap text-xs font-mono text-neutral-400">
-                                                    {log.timestamp?.toDate?.().toLocaleString()}
+                                                    {log.timestamp ? new Date(log.timestamp).toLocaleString() : 'Just now'}
                                                 </td>
                                                 <td className="px-6 py-5">
                                                     <div className="flex flex-col">
