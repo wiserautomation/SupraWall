@@ -42,7 +42,14 @@ export default async function CertificatePage({
             );
         }
 
-        return <CertificateClientView cert={cert} />;
+        // Firestore Timestamp objects are not serializable across the Server→Client boundary.
+        // Convert any Timestamp fields to plain strings before passing as props.
+        const serialized = {
+            ...cert,
+            createdAt: cert.createdAt?.toDate?.()?.toISOString?.() ?? cert.createdAt ?? null,
+        };
+
+        return <CertificateClientView cert={serialized} />;
     } catch (err) {
         console.error("[CertificatePage] Fatal error:", err);
         return (
