@@ -66,7 +66,13 @@ export async function PATCH(
     if (body.name) updateData.name = body.name;
     if (body.status) updateData.status = body.status;
     if (body.scopes) updateData.scopes = body.scopes;
-    if (body.apiKey) updateData.apiKey = body.apiKey; // For rotation
+    if (body.apiKey) updateData.apiKey = body.apiKey;
+
+    // Budget & safety config
+    if ("max_cost_usd" in body) updateData.max_cost_usd = body.max_cost_usd;
+    if ("budget_alert_usd" in body) updateData.budget_alert_usd = body.budget_alert_usd;
+    if ("max_iterations" in body) updateData.max_iterations = body.max_iterations;
+    if ("loop_detection" in body) updateData.loop_detection = body.loop_detection;
 
     await docRef.update(updateData);
     

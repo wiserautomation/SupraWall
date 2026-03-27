@@ -3,8 +3,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { db, auth } from "@/lib/firebase";
+import { auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
+import { ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
 import { POLICY_TEMPLATES, type PolicyTemplate } from "@/lib/policy-templates";
 import type { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
@@ -118,13 +117,17 @@ export default function PoliciesPage() {
         if (!selectedAgentId) return;
         setIsSavingConfig(true);
         try {
-            await updateDoc(doc(db, "agents", selectedAgentId), {
-                max_cost_usd: maxCostUsd ? parseFloat(maxCostUsd) : null,
-                budget_alert_usd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
-                max_iterations: maxIterations ? parseInt(maxIterations) : null,
-                loop_detection: loopDetection,
-                updatedAt: serverTimestamp()
+            const res = await fetch(`/api/v1/agents/${selectedAgentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    max_cost_usd: maxCostUsd ? parseFloat(maxCostUsd) : null,
+                    budget_alert_usd: budgetAlertUsd ? parseFloat(budgetAlertUsd) : null,
+                    max_iterations: maxIterations ? parseInt(maxIterations) : null,
+                    loop_detection: loopDetection,
+                }),
             });
+            if (!res.ok) throw new Error(`Failed: ${res.status}`);
             sendGAEvent('event', 'update_agent_config', { agent_id: selectedAgentId });
         } catch (e) {
             console.error("Error updating agent config", e);
