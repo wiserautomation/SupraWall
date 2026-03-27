@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Shield, CheckCircle2, AlertTriangle, XCircle, Download,
-    FileText, Settings, ExternalLink, RefreshCw, Award, Linkedin, Copy, Check
+    FileText, Settings, ExternalLink, RefreshCw, Award, Linkedin, Copy, Check, Code2, Globe
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -151,6 +151,8 @@ export default function CompliancePage() {
     const [certificate, setCertificate] = useState<CertificateData | null>(null);
     const [copied, setCopied] = useState(false);
     const [certError, setCertError] = useState<string | null>(null);
+    const [badgeTab, setBadgeTab] = useState<"image" | "html">("image");
+    const [badgeCopied, setBadgeCopied] = useState(false);
 
     const fetchStatus = async () => {
         if (!user) return;
@@ -202,6 +204,50 @@ export default function CompliancePage() {
         await navigator.clipboard.writeText(certificate.verificationUrl);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const getBadgeSnippets = (cert: CertificateData) => {
+        const certUrl = cert.certificateUrl;
+        const badgeSrc = `https://www.supra-wall.com/api/badge/cert/${cert.certId}`;
+        const articles = cert.articlesCompliant?.map(a => a.replace("Article ", "Art. ")).join(" · ") ?? "Art. 9 · Art. 12 · Art. 14";
+
+        const imageSnippet =
+`<!-- Supra-wall EU AI Act Compliance Badge -->
+<a href="${certUrl}" target="_blank" rel="noopener noreferrer">
+  <img src="${badgeSrc}" alt="EU AI Act Compliant – ${articles}" height="56" />
+</a>`;
+
+        const htmlSnippet =
+`<!-- Supra-wall EU AI Act Compliance Badge -->
+<a href="${certUrl}" target="_blank" rel="noopener noreferrer"
+   style="display:inline-flex;align-items:center;gap:12px;padding:10px 16px;
+          background:#0f1923;border:1px solid rgba(16,185,129,0.4);border-radius:10px;
+          text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+  <svg width="22" height="26" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14 0L0 6v10c0 9 6 15 14 16 8-1 14-7 14-16V6z"
+          stroke="#10b981" stroke-width="2" stroke-linejoin="round" fill="none"/>
+    <path d="M9 16l3.5 3.5L19 12" stroke="#10b981" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span style="display:flex;flex-direction:column;gap:2px;">
+    <span style="font-size:9px;font-weight:700;letter-spacing:0.12em;
+                 color:#10b981;text-transform:uppercase;">EU AI Act Compliant</span>
+    <span style="font-size:11px;font-weight:600;color:#e2e8f0;">${articles}</span>
+  </span>
+  <span style="margin-left:8px;font-size:20px;font-weight:900;color:#10b981;
+               background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
+               border-radius:6px;padding:2px 8px;">${cert.complianceScore}</span>
+</a>`;
+
+        return { imageSnippet, htmlSnippet };
+    };
+
+    const copyBadgeSnippet = async () => {
+        if (!certificate) return;
+        const { imageSnippet, htmlSnippet } = getBadgeSnippets(certificate);
+        await navigator.clipboard.writeText(badgeTab === "image" ? imageSnippet : htmlSnippet);
+        setBadgeCopied(true);
+        setTimeout(() => setBadgeCopied(false), 2000);
     };
 
     const downloadReport = () => {
@@ -406,6 +452,62 @@ export default function CompliancePage() {
                                         <RefreshCw className="w-3.5 h-3.5" />
                                         Regenerate
                                     </button>
+                                </div>
+
+                                {/* Badge Embed Section */}
+                                <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                                        <p className="text-xs font-black uppercase tracking-widest text-emerald-400">Embed on Your Website</p>
+                                    </div>
+
+                                    {/* Live badge preview */}
+                                    <div className="mb-3 flex items-center gap-3">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img
+                                            src={`/api/badge/cert/${certificate.certId}`}
+                                            alt="EU AI Act Compliance Badge"
+                                            height={56}
+                                            className="rounded-lg"
+                                        />
+                                        <p className="text-[10px] text-neutral-500 italic">Live preview of your badge</p>
+                                    </div>
+
+                                    {/* Tabs */}
+                                    <div className="flex gap-1 mb-2 p-1 bg-black/30 rounded-lg w-fit">
+                                        {(["image", "html"] as const).map((tab) => (
+                                            <button
+                                                key={tab}
+                                                onClick={() => setBadgeTab(tab)}
+                                                className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-colors ${
+                                                    badgeTab === tab
+                                                        ? "bg-emerald-600/80 text-white"
+                                                        : "text-neutral-400 hover:text-white"
+                                                }`}
+                                            >
+                                                {tab === "image" ? "SVG Badge" : "HTML Widget"}
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    {/* Code block */}
+                                    <div className="relative">
+                                        <pre className="text-[10px] font-mono text-emerald-300/80 bg-black/50 border border-white/[0.06] rounded-lg p-3 overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                                            {badgeTab === "image"
+                                                ? getBadgeSnippets(certificate).imageSnippet
+                                                : getBadgeSnippets(certificate).htmlSnippet}
+                                        </pre>
+                                        <button
+                                            onClick={copyBadgeSnippet}
+                                            className="absolute top-2 right-2 flex items-center gap-1.5 px-2.5 py-1.5 bg-black/70 hover:bg-black/90 border border-white/[0.08] rounded-md text-[10px] font-bold text-neutral-300 hover:text-white transition-colors"
+                                        >
+                                            {badgeCopied ? <Check className="w-3 h-3 text-emerald-400" /> : <Code2 className="w-3 h-3" />}
+                                            {badgeCopied ? "Copied!" : "Copy"}
+                                        </button>
+                                    </div>
+                                    <p className="text-[10px] text-neutral-600 mt-2">
+                                        {badgeTab === "image" ? "Paste inside any HTML page or README. Badge updates automatically." : "Paste into your website footer, pricing page, or trust section."}
+                                    </p>
                                 </div>
                             </div>
                         )}
