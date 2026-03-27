@@ -8,10 +8,21 @@ import { stripe } from '@/lib/stripe';
 
 export async function POST(req: Request) {
     try {
-        const { userId, email } = await req.json();
+        const { userId, email, plan } = await req.json();
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Map plan to price ID
+        let priceId = process.env.STRIPE_METERED_PRICE_ID; // Default / Business
+        if (plan === 'starter') priceId = process.env.STRIPE_STARTER_PRICE_ID;
+        if (plan === 'growth') priceId = process.env.STRIPE_GROWTH_PRICE_ID;
+        if (plan === 'business') priceId = process.env.STRIPE_BUSINESS_PRICE_ID;
+
+        if (!priceId) {
+            console.error(`No price ID found for plan: ${plan}`);
+            return NextResponse.json({ error: 'Invalid plan selection' }, { status: 400 });
         }
 
         // 1. Create or retrieve Stripe Customer
@@ -27,13 +38,12 @@ export async function POST(req: Request) {
         }
 
         // 2. Create Checkout Session for Metered Subscription
-        // Note: The product/price must be configured as 'metered' in Stripe Dashboard
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
             billing_address_collection: 'auto',
             line_items: [
                 {
-                    price: process.env.STRIPE_METERED_PRICE_ID, // E.g. price_123...
+                    price: priceId,
                 },
             ],
             mode: 'subscription',
@@ -41,7 +51,7 @@ export async function POST(req: Request) {
             cancel_url: `${req.headers.get('origin')}/pricing?canceled=true`,
             client_reference_id: userId,
             subscription_data: {
-                metadata: { firebaseUserId: userId },
+                metadata: { firebaseUserId: userId, plan },
             },
         });
 

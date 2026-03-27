@@ -427,7 +427,7 @@ export function analyzeAgentCode(code: string, framework: string): Violation[] {
             severity: "critical",
             title: "No audit logging detected",
             description: "EU AI Act Article 12 requires that high-risk AI systems log all significant events during operation. Your agent has no visible logging mechanism.",
-            fix: `// Add Supra-wall — automatic audit logging for every tool call\nimport { protect } from "suprawall";\nconst secured = protect(agent, { apiKey: "ag_..." });`
+            fix: `// Add Supra-wall — automatic audit logging for every tool call\nimport { protect } from "suprawall";\nconst secured = protect(agent, { apiKey: "sw_..." });`
         });
     }
 
@@ -453,7 +453,7 @@ export function analyzeAgentCode(code: string, framework: string): Violation[] {
             severity: "high",
             title: "No rate limiting or cost controls",
             description: "Article 9 requires risk management measures. Your agent has no visible rate limiting, budget caps, or loop detection — a runaway agent could cause unlimited damage.",
-            fix: `// Add budget + loop protection\nconst secured = protect(agent, {\n  apiKey: "ag_...",\n  maxCostUsd: 10.00,\n  loopDetection: true,\n  maxIterations: 50\n});`
+            fix: `// Add budget + loop protection\nconst secured = protect(agent, {\n  apiKey: "sw_...",\n  maxCostUsd: 10.00,\n  loopDetection: true,\n  maxIterations: 50\n});`
         });
     }
 
@@ -589,7 +589,7 @@ if your agent handles any high-risk decisions. Here's how to add it:
 **Option 2: Automatic logging with a security layer**
 ```python
 from suprawall import protect
-secured = protect(agent, api_key="ag_...")
+secured = protect(agent, api_key="sw_...")
 # Every tool call is now automatically logged with full audit trail
 ```
 

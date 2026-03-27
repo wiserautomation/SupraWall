@@ -13,7 +13,7 @@ import {
     LayoutDashboard, Cpu, Network, Github
 } from "lucide-react";
 import Link from "next/link";
-import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints } from "./HomeClient";
+import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection } from "./HomeClient";
 
 export default function LandingPage() {
     const jsonLd = {
@@ -112,7 +112,7 @@ export default function LandingPage() {
                                 <span className="text-white font-bold">Generate</span> audit trails.{' '}
                                 <span className="text-white font-bold">Stop</span> prompt injections.{' '}
                                 <br className="hidden md:block" />
-                                <span className="text-emerald-400 italic">Six real threats. One line of code.</span>
+                                <span className="text-emerald-400 italic">Open source. One line of code. Six threats neutralized.</span>
                             </p>
                                      <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                             <Link
@@ -137,17 +137,21 @@ export default function LandingPage() {
 
                         <div className="pt-12 flex flex-col items-center gap-6">
                             <div className="flex items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
-                                <div className="flex items-center gap-2">
+                                <Link href="https://github.com/suprawall/suprawall" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors">
                                     <Github className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">1.4k Stars</span>
+                                </Link>
+                                <Link href="https://www.npmjs.com/package/suprawall" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors">
+                                    <Activity className="w-4 h-4" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">12k Weekly Downloads</span>
+                                </Link>
+                                <div className="flex items-center gap-2">
+                                    <Shield className="w-4 h-4" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Apache 2.0</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <Activity className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">1.2ms Latency</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <Shield className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Audit Ready</span>
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest">EU AI Act Ready</span>
                                 </div>
                             </div>
                             <p className="text-[11px] font-medium text-neutral-500 uppercase tracking-[0.3em] text-center max-w-2xl px-6 leading-relaxed">
@@ -224,6 +228,9 @@ export default function LandingPage() {
                         </div>
                     </div>
                 </section>
+
+                {/* 🏷️ COMPLIANCE TEMPLATES — Proof point */}
+                <ComplianceTemplatesSection />
 
                 {/* ⚙️ HOW IT WORKS */}
                 <section id="how-it-works" className="py-40 px-6 bg-black">

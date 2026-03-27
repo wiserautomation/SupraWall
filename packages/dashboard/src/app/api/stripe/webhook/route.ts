@@ -41,9 +41,15 @@ export async function POST(req: Request) {
                 stripeCustomerId: session.customer,
                 stripeSubscriptionId: subscriptionId,
                 stripeSubscriptionItemId: subscriptionItemId,
+                plan: session.metadata?.plan || 'free',
                 status: 'active',
                 hasPaymentMethod: true,
                 currentPeriodEnd: admin.firestore.Timestamp.fromMillis(periodEnd * 1000),
+            }, { merge: true });
+
+            // Also sync to users collection for evaluate route
+            await db.collection('users').doc(userId).set({
+                plan: session.metadata?.plan || 'free',
             }, { merge: true });
             break;
         }

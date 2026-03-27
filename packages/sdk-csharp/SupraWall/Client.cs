@@ -40,7 +40,7 @@ namespace SUPRA-WALL.Models
 
         public async Task<EvaluateResponse> EvaluateAsync(string agentId, string toolName, object arguments = null)
         {
-            if (apiKey.StartsWith("ag_test_"))
+            if (apiKey.StartsWith("sw_test_"))
             {
                 return new EvaluateResponse { Decision = "ALLOW", Reason = "Test mode bypass" };
             }

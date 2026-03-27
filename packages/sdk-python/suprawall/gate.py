@@ -137,7 +137,7 @@ class SupraWallOptions:
 
     Example:
         options = SupraWallOptions(
-            api_key="ag_your_key_here",
+            api_key="sw_your_key_here",
             max_cost_usd=5.00,      # Hard stop at $5 per session
             budget_alert_usd=4.00,  # Warn at $4
         )
@@ -521,15 +521,15 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         from suprawall import with_suprawall, SupraWallOptions
 
         secured = with_suprawall(my_agent, SupraWallOptions(
-            api_key="ag_your_key_here"
+            api_key="sw_your_key_here"
         ))
         result = secured.run("delete_file", {"path": "/etc/passwd"})
     """
-    if not options.api_key.startswith(("ag_", "agc_")):
+    if not options.api_key.startswith(("sw_", "swc_")):
         raise ValueError(
             f"[SupraWall] Invalid API key: '{options.api_key}'.\n"
             "  Get your free key at https://suprawall.ai/\n"
-            "  Expected format: ag_xxxxxxxxxxxxxxxx"
+            "  Expected format: sw_xxxxxxxxxxxxxxxx"
         )
 
     # Detect which method to wrap: run > invoke > __call__

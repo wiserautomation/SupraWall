@@ -93,7 +93,7 @@ Each feature has its own story. Each story follows the same structure: **Pain â†
 **The Integration:**
 ```python
 from suprawall import secure_agent
-secured = secure_agent(agent, api_key="ag_...")
+secured = secure_agent(agent, api_key="sw_...")
 # Every tool call is now policy-checked. Done.
 ```
 

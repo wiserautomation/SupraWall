@@ -12,6 +12,27 @@ import {
 import Link from "next/link";
 import { TagBadge } from "../HomeClient";
 
+const EU_ACT_MAPPING = [
+    {
+        article: "Art. 9",
+        requirement: "Prove your AI had a documented risk management system before it acted",
+        solution: "Policy Engine: pre-execution allow/deny rules. Compliance Templates: one-click Article 9 policy activation for Banking, Healthcare, HR.",
+        product: "Policy Engine, Compliance Templates"
+    },
+    {
+        article: "Art. 13",
+        requirement: "Log every AI action in an auditable, tamper-proof record",
+        solution: "RSA-signed audit trail at the tool-call boundary. Every execution logged with cryptographic signature.",
+        product: "Audit Logs, Compliance Reports"
+    },
+    {
+        article: "Art. 14",
+        requirement: "A human must be able to monitor and intervene in AI actions",
+        solution: "Human approval workflows for flagged tool calls. Policy engine is human-defined; AI operates within human-set boundaries.",
+        product: "Policy Engine, Approval Workflows"
+    }
+];
+
 const EU_ACT_ARTICLES = [
     {
         title: "Article 09: Risk Management",
@@ -21,16 +42,9 @@ const EU_ACT_ARTICLES = [
         pill: "Foundation"
     },
     {
-        title: "Article 11: Technical Documentation",
-        href: "/learn/ai-agent-governance-best-practices",
-        desc: "Automating the technical logs required for conformity assessments.",
-        icon: <FileText className="w-6 h-6 text-blue-400" />,
-        pill: "Governance"
-    },
-    {
-        title: "Article 12: Automatic Logging",
+        title: "Article 13: Auditable Logging",
         href: "/eu-ai-act/article-12",
-        desc: "How SupraWall SDK generates signed logs of every tool call and decision.",
+        desc: "Tamper-proof, cryptographically signed record of every agentic intervention.",
         icon: <History className="w-6 h-6 text-blue-400" />,
         pill: "Monitoring"
     },
@@ -66,9 +80,42 @@ export default function EuAiActClient() {
                 </div>
             </section>
 
+             {/* 🎯 TABLE MAPPING SECTION */}
+            <section className="py-24 px-6 bg-black border-y border-white/5">
+                <div className="max-w-7xl mx-auto space-y-12">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-4xl font-black italic uppercase tracking-tighter">The Compliance <span className="text-blue-500">Moat</span></h2>
+                        <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs">Direct mapping of SupraWall capabilities to EU AI Act requirements.</p>
+                    </div>
+                    
+                    <div className="overflow-x-auto rounded-[3rem] border border-white/10 bg-neutral-900/20 shadow-2xl">
+                        <table className="w-full text-left border-separate border-spacing-0">
+                            <thead>
+                                <tr className="bg-neutral-900/80">
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">Article</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">What It Requires</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">What SupraWall Does</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">Product Location</th>
+                                </tr>
+                            </thead>
+                            <tbody className="text-sm font-bold italic uppercase tracking-tighter text-white">
+                                {EU_ACT_MAPPING.map((row, i) => (
+                                    <tr key={i} className="hover:bg-white/5 transition-colors group">
+                                        <td className="p-8 border-t border-white/5 text-blue-500 font-black">{row.article}</td>
+                                        <td className="p-8 border-t border-white/5 text-neutral-200">{row.requirement}</td>
+                                        <td className="p-8 border-t border-white/5 text-neutral-400 group-hover:text-white transition-colors">{row.solution}</td>
+                                        <td className="p-8 border-t border-white/5 text-neutral-600 group-hover:text-blue-500 transition-colors uppercase italic font-bold">{row.product}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
              {/* 🎯 CORE ARTICLES GRID */}
             <section className="py-24 px-6 md:px-0 bg-black">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
                    {EU_ACT_ARTICLES.map((art, i) => (
                        <Link 
                             key={art.href} 
@@ -89,7 +136,7 @@ export default function EuAiActClient() {
                                 </div>
                             </div>
                        </Link>
-                   ))}
+                    ))}
                 </div>
             </section>
 

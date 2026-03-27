@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
+import { Check } from "lucide-react";
 
 // ── Shared Components ──
 
@@ -68,11 +69,11 @@ export function TechTabs() {
     const techExamples: Record<string, any> = {
         "TypeScript": {
             before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
-            after: `import { secure_agent } from "suprawall";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "ag_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
+            after: `import { secure_agent } from "suprawall";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "sw_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
         },
         "Python": {
             before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
-            after: `from suprawall import secure_agent\n\n# 🛡️ Hard-coded security shim\nsecured = secure_agent(my_agent, api_key="ag_...")\n\n# Agent is automatically protected\n# ✅ Destructive acts blocked deterministically`
+            after: `from suprawall import secure_agent\n\n# 🛡️ Hard-coded security shim\nsecured = secure_agent(my_agent, api_key="sw_...")\n\n# Agent is automatically protected\n# ✅ Destructive acts blocked deterministically`
         },
         "MCP": {
             before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
@@ -568,5 +569,127 @@ export function AttackDemo() {
                 </motion.div>
             </div>
         </div>
+    );
+}
+
+// ── Compliance Templates Section ──
+
+const TEMPLATE_COLORS: Record<string, any> = {
+    blue: {
+        badge: "bg-blue-500/10 border-blue-500/20 text-blue-400",
+        article: "bg-blue-500/15 border-blue-500/30 text-blue-400",
+        btn: "group-hover:bg-blue-500/10 group-hover:border-blue-500/40 group-hover:text-blue-400",
+        glow: "0 0 40px rgba(59, 130, 246, 0.1)"
+    },
+    rose: {
+        badge: "bg-rose-500/10 border-rose-500/20 text-rose-400",
+        article: "bg-rose-500/15 border-rose-500/30 text-rose-400",
+        btn: "group-hover:bg-rose-500/10 group-hover:border-rose-500/40 group-hover:text-rose-400",
+        glow: "0 0 40px rgba(244, 63, 94, 0.1)"
+    },
+    purple: {
+        badge: "bg-purple-500/10 border-purple-500/20 text-purple-400",
+        article: "bg-purple-500/15 border-purple-500/30 text-purple-400",
+        btn: "group-hover:bg-purple-500/10 group-hover:border-purple-500/40 group-hover:text-purple-400",
+        glow: "0 0 40px rgba(168, 85, 247, 0.1)"
+    }
+};
+
+export function ComplianceTemplatesSection() {
+    const templates = [
+        {
+            industry: "FINANCIAL SERVICES",
+            title: "Banking & Finance",
+            desc: "Risk controls for AI used in credit scoring, lending, and financial transactions.",
+            articles: ["Art. 9", "Art. 14", "Art. 10"],
+            color: "blue",
+            rules: "5 rules"
+        },
+        {
+            industry: "MEDICAL & CLINICAL",
+            title: "Healthcare",
+            desc: "Guardrails for AI in medical diagnosis, patient records, and clinical decisions.",
+            articles: ["Art. 9", "Art. 14", "Art. 10"],
+            color: "rose",
+            rules: "5 rules"
+        },
+        {
+            industry: "HUMAN RESOURCES",
+            title: "HR & Employment",
+            desc: "Safeguards for AI in hiring, performance reviews, and employment decisions.",
+            articles: ["Art. 9", "Art. 14", "Art. 10"],
+            color: "purple",
+            rules: "5 rules"
+        }
+    ];
+
+    return (
+        <section className="py-40 px-6 bg-black relative overflow-hidden">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[800px] bg-emerald-500/[0.02] blur-[200px] rounded-full pointer-events-none" />
+            
+            <div className="max-w-7xl mx-auto space-y-24 relative z-10">
+                <div className="text-center space-y-6">
+                    <TagBadge>EU AI Act Templates, Built In</TagBadge>
+                    <h2 className="text-5xl md:text-8xl font-black italic tracking-tighter leading-[0.85] uppercase text-glow">
+                        Compliance Ready <br />
+                        <span className="text-emerald-500 font-bold">On Day One.</span>
+                    </h2>
+                    <p className="text-xl text-neutral-500 font-medium max-w-3xl mx-auto italic leading-relaxed">
+                        Those cards aren&apos;t just features — they&apos;re a proof point. Switch on vertical-specific safeguards that handle the regulatory burden for you.
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {templates.map((t, i) => {
+                        const style = TEMPLATE_COLORS[t.color];
+                        return (
+                            <motion.div
+                                key={t.title}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                transition={{ delay: i * 0.15, duration: 0.6 }}
+                                viewport={{ once: true }}
+                                className={`group relative p-1 rounded-[2.5rem] bg-neutral-900/40 border border-white/[0.05] hover:border-white/10 transition-all duration-500`}
+                                style={{ boxShadow: style.glow }}
+                            >
+                                <div className="p-10 space-y-8">
+                                    <div className="space-y-2">
+                                        <div className={`inline-flex items-center px-3 py-1 rounded-md text-[10px] font-black tracking-widest uppercase transition-colors duration-500 ${style.badge}`}>
+                                            {t.industry}
+                                        </div>
+                                        <h3 className="text-3xl font-black italic uppercase text-white tracking-tighter">{t.title}</h3>
+                                    </div>
+                                    <p className="text-neutral-400 text-sm font-medium leading-relaxed italic h-[60px]">
+                                        {t.desc}
+                                    </p>
+                                    
+                                    <div className="flex flex-wrap items-center gap-2">
+                                        {t.articles.map(art => (
+                                            <div key={art} className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(0,0,0,0.5)] transition-colors duration-500 ${style.article}`}>
+                                                {art}
+                                            </div>
+                                        ))}
+                                        <div className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-neutral-500 text-[10px] font-black uppercase tracking-widest italic">
+                                            {t.rules}
+                                        </div>
+                                    </div>
+
+                                    <button className={`w-full py-4 rounded-xl bg-white/[0.03] border border-white/10 group-hover:bg-white/5 text-neutral-500 text-[10px] font-black uppercase tracking-widest transition-all italic flex items-center justify-center gap-3 ${style.btn}`}>
+                                        Activate Template <ArrowRight className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </div>
+
+                <div className="text-center">
+                    <p className="text-lg text-neutral-400 font-medium italic max-w-4xl mx-auto leading-relaxed border-t border-white/5 pt-12 px-6">
+                        &quot;Select a template, activate it in one click, and your agent policies are mapped to <span className="text-white font-bold italic">EU AI Act Articles 9, 14, and 10</span> before you write a single rule.&quot;
+                    </p>
+                </div>
+            </div>
+        </section>
     );
 }

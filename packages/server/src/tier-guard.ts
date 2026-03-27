@@ -52,7 +52,7 @@ export async function resolveTier(req: TieredRequest, res: Response, next: NextF
  */
 export function tierLimitError(feature: string, current: number | string, limit: number | string) {
     return {
-        error: `${feature} limit reached (${current}/${limit}). Upgrade to Cloud for unlimited access.`,
+        error: `${feature} limit reached (${current}/${limit}). Upgrade to Business for unlimited access.`,
         upgradeUrl: "https://www.supra-wall.com/pricing",
         code: "TIER_LIMIT_EXCEEDED",
     };

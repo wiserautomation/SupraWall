@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
+import { Trash2, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
 import { POLICY_TEMPLATES, type PolicyTemplate } from "@/lib/policy-templates";
 import type { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
@@ -79,6 +79,20 @@ export default function PoliciesPage() {
 
         return () => clearInterval(interval);
     }, [user]);
+
+    const handleDeletePolicy = async (id: string) => {
+        if (!user || !id) return;
+        try {
+            const res = await fetch(`/api/v1/policies/${id}?tenantId=${user.uid}`, {
+                method: "DELETE",
+            });
+            if (!res.ok) throw new Error(`Failed: ${res.status}`);
+            setPolicies(prev => prev.filter(p => p.id !== id));
+            sendGAEvent('event', 'delete_policy', { policy_id: id });
+        } catch (e) {
+            console.error("Error deleting policy", e);
+        }
+    };
 
     const handleCreatePolicy = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -559,6 +573,7 @@ export default function PoliciesPage() {
                                             <TableHead className="text-neutral-400 font-medium py-4">Priority</TableHead>
                                             <TableHead className="text-neutral-400 font-medium py-4">Decision</TableHead>
                                             <TableHead className="text-neutral-400 font-medium py-4">Mode</TableHead>
+                                            <TableHead className="text-neutral-400 font-medium py-4 text-right pr-6"></TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -575,12 +590,21 @@ export default function PoliciesPage() {
                                                         {p.ruletype || p.ruleType}
                                                     </span>
                                                 </TableCell>
-                                                <TableCell className="py-4 text-xs">
+                                                <TableCell className="py-4 text-xs font-black italic tracking-tighter uppercase">
                                                     {(p.isdryrun !== undefined ? p.isdryrun : p.isDryRun) ? (
-                                                        <span className="text-amber-500 font-black italic tracking-tighter uppercase">Dry Run</span>
+                                                        <span className="text-amber-500">Dry Run</span>
                                                     ) : (
-                                                        <span className="text-neutral-600 font-black italic tracking-tighter uppercase">Enforced</span>
+                                                        <span className="text-neutral-600">Enforced</span>
                                                     )}
+                                                </TableCell>
+                                                <TableCell className="py-4 text-right pr-6">
+                                                    <button
+                                                        onClick={() => handleDeletePolicy(p.id!)}
+                                                        className="p-2 text-neutral-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all"
+                                                        title="Delete Rule"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}

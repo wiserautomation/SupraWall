@@ -7,7 +7,7 @@ import React from 'react';
 import { AlertTriangle, ArrowUpRight } from 'lucide-react';
 import Link from 'next/link';
 
-export type Tier = 'free' | 'cloud' | 'enterprise';
+export type Tier = 'free' | 'starter' | 'growth' | 'business' | 'enterprise' | 'cloud';
 
 interface TierUsage {
     current: number;
@@ -33,7 +33,7 @@ export function TierBanner({ tier, usages = [], compact = false }: TierBannerPro
         return (
             <div className="flex items-center gap-3 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-[11px] font-bold text-amber-400 uppercase tracking-widest">
                 <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-                <span>Free Tier</span>
+                <span>Developer Tier</span>
                 {warnings.map((u, i) => (
                     <span key={i} className="text-white/60">
                         · {u.label}: {u.current}/{u.max}
@@ -54,10 +54,10 @@ export function TierBanner({ tier, usages = [], compact = false }: TierBannerPro
                 <AlertTriangle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
                     <p className="text-[11px] font-black uppercase tracking-widest text-amber-400">
-                        {atLimit.length > 0 ? 'Free Tier Limit Reached' : 'Approaching Free Tier Limit'}
+                        {atLimit.length > 0 ? 'Developer Limit Reached' : 'Approaching Developer Limit'}
                     </p>
                     <p className="text-[11px] text-neutral-400 mt-1">
-                        Upgrade to Cloud for unlimited access.
+                        Upgrade to Business for unlimited access.
                     </p>
                 </div>
                 <Link

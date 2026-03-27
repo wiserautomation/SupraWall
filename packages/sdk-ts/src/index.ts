@@ -144,7 +144,7 @@ export interface SupraWallOptions {
     /**
      * Your SupraWall API key.
      * Get one free at https://www.supra-wall.com/
-     * Format: ag_xxxxxxxxxxxxxxxx
+     * Format: sw_xxxxxxxxxxxxxxxx
      */
     apiKey: string;
     /**
@@ -234,7 +234,7 @@ export interface AgentInstance {
  * // Works with LangChain, OpenAI Agents SDK, CrewAI, AutoGen, raw MCP
  * import { withSupraWall } from "suprawall";
  *
- * const secured = withSupraWall(myAgent, { apiKey: "ag_your_key" });
+ * const secured = withSupraWall(myAgent, { apiKey: "sw_your_key" });
  * await secured.executeTool("send_email", { to: "ceo@company.com" }); // checked
  *
  * @param agentInstance - Any agent object with an `executeTool` method
@@ -497,11 +497,11 @@ export function withSupraWall<T extends AgentInstance>(
 ): T {
     const { apiKey, logger = console } = options;
 
-    if (!apiKey || !apiKey.startsWith("ag_")) {
+    if (!apiKey || !apiKey.startsWith("sw_")) {
         throw new Error(
             `[SupraWall] Invalid API key: "${apiKey}".\n` +
             `  Get your free key at https://www.supra-wall.com/\n` +
-            `  Expected format: ag_xxxxxxxxxxxxxxxx`
+            `  Expected format: sw_xxxxxxxxxxxxxxxx`
         );
     }
 
@@ -579,7 +579,7 @@ export function createSupraWallMiddleware(options: SupraWallOptions) {
  * 
  * @example
  * import { protect } from "suprawall";
- * const secured = protect(myAgent, { apiKey: "ag_..." });
+ * const secured = protect(myAgent, { apiKey: "sw_..." });
  */
 export function protect(agentOrTools: any, options: SupraWallOptions): any {
     if (!agentOrTools) return agentOrTools;

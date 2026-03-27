@@ -37,16 +37,25 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
         rows: [
             { name: 'Regex-based rules', free: true, cloud: true, enterprise: true },
             { name: 'AI-powered policies', free: false, cloud: true, enterprise: true, highlight: true },
-            { name: 'Article 9 Risk Templates', free: false, cloud: false, enterprise: true },
+            { name: 'Article 9 Risk Templates', free: false, cloud: true, enterprise: true, highlight: true },
             { name: 'Custom policy models', free: false, cloud: false, enterprise: true },
         ],
     },
     {
         category: 'Vault',
         rows: [
-            { name: 'Secret storage', free: '5 secrets', cloud: 'Unlimited', enterprise: 'Dedicated HSM', highlight: true },
+            { name: 'Secret storage', free: '10 secrets', cloud: 'Unlimited', enterprise: 'Dedicated HSM', highlight: true },
             { name: 'Auto-rotation', free: false, cloud: true, enterprise: true },
             { name: 'Custom KMS / HSM', free: false, cloud: false, enterprise: true },
+        ],
+    },
+    {
+        category: 'Integrations',
+        rows: [
+            { name: 'LangChain plugin', free: true, cloud: true, enterprise: true },
+            { name: 'Vercel AI SDK', free: true, cloud: true, enterprise: true },
+            { name: 'CrewAI / AutoGen / LlamaIndex', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'Custom framework support', free: false, cloud: false, enterprise: true },
         ],
     },
     {
@@ -60,13 +69,12 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
     {
         category: 'Audit & Compliance Suite',
         rows: [
-            { name: 'Log retention', free: '7 days', cloud: '1 year', enterprise: '7+ years', highlight: true },
+            { name: 'Log retention', free: '7 days', cloud: '90d - 3yr', enterprise: '7+ years', highlight: true },
             { name: 'Audit exports (JSON)', free: true, cloud: true, enterprise: true },
-            { name: 'Branded PDF Reports', free: false, cloud: true, enterprise: true },
-            { name: 'EU AI Act Compliance Mapping', free: false, cloud: 'Basic', enterprise: 'Full Suite', highlight: true },
+            { name: 'Branded PDF Reports', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'EU AI Act Compliance Mapping', free: false, cloud: 'Included', enterprise: 'Full Suite', highlight: true },
             { name: 'RSA-signed audit trails', free: false, cloud: false, enterprise: true },
             { name: 'Data residency (EU-only)', free: false, cloud: false, enterprise: true },
-            { name: 'Regulator-ready formats', free: false, cloud: false, enterprise: true },
         ],
     },
     {
@@ -84,7 +92,6 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
             { name: 'BAA (Healthcare)', free: false, cloud: false, enterprise: true },
             { name: 'Custom MSA support', free: false, cloud: false, enterprise: true },
             { name: 'SOC 2 Type II certified', free: false, cloud: false, enterprise: true },
-            { name: 'Financial penalty SLAs', free: false, cloud: false, enterprise: true },
         ],
     },
     {
@@ -98,8 +105,10 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
     {
         category: 'Dashboard & Access',
         rows: [
-            { name: 'Dashboard', free: 'Read-only', cloud: 'Full management', enterprise: 'White-label' },
+            { name: 'Managed Dashboard', free: false, cloud: true, enterprise: 'VPC / Air-gapped' },
+            { name: 'Self-hostable OSS Dashboard', free: true, cloud: false, enterprise: false },
             { name: 'SSO (SAML/SCIM)', free: false, cloud: false, enterprise: true },
+            { name: 'White-labeling', free: false, cloud: false, enterprise: true },
         ],
     },
     {
@@ -108,8 +117,6 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
             { name: 'GitHub issues', free: true, cloud: true, enterprise: true },
             { name: 'Email support', free: false, cloud: 'Priority', enterprise: 'Dedicated Line' },
             { name: 'Implementation Engineer', free: false, cloud: false, enterprise: true },
-            { name: 'Named Account Executive', free: false, cloud: false, enterprise: true },
-            { name: 'Quarterly Business Reviews', free: false, cloud: false, enterprise: true },
         ],
     },
 ];
@@ -175,9 +182,27 @@ export default function PricingPage() {
                     Start Free.<br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Scale With Confidence.</span>
                 </h1>
-                <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-medium italic">
-                    Free for solo developers building AI agents. Cloud when you go to production. Enterprise when compliance demands it.
+                <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-medium italic leading-relaxed">
+                    Developer tier for solo builders. Business for scaling production. Enterprise for Article 9 compliance and legal-grade security.
                 </p>
+
+                {/* Abstract Social Proof */}
+                <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-24 mt-20 pb-12 border-b border-white/5 mx-auto max-w-5xl">
+                    <div className="group">
+                        <div className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase mb-2 group-hover:text-emerald-500 transition-colors leading-none">2.3B+</div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 italic">Interactions Secured</p>
+                    </div>
+                    <div className="w-px h-12 bg-white/5 hidden md:block" />
+                    <div className="group">
+                        <div className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase mb-2 leading-none">Fortune 500</div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 italic">Ready Infrastructure</p>
+                    </div>
+                    <div className="w-px h-12 bg-white/5 hidden md:block" />
+                    <div className="group">
+                        <div className="text-2xl md:text-3xl font-black italic tracking-tighter uppercase mb-2 leading-none leading-none">Series A+</div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 italic">Production Scale</p>
+                    </div>
+                </div>
             </div>
 
             <div className="max-w-7xl mx-auto px-6">
@@ -203,10 +228,10 @@ export default function PricingPage() {
                             <ul className="space-y-3">
                                 {[
                                     '3 agents',
-                                    '5 vault secrets',
+                                    '10 vault secrets',
                                     '10K ops / month',
                                     '7-day audit logs',
-                                    'Regex policies',
+                                    'JSON status API (no PDF)',
                                     'LangChain + Vercel AI plugins',
                                     'PostgreSQL adapter',
                                     'GitHub issues support',
@@ -267,14 +292,13 @@ export default function PricingPage() {
                                 {[
                                     'Unlimited agents',
                                     'Unlimited vault secrets (HSM)',
-                                    'Unlimited operations',
-                                    '1-year audit retention',
+                                    '90-day to 3-year retention',
                                     'AI-powered policies',
                                     'ML threat detection',
                                     'Slack + Dashboard approvals',
                                     'PDF compliance reports',
-                                    'All 7 framework plugins',
-                                    'All 5 database adapters',
+                                    'All framework plugins (CrewAI, etc.)',
+                                    'Regulator-ready evidence',
                                     '99.9% SLA',
                                 ].map((item, i) => (
                                     <li key={i} className="flex items-center gap-3 text-[10px] font-bold uppercase tracking-widest italic">
@@ -310,6 +334,7 @@ export default function PricingPage() {
                                 {[
                                     'Everything in Cloud',
                                     'Self-hosted / VPC / Air-gapped',
+                                    'EU AI Act Compliance Suite',
                                     'SSO + SCIM',
                                     'White-label dashboard',
                                     '7+ year audit retention',
@@ -410,12 +435,12 @@ export default function PricingPage() {
 
                                 <div className="grid md:grid-cols-3 gap-4">
                                     <div className="p-6 rounded-3xl bg-white/5 border border-white/5 space-y-2">
-                                        <p className="text-[10px] font-black uppercase text-neutral-500 italic">Free Tier</p>
+                                        <p className="text-[10px] font-black uppercase text-neutral-500 italic">Developer Tier</p>
                                         <p className="text-3xl font-black italic tracking-tighter">{operations <= 10000 ? '$0' : '—'}</p>
                                         <p className="text-[9px] text-neutral-600 font-bold uppercase">Up to 10K ops</p>
                                     </div>
                                     <div className="p-6 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
-                                        <p className="text-[10px] font-black uppercase text-emerald-400 italic">Cloud ({selectedPlan})</p>
+                                        <p className="text-[10px] font-black uppercase text-emerald-400 italic">{selectedPlan.charAt(0).toUpperCase() + selectedPlan.slice(1)} Tier</p>
                                         <p className="text-3xl font-black italic tracking-tighter">${(planBase + Math.max(0, overage - planBase > 0 ? overage : 0)).toFixed(0)}</p>
                                         <p className="text-[9px] text-neutral-400 font-bold uppercase">/month</p>
                                     </div>
@@ -452,12 +477,12 @@ export default function PricingPage() {
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
                         {[
-                            { wall: 'Wall 1', trigger: '4th agent', msg: '"Developer only allows 3 agents" → Cloud unlocks unlimited' },
-                            { wall: 'Wall 2', trigger: 'Regex fatigue', msg: '"AI-powered policies needed" → Cloud feature' },
-                            { wall: 'Wall 3', trigger: '6th secret', msg: '"5 secrets isn\'t enough for production Vault" → Cloud' },
-                            { wall: 'Wall 4', trigger: 'Compliance audit', msg: '"PDF reports needed, not JSON" → Cloud compliance' },
-                            { wall: 'Wall 5', trigger: '8-day log', msg: '"7-day retention is useless for an audit" → Cloud' },
-                            { wall: 'Wall 6', trigger: 'CrewAI plugin', msg: '"Developer only has 2 framework plugins" → Cloud' },
+                            { wall: 'Wall 1', trigger: '4th agent', msg: '"Developer only allows 3 agents" → Business unlocks unlimited' },
+                            { wall: 'Wall 2', trigger: 'Regex fatigue', msg: '"AI-powered policies needed" → Higher tiers' },
+                            { wall: 'Wall 3', trigger: '11th secret', msg: '"10 secrets isn\'t enough for production Vault" → Business' },
+                            { wall: 'Wall 4', trigger: 'Compliance audit', msg: '"PDF reports needed, not JSON" → Enterprise compliance' },
+                            { wall: 'Wall 5', trigger: '8-day log', msg: '"7-day retention is useless for an audit" → Business' },
+                            { wall: 'Wall 6', trigger: 'Full SDK support', msg: '"Developer only has 2 framework plugins" → Business' },
                         ].map((item, i) => (
                             <div key={i} className="p-6 rounded-2xl bg-neutral-900/40 border border-white/5 hover:border-emerald-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-3">

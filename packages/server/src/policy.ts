@@ -51,7 +51,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             if (currentOps >= tierLimits.maxOpsPerMonth) {
                 return res.status(429).json({
                     decision: "DENY",
-                    reason: `Monthly operation limit reached (${currentOps.toLocaleString()}/${tierLimits.maxOpsPerMonth.toLocaleString()}). Upgrade to Cloud for unlimited operations.`,
+                    reason: `Monthly operation limit reached (${currentOps.toLocaleString()}/${tierLimits.maxOpsPerMonth.toLocaleString()}). Upgrade to Business for unlimited operations.`,
                     upgradeUrl: "https://www.supra-wall.com/pricing",
                     code: "TIER_LIMIT_EXCEEDED",
                 });

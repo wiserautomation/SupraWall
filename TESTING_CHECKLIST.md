@@ -207,7 +207,7 @@ curl -H "Authorization: Bearer agc_test_demo_suprawall_2026" \
       "command": "node",
       "args": ["suprawall-client.js"],
       "env": {
-        "SUPRAWALL_API_KEY": "agc_test_demo_suprawall_2026",
+        "SUPRAWALL_API_KEY": "swc_test_demo_suprawall_2026",
         "SUPRAWALL_ENDPOINT": "https://www.supra-wall.com/api/mcp"
       }
     }

@@ -73,12 +73,12 @@ describe("Tier Enforcement Tests", () => {
     });
 
     describe("Vault Secret Limits", () => {
-        test("Developer tier allows 5 secrets but rejects the 6th", async () => {
+        test("Developer tier allows 10 secrets but rejects the 11th", async () => {
              // 1. Mock resolveTier (returns 'free')
              (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ tier: 'free' }] });
  
-             // 2. Mock Secret Count check (returns 5)
-             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ count: "5" }] });
+             // 2. Mock Secret Count check (returns 10)
+             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ count: "10" }] });
  
              const res = await request(app)
                  .post("/v1/vault/secrets")
@@ -86,7 +86,7 @@ describe("Tier Enforcement Tests", () => {
                  .send({ tenantId: TENANT_ID, secretName: "OVER_LIMIT", secretValue: "secret" });
  
              expect(res.status).toBe(403);
-             expect(res.body.error).toContain("Vault secrets limit reached (5/5)");
+             expect(res.body.error).toContain("Vault secrets limit reached (10/10)");
         });
     });
 });

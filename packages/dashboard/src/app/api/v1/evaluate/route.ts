@@ -89,7 +89,8 @@ export async function POST(req: NextRequest) {
             const platformSnap = await db.collection("platforms").doc(platformId!).get();
             const platformData = platformSnap.data();
             userId = platformData?.ownerId;
-            showBranding = platformData?.plan !== "growth" && platformData?.plan !== "enterprise";
+            // Hide branding for any paid tier
+            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(platformData?.plan);
 
             const basePolicySnap = await db.collection("platforms").doc(platformId!).collection("base_policies").doc("default").get();
             const baseRules: PolicyRule[] = basePolicySnap.data()?.rules ?? [];
@@ -113,7 +114,8 @@ export async function POST(req: NextRequest) {
 
             const userSnap = await db.collection("users").doc(userId).get();
             const userData = userSnap.data();
-            showBranding = userData?.plan !== "growth" && userData?.plan !== "enterprise";
+            // Hide branding for any paid tier
+            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(userData?.plan);
 
             if (agentData.status && agentData.status !== 'active') {
                 return NextResponse.json({ decision: "DENY", reason: `Agent is ${agentData.status}.` }, { status: 403 });

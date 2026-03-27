@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
             const tierRes = await fetch(`${serverUrl}/v1/tenants/${userId}`);
             if (tierRes.ok) {
                 const tierData = await tierRes.json();
-                if (tierData.tier === 'cloud' || tierData.tier === 'enterprise') {
+                if (['starter', 'growth', 'business', 'enterprise'].includes(tierData.tier)) {
                     maxAgents = Infinity;
                 }
             }
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
         if (currentCount >= maxAgents) {
             return NextResponse.json({ 
-                error: `Agent limit reached (${currentCount}/${maxAgents}). Upgrade to Cloud for unlimited access.`,
+                error: `Agent limit reached (${currentCount}/${maxAgents}). Upgrade to Business for unlimited access.`,
                 code: "TIER_LIMIT_EXCEEDED"
             }, { status: 403 });
         }

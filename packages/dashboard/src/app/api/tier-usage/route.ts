@@ -35,9 +35,13 @@ export async function GET(req: NextRequest) {
         const stats = opsRes.ok ? await opsRes.json() : {};
 
         const tierLimits: Record<string, any> = {
-            free:       { maxAgents: 3, maxVaultSecrets: 5, auditRetentionDays: 7, maxOpsPerMonth: 10_000 },
-            cloud:      { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 365, maxOpsPerMonth: Infinity },
+            free:       { maxAgents: 3, maxVaultSecrets: 10, auditRetentionDays: 7, maxOpsPerMonth: 10_000 },
+            starter:    { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 90, maxOpsPerMonth: Infinity },
+            growth:     { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 365, maxOpsPerMonth: Infinity },
+            business:   { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 1095, maxOpsPerMonth: Infinity },
             enterprise: { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 2555, maxOpsPerMonth: Infinity },
+            // Legacy fallback
+            cloud:      { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 1095, maxOpsPerMonth: Infinity },
         };
 
         return NextResponse.json({

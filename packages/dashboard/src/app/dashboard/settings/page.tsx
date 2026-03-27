@@ -35,7 +35,11 @@ export default function SettingsPage() {
     const [webhookSecret, setWebhookSecret] = useState("");
     const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
     const [notificationEmail, setNotificationEmail] = useState("");
-    const [masterApiKey, setMasterApiKey] = useState("");
+    const [masterKey, setMasterKey] = useState("");
+    useEffect(() => {
+        // Mocking fetching current key
+        setMasterKey("sw_admin_5f2e8a1b9c3d4e7f");
+    }, []);
     const [openrouterAppUrl, setOpenrouterAppUrl] = useState("");
     const [openrouterAppTitle, setOpenrouterAppTitle] = useState("");
     const [openrouterCategories, setOpenrouterCategories] = useState("");
@@ -57,7 +61,7 @@ export default function SettingsPage() {
                     setWebhookSecret(data.webhook_secret || "");
                     setSlackWebhookUrl(data.slack_webhook_url || "");
                     setNotificationEmail(data.notification_email || "");
-                    setMasterApiKey(data.master_api_key || "");
+                    setMasterKey(data.master_api_key || "");
                     setOpenrouterAppUrl(data.openrouter_app_url || "");
                     setOpenrouterAppTitle(data.openrouter_app_title || "");
                     setOpenrouterCategories(data.openrouter_categories || "");
@@ -100,7 +104,7 @@ export default function SettingsPage() {
         try {
             // Map camelCase to snake_case for the database
             const fieldMap: any = {
-                masterApiKey: "master_api_key",
+                masterKey: "master_api_key",
                 dbType: "db_type",
                 webhookUrl: "webhook_url",
                 slackWebhookUrl: "slack_webhook_url",
@@ -128,10 +132,10 @@ export default function SettingsPage() {
 
     const handleGenerateMasterKey = () => {
         const key = 'ag_master_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-        setMasterApiKey(key);
+        setMasterKey(key);
     };
 
-    const handleSaveMasterKey = () => handleSaveGeneral("masterApiKey", masterApiKey, setSavedMaster);
+    const handleSaveMasterKey = () => handleSaveGeneral("masterKey", masterKey, setSavedMaster);
     const handleSaveDb = (e: React.FormEvent) => {
         e.preventDefault();
         handleSaveGeneral("dbType", dbType, setSavedDb);
@@ -188,7 +192,7 @@ export default function SettingsPage() {
     };
 
     const copyMasterKey = () => {
-        navigator.clipboard.writeText(masterApiKey);
+        navigator.clipboard.writeText(masterKey);
         setCopiedKey(true);
         setTimeout(() => setCopiedKey(false), 2000);
     };
@@ -241,7 +245,7 @@ export default function SettingsPage() {
                         <div className="space-y-3">
                             <div className="flex justify-between items-center px-1">
                                 <label className="text-sm font-semibold text-neutral-300">Master Organizational API Key</label>
-                                {masterApiKey && (
+                                {masterKey && (
                                     <button onClick={copyMasterKey} className="text-xs flex items-center gap-1.5 text-neutral-400 hover:text-white transition-colors bg-white/5 px-2 py-1 rounded-md border border-white/5">
                                         {copiedKey ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
                                         {copiedKey ? "Copied" : "Copy"}
@@ -253,19 +257,19 @@ export default function SettingsPage() {
                                     <input
                                         type="text"
                                         readOnly
-                                        value={masterApiKey || "No key generated yet"}
-                                        className={`w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-emerald-300 font-mono text-sm shadow-inner transition-all ${!masterApiKey && "text-neutral-600 italic"}`}
+                                        value={masterKey || "No key generated yet"}
+                                        className={`w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-emerald-300 font-mono text-sm shadow-inner transition-all ${!masterKey && "text-neutral-600 italic"}`}
                                     />
-                                    {masterApiKey && <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-50" />}
+                                    {masterKey && <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-50" />}
                                 </div>
                                 <Button
                                     onClick={handleGenerateMasterKey}
                                     variant="outline"
                                     className="bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 h-auto py-3 px-5 rounded-xl shadow-lg transition-all"
                                 >
-                                    <RefreshCcw className="w-4 h-4 mr-2" /> {masterApiKey ? "Regenerate" : "Generate"}
+                                    <RefreshCcw className="w-4 h-4 mr-2" /> {masterKey ? "Regenerate" : "Generate"}
                                 </Button>
-                                {masterApiKey && (
+                                {masterKey && (
                                     <Button
                                         onClick={handleSaveMasterKey}
                                         className={`h-auto py-3 px-6 rounded-xl transition-all shadow-lg ${savedMaster ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-blue-600 hover:bg-blue-500 text-white"}`}
@@ -465,10 +469,10 @@ export default function SettingsPage() {
                                 <label className="text-sm font-semibold text-neutral-300">Target Endpoint URL</label>
                                 <input
                                     type="url"
-                                    placeholder="https://your-api.com/webhooks/gate"
+                                    placeholder="https://your-api.com/webhooks/suprawall"
                                     value={webhookUrl}
                                     onChange={(e) => setWebhookUrl(e.target.value)}
-                                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                                    className="w-full bg-black border border-white/10 rounded-xl px-4 py-3 text-sm text-neutral-400 outline-none focus:border-emerald-500/50 transition-all font-mono"
                                 />
                             </div>
 

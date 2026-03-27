@@ -19,6 +19,7 @@ import statsRouter from "./routes/stats";
 import contentRouter from "./routes/content";
 import shieldRouter from "./routes/shield";
 import { gatekeeperAuth } from "./auth";
+import { rateLimit } from "./rate-limit";
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
 // See: https://github.com/suprawall/suprawall-cloud
@@ -41,9 +42,10 @@ app.get("/health", async (req, res) => {
     }
 });
 
-// Policy Evaluation Webhook
-app.post("/v1/evaluate", gatekeeperAuth, evaluatePolicy);
-app.post("/v1/evaluateAction", gatekeeperAuth, evaluatePolicy); // Alias for MCP compatibility
+// Policy Evaluation Webhook (rate limited: 120 req/min per IP)
+const evaluateRateLimit = rateLimit({ max: 120, windowMs: 60_000, message: "Evaluate rate limit exceeded. Upgrade your plan or reduce request frequency." });
+app.post("/v1/evaluate", evaluateRateLimit, gatekeeperAuth, evaluatePolicy);
+app.post("/v1/evaluateAction", evaluateRateLimit, gatekeeperAuth, evaluatePolicy); // Alias for MCP compatibility
 
 // Vault scrub endpoint
 app.post("/v1/scrub", scrubToolResponse);
@@ -51,8 +53,8 @@ app.post("/v1/scrub", scrubToolResponse);
 // Compliance Routes
 app.use("/v1/compliance", complianceRouter);
 
-// Vault Routes
-app.use("/v1/vault", vaultRouter);
+// Vault Routes (rate limited: 60 req/min per IP)
+app.use("/v1/vault", rateLimit({ max: 60, windowMs: 60_000, message: "Vault rate limit exceeded." }), vaultRouter);
 
 // Threat Intel Routes
 app.use("/v1/threat", threatRouter);

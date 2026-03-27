@@ -6,7 +6,7 @@
 
 **The open-source security layer for AI agents.**
 
-*Intercept every tool call. Enforce your policies. Vault your secrets. Generate the audit trail your compliance team needs. One line of code.*
+*SupraWall is the deterministic security layer that intercepts AI agent actions at the tool-call boundary — not after the fact, not probabilistically, but deterministically, before execution. One line of code.*
 
 [![npm version](https://img.shields.io/npm/v/@suprawall/sdk-ts?label=npm&color=22c55e)](https://www.npmjs.com/package/@suprawall/sdk-ts)
 [![PyPI version](https://img.shields.io/pypi/v/suprawall?color=22c55e)](https://pypi.org/project/suprawall/)
@@ -22,7 +22,7 @@
 
 <div align="center">
 
-### Your AI agent can read your API keys, blow your budget, and violate the EU AI Act. SupraWall stops all three.
+### Your AI agent will go rogue. SupraWall makes sure it can't.
 
 <img src="Marketing/Attack Stop .gif" alt="SupraWall intercepting a dangerous tool call" width="700">
 
@@ -32,18 +32,18 @@
 
 ## Why SupraWall?
 
-AI agents execute tool calls autonomously. Without guardrails, they can leak credentials, run destructive commands, exfiltrate PII, and generate unbounded costs. The EU AI Act (enforcement begins August 2026) requires risk management, audit trails, and human oversight for high-risk AI systems.
+AI agents execute tool calls autonomously. Without guardrails, they can leak credentials, run destructive commands, exfiltrate PII, and generate unbounded costs. The EU AI Act (enforcement begins August 2026) requires deterministic risk management, tamper-proof audit trails, and human oversight for high-risk AI systems.
 
-SupraWall wraps your agent in one line of code and solves all six threats:
+SupraWall wraps your agent in one line of code and solves all six threats at the tool-call boundary:
 
-| Threat | How SupraWall Stops It |
-|--------|----------------------|
-| **Credential Theft** | Vault injects secrets JIT — agents never see real keys |
-| **Runaway Costs** | Hard budget caps with per-model token cost tracking |
-| **Unauthorized Actions** | DENY policies block dangerous tool calls before execution |
-| **PII Exposure** | Response scrubbing redacts secrets in 5+ encoding formats |
-| **No Audit Trail** | Immutable logs with risk scores, exportable as PDF evidence |
-| **No Human Oversight** | REQUIRE_APPROVAL pauses agents, notifies via Slack, waits for decision |
+| Threat | How SupraWall Stops It | Article |
+|--------|----------------------|---------|
+| **Credential Theft** | Vault injects secrets JIT — agents never see real keys | Art. 13 |
+| **Runaway Costs** | Hard budget caps with per-model token cost tracking | Art. 9 |
+| **Unauthorized Actions** | **Deterministic** ALLOW/DENY policies block tool calls | Art. 9 |
+| **PII Exposure** | Response scrubbing redacts secrets in 5+ encoding formats | Art. 13 |
+| **No Audit Trail** | RSA-signed logs with risk scores, exportable as evidence | Art. 13 |
+| **No Human Oversight** | REQUIRE_APPROVAL pauses agents, notifies human | Art. 14 |
 
 ---
 
@@ -125,9 +125,9 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 
 | Article | Requirement | SupraWall Implementation |
 |---------|-------------|--------------------------|
-| **Article 9** | Risk Management | DENY policies block unsafe operations before execution. Threat detection flags SQL injection and prompt injection attempts. |
-| **Article 12** | Record-Keeping | Immutable audit logs with timestamps, risk scores, and full context. Export as auditor-ready PDF evidence reports. |
-| **Article 14** | Human Oversight | REQUIRE_APPROVAL pauses agent execution. Slack/Dashboard notifications. Approval queue with decision comments. |
+| **Article 9** | Risk Management | Proof of documented risk management system. pre-execution ALLOW/DENY rules. |
+| **Article 13** | Auditable Logging | Tamper-proof record of every AI action. RSA-signed audit trails at the tool-call boundary. |
+| **Article 14** | Human Oversight | Deterministic human-in-the-loop triggers. REQUIRE_APPROVAL pauses agent execution. |
 
 ```python
 # Article 9: Block dangerous commands

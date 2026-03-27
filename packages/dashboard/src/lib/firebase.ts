@@ -25,6 +25,6 @@ const app = (isClient || !hasConfig)
 
 const auth = isClient ? getAuth(app) : ({} as Auth);
 const db = isClient ? getFirestore(app) : ({} as Firestore);
-const messaging = isClient ? getMessaging(app) : ({} as Messaging);
+const messaging = (isClient && !!firebaseConfig.appId) ? getMessaging(app) : ({} as Messaging);
 
 export { app, auth, db, messaging, firebaseConfig };

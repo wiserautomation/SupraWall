@@ -16,10 +16,13 @@ export interface TierLimits {
     threatDetection: 'regex' | 'ml' | 'advanced';
     complianceReports: 'json' | 'pdf' | 'full-suite';
     approvals: 'api-polling' | 'slack-dashboard' | 'advanced';
-    dashboard: 'read-only' | 'full' | 'white-label';
+    dashboard: 'self-host' | 'full' | 'white-label';
     frameworkPlugins: string[] | 'all';
     databaseAdapters: string[] | 'all';
     budgetEnforcement: boolean;
+    euAiActTemplates: boolean;
+    pdfReports: boolean;
+    slackApprovals: boolean;
     sla: string | null;
     legalSupport: boolean;
 }
@@ -27,24 +30,27 @@ export interface TierLimits {
 export const TIER_LIMITS: Record<Tier, TierLimits> = {
     free: { // Developer
         maxAgents: 3,
-        maxVaultSecrets: 5,
+        maxVaultSecrets: 10,
         auditRetentionDays: 7,
         maxOpsPerMonth: 10_000,
         policyEngine: 'regex',
         threatDetection: 'regex',
         complianceReports: 'json',
         approvals: 'api-polling',
-        dashboard: 'read-only',
+        dashboard: 'self-host',
         frameworkPlugins: ['langchain', 'vercel-ai'],
         databaseAdapters: ['postgres'],
         budgetEnforcement: false,
+        euAiActTemplates: false,
+        pdfReports: false,
+        slackApprovals: false,
         sla: null,
         legalSupport: false,
     },
     starter: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
-        auditRetentionDays: 30,
+        auditRetentionDays: 90,
         maxOpsPerMonth: Infinity,
         policyEngine: 'regex',
         threatDetection: 'regex',
@@ -54,26 +60,13 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
         budgetEnforcement: true,
+        euAiActTemplates: true,
+        pdfReports: true,
+        slackApprovals: true,
         sla: '99.9%',
         legalSupport: false,
     },
     growth: {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        auditRetentionDays: 90,
-        maxOpsPerMonth: Infinity,
-        policyEngine: 'ai',
-        threatDetection: 'ml',
-        complianceReports: 'pdf',
-        approvals: 'slack-dashboard',
-        dashboard: 'full',
-        frameworkPlugins: 'all',
-        databaseAdapters: 'all',
-        budgetEnforcement: true,
-        sla: '99.9%',
-        legalSupport: true, // DPA available
-    },
-    business: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
         auditRetentionDays: 365,
@@ -86,13 +79,35 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
         budgetEnforcement: true,
-        sla: '99.99%', // Enhanced SLA for Business
-        legalSupport: true, // DPA included
+        euAiActTemplates: true,
+        pdfReports: true,
+        slackApprovals: true,
+        sla: '99.9%',
+        legalSupport: true,
+    },
+    business: {
+        maxAgents: Infinity,
+        maxVaultSecrets: Infinity,
+        auditRetentionDays: 1095, // 3 years
+        maxOpsPerMonth: Infinity,
+        policyEngine: 'ai',
+        threatDetection: 'ml',
+        complianceReports: 'pdf',
+        approvals: 'slack-dashboard',
+        dashboard: 'full',
+        frameworkPlugins: 'all',
+        databaseAdapters: 'all',
+        budgetEnforcement: true,
+        euAiActTemplates: true,
+        pdfReports: true,
+        slackApprovals: true,
+        sla: '99.99%',
+        legalSupport: true,
     },
     enterprise: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
-        auditRetentionDays: 365 * 7, // 7 years
+        auditRetentionDays: 2555, // 7 years
         maxOpsPerMonth: Infinity,
         policyEngine: 'advanced',
         threatDetection: 'advanced',
@@ -102,8 +117,11 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
         budgetEnforcement: true,
+        euAiActTemplates: true,
+        pdfReports: true,
+        slackApprovals: true,
         sla: '99.99% (SLA with penalties)',
-        legalSupport: true, // DPA + BAA + MSA + SOC 2
+        legalSupport: true,
     },
 };
 
@@ -127,5 +145,5 @@ export function retentionCutoff(tier: Tier): Date {
  * Returns a friendly upgrade message for free-tier limit errors.
  */
 export function upgradeMessage(feature: string, current: number | string, limit: number | string): string {
-    return `${feature} limit reached (${current}/${limit}). Upgrade to Cloud for unlimited access: https://www.supra-wall.com/pricing`;
+    return `${feature} limit reached (${current}/${limit}). Upgrade to Business for unlimited access: https://www.supra-wall.com/pricing`;
 }

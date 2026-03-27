@@ -39,7 +39,7 @@ export default function ThreatIntelligencePage() {
         if (!user) return;
         setLoading(true);
         try {
-            const tenantId = "default-tenant";
+            const tenantId = user.uid;
 
             const [eventsRes, summaryRes] = await Promise.all([
                 fetch(`${API_BASE}/v1/threat/events?tenantId=${tenantId}`),
@@ -59,7 +59,7 @@ export default function ThreatIntelligencePage() {
         if (!user) return;
         setAggregating(true);
         try {
-            const tenantId = "default-tenant";
+            const tenantId = user.uid;
             await fetch(`${API_BASE}/v1/threat/aggregate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },

@@ -152,6 +152,7 @@ export default function CompliancePage() {
     const [copied, setCopied] = useState(false);
     const [certError, setCertError] = useState<string | null>(null);
     const [badgeTab, setBadgeTab] = useState<"image" | "html">("image");
+    const [badgeTheme, setBadgeTheme] = useState<"dark" | "light">("dark");
     const [badgeCopied, setBadgeCopied] = useState(false);
 
     const fetchStatus = async () => {
@@ -208,35 +209,43 @@ export default function CompliancePage() {
 
     const getBadgeSnippets = (cert: CertificateData) => {
         const certUrl = cert.certificateUrl;
-        const badgeSrc = `https://www.supra-wall.com/api/badge/cert/${cert.certId}`;
+        const themeQuery = badgeTheme === "light" ? "?theme=light" : "";
+        const badgeSrc = `https://www.supra-wall.com/api/badge/cert/${cert.certId}${themeQuery}`;
         const articles = cert.articlesCompliant?.map(a => a.replace("Article ", "Art. ")).join(" · ") ?? "Art. 9 · Art. 12 · Art. 14";
 
         const imageSnippet =
 `<!-- Supra-wall EU AI Act Compliance Badge -->
 <a href="${certUrl}" target="_blank" rel="noopener noreferrer">
-  <img src="${badgeSrc}" alt="EU AI Act Compliant – ${articles}" height="56" />
+  <img src="${badgeSrc}" alt="EU AI Act Compliant – ${articles}" height="64" />
 </a>`;
+
+        const htmlBg = badgeTheme === "dark" ? "#09090b" : "#ffffff";
+        const htmlBorder = badgeTheme === "dark" ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.1)";
+        const htmlText = badgeTheme === "dark" ? "#ffffff" : "#09090b";
+        const htmlTextSec = badgeTheme === "dark" ? "#71717a" : "#52525b";
 
         const htmlSnippet =
 `<!-- Supra-wall EU AI Act Compliance Badge -->
 <a href="${certUrl}" target="_blank" rel="noopener noreferrer"
-   style="display:inline-flex;align-items:center;gap:12px;padding:10px 16px;
-          background:#0f1923;border:1px solid rgba(16,185,129,0.4);border-radius:10px;
-          text-decoration:none;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <svg width="22" height="26" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14 0L0 6v10c0 9 6 15 14 16 8-1 14-7 14-16V6z"
-          stroke="#10b981" stroke-width="2" stroke-linejoin="round" fill="none"/>
-    <path d="M9 16l3.5 3.5L19 12" stroke="#10b981" stroke-width="2"
-          stroke-linecap="round" stroke-linejoin="round"/>
+   style="display:inline-flex;align-items:center;padding:12px 16px;min-width:280px;box-sizing:border-box;
+          background:${htmlBg};border:1.5px solid ${htmlBorder};border-radius:16px;
+          text-decoration:none;font-family:Inter,-apple-system,BlinkMacSystemFont,sans-serif;color:${htmlText};">
+  <div style="width:4px;height:32px;background:#10b981;border-radius:2px;margin-right:16px;"></div>
+  <svg width="28" height="32" viewBox="0 0 28 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-right:12px;">
+    <path d="M14 0L0 5v8c0 7.5 6 12.5 14 14 8-1.5 14-6.5 14-14V5z" fill="#10b981" fill-opacity="0.1"/>
+    <path d="M14 0L0 5v8c0 7.5 6 12.5 14 14 8-1.5 14-6.5 14-14V5z"
+          stroke="#10b981" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M9 13l3 3 6-7" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
-  <span style="display:flex;flex-direction:column;gap:2px;">
-    <span style="font-size:9px;font-weight:700;letter-spacing:0.12em;
-                 color:#10b981;text-transform:uppercase;">EU AI Act Compliant</span>
-    <span style="font-size:11px;font-weight:600;color:#e2e8f0;">${articles}</span>
+  <span style="display:flex;flex-direction:column;gap:2px;flex:1;">
+    <span style="font-size:9px;font-weight:800;letter-spacing:0.1em;color:#10b981;text-transform:uppercase;">EU AI ACT SECURED</span>
+    <span style="font-size:13px;font-weight:700;">${cert.orgName || 'SupraWall Certified'}</span>
+    <span style="font-size:8px;font-weight:500;color:${htmlTextSec};">Art. ${articles}</span>
   </span>
-  <span style="margin-left:8px;font-size:20px;font-weight:900;color:#10b981;
-               background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.3);
-               border-radius:6px;padding:2px 8px;">${cert.complianceScore}</span>
+  <div style="margin-left:12px;display:flex;align-items:center;justify-content:center;width:36px;height:36px;
+              border:1.5px solid #10b981;border-radius:50%;font-size:11px;font-weight:900;">
+    ${cert.complianceScore}
+  </div>
 </a>`;
 
         return { imageSnippet, htmlSnippet };
@@ -461,16 +470,36 @@ export default function CompliancePage() {
                                         <p className="text-xs font-black uppercase tracking-widest text-emerald-400">Embed on Your Website</p>
                                     </div>
 
-                                    {/* Live badge preview */}
-                                    <div className="mb-3 flex items-center gap-3">
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
-                                            src={`/api/badge/cert/${certificate.certId}`}
-                                            alt="EU AI Act Compliance Badge"
-                                            height={56}
-                                            className="rounded-lg"
-                                        />
-                                        <p className="text-[10px] text-neutral-500 italic">Live preview of your badge</p>
+                                    <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+                                        <div className="space-y-2">
+                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                            <img
+                                                src={`/api/badge/cert/${certificate.certId}${badgeTheme === "light" ? "?theme=light" : ""}`}
+                                                alt="EU AI Act Compliance Badge"
+                                                height={64}
+                                                className="rounded-xl shadow-lg border border-white/5"
+                                            />
+                                            <p className="text-[10px] text-neutral-500 italic">Live preview of your badge</p>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Pick Your Theme</p>
+                                            <div className="flex gap-2 p-1 bg-black/40 border border-white/5 rounded-xl w-fit">
+                                                {(["dark", "light"] as const).map((t) => (
+                                                    <button
+                                                        key={t}
+                                                        onClick={() => setBadgeTheme(t)}
+                                                        className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                            badgeTheme === t
+                                                                ? "bg-white text-black shadow-lg"
+                                                                : "text-neutral-500 hover:text-white"
+                                                        }`}
+                                                    >
+                                                        {t}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Tabs */}

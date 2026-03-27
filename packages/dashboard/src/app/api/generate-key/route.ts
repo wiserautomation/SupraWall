@@ -6,7 +6,7 @@ import { randomBytes, createHash } from "crypto";
 
 export async function POST(req: NextRequest) {
     try {
-        const { prefix = "ag_" } = await req.json();
+        const { prefix = "sw_" } = await req.json();
         
         // Generate a cryptographically secure random key
         // 32 bytes = 64 hex characters

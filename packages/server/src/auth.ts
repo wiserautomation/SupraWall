@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Request, Response, NextFunction } from "express";
+import { timingSafeEqual } from "crypto";
 import { pool } from "./db";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
@@ -55,6 +56,7 @@ export function getAuthProvider(): AuthProvider {
 /**
  * Admin authentication middleware.
  * Validates the master API key (Bearer token) against the tenants table.
+ * Uses constant-time comparison to prevent timing attacks.
  */
 export const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -65,16 +67,30 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     const masterKey = authHeader.split(" ")[1];
 
     try {
+        // Fetch all tenant keys — we must compare in constant time in JS
+        // to prevent timing side-channels on the master key value.
         const result = await pool.query(
-            "SELECT id FROM tenants WHERE master_api_key = $1",
-            [masterKey]
+            "SELECT id, master_api_key FROM tenants"
         );
 
-        if (result.rows.length === 0) {
+        let matchedTenantId: string | null = null;
+        for (const row of result.rows) {
+            const storedKey = row.master_api_key;
+            if (storedKey && storedKey.length === masterKey.length) {
+                const a = Buffer.from(masterKey, "utf-8");
+                const b = Buffer.from(storedKey, "utf-8");
+                if (timingSafeEqual(a, b)) {
+                    matchedTenantId = row.id;
+                    break;
+                }
+            }
+        }
+
+        if (!matchedTenantId) {
             return res.status(401).json({ error: "Unauthorized: Invalid Master API Key." });
         }
 
-        (req as AuthenticatedRequest).tenantId = result.rows[0].id;
+        (req as AuthenticatedRequest).tenantId = matchedTenantId;
         next();
     } catch (error) {
         logger.error("[AdminAuth] Error:", { error });
