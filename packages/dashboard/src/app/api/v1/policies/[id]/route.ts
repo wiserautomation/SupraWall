@@ -28,8 +28,8 @@ export async function DELETE(
     }
 
     const data = docSnap.data();
-    if (data.tenantId !== tenantId && data.userId !== tenantId) {
-        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    if (!data || (data.tenantId !== tenantId && data.userId !== tenantId)) {
+        return NextResponse.json({ error: "Unauthorized or missing policy data" }, { status: 403 });
     }
 
     await docRef.delete();

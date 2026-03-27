@@ -94,10 +94,24 @@ router.get("/status", async (req: Request, res: Response) => {
 
 // ─── GET /v1/compliance/report ────────────────────────────────────────────────
 
-router.get("/report", async (req: Request, res: Response) => {
+router.get("/report", resolveTier, async (req: Request, res: Response) => {
     try {
         const { agentId, tenantId } = req.query;
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
+
+        const tieredReq = req as TieredRequest;
+        const tierLimits = tieredReq.tierLimits!;
+
+        // --- Tier Enforcement: PDF Reports are paid-only ---
+        if (!tierLimits.pdfReports) {
+            return res.status(403).json({
+                error: "PDF compliance reports require a paid plan.",
+                detail: "Your Developer tier includes JSON compliance status via /v1/compliance/status. Upgrade to Starter ($49/mo) or higher for regulator-ready PDF evidence reports.",
+                upgradeUrl: "https://www.supra-wall.com/pricing",
+                code: "TIER_LIMIT_EXCEEDED",
+                currentTier: tieredReq.tier,
+            });
+        }
 
         const to = req.query.to ? new Date(req.query.to as string) : new Date();
         const from = req.query.from

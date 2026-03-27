@@ -40,7 +40,21 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         } catch { /* default to free */ }
         const tierLimits = TIER_LIMITS[tenantTier];
 
-        // 0b. Monthly Operation Limit (free tier only)
+        // 0b. Framework Plugin Enforcement
+        const requestedFramework = (req.headers["x-suprawall-framework"] as string) || (req.body as any).framework || "langchain";
+        if (tierLimits.frameworkPlugins !== "all") {
+            const allowed = Array.isArray(tierLimits.frameworkPlugins) ? tierLimits.frameworkPlugins : [];
+            if (!allowed.includes(requestedFramework.toLowerCase())) {
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: `Framework '${requestedFramework}' is not supported on your current tier. Upgrade to Business for full SDK plugin support.`,
+                    code: "FRAMEWORK_NOT_SUPPORTED",
+                    upgradeUrl: "https://www.supra-wall.com/pricing",
+                });
+            }
+        }
+
+        // 0c. Monthly Operation Limit (free tier only)
         if (isFinite(tierLimits.maxOpsPerMonth)) {
             const month = currentMonth();
             const opsResult = await pool.query(
@@ -284,9 +298,9 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     );
                     const approvalId = approvalRes.rows[0].id;
                     
-                    // Send Slack notification (Cloud/Enterprise only)
+                    // Send Slack notification (Paid tiers only)
                     const agentDetails = await getAgentById(agentId);
-                    if (tierLimits.approvals !== 'api-polling' && agentDetails?.slack_webhook) {
+                    if (tierLimits.slackApprovals && agentDetails?.slack_webhook) {
                         await sendSlackNotification(
                             agentDetails.slack_webhook,
                             agentDetails.name || agentId,
