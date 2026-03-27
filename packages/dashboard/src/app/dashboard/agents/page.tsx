@@ -700,10 +700,10 @@ export default function AgentsPage() {
                                         </td>
                                         <td className="px-6 py-5">
                                             <div className="flex flex-col gap-1">
-                                                <div className="flex items-center gap-2 text-sm">
-                                                    <span className="text-neutral-300 font-medium">{agent.totalCalls || 0} calls</span>
+                                                <div className="flex items-center gap-1.5 mb-1.5">
+                                                    <span className="text-white font-mono text-sm">{agent.totalCalls || 0} calls</span>
                                                     <span className="text-neutral-600">/</span>
-                                                    <span className="text-emerald-400/80 font-mono text-xs">${(agent.totalSpendUsd || 0).toFixed(3)}</span>
+                                                    <span className="text-emerald-400/80 font-mono text-xs">${(agent.totalSpendUsd || 0).toFixed(4)}</span>
                                                 </div>
                                                 {agent.lastUsedAt && (
                                                     <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 uppercase font-bold tracking-wider">
