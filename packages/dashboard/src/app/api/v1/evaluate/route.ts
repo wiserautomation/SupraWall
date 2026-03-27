@@ -44,6 +44,7 @@ export async function POST(req: NextRequest) {
         apiKey,
         toolName,
         args,
+        arguments: argsAlias, // Alias for SDK-native naming
         sessionId = null,
         agentRole = null,
         model = "gpt-4o-mini",
@@ -53,7 +54,9 @@ export async function POST(req: NextRequest) {
         isLoop = false
     } = body;
 
-    if (!apiKey || !toolName || args === undefined) {
+    let finalArgs = args ?? argsAlias;
+
+    if (!apiKey || !toolName || finalArgs === undefined) {
         return NextResponse.json({ error: "apiKey and toolName are required." }, { status: 400 });
     }
 
@@ -117,9 +120,9 @@ export async function POST(req: NextRequest) {
             }
 
             // ── Threat Detection — blocks before any policy evaluation ──
-            const threatResult = detectThreats(toolName, args);
+            const threatResult = detectThreats(toolName, finalArgs);
             if (threatResult.blocked) {
-                await logAudit(agentId, toolName, JSON.stringify(args), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
+                await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
                 // Fire-and-forget threat event log
                 db.collection("threat_events").add({
                     agentId, tenantId, toolName,
@@ -136,14 +139,14 @@ export async function POST(req: NextRequest) {
             }
 
             // ── Guardrail Evaluation — hard stops before policy evaluation ──
-            const guardrailResult = evaluateGuardrailsSync(agentData, toolName, args);
+            const guardrailResult = evaluateGuardrailsSync(agentData, toolName, finalArgs);
             if (guardrailResult.blocked) {
                 const gr = guardrailResult.reason || 'Blocked by agent guardrail';
-                await logAudit(agentId, toolName, JSON.stringify(args), "DENY", 0, gr, sessionId, agentRole, isLoop);
+                await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
                 return NextResponse.json({ decision: "DENY", reason: gr });
             }
             if (guardrailResult.modifiedArgs) {
-                args = guardrailResult.modifiedArgs;
+                finalArgs = guardrailResult.modifiedArgs;
             }
 
             // Simple Policy Evaluation for regular agents (from audit logic)
@@ -153,7 +156,7 @@ export async function POST(req: NextRequest) {
                 .get();
 
             let finalDecision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL" = "ALLOW";
-            const argsString = JSON.stringify(args);
+            const finalArgsString = JSON.stringify(finalArgs);
             for (const doc of policiesSnapshot.docs) {
                 const policy = doc.data();
                 const conditionStr = policy.condition || policy.description || "";
@@ -164,7 +167,7 @@ export async function POST(req: NextRequest) {
                     break;
                 }
 
-                if (conditionStr && new RegExp(conditionStr).test(argsString)) {
+                if (conditionStr && new RegExp(conditionStr).test(finalArgsString)) {
                     finalDecision = policy.ruleType;
                     if (finalDecision === "DENY") break;
                 }
@@ -182,8 +185,8 @@ export async function POST(req: NextRequest) {
 
         // ── Vault Evaluation ──
         
-        const vaultResult = await resolveVaultTokens(tenantId, agentId, toolName, args);
-        let resolvedArguments = args;
+        const vaultResult = await resolveVaultTokens(tenantId, agentId, toolName, finalArgs);
+        let resolvedArguments = finalArgs;
         let vaultInjected = false;
 
         if (!vaultResult.success) {
@@ -215,16 +218,16 @@ export async function POST(req: NextRequest) {
 
         // ── Cost Estimation ──
 
-        const estimatedCost = costUsd ?? estimateActionCost(args, toolName, model, inputTokens, outputTokens);
+        const estimatedCost = costUsd ?? estimateActionCost(finalArgs, toolName, model, inputTokens, outputTokens);
         const latencyMs = Date.now() - startTime;
 
         // ── Approval Flow ──
 
         if (decision === "REQUIRE_APPROVAL") {
-            const argsString = JSON.stringify(resolvedArguments);
-            const requestId = await createApprovalRequest(userId, agentId, agentName, toolName, argsString, sessionId, agentRole, estimatedCost);
+            const finalArgsString = JSON.stringify(resolvedArguments);
+            const requestId = await createApprovalRequest(userId, agentId, agentName, toolName, finalArgsString, sessionId, agentRole, estimatedCost);
             
-            await logAudit(agentId, toolName, argsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop);
+            await logAudit(agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop);
             
             return NextResponse.json({ 
                 decision: "REQUIRE_APPROVAL", 
@@ -295,9 +298,9 @@ interface ThreatResult {
     detail?: string;
 }
 
-function detectThreats(toolName: string, args: any): ThreatResult {
-    const payload = `${toolName} ${JSON.stringify(args || {})}`.toLowerCase();
-    const rawPayload = JSON.stringify(args || {});
+function detectThreats(toolName: string, finalArgs: any): ThreatResult {
+    const payload = `${toolName} ${JSON.stringify(finalArgs || {})}`.toLowerCase();
+    const rawPayload = JSON.stringify(finalArgs || {});
 
     // SQL Injection Patterns
     const sqlPatterns: Array<{ re: RegExp; label: string }> = [
@@ -382,7 +385,7 @@ function matchesWildcard(toolName: string, pattern: string): boolean {
 }
 
 function evaluateGuardrailsSync(
-    agentData: any, toolName: string, args: any
+    agentData: any, toolName: string, finalArgs: any
 ): { blocked: boolean; reason?: string; modifiedArgs?: any } {
     const g = agentData.guardrails;
     if (!g) return { blocked: false };
@@ -408,7 +411,7 @@ function evaluateGuardrailsSync(
     }
 
     if (g.piiScrubbing?.enabled && g.piiScrubbing.patterns?.length > 0) {
-        const { modifiedArgs, shouldBlock } = scrubPii(args, g.piiScrubbing);
+        const { modifiedArgs, shouldBlock } = scrubPii(finalArgs, g.piiScrubbing);
         if (shouldBlock) return { blocked: true, reason: 'PII guardrail: sensitive data detected in arguments' };
         return { blocked: false, modifiedArgs };
     }
@@ -416,7 +419,7 @@ function evaluateGuardrailsSync(
     return { blocked: false };
 }
 
-function evaluatePolicies(toolName: string, args: any, rules: PolicyRule[]): { decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string } {
+function evaluatePolicies(toolName: string, finalArgs: any, rules: PolicyRule[]): { decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string } {
     for (const rule of rules) {
         if (matchesPattern(toolName, rule.toolPattern)) {
             return { decision: rule.action, reason: rule.conditions?.reason };
@@ -444,7 +447,7 @@ async function checkRateLimit(key: string, config: RateLimitConfig): Promise<boo
     return true;
 }
 
-function estimateActionCost(args: any, toolName: string, model: string, inT: number, outT: number): number {
+function estimateActionCost(finalArgs: any, toolName: string, model: string, inT: number, outT: number): number {
     if (inT > 0 || outT > 0) {
         const rates: any = { "gpt-4o": 0.005, "gpt-4o-mini": 0.00015, "claude": 0.003 };
         const rate = rates[Object.keys(rates).find(k => model.includes(k)) || "gpt-4o-mini"];
@@ -453,18 +456,18 @@ function estimateActionCost(args: any, toolName: string, model: string, inT: num
     return 0.0001; // minimal fallback
 }
 
-async function createApprovalRequest(userId: string, agentId: string, agentName: string, toolName: string, args: string, sessionId: any, agentRole: any, cost: number) {
+async function createApprovalRequest(userId: string, agentId: string, agentName: string, toolName: string, finalArgs: string, sessionId: any, agentRole: any, cost: number) {
     const res = await db.collection("approvalRequests").add({
-        userId, agentId, agentName, toolName, arguments: args, sessionId, agentRole,
+        userId, agentId, agentName, toolName, arguments: finalArgs, sessionId, agentRole,
         status: "pending", createdAt: admin.firestore.FieldValue.serverTimestamp(),
         expiresAt: new Date(Date.now() + 86400000), estimatedCostUsd: cost
     });
     return res.id;
 }
 
-async function logAudit(agentId: string, toolName: string, args: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
+async function logAudit(agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
     await db.collection("audit_logs").add({
-        agentId, toolName, arguments: args, decision, reason, sessionId: sId, agentRole: role,
+        agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
         cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
 }

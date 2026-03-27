@@ -21,11 +21,18 @@ interface CertificateData {
 
 export default function CertificateClientView({ cert }: { cert: CertificateData }) {
     const allArticles = ["Article 9", "Article 12", "Article 14"];
-    const issueDate = new Date(cert.issueDate).toLocaleDateString("en-GB", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-    });
+    let issueDate = "N/A";
+    try {
+        if (cert.issueDate) {
+            issueDate = new Date(cert.issueDate).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+            });
+        }
+    } catch (e) {
+        console.error("Date formatting error:", e);
+    }
 
     return (
         <>
@@ -144,8 +151,8 @@ export default function CertificateClientView({ cert }: { cert: CertificateData 
                     {/* Stats */}
                     <div className="grid grid-cols-3 gap-3 mb-8">
                         {[
-                            { label: "Agents", value: cert.agentCount },
-                            { label: "Audit Events", value: cert.totalAuditEvents?.toLocaleString() || "0" },
+                            { label: "Agents", value: cert.agentCount || 0 },
+                            { label: "Audit Events", value: (cert.totalAuditEvents || 0).toLocaleString() },
                             { label: "Issue Date", value: issueDate },
                         ].map(({ label, value }) => (
                             <div key={label} className="text-center p-3 bg-slate-50 rounded-lg">

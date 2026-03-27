@@ -5,6 +5,8 @@ import { getAdminDb } from "@/lib/firebase-admin";
 import { Metadata } from "next";
 import CertificateClientView from "@/components/CertificateClientView";
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
     params,
 }: {

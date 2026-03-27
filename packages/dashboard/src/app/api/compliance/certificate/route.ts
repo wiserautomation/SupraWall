@@ -48,10 +48,11 @@ export async function POST(req: NextRequest) {
 
         if (agentIds.length > 0) {
             try {
+                // Fetch latest logs for these agents to calculate compliance
+                // Max 30 agents to stay safe with IN query limits
                 const auditSnap = await adminDb
-                    .collection("auditLogs")
-                    .where("agentId", "in", agentIds.slice(0, 10))
-                    .orderBy("timestamp", "desc")
+                    .collection("audit_logs")
+                    .where("agentId", "in", agentIds.slice(0, 30))
                     .limit(500)
                     .get();
 
@@ -60,8 +61,8 @@ export async function POST(req: NextRequest) {
                 approvalEvents = auditSnap.docs.filter(
                     (d) => d.data().decision === "REQUIRE_APPROVAL"
                 ).length;
-            } catch {
-                // index might not be seeded yet — gracefully skip
+            } catch (err) {
+                console.error("[Certificate] Audit fetch failed:", err);
             }
         }
 

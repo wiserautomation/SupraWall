@@ -22,8 +22,9 @@ export async function GET(request: NextRequest) {
     if (agentId) {
         // Query specific agent
         const logsSnap = await query.where("agentId", "==", agentId)
+                                    .orderBy("timestamp", "desc")
                                     .limit(limitParam)
-                                    .get(); // Note: no orderBy to avoid index errors, sort in memory
+                                    .get();
         
         const logs = logsSnap.docs.map(doc => {
             const data = doc.data();
@@ -66,19 +67,19 @@ export async function GET(request: NextRequest) {
             return NextResponse.json([]);
         }
 
-        // Step 2: Query audit_logs for those agent IDs (batch in groups of 30 for Firestore "in" limit)
-        const batches: string[][] = [];
-        for (let i = 0; i < agentIds.length; i += 30) {
-            batches.push(agentIds.slice(i, i + 30));
-        }
-
         let allLogs: any[] = [];
-        for (const batch of batches) {
-            const logsSnap = await db.collection("audit_logs")
-                .where("agentId", "in", batch)
-                .limit(limitParam)
-                .get();
-            
+        // Fetch latest logs for each agent individually to use native single-field + orderBy index
+        const logQueries = agentIds.map(id => 
+            db.collection("audit_logs")
+              .where("agentId", "==", id)
+              .orderBy("timestamp", "desc")
+              .limit(50)
+              .get()
+        );
+
+        const queryResults = await Promise.all(logQueries);
+        
+        for (const logsSnap of queryResults) {
             for (const doc of logsSnap.docs) {
                 const data = doc.data();
                 allLogs.push({

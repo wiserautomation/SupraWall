@@ -32,19 +32,20 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ logs: [], stats: { total: 0, allowed: 0, denied: 0, approvals: 0, avgRisk: 0, totalCost: 0 } });
         }
 
-        // Step 2: Query audit_logs for those agent IDs (batch in groups of 30 for Firestore "in" limit)
-        const batches: string[][] = [];
-        for (let i = 0; i < agentIds.length; i += 30) {
-            batches.push(agentIds.slice(i, i + 30));
-        }
-
         let allLogs: any[] = [];
-        for (const batch of batches) {
-            const logsSnap = await db.collection("audit_logs")
-                .where("agentId", "in", batch)
-                .limit(limitParam)
-                .get();
-            
+        // Fetch latest logs for each agent individually to use native single-field + orderBy index
+        // This avoids FAILED_PRECONDITION errors from missing composite indices on 'IN' queries.
+        const logQueries = agentIds.map(id => 
+            db.collection("audit_logs")
+              .where("agentId", "==", id)
+              .orderBy("timestamp", "desc")
+              .limit(50) // Get top 50 per agent to ensure latest are captured
+              .get()
+        );
+
+        const queryResults = await Promise.all(logQueries);
+        
+        for (const logsSnap of queryResults) {
             for (const doc of logsSnap.docs) {
                 const data = doc.data();
                 allLogs.push({
@@ -60,6 +61,7 @@ export async function GET(req: NextRequest) {
                     sessionId: data.sessionId || null,
                     is_loop: data.is_loop || false,
                     agentRole: data.agentRole || null,
+                    integrityHash: data.integrityHash || null,
                 });
             }
         }

@@ -126,13 +126,13 @@ export default function PoliciesPage() {
     };
 
     const handleGenerateRegex = async () => {
-        if (!toolName || !aiPrompt) return;
+        if (!aiPrompt) return;
         setIsGenerating(true);
         try {
             const res = await fetch(`/api/generate`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: aiPrompt, toolName })
+                body: JSON.stringify({ prompt: aiPrompt, toolName: toolName || "a generic tool" })
             });
             const data = await res.json();
             if (data.regex) {
@@ -175,20 +175,20 @@ export default function PoliciesPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="col-span-1 bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl h-fit relative group overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent group-hover:via-emerald-500/50 transition-all duration-700" />
-                    <CardHeader className="bg-black/20 border-b border-white/[0.08]">
-                        <div className="flex justify-between items-center w-full">
-                            <CardTitle className="text-sm flex items-center font-black text-white uppercase italic tracking-tighter">
-                                <ShieldAlert className="w-5 h-5 mr-2 text-emerald-400" />
+                    <CardHeader className="bg-black/20 border-b border-white/[0.08] px-4 py-3 sm:px-6 sm:py-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 w-full">
+                            <CardTitle className="text-xs sm:text-sm flex items-center font-black text-white uppercase italic tracking-tighter shrink-0">
+                                <ShieldAlert className="w-4 h-4 sm:w-5 sm:h-5 mr-2 text-emerald-400" />
                                 New Policy Rule
                             </CardTitle>
                             <Button
                                 variant="outline"
                                 size="sm"
                                 onClick={() => setShowAiWizard(!showAiWizard)}
-                                className={`text-xs border-emerald-500/30 hover:bg-emerald-500/10 transition-colors ${showAiWizard ? 'bg-emerald-500/10 text-emerald-300' : 'bg-transparent text-emerald-400'}`}
+                                className={`h-8 text-[10px] sm:text-xs border-emerald-500/30 hover:bg-emerald-500/10 transition-colors whitespace-nowrap overflow-hidden px-3 ${showAiWizard ? 'bg-emerald-500/10 text-emerald-300' : 'bg-transparent text-emerald-400'}`}
                             >
-                                <Sparkles className="w-4 h-4 mr-2" />
-                                {showAiWizard ? "Hide AI Wizard" : "Magic AI Generator"}
+                                <Sparkles className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                                {showAiWizard ? "Close Wizard" : "AI Magic"}
                             </Button>
                         </div>
                     </CardHeader>
@@ -201,27 +201,30 @@ export default function PoliciesPage() {
                                     exit={{ height: 0, opacity: 0 }}
                                     className="overflow-hidden mb-6"
                                 >
-                                    <div className="p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-3">
-                                        <label className="text-sm font-medium text-emerald-300">Describe restriction in plain English</label>
+                                    <div className="p-4 sm:p-5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 space-y-4">
+                                        <label className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-emerald-400/80">Describe restriction in plain English</label>
                                         <Textarea
                                             value={aiPrompt}
                                             onChange={e => setAiPrompt(e.target.value)}
                                             placeholder="e.g., Stop the agent from deleting files."
-                                            className="bg-black/50 border-emerald-500/30 text-white placeholder:text-emerald-200/50 resize-none focus-visible:ring-emerald-500/50"
-                                            rows={2}
+                                            className="bg-black/50 border-emerald-500/30 text-white placeholder:text-emerald-200/50 resize-none focus-visible:ring-emerald-500/50 min-h-[80px] w-full"
+                                            rows={3}
                                         />
                                         <Button
                                             type="button"
                                             onClick={handleGenerateRegex}
-                                            disabled={!toolName || !aiPrompt || isGenerating}
-                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50"
+                                            disabled={!aiPrompt || isGenerating}
+                                            className="w-full bg-emerald-600 hover:bg-emerald-500 text-white disabled:opacity-50 text-xs sm:text-sm font-bold min-h-[44px]"
                                         >
                                             {isGenerating ? (
-                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                                                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Working...</>
                                             ) : (
-                                                <><Sparkles className="mr-2 h-4 w-4" /> Generate Rule (Requires Tool Name)</>
+                                                <><Sparkles className="mr-2 h-4 w-4" /> Generate Rule Regex</>
                                             )}
                                         </Button>
+                                        {!toolName && aiPrompt && (
+                                            <p className="text-[10px] text-emerald-400/60 text-center italic">Tip: Add a tool name for more specific regex.</p>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}

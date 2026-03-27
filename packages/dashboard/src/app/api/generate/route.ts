@@ -7,10 +7,9 @@ import { GoogleGenAI } from "@google/genai";
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { prompt, toolName } = body;
-
-        if (!prompt || !toolName) {
-            return NextResponse.json({ error: "Missing required fields: prompt, toolName" }, { status: 400 });
+        const { prompt, toolName = "a generic tool" } = body;
+        if (!prompt) {
+            return NextResponse.json({ error: "Missing required fields: prompt" }, { status: 400 });
         }
 
         const apiKey = process.env.GEMINI_API_KEY;
