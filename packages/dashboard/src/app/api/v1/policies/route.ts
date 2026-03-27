@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     const db = getAdminDb();
   try {
     const body = await request.json();
-    const { tenantId, name, toolName, ruleType, description, condition, agentId } = body;
+    const { tenantId, name, toolName, ruleType, description, condition, agentId, priority, isDryRun } = body;
 
     if (!tenantId || !name || !ruleType) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
@@ -49,10 +49,12 @@ export async function POST(request: NextRequest) {
       tenantId,
       agentId: agentId || null,
       name,
-      toolName,
+      toolName: toolName || '',
       ruleType,
       description: description || '',
       condition: condition || '',
+      priority: typeof priority === 'number' ? priority : 100,
+      isDryRun: isDryRun === true,
       createdAt: new Date()
     };
 

@@ -3,7 +3,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { collection, addDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -86,18 +86,22 @@ export default function PoliciesPage() {
         if (!user || !selectedAgentId || !toolName || !condition) return;
 
         try {
-            await addDoc(collection(db, "policies"), {
-                userId: user.uid,
-                agentId: selectedAgentId,
-                name: `${toolName} Rule`,
-                toolName,
-                ruleType,
-                description,
-                condition,
-                priority: parseInt(priority) || 100,
-                isDryRun,
-                createdAt: serverTimestamp()
+            const res = await fetch("/api/v1/policies", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    tenantId: user.uid,
+                    agentId: selectedAgentId,
+                    name: `${toolName} Rule`,
+                    toolName,
+                    ruleType,
+                    description,
+                    condition,
+                    priority: parseInt(priority) || 100,
+                    isDryRun,
+                }),
             });
+            if (!res.ok) throw new Error(`Failed: ${res.status}`);
 
             setToolName("");
             setCondition("");
@@ -154,19 +158,22 @@ export default function PoliciesPage() {
         setActivatingTemplate(template.id);
         try {
             for (const rule of template.rules) {
-                await addDoc(collection(db, "policies"), {
-                    userId: user.uid,
-                    tenantId: user.uid,
-                    agentId: selectedAgentId,
-                    name: rule.description,
-                    toolName: rule.toolName,
-                    ruleType: rule.ruleType,
-                    description: `[${template.name} Template — ${rule.article}] ${rule.description}`,
-                    condition: rule.condition,
-                    priority: rule.priority,
-                    isDryRun: false,
-                    createdAt: serverTimestamp(),
+                const res = await fetch("/api/v1/policies", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        tenantId: user.uid,
+                        agentId: selectedAgentId,
+                        name: rule.description,
+                        toolName: rule.toolName,
+                        ruleType: rule.ruleType,
+                        description: `[${template.name} Template — ${rule.article}] ${rule.description}`,
+                        condition: rule.condition,
+                        priority: rule.priority,
+                        isDryRun: false,
+                    }),
                 });
+                if (!res.ok) throw new Error(`Failed: ${res.status}`);
             }
             setActivatedTemplates(prev => new Set(prev).add(template.id));
             sendGAEvent("event", "activate_compliance_template", { template_id: template.id, agent_id: selectedAgentId });
