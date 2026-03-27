@@ -60,12 +60,31 @@ router.post("/secrets", resolveTier, async (req: Request, res: Response) => {
 });
 
 // POST /v1/vault/secrets/bulk — Create multiple secrets
-router.post("/secrets/bulk", async (req: Request, res: Response) => {
+router.post("/secrets/bulk", resolveTier, async (req: Request, res: Response) => {
     try {
         const { tenantId, secrets } = req.body;
+        const tierLimits = (req as TieredRequest).tierLimits!;
 
         if (!tenantId || !Array.isArray(secrets)) {
             return res.status(400).json({ error: "Missing required fields: tenantId, secrets (array)" });
+        }
+
+        // --- Tier Enforcement: Vault Secret Count ---
+        if (isFinite(tierLimits.maxVaultSecrets)) {
+            const countResult = await pool.query(
+                "SELECT COUNT(*) FROM vault_secrets WHERE tenant_id = $1",
+                [tenantId]
+            );
+            const currentCount = parseInt(countResult.rows[0].count, 10);
+            
+            // Check if adding the new unique secrets would breach the limit
+            // Note: We should ideally filter out duplicates before checking, 
+            // but a simpler check on the input array length is safer for performance.
+            if (currentCount + secrets.length > tierLimits.maxVaultSecrets) {
+                return res.status(403).json(
+                    tierLimitError("Vault secrets (bulk)", currentCount, tierLimits.maxVaultSecrets)
+                );
+            }
         }
 
         if (secrets.length > 100) {

@@ -54,6 +54,37 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
+    // --- Tier Enforcement: Agent Count ---
+    try {
+        const countSnapshot = await db.collection("agents").where("userId", "==", userId).get();
+        const currentCount = countSnapshot.size;
+
+        // Fetch user tier from the backend server
+        let maxAgents = 3; // Default free tier limit
+        const serverUrl = process.env.SUPRAWALL_API_URL || 'http://localhost:3000';
+        try {
+            const tierRes = await fetch(`${serverUrl}/v1/tenants/${userId}`);
+            if (tierRes.ok) {
+                const tierData = await tierRes.json();
+                if (tierData.tier === 'cloud' || tierData.tier === 'enterprise') {
+                    maxAgents = Infinity;
+                }
+            }
+        } catch (err) {
+            console.warn("[Dashboard API POST Agents] Failed to fetch tier, using fallback limit:", err);
+        }
+
+        if (currentCount >= maxAgents) {
+            return NextResponse.json({ 
+                error: `Agent limit reached (${currentCount}/${maxAgents}). Upgrade to Cloud for unlimited access.`,
+                code: "TIER_LIMIT_EXCEEDED"
+            }, { status: 403 });
+        }
+    } catch (err) {
+        console.error("[Dashboard API POST Agents] Count check error:", err);
+        // Fail-closed/open policy choice: Here we allow if DB fails but log it.
+    }
+
     const agentDoc = {
       name,
       userId,
