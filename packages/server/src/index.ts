@@ -85,7 +85,7 @@ app.use("/v1/shield", shieldRouter);
 export default app;
 
 // Only start the server listener if not on Vercel
-if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
+if (process.env.NODE_ENV !== 'test' && (process.env.NODE_ENV !== "production" || !process.env.VERCEL)) {
     const startServer = async () => {
         try {
             await initDb();
@@ -110,7 +110,8 @@ if (process.env.NODE_ENV !== "production" || !process.env.VERCEL) {
         }
     };
     startServer();
-} else {
+}
+ else {
     // On Vercel, we still need to ensure DB is initialized
     // We can do this at the top level or per-request. 
     // Top-level await is supported in modern Node on Vercel.

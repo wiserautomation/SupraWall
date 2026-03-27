@@ -5,26 +5,27 @@
 // Tier Configuration — Single source of truth for all plan limits
 // ---------------------------------------------------------------------------
 
-export type Tier = 'free' | 'cloud' | 'enterprise';
+export type Tier = 'free' | 'starter' | 'growth' | 'business' | 'enterprise';
 
 export interface TierLimits {
     maxAgents: number;
     maxVaultSecrets: number;
     auditRetentionDays: number;
     maxOpsPerMonth: number;
-    policyEngine: 'regex' | 'ai';
-    threatDetection: 'regex' | 'ml';
-    complianceReports: 'json' | 'pdf';
+    policyEngine: 'regex' | 'ai' | 'advanced';
+    threatDetection: 'regex' | 'ml' | 'advanced';
+    complianceReports: 'json' | 'pdf' | 'full-suite';
     approvals: 'api-polling' | 'slack-dashboard' | 'advanced';
     dashboard: 'read-only' | 'full' | 'white-label';
     frameworkPlugins: string[] | 'all';
     databaseAdapters: string[] | 'all';
     budgetEnforcement: boolean;
     sla: string | null;
+    legalSupport: boolean;
 }
 
 export const TIER_LIMITS: Record<Tier, TierLimits> = {
-    free: {
+    free: { // Developer
         maxAgents: 3,
         maxVaultSecrets: 5,
         auditRetentionDays: 7,
@@ -38,8 +39,41 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         databaseAdapters: ['postgres'],
         budgetEnforcement: false,
         sla: null,
+        legalSupport: false,
     },
-    cloud: {
+    starter: {
+        maxAgents: Infinity,
+        maxVaultSecrets: Infinity,
+        auditRetentionDays: 30,
+        maxOpsPerMonth: Infinity,
+        policyEngine: 'regex',
+        threatDetection: 'regex',
+        complianceReports: 'pdf',
+        approvals: 'slack-dashboard',
+        dashboard: 'full',
+        frameworkPlugins: 'all',
+        databaseAdapters: 'all',
+        budgetEnforcement: true,
+        sla: '99.9%',
+        legalSupport: false,
+    },
+    growth: {
+        maxAgents: Infinity,
+        maxVaultSecrets: Infinity,
+        auditRetentionDays: 90,
+        maxOpsPerMonth: Infinity,
+        policyEngine: 'ai',
+        threatDetection: 'ml',
+        complianceReports: 'pdf',
+        approvals: 'slack-dashboard',
+        dashboard: 'full',
+        frameworkPlugins: 'all',
+        databaseAdapters: 'all',
+        budgetEnforcement: true,
+        sla: '99.9%',
+        legalSupport: true, // DPA available
+    },
+    business: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
         auditRetentionDays: 365,
@@ -52,22 +86,24 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
         budgetEnforcement: true,
-        sla: '99.9%',
+        sla: '99.99%', // Enhanced SLA for Business
+        legalSupport: true, // DPA included
     },
     enterprise: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
         auditRetentionDays: 365 * 7, // 7 years
         maxOpsPerMonth: Infinity,
-        policyEngine: 'ai',
-        threatDetection: 'ml',
-        complianceReports: 'pdf',
+        policyEngine: 'advanced',
+        threatDetection: 'advanced',
+        complianceReports: 'full-suite',
         approvals: 'advanced',
         dashboard: 'white-label',
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
         budgetEnforcement: true,
-        sla: '99.99%',
+        sla: '99.99% (SLA with penalties)',
+        legalSupport: true, // DPA + BAA + MSA + SOC 2
     },
 };
 

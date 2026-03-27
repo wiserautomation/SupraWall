@@ -36,7 +36,8 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
         category: 'Policy Engine',
         rows: [
             { name: 'Regex-based rules', free: true, cloud: true, enterprise: true },
-            { name: 'AI-powered + natural language policies', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'AI-powered policies', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'Article 9 Risk Templates', free: false, cloud: false, enterprise: true },
             { name: 'Custom policy models', free: false, cloud: false, enterprise: true },
         ],
     },
@@ -51,64 +52,64 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
     {
         category: 'Threat Detection',
         rows: [
-            { name: 'Basic regex patterns (SQL, prompt injection)', free: true, cloud: true, enterprise: true },
-            { name: 'ML-powered + cross-tenant intelligence', free: false, cloud: true, enterprise: true, highlight: true },
-            { name: 'Custom threat models + real-time alerts', free: false, cloud: false, enterprise: true },
+            { name: 'Basic regex patterns', free: true, cloud: true, enterprise: true },
+            { name: 'ML-powered threat intel', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'Custom threat models', free: false, cloud: false, enterprise: true },
         ],
     },
     {
-        category: 'Audit Logging',
+        category: 'Audit & Compliance Suite',
         rows: [
             { name: 'Log retention', free: '7 days', cloud: '1 year', enterprise: '7+ years', highlight: true },
-            { name: 'Searchable + exportable logs', free: false, cloud: true, enterprise: true },
-            { name: 'Legal-grade / certified', free: false, cloud: false, enterprise: true },
-        ],
-    },
-    {
-        category: 'Compliance',
-        rows: [
-            { name: 'Status endpoint (JSON)', free: true, cloud: true, enterprise: true },
-            { name: 'Branded PDF reports + EU AI Act mapping', free: false, cloud: true, enterprise: true, highlight: true },
-            { name: 'Auditor-ready, SOC 2 certified', free: false, cloud: false, enterprise: true },
+            { name: 'Audit exports (JSON)', free: true, cloud: true, enterprise: true },
+            { name: 'Branded PDF Reports', free: false, cloud: true, enterprise: true },
+            { name: 'EU AI Act Compliance Mapping', free: false, cloud: 'Basic', enterprise: 'Full Suite', highlight: true },
+            { name: 'RSA-signed audit trails', free: false, cloud: false, enterprise: true },
+            { name: 'Data residency (EU-only)', free: false, cloud: false, enterprise: true },
+            { name: 'Regulator-ready formats', free: false, cloud: false, enterprise: true },
         ],
     },
     {
         category: 'Approvals',
         rows: [
             { name: 'API polling', free: true, cloud: true, enterprise: true },
-            { name: 'Slack + Dashboard + Mobile', free: false, cloud: true, enterprise: true, highlight: true },
-            { name: 'Teams, escalation chains, custom workflows', free: false, cloud: false, enterprise: true },
+            { name: 'Slack + Dashboard', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'Workflows & Escalations', free: false, cloud: false, enterprise: true },
+        ],
+    },
+    {
+        category: 'Procurement & Legal',
+        rows: [
+            { name: 'Data Processing Agreement (DPA)', free: false, cloud: 'Available', enterprise: 'Included', highlight: true },
+            { name: 'BAA (Healthcare)', free: false, cloud: false, enterprise: true },
+            { name: 'Custom MSA support', free: false, cloud: false, enterprise: true },
+            { name: 'SOC 2 Type II certified', free: false, cloud: false, enterprise: true },
+            { name: 'Financial penalty SLAs', free: false, cloud: false, enterprise: true },
         ],
     },
     {
         category: 'Agents & Operations',
         rows: [
             { name: 'Agents', free: '3 max', cloud: 'Unlimited', enterprise: 'Unlimited', highlight: true },
-            { name: 'Operations / month', free: '10K', cloud: 'Unlimited (usage-based)', enterprise: 'Unlimited (fixed price)', highlight: true },
+            { name: 'Operations / month', free: '10K', cloud: 'Usage-based', enterprise: 'Fixed price', highlight: true },
             { name: 'Budget enforcement', free: false, cloud: true, enterprise: true },
-            { name: 'Delegation chains', free: false, cloud: false, enterprise: true },
-        ],
-    },
-    {
-        category: 'Integrations',
-        rows: [
-            { name: 'Database adapters', free: 'PostgreSQL only', cloud: 'All 5', enterprise: 'All 5 + custom', highlight: true },
-            { name: 'Framework plugins', free: '2 (LangChain + Vercel AI)', cloud: 'All 7', enterprise: 'All 7 + priority', highlight: true },
         ],
     },
     {
         category: 'Dashboard & Access',
         rows: [
-            { name: 'Dashboard', free: 'Read-only', cloud: 'Full management', enterprise: 'White-label + SSO' },
-            { name: 'SSO / SCIM', free: false, cloud: false, enterprise: true },
+            { name: 'Dashboard', free: 'Read-only', cloud: 'Full management', enterprise: 'White-label' },
+            { name: 'SSO (SAML/SCIM)', free: false, cloud: false, enterprise: true },
         ],
     },
     {
-        category: 'Support',
+        category: 'Support & Success',
         rows: [
             { name: 'GitHub issues', free: true, cloud: true, enterprise: true },
-            { name: 'Email + priority', free: false, cloud: true, enterprise: true },
-            { name: 'Dedicated + SLA', free: false, cloud: false, enterprise: true },
+            { name: 'Email support', free: false, cloud: 'Priority', enterprise: 'Dedicated Line' },
+            { name: 'Implementation Engineer', free: false, cloud: false, enterprise: true },
+            { name: 'Named Account Executive', free: false, cloud: false, enterprise: true },
+            { name: 'Quarterly Business Reviews', free: false, cloud: false, enterprise: true },
         ],
     },
 ];
@@ -139,9 +140,9 @@ export default function PricingPage() {
     const [user] = useAuthState(auth);
     const router = useRouter();
     const [loadingCheckout, setLoadingCheckout] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState<'starter' | 'growth' | 'scale'>('growth');
+    const [selectedPlan, setSelectedPlan] = useState<'starter' | 'growth' | 'business'>('growth');
 
-    const cloudPrices = { starter: 49, growth: 149, scale: 499 };
+    const cloudPrices = { starter: 49, growth: 149, business: 499 };
     const overage = Math.max(0, calculateCost(operations));
     const planBase = cloudPrices[selectedPlan];
 
@@ -192,12 +193,12 @@ export default function PricingPage() {
                                 <span className="text-[10px] font-black uppercase tracking-widest text-neutral-500 py-1 px-3 border border-white/5 rounded-full">Apache 2.0</span>
                             </div>
                             <div>
-                                <h3 className="text-3xl font-black italic uppercase tracking-tighter">Free</h3>
+                                <h3 className="text-3xl font-black italic uppercase tracking-tighter">Developer</h3>
                                 <p className="text-xs font-bold text-neutral-500 uppercase italic mt-1 leading-relaxed">Self-host on your own infrastructure. No credit card.</p>
                             </div>
                             <div className="py-4">
                                 <div className="text-5xl font-black italic tracking-tighter">$0</div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mt-2">Forever Free</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mt-2">Free for individuals</p>
                             </div>
                             <ul className="space-y-3">
                                 {[
@@ -240,12 +241,12 @@ export default function PricingPage() {
 
                             {/* Plan selector */}
                             <div className="grid grid-cols-3 gap-2 bg-emerald-700/40 p-1 rounded-xl">
-                                {(['starter', 'growth', 'scale'] as const).map(plan => (
+                                {(['starter', 'growth', 'business'] as const).map(plan => (
                                     <button
                                         key={plan}
                                         onClick={() => setSelectedPlan(plan)}
                                         className={cn(
-                                            "py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
+                                            "py-2 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all text-center",
                                             selectedPlan === plan ? "bg-white text-black" : "text-emerald-200 hover:text-white"
                                         )}
                                     >
@@ -259,7 +260,7 @@ export default function PricingPage() {
                                 <p className="text-[10px] font-black uppercase tracking-widest text-emerald-200 mt-2">
                                     {selectedPlan === 'starter' && '+ $0.002/eval after 50K'}
                                     {selectedPlan === 'growth' && '+ $0.002/eval after 500K'}
-                                    {selectedPlan === 'scale' && '+ $0.001/eval after 5M'}
+                                    {selectedPlan === 'business' && '+ $0.001/eval after 5M'}
                                 </p>
                             </div>
                             <ul className="space-y-3">
@@ -303,7 +304,7 @@ export default function PricingPage() {
                             </div>
                             <div className="py-4">
                                 <div className="text-5xl font-black italic tracking-tighter">Custom</div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mt-2">$2K – $10K / month</p>
+                                <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mt-2">Starting at $25,000 / year</p>
                             </div>
                             <ul className="space-y-3">
                                 {[
@@ -325,7 +326,7 @@ export default function PricingPage() {
                             </ul>
                         </div>
                         <button className="mt-10 w-full py-4 rounded-xl border-2 border-white/10 text-white font-black uppercase tracking-tighter text-lg hover:border-blue-500/50 hover:bg-blue-500/5 transition-all">
-                            Talk to Us
+                            Contact Sales
                         </button>
                     </div>
                 </div>
@@ -339,7 +340,7 @@ export default function PricingPage() {
                         {/* Table header */}
                         <div className="grid grid-cols-4 bg-neutral-900/80 border-b border-white/5">
                             <div className="p-6 text-[11px] font-black uppercase tracking-widest text-neutral-500">Feature</div>
-                            {['Free', 'Cloud', 'Enterprise'].map((col, i) => (
+                            {['Developer', 'Business', 'Enterprise'].map((col, i) => (
                                 <div key={i} className={cn(
                                     "p-6 text-center text-[11px] font-black uppercase tracking-widest",
                                     i === 1 ? "text-emerald-400" : "text-neutral-400"
@@ -451,12 +452,12 @@ export default function PricingPage() {
                     </h3>
                     <div className="grid md:grid-cols-2 gap-4">
                         {[
-                            { wall: 'Wall 1', trigger: '4th agent', msg: '"Free only allows 3 agents" → Cloud unlocks unlimited' },
+                            { wall: 'Wall 1', trigger: '4th agent', msg: '"Developer only allows 3 agents" → Cloud unlocks unlimited' },
                             { wall: 'Wall 2', trigger: 'Regex fatigue', msg: '"AI-powered policies needed" → Cloud feature' },
                             { wall: 'Wall 3', trigger: '6th secret', msg: '"5 secrets isn\'t enough for production Vault" → Cloud' },
                             { wall: 'Wall 4', trigger: 'Compliance audit', msg: '"PDF reports needed, not JSON" → Cloud compliance' },
                             { wall: 'Wall 5', trigger: '8-day log', msg: '"7-day retention is useless for an audit" → Cloud' },
-                            { wall: 'Wall 6', trigger: 'CrewAI plugin', msg: '"Free only has LangChain + Vercel AI" → Cloud' },
+                            { wall: 'Wall 6', trigger: 'CrewAI plugin', msg: '"Developer only has 2 framework plugins" → Cloud' },
                         ].map((item, i) => (
                             <div key={i} className="p-6 rounded-2xl bg-neutral-900/40 border border-white/5 hover:border-emerald-500/20 transition-all group">
                                 <div className="flex items-center gap-3 mb-3">
@@ -482,13 +483,20 @@ export default function PricingPage() {
                             <Shield className="w-10 h-10" />
                         </div>
                         <div className="space-y-4">
-                            <h2 className="text-4xl font-black italic uppercase tracking-tighter">Enterprise Operational Layer</h2>
+                            <h2 className="text-4xl font-black italic uppercase tracking-tighter">Enterprise Compliance Suite</h2>
                             <p className="text-gray-400 font-medium italic leading-relaxed max-w-2xl">
-                                For organizations with procurement requirements, air-gap mandates, and compliance certifications. Same product, different service level.
+                                For organizations with procurement requirements, air-gap mandates, and EU AI Act certification. Same infrastructure, elevated governance.
                             </p>
                         </div>
                         <div className="grid md:grid-cols-2 gap-x-12 gap-y-4 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 italic">
-                            {['Annual Contracts & POs', 'Single Sign-On (SAML/SSO)', 'Sub-10ms SLA Guarantee', 'Self-Hosted / Air-Gapped', 'SIEM Export (Datadog/Splunk)', 'Dedicated Support & CSM'].map((item, i) => (
+                            {[
+                                'Data Processing Agreement (DPA)',
+                                'SOC 2 Type II Certification',
+                                '99.99% SLA with Penalties',
+                                'Article 9 Risk Templates',
+                                'Dedicated Implementation Engineer',
+                                'Named Account Executive'
+                            ].map((item, i) => (
                                 <div key={i} className="flex items-center gap-3">
                                     <Check className="w-4 h-4 text-emerald-500" />{item}
                                 </div>
@@ -496,7 +504,7 @@ export default function PricingPage() {
                         </div>
                         <div className="pt-6">
                             <button className="px-10 py-5 rounded-2xl bg-white text-black font-black uppercase tracking-tighter text-lg hover:bg-emerald-500 hover:text-white transition-all transform hover:translate-x-2">
-                                Talk to Enterprise →
+                                Contact Enterprise →
                             </button>
                         </div>
                     </div>

@@ -6,9 +6,9 @@
 [1G[0K[1m[38;2;173;127;168m▲ Next.js 16.2.1[39m[22m (Turbopack)
 
 [37m[1m [22m[39m Creating an optimized production build ...
-[32m[1m✓[22m[39m Compiled successfully in 6.2s
-[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 7.5s  [36m.[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 7.5s    [32m[1m✓[22m[39m Finished TypeScript in 7.5s 
-[?25l[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[1A[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[32m[1m✓[22m[39m Compiled successfully in 8.3s
+[?25l[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m...[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m.[39m[2K[1G[37m[1m [22m[39m Running TypeScript  [36m..[39m[2K[1G[?25h[?25l[37m[1m [22m[39m Finished TypeScript in 11.2s  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finished TypeScript in 11.2s    [32m[1m✓[22m[39m Finished TypeScript in 11.2s 
+[?25l[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m..[39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
 [Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
@@ -16,22 +16,25 @@
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
 [Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
+[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
+[Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
 [Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m...[39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
-[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 9 workers in 687ms    [32m[1m✓[22m[39m Collecting page data using 9 workers in 687ms 
+[?25l[37m[1m [22m[39m Generating static pages using 9 workers (0/176)  [36m[    ][39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
-[2K[1G[1A[2K[1G[37m[1m [22m[39m Collecting page data using 9 workers  [36m...[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Collecting page data using 9 workers in 525ms    [32m[1m✓[22m[39m Collecting page data using 9 workers in 525ms 
-[?25l[37m[1m [22m[39m Generating static pages using 9 workers (0/177)  [36m[    ][39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
+[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (13/176)  [36m[=   ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (45/176)  [36m[==  ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (108/176)  [36m[=== ][39m[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (150/176)  [36m[ ===][39m[Firebase Admin] Initializing with projectId: agentguard-1b9e9, clientEmail: undefined...
 [Firebase Admin] Private Key Info: length=0, startsWith=, endsWith=
 [Firebase Admin] Environment variables are missing. Using default credentials with project ID: agentguard-1b9e9
-[2K[1G[1A[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (21/177)  [36m[=   ][39m[2K[1G[1A[2K[1G[37m[1m [22m[39m Generating static pages using 9 workers (87/177)  [36m[==  ][39m[2K[1G[1A[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 9 workers (177/177) in 604ms
-[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[1A[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 8ms    [32m[1m✓[22m[39m Finalizing page optimization in 8ms 
+[2K[1G[?25h[32m[1m✓[22m[39m Generating static pages using 9 workers (176/176) in 931ms
+[?25l[37m[1m [22m[39m Finalizing page optimization  [36m.[39m[2K[1G[?25h[37m[1m [22m[39m Finalizing page optimization in 22ms    [32m[1m✓[22m[39m Finalizing page optimization in 22ms 
 
 [4mRoute (app)[24m
 ┌ ○ /
@@ -60,6 +63,7 @@
 ├ ƒ /api/approvals/[id]
 ├ ƒ /api/approvals/[id]/respond
 ├ ƒ /api/audit
+├ ƒ /api/audit-firestore
 ├ ƒ /api/audit/export
 ├ ƒ /api/audit/scan
 ├ ƒ /api/badge/[agentId]
@@ -91,6 +95,8 @@
 ├ ƒ /api/v1/approvals/[id]
 ├ ƒ /api/v1/audit-logs
 ├ ƒ /api/v1/evaluate
+├ ƒ /api/v1/platforms
+├ ƒ /api/v1/platforms/keys
 ├ ƒ /api/v1/policies
 ├ ƒ /api/v1/policies/[id]
 ├ ƒ /api/v1/scrub

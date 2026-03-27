@@ -3,7 +3,7 @@
 
 "use client";
 import { useState, useEffect } from "react";
-import { collection, query, where, getDocs, addDoc, onSnapshot, doc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, doc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db, auth } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { sendGAEvent } from "@next/third-parties/google";
@@ -13,12 +13,10 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
-import { POLICY_TEMPLATES, PolicyTemplate } from "@/lib/policy-templates";
-import { Agent, Policy, RuleType } from "@/types/database";
+import { POLICY_TEMPLATES, type PolicyTemplate } from "@/lib/policy-templates";
+import type { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
-
-const API_BASE = "/api";
 
 export default function PoliciesPage() {
     const [user] = useAuthState(auth);
