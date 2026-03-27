@@ -156,6 +156,7 @@ export default function PoliciesPage() {
             for (const rule of template.rules) {
                 await addDoc(collection(db, "policies"), {
                     userId: user.uid,
+                    tenantId: user.uid,
                     agentId: selectedAgentId,
                     name: rule.description,
                     toolName: rule.toolName,
