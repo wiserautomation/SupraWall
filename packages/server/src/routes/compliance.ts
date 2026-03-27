@@ -11,13 +11,16 @@ const router = Router();
 
 // ─── GET /v1/compliance/status ────────────────────────────────────────────────
 
-router.get("/status", async (_req: Request, res: Response) => {
+router.get("/status", async (req: Request, res: Response) => {
     try {
+        const { tenantId } = req.query;
+        if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
+
         const [approvalResult, auditResult, denyResult, oldestResult] = await Promise.all([
-            pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'REQUIRE_APPROVAL'"),
-            pool.query("SELECT COUNT(*) FROM audit_logs"),
-            pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'DENY'"),
-            pool.query("SELECT MIN(timestamp) AS oldest FROM audit_logs"),
+            pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'REQUIRE_APPROVAL' AND tenantid = $1", [tenantId]),
+            pool.query("SELECT COUNT(*) FROM audit_logs WHERE tenantid = $1", [tenantId]),
+            pool.query("SELECT COUNT(*) FROM policies WHERE ruletype = 'DENY' AND tenantid = $1", [tenantId]),
+            pool.query("SELECT MIN(timestamp) AS oldest FROM audit_logs WHERE tenantid = $1", [tenantId]),
         ]);
 
         const approvalPolicies = parseInt(approvalResult.rows[0].count, 10);
@@ -92,26 +95,28 @@ router.get("/status", async (_req: Request, res: Response) => {
 
 router.get("/report", async (req: Request, res: Response) => {
     try {
-        const { agentId } = req.query;
+        const { agentId, tenantId } = req.query;
+        if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
+
         const to = req.query.to ? new Date(req.query.to as string) : new Date();
         const from = req.query.from
             ? new Date(req.query.from as string)
             : new Date(Date.now() - 30 * 86_400_000);
 
-        // Fetch audit logs
-        const auditParams: (Date | string)[] = [from, to];
-        let auditSql = "SELECT * FROM audit_logs WHERE timestamp >= $1 AND timestamp <= $2";
+        // Fetch audit logs scoped to tenant
+        const auditParams: (Date | string)[] = [from, to, tenantId as string];
+        let auditSql = "SELECT * FROM audit_logs WHERE timestamp >= $1 AND timestamp <= $2 AND tenantid = $3";
         if (agentId) {
-            auditSql += " AND agentid = $3";
+            auditSql += " AND agentid = $4";
             auditParams.push(agentId as string);
         }
         auditSql += " ORDER BY timestamp DESC";
 
-        // Fetch policies
-        const policyParams: string[] = [];
-        let policySql = "SELECT * FROM policies";
+        // Fetch policies scoped to tenant
+        const policyParams: string[] = [tenantId as string];
+        let policySql = "SELECT * FROM policies WHERE tenantid = $1";
         if (agentId) {
-            policySql += " WHERE agentid = $1"; // Note: production schema might use toolname grouping, but keeping filter for now
+            policySql += " AND agentid = $2";
             policyParams.push(agentId as string);
         }
         policySql += " ORDER BY createdat ASC";
@@ -222,6 +227,26 @@ router.get("/report", async (req: Request, res: Response) => {
         doc.moveDown(0.5);
         hr();
         sectionHead("SECTION 2: ACTIVITY SUMMARY");
+
+        // Narrative executive summary — readable by a compliance officer or regulator
+        const blockedNote = denied === 0
+            ? "No tool calls were blocked during this period."
+            : `${denied.toLocaleString()} ${denied === 1 ? "call was" : "calls were"} blocked by active risk policies before execution.`;
+        const approvalNote = pending === 0
+            ? "All permitted actions were executed without requiring human intervention."
+            : `${pending.toLocaleString()} ${pending === 1 ? "action" : "actions"} were paused and required explicit human approval before proceeding.`;
+
+        const execSummary =
+            `During the period ${fromStr} to ${toStr}, AI agents under this account made ` +
+            `${total.toLocaleString()} tool call${total !== 1 ? "s" : ""} across ` +
+            `${uniqueAgents} monitored agent${uniqueAgents !== 1 ? "s" : ""} and ` +
+            `${uniqueTools} unique tool${uniqueTools !== 1 ? "s" : ""}. ` +
+            `${blockedNote} ${approvalNote} ` +
+            `A complete signed audit trail is available in Section 4 of this report.`;
+
+        doc.fontSize(10).font("Helvetica").fillColor(MID)
+            .text(execSummary, 80, doc.y, { width: W - 160, lineGap: 3 });
+        doc.moveDown(1.2);
 
         const pct = (n: number) => (total > 0 ? ` (${Math.round((n / total) * 100)}%)` : " (0%)");
         [

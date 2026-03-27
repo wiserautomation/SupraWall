@@ -153,10 +153,11 @@ export default function CompliancePage() {
     const [certError, setCertError] = useState<string | null>(null);
 
     const fetchStatus = async () => {
+        if (!user) return;
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`${API_URL}/v1/compliance/status`);
+            const res = await fetch(`${API_URL}/v1/compliance/status?tenantId=${user.uid}`);
             if (!res.ok) throw new Error(`Server returned ${res.status}`);
             const data = await res.json();
             setStatus(data);
@@ -204,9 +205,11 @@ export default function CompliancePage() {
     };
 
     const downloadReport = () => {
+        if (!user) return;
         const url = new URL(`${API_URL}/v1/compliance/report`);
         const from = new Date(Date.now() - 30 * 86_400_000).toISOString().split("T")[0];
         const to = new Date().toISOString().split("T")[0];
+        url.searchParams.set("tenantId", user.uid);
         url.searchParams.set("from", from);
         url.searchParams.set("to", to);
         window.open(url.toString(), "_blank");
