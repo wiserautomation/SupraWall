@@ -315,6 +315,8 @@ function detectThreats(toolName: string, finalArgs: any): ThreatResult {
         { re: /xp_cmdshell/i,                         label: "xp_cmdshell" },
         { re: /\bsleep\s*\(\s*\d+\s*\)/i,             label: "SLEEP() time-based" },
         { re: /benchmark\s*\(/i,                      label: "BENCHMARK() DoS" },
+        { re: /load_file\s*\(/i,                      label: "LOAD_FILE() exfil" },
+        { re: /into\s+outfile/i,                      label: "INTO OUTFILE exfil" },
     ];
 
     for (const { re, label } of sqlPatterns) {
@@ -329,18 +331,18 @@ function detectThreats(toolName: string, finalArgs: any): ThreatResult {
         }
     }
 
-    // Prompt Injection Patterns
+    // Prompt Injection Patterns (now more flexible)
     const promptPatterns: Array<{ re: RegExp; label: string }> = [
-        { re: /ignore\s+(all\s+)?previous\s+instructions/i,   label: "ignore previous instructions" },
-        { re: /system\s+bypass/i,                             label: "system bypass" },
-        { re: /you\s+are\s+now\s+(a|an|the)\s/i,             label: "persona override" },
-        { re: /forget\s+(all\s+)?(your|previous)\s+instructions/i, label: "forget instructions" },
-        { re: /ignore\s+previous/i,                          label: "ignore previous" },
-        { re: /override\s+(system|safety|security)/i,        label: "override safety" },
-        { re: /disregard\s+(all|any|your)\s+(previous|prior|safety)/i, label: "disregard safety" },
-        { re: /act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i, label: "no restrictions" },
-        { re: /reveal\s+(your|the)\s+(system\s+)?prompt/i,   label: "reveal system prompt" },
-        { re: /do\s+not\s+follow\s+(your|the|any)\s+(previous|original)/i, label: "do not follow instructions" },
+        { re: /ignore\s+(all\s+)?(previous\s+|original\s+)?instructions/i,   label: "ignore previous instructions" },
+        { re: /system\s+bypass/i,                                             label: "system bypass" },
+        { re: /you\s+are\s+now\s+(a|an|the)\s/i,                             label: "persona override" },
+        { re: /forget\s+(any\s+|all\s+|your\s+)?(previous\s+|original\s+)?instructions/i, label: "forget instructions" },
+        { re: /override\s+(system|safety|security)/i,                        label: "override safety" },
+        { re: /disregard\s+(all|any|your)?\s*(previous|prior|safety)/i,      label: "disregard safety" },
+        { re: /act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i,             label: "no restrictions" },
+        { re: /reveal\s+(your|the)\s+(system\s+)?prompt/i,                   label: "reveal system prompt" },
+        { re: /do\s+not\s+follow\s+(your|the|any|original)?\s*(previous|original|prior)/i, label: "do not follow instructions" },
+        { re: /DAN\s+mode/i,                                                 label: "DAN mode bypass" },
     ];
 
     for (const { re, label } of promptPatterns) {
@@ -350,6 +352,30 @@ function detectThreats(toolName: string, finalArgs: any): ThreatResult {
                 reason: "Threat detected: Prompt injection attempt blocked by SupraWall Threat Engine.",
                 threatType: "prompt_injection",
                 severity: "high",
+                detail: label,
+            };
+        }
+    }
+
+    // OS Command Injection Patterns
+    const osPatterns: Array<{ re: RegExp; label: string }> = [
+        { re: /;\s*(rm|mv|cp|ls|cat|sh|bash|pwd|id|whoami|curl|wget)\s/i, label: "piped command" },
+        { re: /\|\s*(rm|mv|cp|ls|cat|sh|bash|pwd|id|whoami|curl|wget)\s/i, label: "piped command" },
+        { re: /&\s*(rm|mv|cp|ls|cat|sh|bash|pwd|id|whoami|curl|wget)\s/i, label: "piped command" },
+        { re: /`.*`/i,                                                      label: "backtick execution" },
+        { re: /\$\(.*\)/i,                                                   label: "subshell execution" },
+        { re: /\/etc\/(passwd|shadow|hostname|hosts)/i,                    label: "sensitive system file" },
+        { re: /\/proc\//i,                                                  label: "proc file access" },
+        { re: /\/root\//i,                                                  label: "root file access" },
+    ];
+
+    for (const { re, label } of osPatterns) {
+        if (re.test(rawPayload)) {
+            return {
+                blocked: true,
+                reason: "Threat detected: OS Command injection attempt blocked by SupraWall Threat Engine.",
+                threatType: "os_command_injection",
+                severity: "critical",
                 detail: label,
             };
         }
