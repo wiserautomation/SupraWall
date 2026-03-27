@@ -6,6 +6,7 @@ import { pool } from "../db";
 import PDFDocument from "pdfkit";
 import { randomUUID } from "crypto";
 import { logger } from "../logger";
+import { resolveTier, TieredRequest } from "../tier-guard";
 
 const router = Router();
 

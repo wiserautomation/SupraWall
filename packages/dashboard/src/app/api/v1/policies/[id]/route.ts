@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { query } from '@/lib/db_sql';
+import { getAdminDb } from '@/lib/firebase-admin';
+
+export const dynamic = 'force-dynamic';
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const db = getAdminDb();
   try {
     const { id } = await params;
     const { searchParams } = new URL(request.url);
@@ -17,10 +20,19 @@ export async function DELETE(
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    await query(
-      "DELETE FROM policies WHERE id = $1 AND tenantid = $2",
-      [id, tenantId]
-    );
+    const docRef = db.collection("policies").doc(id);
+    const docSnap = await docRef.get();
+
+    if (!docSnap.exists) {
+        return NextResponse.json({ error: "Policy not found" }, { status: 404 });
+    }
+
+    const data = docSnap.data();
+    if (data.tenantId !== tenantId && data.userId !== tenantId) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    await docRef.delete();
 
     return NextResponse.json({ status: "deleted" });
   } catch (err: any) {
