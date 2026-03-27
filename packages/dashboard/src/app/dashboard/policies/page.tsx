@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity } from "lucide-react";
+import { Shield, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
+import { POLICY_TEMPLATES, PolicyTemplate } from "@/lib/policy-templates";
 import { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,6 +46,10 @@ export default function PoliciesPage() {
     const [showAiWizard, setShowAiWizard] = useState(false);
     const [aiPrompt, setAiPrompt] = useState("");
     const [isGenerating, setIsGenerating] = useState(false);
+
+    // Template State
+    const [activatingTemplate, setActivatingTemplate] = useState<string | null>(null);
+    const [activatedTemplates, setActivatedTemplates] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         if (!user) return;
@@ -146,6 +151,32 @@ export default function PoliciesPage() {
         setIsGenerating(false);
     };
 
+    const handleActivateTemplate = async (template: PolicyTemplate) => {
+        if (!user || !selectedAgentId) return;
+        setActivatingTemplate(template.id);
+        try {
+            for (const rule of template.rules) {
+                await addDoc(collection(db, "policies"), {
+                    userId: user.uid,
+                    agentId: selectedAgentId,
+                    name: rule.description,
+                    toolName: rule.toolName,
+                    ruleType: rule.ruleType,
+                    description: `[${template.name} Template — ${rule.article}] ${rule.description}`,
+                    condition: rule.condition,
+                    priority: rule.priority,
+                    isDryRun: false,
+                    createdAt: serverTimestamp(),
+                });
+            }
+            setActivatedTemplates(prev => new Set(prev).add(template.id));
+            sendGAEvent("event", "activate_compliance_template", { template_id: template.id, agent_id: selectedAgentId });
+        } catch (e) {
+            console.error("Error activating template", e);
+        }
+        setActivatingTemplate(null);
+    };
+
     const getAgentName = (id: string) => agents.find(a => a.id === id)?.name || "Unknown";
 
     const getRuleBadgeColor = (type: string) => {
@@ -171,6 +202,96 @@ export default function PoliciesPage() {
                     <p className="text-[11px] font-black text-neutral-400 uppercase tracking-[0.2em]">Define access control and approval flows for your agents&apos; tools.</p>
                 </div>
             </div>
+
+            {/* Compliance Templates */}
+            <Card className="bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/25 to-transparent" />
+                <CardHeader className="bg-black/20 border-b border-white/[0.08] px-6 py-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <CardTitle className="text-sm flex items-center font-black text-white uppercase italic tracking-tighter">
+                                <BookOpen className="w-4 h-4 mr-2 text-emerald-400" />
+                                EU AI Act Starter Templates
+                            </CardTitle>
+                            <p className="text-[10px] font-black text-neutral-400 uppercase tracking-[0.15em] mt-1">
+                                One-click policy packs mapped to high-risk AI categories (Article 9 / 14 / 10)
+                            </p>
+                        </div>
+                        {!selectedAgentId && (
+                            <span className="text-[10px] font-bold text-amber-400/80 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-1.5 whitespace-nowrap">
+                                Select an agent first
+                            </span>
+                        )}
+                    </div>
+                </CardHeader>
+                <CardContent className="pt-5 pb-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {POLICY_TEMPLATES.map((template) => {
+                            const isActivating = activatingTemplate === template.id;
+                            const isActivated = activatedTemplates.has(template.id);
+                            const accentColors: Record<string, { border: string; tag: string; btn: string; badge: string }> = {
+                                blue: {
+                                    border: "border-blue-500/20 hover:border-blue-500/40",
+                                    tag: "text-blue-400/70 bg-blue-500/10 border-blue-500/20",
+                                    btn: "bg-blue-600/80 hover:bg-blue-500 disabled:bg-blue-900/40",
+                                    badge: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+                                },
+                                rose: {
+                                    border: "border-rose-500/20 hover:border-rose-500/40",
+                                    tag: "text-rose-400/70 bg-rose-500/10 border-rose-500/20",
+                                    btn: "bg-rose-600/80 hover:bg-rose-500 disabled:bg-rose-900/40",
+                                    badge: "bg-rose-500/10 text-rose-400 border-rose-500/20",
+                                },
+                                violet: {
+                                    border: "border-violet-500/20 hover:border-violet-500/40",
+                                    tag: "text-violet-400/70 bg-violet-500/10 border-violet-500/20",
+                                    btn: "bg-violet-600/80 hover:bg-violet-500 disabled:bg-violet-900/40",
+                                    badge: "bg-violet-500/10 text-violet-400 border-violet-500/20",
+                                },
+                            };
+                            const c = accentColors[template.accentClass] ?? accentColors.blue;
+                            return (
+                                <motion.div
+                                    key={template.id}
+                                    initial={{ opacity: 0, y: 6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className={`relative flex flex-col gap-3 p-5 rounded-xl bg-black/40 border transition-colors duration-300 ${c.border}`}
+                                >
+                                    <div>
+                                        <span className={`inline-block text-[9px] font-black uppercase tracking-[0.18em] px-2 py-0.5 rounded border mb-2 ${c.tag}`}>
+                                            {template.industry}
+                                        </span>
+                                        <h3 className="text-sm font-black text-white uppercase italic tracking-tight">{template.name}</h3>
+                                        <p className="text-xs text-neutral-400 mt-1 leading-relaxed">{template.tagline}</p>
+                                    </div>
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {template.articles.map(a => (
+                                            <span key={a} className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${c.badge}`}>{a}</span>
+                                        ))}
+                                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border bg-white/[0.04] text-neutral-400 border-white/10">
+                                            {template.rules.length} rules
+                                        </span>
+                                    </div>
+                                    <Button
+                                        size="sm"
+                                        disabled={!selectedAgentId || isActivating || isActivated}
+                                        onClick={() => handleActivateTemplate(template)}
+                                        className={`mt-auto w-full text-white text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${c.btn}`}
+                                    >
+                                        {isActivating ? (
+                                            <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Activating…</>
+                                        ) : isActivated ? (
+                                            <><CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Activated</>
+                                        ) : (
+                                            "Activate Template"
+                                        )}
+                                    </Button>
+                                </motion.div>
+                            );
+                        })}
+                    </div>
+                </CardContent>
+            </Card>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <Card className="col-span-1 bg-black/60 backdrop-blur-xl border-emerald-500/10 shadow-2xl h-fit relative group overflow-hidden">
