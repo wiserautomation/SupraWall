@@ -16,7 +16,8 @@
       "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall/dashboard -maxdepth 1 -name *.js -o -name *.ts -o -name *.jsx -o -name *.tsx)",
       "Bash(xargs ls:*)",
       "Bash(grep -r \"motion\\\\.\" /Users/alejandropeghin/Desktop/AntiG/SupraWall/dashboard/src/components/*.tsx)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall -maxdepth 2 -name docker* -o -name *deployment* -o -name *compose*)"
     ]
   }
 }
