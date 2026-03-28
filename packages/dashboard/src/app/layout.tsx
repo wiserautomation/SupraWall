@@ -45,10 +45,6 @@ export const metadata: Metadata = {
     title: "SupraWall | Enterprise AI Agent Security",
     description: "The zero-trust shim for your autonomous AI swarm.",
   },
-  icons: {
-    icon: "/favicon.png",
-    apple: "/favicon.png",
-  },
   robots: {
     index: true,
     follow: true,
