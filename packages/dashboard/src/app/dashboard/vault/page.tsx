@@ -99,6 +99,13 @@ export default function VaultPage() {
     const [error, setError] = useState<string | null>(null);
     const [agentSearch, setAgentSearch] = useState("");
     const [editingSecretId, setEditingSecretId] = useState<string | null>(null);
+    const [showNextStepModal, setShowNextStepModal] = useState(false);
+    const [dontShowNextStep, setDontShowNextStep] = useState(false);
+
+    useEffect(() => {
+        const saved = localStorage.getItem("suprawall_vault_onboarding_done");
+        if (saved === "true") setDontShowNextStep(true);
+    }, []);
 
     const getAuthHeaders = async (): Promise<Record<string, string>> => {
         if (!user) return {};
@@ -250,6 +257,11 @@ export default function VaultPage() {
             setNewSecretName(""); setNewSecretValue(""); setNewSecretDesc(""); setNewSecretExpiry("");
             setNewSecretAgents([]);
             await fetchSecrets();
+            
+            // Show onboarding modal for new secrets if not opted out
+            if (!editingSecretId && !dontShowNextStep) {
+                setShowNextStepModal(true);
+            }
         } finally {
             setLoading(false);
         }
@@ -387,6 +399,15 @@ export default function VaultPage() {
             setError(e.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const toggleOnboardingPreference = (checked: boolean) => {
+        setDontShowNextStep(checked);
+        if (checked) {
+            localStorage.setItem("suprawall_vault_onboarding_done", "true");
+        } else {
+            localStorage.removeItem("suprawall_vault_onboarding_done");
         }
     };
 
@@ -1138,6 +1159,89 @@ export default function VaultPage() {
                     </div>
                 </div>
             )}
+
+            {/* Next Steps Onboarding Modal */}
+            <AnimatePresence>
+                {showNextStepModal && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            exit={{ scale: 0.9, y: 20 }}
+                            className="w-full max-w-lg bg-neutral-900 border border-emerald-500/30 rounded-3xl p-8 shadow-[0_0_50px_-12px_rgba(16,185,129,0.3)] space-y-6 relative overflow-hidden"
+                        >
+                            {/* Decorative background flare */}
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+                            
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20">
+                                    <Shield className="w-8 h-8 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-black text-white tracking-tight leading-tight uppercase italic">Secret created! <br/><span className="text-emerald-400">What's next?</span></h2>
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <p className="text-neutral-300 leading-relaxed text-sm">
+                                    In our <span className="text-white font-bold">Zero-Trust architecture</span>, simply creating a secret isn't enough. Your agents are currently blocked from "asking" for it until you authorize them.
+                                </p>
+                                
+                                <div className="p-4 rounded-2xl bg-black/40 border border-white/10 space-y-3">
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-400 border border-emerald-500/30">1</div>
+                                        <p className="text-xs text-neutral-400"><span className="text-emerald-300 font-bold uppercase tracking-wider">Authorize</span>: Go to the Access Rules tab.</p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-400 border border-emerald-500/30">2</div>
+                                        <p className="text-xs text-neutral-400"><span className="text-emerald-300 font-bold uppercase tracking-wider">Map</span>: Connect this secret to a specific agent and tool.</p>
+                                    </div>
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500/20 flex items-center justify-center text-[10px] font-black text-emerald-400 border border-emerald-500/30">3</div>
+                                        <p className="text-xs text-neutral-400"><span className="text-emerald-300 font-bold uppercase tracking-wider">Lock</span>: Set rate limits to prevent accidental data leaks.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-col gap-4">
+                                <button
+                                    onClick={() => {
+                                        setTab("rules");
+                                        setShowNextStepModal(false);
+                                    }}
+                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-widest rounded-2xl transition-all shadow-lg shadow-emerald-500/20 text-sm flex items-center justify-center gap-2 group"
+                                >
+                                    Take me to Access Rules
+                                    <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+                                </button>
+                                
+                                <div className="flex items-center justify-between px-2">
+                                    <label className="flex items-center gap-2 cursor-pointer group">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={dontShowNextStep}
+                                            onChange={(e) => toggleOnboardingPreference(e.target.checked)}
+                                            className="w-4 h-4 rounded border-white/20 bg-white/5 text-emerald-500 focus:ring-emerald-500/50" 
+                                        />
+                                        <span className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 group-hover:text-neutral-300 transition-colors">Don't show this again</span>
+                                    </label>
+                                    <button 
+                                        onClick={() => setShowNextStepModal(false)}
+                                        className="text-[10px] font-bold uppercase tracking-widest text-neutral-500 hover:text-white transition-colors"
+                                    >
+                                        I'll do it later
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
