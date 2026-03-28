@@ -58,6 +58,11 @@ export async function GET(request: NextRequest) {
             is_loop: metadata.isLoop || false,
             agentRole: metadata.agentRole || null,
             integrityHash: metadata.integrityHash || null,
+            // Layer 2 Fields
+            semanticScore: metadata.semanticScore ?? null,
+            anomalyScore: metadata.anomalyScore ?? null,
+            semanticDecision: metadata.semanticDecision ?? null,
+            semanticLatencyMs: metadata.semanticLatencyMs ?? null,
         };
     });
 
