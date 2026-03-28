@@ -4,7 +4,7 @@
 import request from "supertest";
 import app from "../src/index";
 import { pool } from "../src/db";
-import { db } from "../src/firebase";
+import { getFirestore } from "../src/firebase";
 
 // Mock pg pool
 jest.mock("../src/db", () => ({
@@ -17,7 +17,7 @@ jest.mock("../src/db", () => ({
 
 // Mock firebase
 jest.mock("../src/firebase", () => ({
-    db: {
+    getFirestore: jest.fn(() => ({
         collection: jest.fn().mockReturnThis(),
         doc: jest.fn().mockReturnThis(),
         set: jest.fn().mockResolvedValue(undefined),
@@ -25,7 +25,8 @@ jest.mock("../src/firebase", () => ({
         delete: jest.fn().mockResolvedValue(undefined),
         where: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
-    },
+    })),
+    logToFirestore: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe("Programmatic Agent API (Mocked)", () => {
@@ -121,8 +122,9 @@ describe("Programmatic Agent API (Mocked)", () => {
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
 
             // Verify Firestore write
-            expect(db!.collection).toHaveBeenCalledWith("agents");
-            expect(db!.doc).toHaveBeenCalled();
+            const db = getFirestore();
+            expect(db?.collection).toHaveBeenCalledWith("agents");
+            expect(db?.doc).toHaveBeenCalled();
         });
     });
 
@@ -162,7 +164,8 @@ describe("Programmatic Agent API (Mocked)", () => {
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
-            expect(db!.doc).toHaveBeenCalledWith("some-id");
+            const db = getFirestore();
+            expect(db?.doc).toHaveBeenCalledWith("some-id");
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
         });
     });
