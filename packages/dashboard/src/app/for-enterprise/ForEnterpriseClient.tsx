@@ -106,7 +106,7 @@ export default function ForEnterpriseClient() {
                         </h2>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {[
                             { title: "SLA Guaranteed", desc: "Enterprise infrastructure with 99.99% uptime and dedicated support channels.", icon: <ShieldCheck className="w-8 h-8 text-purple-400" /> },
                             { title: "Custom Policies", desc: "Build industry-specific policy sets tailored to your unique internal tool sets.", icon: <Users className="w-8 h-8 text-purple-400" /> },
@@ -123,6 +123,40 @@ export default function ForEnterpriseClient() {
                     </div>
                 </div>
             </section>
+
+             {/* 🎯 PROCUREMENT & COMPLIANCE */}
+             <section className="py-24 px-6 md:px-0 bg-neutral-900/20 border-y border-white/5 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/5 blur-[120px] pointer-events-none" />
+                <div className="max-w-7xl mx-auto space-y-16">
+                    <div className="flex flex-col md:flex-row items-end justify-between gap-8">
+                        <div className="space-y-4">
+                            <TagBadge>Procurement Ready</TagBadge>
+                            <h2 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none text-glow">
+                                Built for <br />
+                                <span className="text-emerald-500 font-bold italic underline decoration-white/10 uppercase italic">Enterprise Paperwork.</span>
+                            </h2>
+                        </div>
+                        <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-relaxed max-w-xl text-right">
+                            We understand that security is only half the battle. SupraWall Enterprise is designed to slide through procurement with standard-grade legal and compliance frameworks.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                        {[
+                            { title: "Standard DPA", desc: "GDPR-compliant Data Processing Agreement signed and ready for your legal team." },
+                            { title: "HIPAA BAA", desc: "Sign a Business Associate Agreement to process Protected Health Information (PHI)." },
+                            { title: "Custom MSA", desc: "Flexible Master Service Agreements tailored to your organization's legal requirements." },
+                            { title: "SOC 2 Type II", desc: "Full audit reports available upon request for security and availability trust principles." }
+                        ].map(item => (
+                            <div key={item.title} className="p-8 rounded-3xl bg-black/40 border border-white/5 space-y-4 hover:border-emerald-500/30 transition-all group">
+                                <ShieldCheck className="w-8 h-8 text-emerald-400 group-hover:scale-110 transition-transform" />
+                                <h4 className="text-xl font-black italic uppercase text-white tracking-tighter">{item.title}</h4>
+                                <p className="text-neutral-500 text-[10px] font-bold uppercase tracking-widest leading-relaxed">{item.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+             </section>
 
              {/* 🎯 FINAL CTA */}
              <section className="py-48 px-6 bg-black relative text-center">

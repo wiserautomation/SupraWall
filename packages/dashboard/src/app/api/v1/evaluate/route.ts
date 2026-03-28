@@ -9,6 +9,7 @@ import * as crypto from 'crypto';
 import { resolveVaultTokens } from '@/lib/vault-server';
 import { scrubPii } from '@/lib/guardrail-scrubber';
 import { analyzeCall, updateBaseline, type SemanticAnalysisResult, type SemanticLayerMode } from '@/lib/semantic-server';
+import { pool as pgPool } from '@/lib/db_sql';
 
 // ── Types ──
 
@@ -128,7 +129,7 @@ export async function POST(req: NextRequest) {
             // ── Threat Detection — blocks before any policy evaluation ──
             const threatResult = detectThreats(toolName, finalArgs);
             if (threatResult.blocked) {
-                await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
+                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
                 // Fire-and-forget threat event log
                 db.collection("threat_events").add({
                     agentId, tenantId, toolName,
@@ -148,7 +149,7 @@ export async function POST(req: NextRequest) {
             const guardrailResult = evaluateGuardrailsSync(agentData, toolName, finalArgs);
             if (guardrailResult.blocked) {
                 const gr = guardrailResult.reason || 'Blocked by agent guardrail';
-                await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
+                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
                 return NextResponse.json({ decision: "DENY", reason: gr });
             }
             if (guardrailResult.modifiedArgs) {
@@ -292,7 +293,7 @@ export async function POST(req: NextRequest) {
             const finalArgsString = JSON.stringify(resolvedArguments);
             const requestId = await createApprovalRequest(userId, agentId, agentName, toolName, finalArgsString, sessionId, agentRole, estimatedCost);
             
-            await logAudit(agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop);
+            await logAudit(tenantId, agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop);
             
             return NextResponse.json({ 
                 decision: "REQUIRE_APPROVAL", 
@@ -305,7 +306,7 @@ export async function POST(req: NextRequest) {
         // ── Post-Evaluation Writes ──
 
         const updates: Promise<any>[] = [
-            logAudit(agentId, toolName, JSON.stringify(resolvedArguments), decision, estimatedCost, decisionResult.reason, sessionId, agentRole, isLoop)
+            logAudit(tenantId, agentId, toolName, JSON.stringify(resolvedArguments), decision, estimatedCost, decisionResult.reason, sessionId, agentRole, isLoop)
         ];
 
         if (apiKey.startsWith("agc_")) {
@@ -321,7 +322,8 @@ export async function POST(req: NextRequest) {
             updates.push(db.collection("agents").doc(agentId).update({
                 totalCalls: admin.firestore.FieldValue.increment(1),
                 totalSpendUsd: admin.firestore.FieldValue.increment(estimatedCost),
-                lastUsedAt: admin.firestore.FieldValue.serverTimestamp()
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
+                verifiedAt: admin.firestore.FieldValue.serverTimestamp() // Update verification heartbeat
             }));
         }
 
@@ -558,9 +560,19 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
     return res.id;
 }
 
-async function logAudit(agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
+async function logAudit(tenantId: string, agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
+    // Primary: Firestore (real-time agent spend tracking)
     await db.collection("audit_logs").add({
         agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
         cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
+
+    // Secondary: PostgreSQL (forensic audit trail — non-blocking, never fails the request)
+    const riskScore = decision === "DENY" ? 90 : decision === "REQUIRE_APPROVAL" ? 60 : 10;
+    pgPool.query(
+        `INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+        [tenantId, agentId, toolName, finalArgs, decision, riskScore, cost,
+         JSON.stringify({ reason, sessionId: sId, agentRole: role, is_loop: isLoop })]
+    ).catch((err: unknown) => console.error("[AuditLog] PostgreSQL write failed (non-fatal):", err));
 }

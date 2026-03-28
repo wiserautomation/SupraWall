@@ -145,6 +145,7 @@ interface Agent {
     totalCalls: number;
     totalSpendUsd: number;
     lastUsedAt?: any;
+    verifiedAt?: any; // Added for connection status tracking
     apiKey: string;
     createdAt: any;
 }
@@ -169,6 +170,8 @@ export default function AgentsPage() {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [isVerifyModalOpen, setIsVerifyModalOpen] = useState(false);
+    const [agentToVerify, setAgentToVerify] = useState<Agent | null>(null);
     const [newAgentName, setNewAgentName] = useState("");
     const [generatedKey, setGeneratedKey] = useState<string | null>(null);
     const [isCopying, setIsCopying] = useState(false);
@@ -586,7 +589,7 @@ export default function AgentsPage() {
 
             {/* Tier Upgrade Nudge */}
             <TierBanner
-                tier="free"
+                tier="developer"
                 usages={[
                     { current: agents.filter(a => a.status !== 'revoked').length, max: 3, label: 'Agents', upgradeFeature: 'Unlimited on Cloud' },
                 ]}
@@ -734,16 +737,21 @@ export default function AgentsPage() {
                                                 <button 
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        toggleStatus(agent);
+                                                        setAgentToVerify(agent);
+                                                        setIsVerifyModalOpen(true);
                                                     }}
-                                                    title={agent.status === 'active' ? "Pause Agent" : "Resume Agent"}
+                                                    title={agent.verifiedAt ? `Verified ${new Date(agent.verifiedAt).toLocaleDateString()} — Click to verify again` : "Click to verify connection"}
                                                     className={`p-2 rounded-lg border transition-all ${
-                                                        agent.status === 'active'
-                                                            ? 'bg-amber-500/5 border-amber-500/20 text-amber-400 hover:bg-amber-500/20'
-                                                            : 'bg-emerald-500/5 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                                                        (agent.verifiedAt && (new Date().getTime() - new Date(agent.verifiedAt).getTime() < 15 * 60 * 1000))
+                                                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
+                                                            : 'bg-neutral-500/5 border-white/10 text-neutral-500 hover:text-white hover:bg-white/10'
                                                     }`}
                                                 >
-                                                    {agent.status === 'active' ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                                                    {(agent.verifiedAt && (new Date().getTime() - new Date(agent.verifiedAt).getTime() < 15 * 60 * 1000)) ? (
+                                                        <ShieldCheck className="w-4 h-4" />
+                                                    ) : (
+                                                        <Shield className="w-4 h-4" />
+                                                    )}
                                                 </button>
                                                 <button 
                                                     onClick={(e) => {
@@ -1029,7 +1037,6 @@ export default function AgentsPage() {
                             </div>
                         </div>
                     )}
-
                     <DialogFooter>
                         {generatedKey && (
                             <Button
@@ -1045,6 +1052,70 @@ export default function AgentsPage() {
                                 </span>
                             </Button>
                         )}
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Verify Connection Dialog */}
+            <Dialog open={isVerifyModalOpen} onOpenChange={setIsVerifyModalOpen}>
+                <DialogContent className="bg-neutral-950 border-white/10 shadow-2xl space-y-6 sm:max-w-[500px]">
+                    <DialogHeader className="relative">
+                        <div className="absolute -top-10 -right-4 w-32 h-32 bg-emerald-500/10 blur-3xl rounded-full" />
+                        <DialogTitle className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
+                            <ShieldCheck className="w-8 h-8 text-emerald-400" />
+                            Verify Connection
+                        </DialogTitle>
+                        <DialogDescription className="text-neutral-400 text-xs font-medium uppercase tracking-widest">
+                            Agent: {agentToVerify?.name}
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4">
+                        <p className="text-sm text-neutral-300 leading-relaxed">
+                            To verify your agent is correctly integrated with SupraWall, run a test evaluation call using the command below. 
+                            The shield icon for this agent will turn green once a heartbeat is detected.
+                        </p>
+
+                        <div className="p-4 bg-black/40 border border-white/10 rounded-xl font-mono text-xs text-neutral-400 relative group">
+                            <pre className="whitespace-pre-wrap break-all">
+                                {`curl -X POST https://www.supra-wall.com/api/v1/evaluate \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "apiKey": "${agentToVerify?.apiKey || 'AG_KEY'}",
+    "toolName": "suprawall:verify",
+    "args": { "ping": true }
+  }'`}
+                            </pre>
+                            <button
+                                onClick={() => {
+                                    const text = `curl -X POST https://www.supra-wall.com/api/v1/evaluate \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "apiKey": "${agentToVerify?.apiKey || 'AG_KEY'}",
+    "toolName": "suprawall:verify",
+    "args": { "ping": true }
+  }'`;
+                                    navigator.clipboard.writeText(text);
+                                }}
+                                className="absolute top-3 right-3 p-2 bg-white/5 hover:bg-white/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
+                            >
+                                <Copy className="w-3.5 h-3.5" />
+                            </button>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-4 bg-emerald-500/5 border border-emerald-500/10 rounded-xl text-xs text-emerald-400/80">
+                            <Clock className="w-4 h-4" />
+                            <span>Status: Waiting for heartbeat... (Updates every 10s)</span>
+                        </div>
+                    </div>
+
+                    <DialogFooter>
+                        <Button
+                            onClick={() => setIsVerifyModalOpen(false)}
+                            className="w-full bg-white/5 hover:bg-white/10 text-white border-white/10 font-bold uppercase tracking-widest text-[10px]"
+                        >
+                            Done
+                        </Button>
                     </DialogFooter>
                 </DialogContent>
             </Dialog>

@@ -1,0 +1,1032 @@
+================================================================================
+SUPRAWALL — LAYER 2: AI SEMANTIC ANALYSIS ENGINE
+FULL IMPLEMENTATION PLAN
+================================================================================
+Date: 2026-03-28
+Status: Architecture + Step-by-Step Implementation Spec
+Scope: Backend, SDK, Dashboard, Pricing, README, Homepage
+
+This document contains every step required to implement the two-layer
+security architecture end-to-end in the existing SupraWall monorepo.
+
+================================================================================
+TABLE OF CONTENTS
+================================================================================
+
+  1.  ARCHITECTURE OVERVIEW
+  2.  TIER GATING MATRIX
+  3.  DATABASE SCHEMA CHANGES
+  4.  STEP 1 — Core AI Semantic Module (packages/server/src/semantic.ts)
+  5.  STEP 2 — Behavioral Baseline Service (packages/server/src/behavioral.ts)
+  6.  STEP 3 — Wire Layer 2 into Server Evaluate Route (policy.ts)
+  7.  STEP 4 — Wire Layer 2 into Dashboard Evaluate Route (evaluate/route.ts)
+  8.  STEP 5 — Tier Config Changes (tier-config.ts)
+  9.  STEP 6 — Tier Guard Changes (tier-guard.ts)
+  10. STEP 7 — SDK Changes (sdk-ts + sdk-python)
+  11. STEP 8 — Dashboard UI — Threat Intelligence Panel
+  12. STEP 9 — Pricing Page Changes (pricing/page.tsx)
+  13. STEP 10 — Homepage Changes (page.tsx)
+  14. STEP 11 — README.md (root)
+  15. STEP 12 — README_FULL.md (root)
+  16. STEP 13 — SDK README (packages/sdk-ts/README.md)
+  17. STEP 14 — Server README (packages/server/README.md)
+  18. STEP 15 — Environment Variables & Config
+  19. STEP 16 — Cost Estimation & Rate Limiting for LLM Calls
+  20. STEP 17 — Testing Strategy
+  21. STEP 18 — Rollout Plan
+  22. EXECUTION PRIORITY
+
+
+================================================================================
+1. ARCHITECTURE OVERVIEW
+================================================================================
+
+Current state:
+  - One layer: Deterministic regex-based threat detection in policy.ts
+    and evaluate/route.ts (SQLi, XSS, prompt injection patterns).
+  - tier-config.ts already has fields: policyEngine ('regex'|'ai'|'advanced'),
+    threatDetectionPatterns (3|'full-regex'|'ml'|'advanced').
+  - These fields are partially wired but "ai"/"ml"/"advanced" do nothing yet.
+
+Target state:
+
+  Tool Call Received
+       |
+  [Layer 1] Deterministic Policy Engine         <2ms, zero network calls
+       |  - Hard DENY rules (regex patterns)
+       |  - Budget cap check
+       |  - Vault token injection
+       |  - Scope verification (delegation chain)
+       |  - Known-bad regex patterns (SQLi, XSS, prompt injection)
+       |
+       v  (only if ALLOW passes through)
+  [Layer 2] AI Semantic Layer                    ~80-150ms, LLM call
+       |  - Contextual argument combination analysis
+       |  - Cross-tool attack sequence detection
+       |  - Anomaly score vs. agent's historical behavior
+       |  - Confidence-based routing:
+       |      high confidence threat  ->  DENY
+       |      medium confidence       ->  REQUIRE_APPROVAL (HITL)
+       |      low confidence          ->  ALLOW + FLAG in audit
+       |
+       v
+  Final Decision: ALLOW / DENY / REQUIRE_APPROVAL / FLAG
+
+Key architectural constraint:
+  Layer 2 MUST NOT be a blocking dependency on the hot path for Team tier.
+  It runs CONCURRENTLY with the post-Layer-1 response preparation.
+  Only if the semantic score exceeds a configurable threshold does it
+  override the Layer 1 ALLOW to DENY or REQUIRE_APPROVAL.
+
+  For Business tier, Layer 2 includes behavioral anomaly detection
+  (historical call graph comparison) which adds ~20ms on top.
+
+  For Enterprise, customers can provide custom training data / fine-tuned
+  model endpoints.
+
+
+================================================================================
+2. TIER GATING MATRIX
+================================================================================
+
+  Tier          | Layer 1                   | Layer 2
+  --------------|---------------------------|------------------------------
+  open_source   | 3 regex patterns          | NONE
+  developer     | Full 26+ regex patterns   | NONE
+  team ($79)    | Full regex + AI policies  | AI semantic check (standard)
+  business      | Full regex + AI policies  | AI semantic + behavioral anomaly
+  enterprise    | Full regex + AI policies  | AI semantic + behavioral + custom model
+
+  Layer 2 modes:
+    'none'       -> skip entirely (open_source, developer)
+    'semantic'   -> LLM contextual analysis only (team)
+    'behavioral' -> semantic + historical baseline comparison (business)
+    'custom'     -> semantic + behavioral + custom model endpoint (enterprise)
+
+
+================================================================================
+3. DATABASE SCHEMA CHANGES
+================================================================================
+
+File: packages/server/setup_db.sql
+
+ADD the following tables:
+
+--- 3a. Behavioral Baselines ---
+
+  CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
+      id SERIAL PRIMARY KEY,
+      tenant_id VARCHAR(255) NOT NULL,
+      agent_id VARCHAR(255) NOT NULL,
+      tool_name VARCHAR(255) NOT NULL,
+      avg_args_length FLOAT DEFAULT 0,
+      avg_calls_per_hour FLOAT DEFAULT 0,
+      common_arg_patterns JSONB DEFAULT '[]',
+      total_samples INTEGER DEFAULT 0,
+      last_updated TIMESTAMP DEFAULT NOW(),
+      UNIQUE(tenant_id, agent_id, tool_name)
+  );
+
+  CREATE INDEX idx_baselines_tenant_agent
+      ON agent_behavioral_baselines(tenant_id, agent_id);
+
+--- 3b. Semantic Analysis Results (audit trail for Layer 2) ---
+
+  CREATE TABLE IF NOT EXISTS semantic_analysis_log (
+      id SERIAL PRIMARY KEY,
+      tenant_id VARCHAR(255) NOT NULL,
+      agent_id VARCHAR(255) NOT NULL,
+      tool_name VARCHAR(255) NOT NULL,
+      semantic_score FLOAT NOT NULL,         -- 0.0 (safe) to 1.0 (threat)
+      anomaly_score FLOAT,                   -- null if behavioral not enabled
+      confidence VARCHAR(20) NOT NULL,       -- 'high', 'medium', 'low'
+      decision_override VARCHAR(20),         -- null, 'DENY', 'REQUIRE_APPROVAL', 'FLAG'
+      reasoning TEXT,                        -- LLM explanation
+      model_used VARCHAR(100),               -- e.g. 'gpt-4o-mini', custom endpoint
+      latency_ms INTEGER,
+      parameters JSONB,
+      timestamp TIMESTAMP DEFAULT NOW()
+  );
+
+  CREATE INDEX idx_semantic_log_tenant
+      ON semantic_analysis_log(tenant_id, timestamp DESC);
+
+--- 3c. Custom Model Endpoints (Enterprise) ---
+
+  CREATE TABLE IF NOT EXISTS custom_model_endpoints (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      tenant_id VARCHAR(255) NOT NULL UNIQUE,
+      endpoint_url VARCHAR(500) NOT NULL,
+      auth_header VARCHAR(500),              -- encrypted, use pgp_sym_encrypt
+      model_name VARCHAR(100),
+      max_latency_ms INTEGER DEFAULT 500,
+      enabled BOOLEAN DEFAULT true,
+      created_at TIMESTAMP DEFAULT NOW()
+  );
+
+
+================================================================================
+4. STEP 1 — Core AI Semantic Module
+================================================================================
+
+File: NEW — packages/server/src/semantic.ts
+
+Purpose: Encapsulates all Layer 2 logic. Single entry point: analyzeCall().
+
+Implementation:
+
+  import { pool } from "./db";
+  import { logger } from "./logger";
+  import type { Tier } from "./tier-config";
+
+  // --- Types ---
+
+  export interface SemanticAnalysisRequest {
+      tenantId: string;
+      agentId: string;
+      toolName: string;
+      args: any;
+      argsString: string;
+      delegationChain?: string[];
+      tier: Tier;
+      model?: string;              // override LLM model
+      customEndpoint?: string;     // enterprise custom model
+  }
+
+  export interface SemanticAnalysisResult {
+      semanticScore: number;       // 0.0 - 1.0
+      anomalyScore: number | null; // null if behavioral disabled
+      confidence: 'high' | 'medium' | 'low';
+      decision: 'ALLOW' | 'DENY' | 'REQUIRE_APPROVAL' | 'FLAG' | null;
+      reasoning: string;
+      latencyMs: number;
+      modelUsed: string;
+  }
+
+  // --- Configurable Thresholds ---
+
+  const THRESHOLDS = {
+      denyAbove: 0.85,             // auto-DENY
+      approvalAbove: 0.60,         // route to HITL
+      flagAbove: 0.35,             // log as FLAG, allow through
+  };
+
+  // --- Main Entry Point ---
+
+  export async function analyzeCall(
+      req: SemanticAnalysisRequest
+  ): Promise<SemanticAnalysisResult> {
+      const start = Date.now();
+
+      // 1. Build the prompt
+      const prompt = buildAnalysisPrompt(req);
+
+      // 2. Call LLM (standard or custom endpoint)
+      let llmResult: { score: number; reasoning: string; model: string };
+
+      if (req.customEndpoint) {
+          llmResult = await callCustomEndpoint(req.customEndpoint, prompt);
+      } else {
+          llmResult = await callStandardLLM(prompt);
+      }
+
+      // 3. Behavioral anomaly (business+ only)
+      let anomalyScore: number | null = null;
+      if (req.tier === 'business' || req.tier === 'enterprise') {
+          anomalyScore = await computeAnomalyScore(req);
+      }
+
+      // 4. Combine scores
+      const combinedScore = anomalyScore !== null
+          ? (llmResult.score * 0.7) + (anomalyScore * 0.3)
+          : llmResult.score;
+
+      // 5. Determine decision
+      let decision: SemanticAnalysisResult['decision'] = null;
+      let confidence: SemanticAnalysisResult['confidence'] = 'low';
+
+      if (combinedScore >= THRESHOLDS.denyAbove) {
+          decision = 'DENY';
+          confidence = 'high';
+      } else if (combinedScore >= THRESHOLDS.approvalAbove) {
+          decision = 'REQUIRE_APPROVAL';
+          confidence = 'medium';
+      } else if (combinedScore >= THRESHOLDS.flagAbove) {
+          decision = 'FLAG';
+          confidence = 'low';
+      }
+      // Below flagAbove -> null decision, Layer 2 does not intervene
+
+      const latencyMs = Date.now() - start;
+
+      // 6. Log to Postgres (non-blocking)
+      pool.query(
+          `INSERT INTO semantic_analysis_log
+           (tenant_id, agent_id, tool_name, semantic_score, anomaly_score,
+            confidence, decision_override, reasoning, model_used, latency_ms, parameters)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [req.tenantId, req.agentId, req.toolName, combinedScore, anomalyScore,
+           confidence, decision, llmResult.reasoning, llmResult.model, latencyMs,
+           JSON.stringify(req.args)]
+      ).catch(err => logger.error("[Semantic] Failed to log analysis", { error: err }));
+
+      return {
+          semanticScore: combinedScore,
+          anomalyScore,
+          confidence,
+          decision,
+          reasoning: llmResult.reasoning,
+          latencyMs,
+          modelUsed: llmResult.model,
+      };
+  }
+
+  // --- Prompt Construction ---
+
+  The prompt MUST include:
+    - The tool name
+    - The stringified arguments (truncated to 2000 chars)
+    - The delegation chain (if present)
+    - The agent's recent call history (last 5 calls, from audit_logs)
+    - Explicit instruction to return JSON: { score: 0-1, reasoning: "..." }
+
+  function buildAnalysisPrompt(req: SemanticAnalysisRequest): string {
+      return `You are a security analyst evaluating an AI agent tool call.
+  Assess the threat level of this call on a scale of 0.0 (completely safe)
+  to 1.0 (definitely malicious). Consider:
+  - Is the combination of tool + arguments suspicious?
+  - Could this be part of a multi-step attack?
+  - Are the arguments unusually formatted or encoded?
+  - Does this look like a privilege escalation attempt?
+
+  Tool: ${req.toolName}
+  Arguments: ${req.argsString.slice(0, 2000)}
+  Delegation Chain: ${JSON.stringify(req.delegationChain || [])}
+
+  Respond ONLY with JSON: { "score": <float 0-1>, "reasoning": "<one sentence>" }`;
+  }
+
+  // --- LLM Calling ---
+
+  Default model: gpt-4o-mini (cheapest, fastest, sufficient for scoring).
+  Use OpenAI API via fetch(). API key from env: SUPRAWALL_SEMANTIC_LLM_KEY.
+  Fallback: If LLM call fails or times out (>300ms), return score 0.0
+  with reasoning "Layer 2 unavailable — defaulting to ALLOW".
+  NEVER let Layer 2 failure block the response.
+
+  async function callStandardLLM(prompt: string) {
+      const apiKey = process.env.SUPRAWALL_SEMANTIC_LLM_KEY;
+      if (!apiKey) {
+          return { score: 0, reasoning: "Layer 2 not configured", model: "none" };
+      }
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 300);
+
+      try {
+          const res = await fetch("https://api.openai.com/v1/chat/completions", {
+              method: "POST",
+              headers: {
+                  "Authorization": `Bearer ${apiKey}`,
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                  model: "gpt-4o-mini",
+                  messages: [{ role: "user", content: prompt }],
+                  temperature: 0,
+                  max_tokens: 100,
+                  response_format: { type: "json_object" },
+              }),
+              signal: controller.signal,
+          });
+
+          clearTimeout(timeout);
+
+          if (!res.ok) {
+              logger.warn("[Semantic] LLM returned non-OK", { status: res.status });
+              return { score: 0, reasoning: "LLM error — defaulting safe", model: "gpt-4o-mini" };
+          }
+
+          const data = await res.json();
+          const content = JSON.parse(data.choices[0].message.content);
+          return {
+              score: Math.min(1, Math.max(0, content.score)),
+              reasoning: content.reasoning || "",
+              model: "gpt-4o-mini",
+          };
+      } catch (err) {
+          clearTimeout(timeout);
+          logger.warn("[Semantic] LLM call failed/timed out", { error: err });
+          return { score: 0, reasoning: "Layer 2 timeout — defaulting safe", model: "gpt-4o-mini" };
+      }
+  }
+
+  // --- Custom Endpoint (Enterprise) ---
+
+  async function callCustomEndpoint(endpoint: string, prompt: string) {
+      // Same pattern as callStandardLLM but hits the custom URL.
+      // Auth header pulled from custom_model_endpoints table.
+      // Max timeout: custom_model_endpoints.max_latency_ms (default 500).
+      // Same JSON response format expected: { score, reasoning }.
+      // Implementation follows same try/catch/abort pattern.
+  }
+
+
+================================================================================
+5. STEP 2 — Behavioral Baseline Service
+================================================================================
+
+File: NEW — packages/server/src/behavioral.ts
+
+Purpose: Maintains running baselines of per-agent/per-tool behavior.
+         Used by Layer 2 to compute anomaly scores.
+
+  export async function computeAnomalyScore(req: SemanticAnalysisRequest): Promise<number> {
+      // 1. Fetch baseline from agent_behavioral_baselines
+      const baseline = await pool.query(
+          `SELECT avg_args_length, avg_calls_per_hour, common_arg_patterns, total_samples
+           FROM agent_behavioral_baselines
+           WHERE tenant_id = $1 AND agent_id = $2 AND tool_name = $3`,
+          [req.tenantId, req.agentId, req.toolName]
+      );
+
+      if (baseline.rows.length === 0 || baseline.rows[0].total_samples < 10) {
+          // Not enough data — no anomaly signal
+          return 0;
+      }
+
+      const b = baseline.rows[0];
+      let anomaly = 0;
+
+      // 2. Compare current call vs baseline
+      const argsLen = req.argsString.length;
+      const argsLenDev = Math.abs(argsLen - b.avg_args_length) / (b.avg_args_length || 1);
+      if (argsLenDev > 3) anomaly += 0.4;       // >3x deviation
+      else if (argsLenDev > 2) anomaly += 0.2;
+
+      // 3. Check if args contain patterns never seen before
+      const knownPatterns: string[] = b.common_arg_patterns || [];
+      const argKeys = Object.keys(typeof req.args === 'object' ? req.args : {});
+      const unknownKeys = argKeys.filter(k => !knownPatterns.includes(k));
+      if (unknownKeys.length > 0 && argKeys.length > 0) {
+          anomaly += 0.3 * (unknownKeys.length / argKeys.length);
+      }
+
+      return Math.min(1, anomaly);
+  }
+
+  // --- Baseline Update (async, called after ALLOW decisions) ---
+
+  export async function updateBaseline(
+      tenantId: string, agentId: string, toolName: string, args: any
+  ): Promise<void> {
+      const argsLen = JSON.stringify(args).length;
+      const argKeys = Object.keys(typeof args === 'object' ? args : {});
+
+      await pool.query(
+          `INSERT INTO agent_behavioral_baselines
+               (tenant_id, agent_id, tool_name, avg_args_length, total_samples, common_arg_patterns)
+           VALUES ($1, $2, $3, $4, 1, $5)
+           ON CONFLICT (tenant_id, agent_id, tool_name) DO UPDATE SET
+               avg_args_length = (agent_behavioral_baselines.avg_args_length * agent_behavioral_baselines.total_samples + $4)
+                   / (agent_behavioral_baselines.total_samples + 1),
+               total_samples = agent_behavioral_baselines.total_samples + 1,
+               common_arg_patterns = (
+                   SELECT jsonb_agg(DISTINCT val)
+                   FROM jsonb_array_elements_text(
+                       agent_behavioral_baselines.common_arg_patterns || $5::jsonb
+                   ) AS val
+               ),
+               last_updated = NOW()`,
+          [tenantId, agentId, toolName, argsLen, JSON.stringify(argKeys)]
+      );
+  }
+
+
+================================================================================
+6. STEP 3 — Wire Layer 2 into Server Evaluate Route (policy.ts)
+================================================================================
+
+File: packages/server/src/policy.ts
+
+CHANGES:
+
+  a) Add imports at top:
+
+     import { analyzeCall, SemanticAnalysisResult } from "./semantic";
+     import { updateBaseline } from "./behavioral";
+
+  b) After the existing threat detection block (after line ~203, after XSS
+     patterns), and AFTER the delegation chain + policy engine + vault
+     resolution (after the vault section ~line 352), add Layer 2:
+
+     LOCATION: After "3b. Record evaluation usage" (~line 356), before
+     "4. Audit Logging"
+
+     // ── Layer 2: AI Semantic Analysis (Team+ only) ──
+     let semanticResult: SemanticAnalysisResult | null = null;
+
+     if (decision === "ALLOW" && tierLimits.threatDetectionPatterns !== 3
+         && tierLimits.threatDetectionPatterns !== 'full-regex') {
+         // Tier is team/business/enterprise — run Layer 2
+         try {
+             // Check for custom endpoint (enterprise)
+             let customEndpoint: string | undefined;
+             if (tierLimits.threatDetectionPatterns === 'advanced') {
+                 const epResult = await pool.query(
+                     "SELECT endpoint_url FROM custom_model_endpoints WHERE tenant_id = $1 AND enabled = true",
+                     [tenantId]
+                 );
+                 if (epResult.rows.length > 0) {
+                     customEndpoint = epResult.rows[0].endpoint_url;
+                 }
+             }
+
+             semanticResult = await analyzeCall({
+                 tenantId,
+                 agentId,
+                 toolName,
+                 args: resolvedArgs,
+                 argsString: JSON.stringify(resolvedArgs),
+                 delegationChain: chain,
+                 tier: tenantTier,
+                 customEndpoint,
+             });
+
+             // Override decision if Layer 2 flags a threat
+             if (semanticResult.decision === 'DENY') {
+                 decision = "DENY";
+                 matchedRule = `semantic:${semanticResult.reasoning}`;
+                 response.decision = decision;
+                 response.reason = `AI semantic analysis: ${semanticResult.reasoning}`;
+                 response.semanticScore = semanticResult.semanticScore;
+             } else if (semanticResult.decision === 'REQUIRE_APPROVAL') {
+                 decision = "REQUIRE_APPROVAL";
+                 matchedRule = `semantic:approval_required`;
+                 response.decision = decision;
+                 response.reason = `AI flagged for review: ${semanticResult.reasoning}`;
+                 response.semanticScore = semanticResult.semanticScore;
+                 // Create approval request (reuse existing logic from ~line 293)
+             } else if (semanticResult.decision === 'FLAG') {
+                 // Don't change decision, but add metadata
+                 response.semanticFlag = true;
+                 response.semanticScore = semanticResult.semanticScore;
+                 response.semanticReasoning = semanticResult.reasoning;
+             }
+         } catch (err) {
+             logger.error("[Layer2] Semantic analysis failed", { error: err });
+             // NEVER block on Layer 2 failure — continue with Layer 1 decision
+         }
+     }
+
+     // Update behavioral baseline (async, non-blocking, business+ only)
+     if (decision === "ALLOW" &&
+         (tierLimits.threatDetectionPatterns === 'ml' || tierLimits.threatDetectionPatterns === 'advanced')) {
+         updateBaseline(tenantId, agentId, toolName, resolvedArgs).catch(() => {});
+     }
+
+  c) In the audit log section (step 4), add semantic metadata to the
+     audit_logs INSERT if semanticResult is not null:
+
+     metadata: JSON.stringify({
+         ...existingMetadata,
+         semanticScore: semanticResult?.semanticScore,
+         anomalyScore: semanticResult?.anomalyScore,
+         semanticDecision: semanticResult?.decision,
+         semanticLatencyMs: semanticResult?.latencyMs,
+     })
+
+
+================================================================================
+7. STEP 4 — Wire Layer 2 into Dashboard Evaluate Route
+================================================================================
+
+File: packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+This is the Next.js API route (used by dashboard-hosted agents).
+Same logic as Step 3, but adapted for the Next.js context.
+
+CHANGES:
+
+  a) Create a shared semantic module for the dashboard:
+     File: NEW — packages/dashboard/src/lib/semantic-server.ts
+     This is a copy of the semantic.ts module adapted for the Next.js
+     server context (uses pool from @/lib/db_sql).
+
+  b) In evaluate/route.ts, after the existing detectThreats() call and
+     after the policy evaluation + vault resolution section:
+
+     Add the same Layer 2 block as in Step 3, but using the dashboard's
+     user tier (from userData.plan or platformData.plan) to gate it.
+
+     The user's tier can be resolved from the userSnap.data()?.plan field
+     that's already fetched at ~line 117.
+
+  c) Add semanticScore and semanticReasoning to the final JSON response
+     when present.
+
+  d) Important: The dashboard route currently does NOT have the
+     tierLimits object. Add tier resolution:
+
+     import { TIER_LIMITS } from somewhere accessible to Next.js.
+     Options:
+       - Duplicate the TIER_LIMITS const in a shared package
+       - Or import from the server package if the monorepo supports it
+       - Recommended: Create packages/shared/tier-config.ts and import
+         from both server and dashboard
+
+
+================================================================================
+8. STEP 5 — Tier Config Changes
+================================================================================
+
+File: packages/server/src/tier-config.ts
+
+CHANGES:
+
+  a) Add new field to TierLimits interface:
+
+     semanticLayer: 'none' | 'semantic' | 'behavioral' | 'custom';
+
+  b) Update each tier:
+
+     open_source:   semanticLayer: 'none'
+     developer:     semanticLayer: 'none'
+     team:          semanticLayer: 'semantic'
+     business:      semanticLayer: 'behavioral'
+     enterprise:    semanticLayer: 'custom'
+
+  c) The existing fields can be kept for backward compat, but the new
+     semanticLayer field is the canonical gate for Layer 2:
+
+     policyEngine stays as-is ('regex'|'ai'|'advanced')
+     threatDetectionPatterns stays as-is (3|'full-regex'|'ml'|'advanced')
+     semanticLayer is NEW and specifically gates the LLM analysis layer
+
+
+================================================================================
+9. STEP 6 — Tier Guard Changes
+================================================================================
+
+File: packages/server/src/tier-guard.ts
+
+No structural changes needed. The existing resolveTier() middleware
+already attaches tierLimits to the request, and the new semanticLayer
+field will be available via tierLimits.semanticLayer.
+
+Optional enhancement: Add a log line in resolveTier when semantic layer
+is enabled:
+
+  if (tierLimits.semanticLayer !== 'none') {
+      logger.info(`[TierGuard] Semantic layer enabled: ${tierLimits.semanticLayer}`);
+  }
+
+
+================================================================================
+10. STEP 7 — SDK Changes
+================================================================================
+
+File: packages/sdk-ts/src/index.ts
+File: packages/sdk-python/suprawall/gate.py
+
+The SDK does NOT need to change for Layer 2 to work. Layer 2 is entirely
+server-side. However, the response payload will now include new fields
+that SDKs should surface:
+
+  a) In the TypeScript SDK, update the SupraWallResponse interface
+     (or equivalent) to include optional fields:
+
+     semanticScore?: number;
+     semanticFlag?: boolean;
+     semanticReasoning?: string;
+     anomalyScore?: number;
+
+  b) In the Python SDK, update the response dataclass/dict similarly.
+
+  c) Add a paragraph to the SDK README explaining:
+     "If your tenant is on Team tier or above, the response may include
+     semanticScore (0-1) and semanticReasoning fields when SupraWall's
+     AI semantic layer identifies potentially suspicious patterns."
+
+
+================================================================================
+11. STEP 8 — Dashboard UI: Threat Intelligence Panel
+================================================================================
+
+File: packages/dashboard/src/app/dashboard/threats/ (existing or new)
+
+ADD a new component or tab showing:
+
+  a) Semantic Analysis Feed — real-time table from semantic_analysis_log:
+     Columns: Timestamp, Agent, Tool, Semantic Score, Anomaly Score,
+              Confidence, Decision, Reasoning, Latency
+
+  b) Anomaly Trend Chart — line chart of average anomaly scores over time
+     per agent (pulls from semantic_analysis_log grouped by day).
+
+  c) Behavioral Baseline View — show per-agent/per-tool baselines from
+     agent_behavioral_baselines table:
+     Columns: Agent, Tool, Avg Args Length, Calls/Hour, Known Patterns, Samples
+
+  d) Tier gate the UI:
+     - open_source/developer: Show the panel but with a CTA:
+       "Upgrade to Team for AI-powered threat detection"
+     - team: Show semantic feed + basic charts
+     - business+: Show everything including anomaly trends and baselines
+
+  e) Wire data via new API routes:
+     /api/v1/threat/semantic — GET, returns semantic_analysis_log rows
+     /api/v1/threat/baselines — GET, returns agent_behavioral_baselines rows
+     Both require auth (verifyAuth) and scope to user's tenantId.
+
+
+================================================================================
+12. STEP 9 — Pricing Page Changes
+================================================================================
+
+File: packages/dashboard/src/app/pricing/page.tsx
+
+CHANGES to TIER_DATA array:
+
+  a) Open Source features — add clarifying text:
+     CHANGE: 'Regex-based policies' -> 'Layer 1: Regex threat detection (3 patterns)'
+
+  b) Developer features — update:
+     CHANGE: 'Full Regex engine' -> 'Layer 1: Full regex engine (26+ patterns)'
+
+  c) Team features — update these two lines:
+     CHANGE: 'AI-powered policies (LLM)' -> 'Layer 1 + Layer 2: AI semantic analysis'
+     CHANGE: 'ML threat detection' -> 'Contextual threat detection (LLM-powered)'
+
+  d) Business features — update:
+     CHANGE: 'ML threat detection' -> 'Layer 1 + Layer 2 + behavioral anomaly detection'
+     ADD new feature line: 'Historical call graph analysis'
+
+  e) Enterprise features — add:
+     ADD new feature line: 'Custom fine-tuned threat model'
+     ADD new feature line: 'Layer 1 + Layer 2 + custom AI model'
+
+  f) ADD a new section below the tier cards — "Two-Layer Architecture"
+     visual explainer. This should be a simple diagram section:
+
+     Heading: "Two-Layer Defense Architecture"
+     Subheading: "Regex catches what you know. AI catches what you don't."
+
+     Left column:  "Layer 1 — Deterministic" with bullet points:
+       - Sub-2ms latency
+       - Zero false negatives on known patterns
+       - 26+ regex rules (SQLi, XSS, prompt injection)
+       - Budget caps, vault, scope verification
+       - All tiers
+
+     Right column: "Layer 2 — AI Semantic" with bullet points:
+       - Context-aware argument analysis
+       - Cross-tool attack sequence detection
+       - Behavioral anomaly scoring
+       - Confidence-based routing (DENY / HITL / FLAG)
+       - Team tier and above
+
+  g) ADD a comparison row in any feature comparison table (if one exists):
+     Feature: "AI Semantic Layer"
+     OSS: X, Dev: X, Team: Check, Business: Check+, Enterprise: Check++
+
+
+================================================================================
+13. STEP 10 — Homepage Changes
+================================================================================
+
+File: packages/dashboard/src/app/page.tsx
+File: packages/dashboard/src/app/HomeClient.tsx (if components live here)
+
+CHANGES:
+
+  a) Update the hero subheadline to include the two-layer concept.
+     Current 6 capabilities stay, but add a 7th concept:
+
+     AFTER "Stop prompt injections."
+     ADD: "<span>Analyze</span> context with AI."
+
+     Updated line:
+       "Vault credentials. Cap budgets. Block unauthorized actions.
+        Scrub PII. Generate audit trails. Stop prompt injections.
+        Analyze context with AI."
+
+     Updated tagline:
+       "Open source. One line of code. Seven threats neutralized."
+
+  b) In the existing "Six threats. One SDK." section or equivalent
+     feature grid, ADD a 7th card:
+
+     Icon: Brain or Cpu (from lucide-react)
+     Title: "AI Semantic Layer"
+     Description: "Layer 1 catches known threats in <2ms.
+                   Layer 2 uses LLM analysis to catch context-dependent
+                   attacks that regex can't see. Runs on Team tier+."
+
+  c) Update the JSON-LD schema (jsonLd.featureList array):
+     ADD: "AI Semantic Analysis — LLM-powered contextual threat detection"
+
+  d) Update the FAQ schema:
+     ADD new Q&A:
+       Q: "What is SupraWall's two-layer defense architecture?"
+       A: "SupraWall runs deterministic regex rules first (Layer 1, <2ms)
+           to catch known threats with zero false negatives. Calls that
+           pass Layer 1 are optionally analyzed by an AI semantic layer
+           (Layer 2) that detects context-dependent attacks, unusual
+           argument combinations, and behavioral anomalies. Layer 2 is
+           available on Team tier ($79/mo) and above."
+
+  e) In the AttackDemo or ThreatCardsGrid component, add an example
+     that showcases Layer 2:
+
+     Example: "Agent calls shutil.rmtree with target_dir set to '/'.
+               Regex sees no banned string. Layer 2 flags: argument
+               combination is a destructive root-level deletion."
+
+
+================================================================================
+14. STEP 11 — README.md (root)
+================================================================================
+
+File: README.md
+
+CHANGES:
+
+  a) Update the "Six threats. One SDK." heading to:
+     "Two layers. Seven threats. One SDK."
+
+  b) Add a 7th bullet point after the existing 6:
+     - brain "AI Semantic Layer" — context-aware threat analysis for attacks
+       regex can't see (Team+)
+
+  c) Update the description paragraph:
+     AFTER "Deterministically, at the boundary, in under 2ms."
+     ADD: "For calls that pass deterministic checks, an optional AI
+           semantic layer analyzes argument context, cross-tool patterns,
+           and behavioral anomalies — catching zero-day threats that
+           pattern matching alone cannot detect."
+
+  d) ADD a new section after "Six threats" (now "Seven threats"):
+
+     ### Two-Layer Architecture
+
+     Layer 1 (all tiers): Deterministic regex engine. <2ms. Zero network
+     calls. Hard DENY on known attack patterns (SQLi, XSS, prompt
+     injection), budget caps, vault token injection, scope verification.
+
+     Layer 2 (Team+): AI semantic analysis. ~80-150ms. LLM-powered
+     contextual analysis of tool + argument combinations. Catches attacks
+     that emerge from context, not from any single string pattern.
+     Confidence-based routing: high -> DENY, medium -> human review,
+     low -> flag for audit.
+
+
+================================================================================
+15. STEP 12 — README_FULL.md (root)
+================================================================================
+
+File: README_FULL.md
+
+CHANGES:
+
+  a) Add a dedicated "Two-Layer Defense Architecture" section with:
+     - ASCII diagram (same as the one in the IDEA doc)
+     - Explanation of Layer 1 vs Layer 2
+     - Tier gating table
+     - Configuration instructions (env vars, thresholds)
+     - Example: showing a call that passes Layer 1 but gets caught by Layer 2
+
+  b) Update any existing "Threat Detection" section to explain the
+     two-layer model and reference the semantic.ts module.
+
+  c) Add deployment instructions for the LLM key:
+     "To enable Layer 2, set SUPRAWALL_SEMANTIC_LLM_KEY to your OpenAI API key.
+      Without this key, Layer 2 silently degrades to passthrough (Layer 1 only)."
+
+
+================================================================================
+16. STEP 13 — SDK README
+================================================================================
+
+File: packages/sdk-ts/README.md
+
+CHANGES:
+
+  a) In the "Response" section, document new optional fields:
+     - semanticScore (number, 0-1, present on Team+)
+     - semanticFlag (boolean, true if flagged but allowed)
+     - semanticReasoning (string, LLM explanation)
+     - anomalyScore (number, 0-1, present on Business+)
+
+  b) Add a note:
+     "Layer 2 AI analysis runs server-side and requires no SDK changes.
+      If your organization is on Team tier or above, you will automatically
+      receive semantic analysis results in the evaluate response."
+
+
+================================================================================
+17. STEP 14 — Server README
+================================================================================
+
+File: packages/server/README.md
+
+CHANGES:
+
+  a) Add "Layer 2 Configuration" section:
+
+     Environment variables:
+       SUPRAWALL_SEMANTIC_LLM_KEY     — OpenAI API key for semantic analysis
+       SUPRAWALL_SEMANTIC_MODEL       — Model override (default: gpt-4o-mini)
+       SUPRAWALL_SEMANTIC_TIMEOUT_MS  — LLM timeout (default: 300)
+       SUPRAWALL_DENY_THRESHOLD       — Score to auto-DENY (default: 0.85)
+       SUPRAWALL_APPROVAL_THRESHOLD   — Score to route to HITL (default: 0.60)
+       SUPRAWALL_FLAG_THRESHOLD       — Score to flag in audit (default: 0.35)
+
+  b) Document the new database tables and their purpose.
+
+
+================================================================================
+18. STEP 15 — Environment Variables & Config
+================================================================================
+
+File: .env.example (create if not exists)
+File: packages/server/.env.example
+
+ADD:
+
+  # Layer 2: AI Semantic Analysis (Team+ tiers)
+  SUPRAWALL_SEMANTIC_LLM_KEY=sk-your-openai-key-here
+  SUPRAWALL_SEMANTIC_MODEL=gpt-4o-mini
+  SUPRAWALL_SEMANTIC_TIMEOUT_MS=300
+
+  # Thresholds (0.0-1.0)
+  SUPRAWALL_DENY_THRESHOLD=0.85
+  SUPRAWALL_APPROVAL_THRESHOLD=0.60
+  SUPRAWALL_FLAG_THRESHOLD=0.35
+
+Make thresholds configurable via env so customers can tune sensitivity
+without code changes.
+
+
+================================================================================
+19. STEP 16 — Cost Estimation & Rate Limiting for LLM Calls
+================================================================================
+
+Each Layer 2 LLM call costs approximately:
+  - gpt-4o-mini: ~$0.00015/call (150 input tokens + 50 output tokens)
+  - At Team tier (250K evals/month), worst case 250K * $0.00015 = $37.50/month
+  - BUT Layer 1 filters 95%+ of calls. Realistic: 5% * 250K = 12,500 calls
+    = $1.87/month in LLM costs
+
+To prevent runaway LLM costs:
+
+  a) Add a per-tenant rate limit on Layer 2 calls:
+     Table: Reuse rate_limit_counters or add to tier-config:
+
+     team:       maxSemanticCallsPerHour: 500
+     business:   maxSemanticCallsPerHour: 5000
+     enterprise: maxSemanticCallsPerHour: Infinity
+
+  b) If rate limit exceeded, silently skip Layer 2 (do NOT block the request).
+
+  c) Add cost tracking: Log each Layer 2 call cost to the existing
+     cost tracking system (audit_logs.metadata.semanticCostUsd).
+
+  d) Surface in dashboard: Show "Layer 2 LLM cost this month" in the
+     usage/billing section.
+
+
+================================================================================
+20. STEP 17 — Testing Strategy
+================================================================================
+
+  a) Unit Tests — packages/server/src/__tests__/semantic.test.ts:
+     - Mock the LLM API response
+     - Test threshold routing (score 0.9 -> DENY, 0.7 -> APPROVAL, 0.4 -> FLAG)
+     - Test timeout handling (abort after 300ms -> returns 0)
+     - Test tier gating (developer tier -> skip Layer 2)
+
+  b) Unit Tests — packages/server/src/__tests__/behavioral.test.ts:
+     - Test anomaly score computation with known baselines
+     - Test baseline update (INSERT + ON CONFLICT DO UPDATE)
+
+  c) Integration Tests:
+     - Full evaluate flow with mocked LLM returning high score -> verify DENY
+     - Full evaluate flow with mocked LLM returning 0 -> verify ALLOW
+     - Verify Layer 2 failure does NOT block Layer 1 ALLOW
+     - Verify semantic_analysis_log gets populated
+
+  d) Load Testing:
+     - Verify <2ms latency on Layer 1 is not degraded when Layer 2 runs
+     - Verify Layer 2 completes in <300ms with real OpenAI calls
+     - Verify concurrent Layer 2 calls don't cause connection pool exhaustion
+
+  e) Adversarial Testing:
+     - shutil.rmtree("/") — should pass Layer 1, caught by Layer 2
+     - Multi-step exfiltration (read file -> encode -> send to external URL)
+     - Gradually escalating permissions in delegation chain
+
+
+================================================================================
+21. STEP 18 — Rollout Plan
+================================================================================
+
+  Phase 1 — Foundation (Week 1):
+    - Create database tables (setup_db.sql)
+    - Implement semantic.ts and behavioral.ts
+    - Implement tier-config.ts changes
+    - Add env vars
+    - Write unit tests
+
+  Phase 2 — Server Integration (Week 2):
+    - Wire Layer 2 into policy.ts (server evaluate route)
+    - Wire Layer 2 into evaluate/route.ts (dashboard evaluate route)
+    - Add semantic metadata to audit logs
+    - Integration tests
+
+  Phase 3 — Dashboard & Communication (Week 3):
+    - Build Threat Intelligence panel in dashboard
+    - Update pricing page
+    - Update homepage
+    - Update all READMEs
+
+  Phase 4 — Beta (Week 4):
+    - Deploy to staging with SUPRAWALL_SEMANTIC_LLM_KEY configured
+    - Enable for internal testing / beta partners on Team tier
+    - Monitor latency, cost, and false positive rates
+    - Tune thresholds based on real traffic
+
+  Phase 5 — GA (Week 5-6):
+    - Enable for all Team+ tenants
+    - Announce via changelog, blog post, and email
+    - Monitor for 2 weeks, adjust thresholds if needed
+
+
+================================================================================
+EXECUTION PRIORITY
+================================================================================
+
+  P0 (Must have for launch):
+    - semantic.ts core module
+    - Wire into policy.ts
+    - tier-config.ts semanticLayer field
+    - Database tables
+    - Env var configuration
+    - Timeout + graceful degradation
+
+  P1 (Should have):
+    - behavioral.ts anomaly detection
+    - Dashboard Threat Intelligence panel
+    - Pricing page updates
+    - Homepage updates
+    - README updates
+
+  P2 (Nice to have):
+    - Custom model endpoints (enterprise)
+    - Cost tracking for LLM calls
+    - Anomaly trend charts
+    - SDK response field documentation
+
+================================================================================
+END OF IMPLEMENTATION PLAN
+================================================================================

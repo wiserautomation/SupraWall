@@ -1,0 +1,45 @@
+// Copyright 2026 SupraWall Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+import { NextRequest, NextResponse } from "next/server";
+import { db, admin } from "@/lib/firebase-admin";
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json();
+        const { name, surname, email, framework, agentsCount, mainRisk } = body;
+
+        if (!name || !surname || !email || !framework || !agentsCount || !mainRisk) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
+        // Auto-qualification logic
+        // Qualify if agentsCount > 5 OR mainRisk contains certain keywords
+        const count = parseInt(agentsCount);
+        const highRiskKeywords = ["pci", "hipaa", "financial", "bank", "health", "audit", "compliance", "eu ai act", "leak", "rogue"];
+        const riskLower = mainRisk.toLowerCase();
+        const isHighRisk = highRiskKeywords.some(kw => riskLower.includes(kw));
+        
+        const isQualified = count >= 5 || isHighRisk;
+
+        const leadData = {
+            name,
+            surname,
+            email,
+            framework,
+            agentsCount: count,
+            mainRisk,
+            isQualified,
+            status: "pending",
+            appliedAt: admin.firestore.FieldValue.serverTimestamp(),
+            source: "waitlist_landing"
+        };
+
+        await db.collection("waitlist").add(leadData);
+
+        return NextResponse.json({ success: true });
+    } catch (err: any) {
+        console.error("[Waitlist API Error]:", err);
+        return NextResponse.json({ error: "Internal Server Error", details: err.message }, { status: 500 });
+    }
+}

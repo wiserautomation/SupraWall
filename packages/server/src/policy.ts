@@ -5,6 +5,7 @@ import { Request, Response } from "express";
 import { pool } from "./db";
 import { logger } from "./logger";
 import { resolveVaultTokens, VaultResolutionResult } from "./vault";
+import { logToFirestore, admin } from "./firebase";
 import { scrubResponse } from "./scrubber";
 import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
@@ -33,6 +34,21 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         if (!agentId || !toolName) {
             return res.status(400).json({ error: "Missing agentId or toolName" });
         }
+
+        // 0. Cost Estimation (Alignment with Dashboard Evaluator)
+        const inputTokens = req.body.inputTokens || 0;
+        const outputTokens = req.body.outputTokens || 0;
+        const model = req.body.model || "gpt-4o-mini";
+        
+        const estimateActionCost = (inT: number, outT: number, mdl: string) => {
+            if (inT > 0 || outT > 0) {
+                const rates: any = { "gpt-4o": 0.005, "gpt-4o-mini": 0.00015, "claude": 0.003 };
+                const rate = rates[Object.keys(rates).find(k => mdl.includes(k)) || "gpt-4o-mini"];
+                return (inT / 1000 * rate) + (outT / 1000 * rate * 3);
+            }
+            return 0.0001; // minimal fallback for non-token actions
+        };
+        const estimatedCost = req.body.costUsd ?? estimateActionCost(inputTokens, outputTokens, model);
 
         // 0a. Resolve tenant tier
         let tenantTier: Tier = "free";
@@ -83,16 +99,16 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             );
             const currentSpend = parseFloat(spendResult.rows[0].total || 0);
 
-            if (currentSpend >= maxBudget) {
+            if (currentSpend + estimatedCost >= maxBudget) {
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
                      JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
                 );
 
                 return res.status(403).json({
                     decision: "DENY",
-                    reason: `Budget exceeded: Current spend $${currentSpend.toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
+                    reason: `Budget exceeded: Current spend $${(currentSpend + estimatedCost).toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
                 });
             }
         }
@@ -123,8 +139,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     [tenantId, agentId, "sql_injection_attempt", "critical", JSON.stringify({ toolName, pattern: label })]
                 ).catch(err => logger.error("Failed to log SQL injection threat", { error: err }));
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
                      JSON.stringify({ reason: `Threat blocked: SQL injection (${label})`, matchedRule: "threat_engine" })]
                 );
                 return res.status(403).json({
@@ -157,8 +173,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     [tenantId, agentId, "prompt_injection_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
                 ).catch(err => logger.error("Failed to log prompt injection threat", { error: err }));
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
                      JSON.stringify({ reason: "Threat blocked: Prompt injection attempt", matchedRule: "threat_engine" })]
                 );
                 return res.status(403).json({
@@ -186,8 +202,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     [tenantId, agentId, "xss_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
                 ).catch(err => logger.error("Failed to log XSS threat", { error: err }));
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
                      JSON.stringify({ reason: "Threat blocked: XSS/script injection attempt", matchedRule: "threat_engine" })]
                 );
                 return res.status(403).json({
@@ -206,8 +222,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 [tenantId, agentId, "path_traversal_attempt", "high", JSON.stringify({ toolName })]
             ).catch(err => logger.error("Failed to log path traversal threat", { error: err }));
             await pool.query(
-                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 90,
+                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 90, 0,
                  JSON.stringify({ reason: "Threat blocked: Path traversal attempt", matchedRule: "threat_engine" })]
             );
             return res.status(403).json({
@@ -237,8 +253,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             
             if (!isAllowedByScope) {
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
                      JSON.stringify({ reason: "Chain scope failure", actorId, requiredScope: toolName, agentScopes: scopes })]
                 );
 
@@ -342,8 +358,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 matchedRule = `vault:${vaultResult.errors.map(e => e.reason).join(",")}`;
 
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95, 0,
                      JSON.stringify({ vaultErrors: vaultResult.errors })]
                 );
 
@@ -444,26 +460,57 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         }
 
         // 4. Audit Logging
+        const auditRecord = {
+            tenantid: tenantId,
+            agentid: agentId,
+            toolname: toolName,
+            parameters: args,
+            decision,
+            riskscore: decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
+            cost_usd: decision === "ALLOW" ? estimatedCost : 0,
+            metadata: {
+                matchedRule,
+                agentName: agent?.name,
+                vaultInjected: hasVaultTokens,
+                vaultSecrets: vaultResult?.injectedSecrets || [],
+                ...(semanticResult ? {
+                    semanticScore: semanticResult.semanticScore,
+                    anomalyScore: semanticResult.anomalyScore,
+                    semanticDecision: semanticResult.decision,
+                    semanticLatencyMs: semanticResult.latencyMs,
+                } : {}),
+            }
+        };
+
         await pool.query(
-            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-            [tenantId, agentId, toolName,
-             JSON.stringify(args || {}),
-             decision,
-             decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
-             JSON.stringify({
-                 matchedRule,
-                 agentName: agent?.name,
-                 vaultInjected: hasVaultTokens,
-                 vaultSecrets: vaultResult?.injectedSecrets || [],
-                 ...(semanticResult ? {
-                     semanticScore: semanticResult.semanticScore,
-                     anomalyScore: semanticResult.anomalyScore,
-                     semanticDecision: semanticResult.decision,
-                     semanticLatencyMs: semanticResult.latencyMs,
-                 } : {}),
-             })
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [auditRecord.tenantid, auditRecord.agentid, auditRecord.toolname,
+             JSON.stringify(auditRecord.parameters || {}),
+             auditRecord.decision,
+             auditRecord.riskscore,
+             auditRecord.cost_usd,
+             JSON.stringify(auditRecord.metadata)
             ]
         );
+
+        // 5. Mirror to Firestore & Update Agent Stats
+        const firestore = (admin as any)?.apps?.length > 0 ? admin.firestore() : null;
+        if (firestore) {
+            logToFirestore("audit_logs", auditRecord);
+
+            // Update Agent cumulative stats for dashboard
+            firestore.collection("agents").doc(agentId).update({
+                totalCalls: admin.firestore.FieldValue.increment(1),
+                totalSpendUsd: admin.firestore.FieldValue.increment(auditRecord.cost_usd),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp()
+            }).catch((err: any) => logger.error("[Firestore] Agent update failed:", err));
+
+            // Update User monthly usage
+            firestore.collection("users").doc(tenantId).update({
+                operationsThisMonth: admin.firestore.FieldValue.increment(1),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
+            }).catch(() => {});
+        }
 
         if (hasVaultTokens && vaultResult?.success) {
             response.resolvedArguments = resolvedArgs;

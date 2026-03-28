@@ -76,6 +76,7 @@ export async function POST(request: NextRequest) {
       totalCalls: 0,
       totalSpendUsd: 0,
       createdAt: new Date(),
+      verifiedAt: null, // Initialize as null
       scopes: scopes?.length > 0 ? scopes : ["*:*"],
     };
 
