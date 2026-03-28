@@ -15,8 +15,16 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
 
-        // 1. Fetch Agents for this tenant
-        const agentsSnap = await db.collection('agents').where('userId', '==', tenantId).get();
+        // 1. Fetch Effective Tenant IDs (Firebase UID + mapped Tenant ID)
+        const userDoc = await db.collection("users").doc(tenantId).get();
+        const mappedTenantId = userDoc.data()?.tenantId;
+
+        const queryIds = [tenantId];
+        if (mappedTenantId && mappedTenantId !== tenantId) {
+            queryIds.push(mappedTenantId);
+        }
+
+        const agentsSnap = await db.collection('agents').where('userId', 'in', queryIds).get();
         const agentDocs = agentsSnap.docs.map(d => d.data());
         
         let totalCalls = 0;
@@ -29,16 +37,16 @@ export async function GET(request: NextRequest) {
 
         // 2. Fetch Pending Approvals
         const approvalsSnap = await db.collection('approvalRequests')
-            .where('userId', '==', tenantId)
+            .where('userId', 'in', queryIds)
             .where('status', '==', 'pending')
             .get();
         const pendingApprovalsCount = approvalsSnap.size;
 
         // 3. Fetch Blocked Actions from Audit Logs (decision === 'DENY')
-        // We'll approximate this by looking at recent logs
         const blockedSnap = await db.collection('audit_logs')
+            .where('userId', 'in', queryIds)
             .where('decision', '==', 'DENY')
-            .limit(100) // limit for performance
+            .limit(100) 
             .get();
         
         // Note: Firestore doesn't support complex cross-collection joins easily.

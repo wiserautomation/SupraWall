@@ -16,10 +16,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
+    // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+    let effectiveTenantId = tenantId;
+    try {
+        const { getAdminDb } = require('@/lib/firebase-admin');
+        const db = getAdminDb();
+        const userDoc = await db.collection("users").doc(tenantId).get();
+        if (userDoc.exists && userDoc.data()?.tenantId) {
+            effectiveTenantId = userDoc.data().tenantId;
+        }
+    } catch (e) {
+        console.warn("[Audit Proxy] Failed to resolve mapped tenantId, using original:", tenantId);
+    }
+
     // Proxy to the SupraWall Backend (PostgreSQL source of truth)
     const serverUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
     const url = new URL(`${serverUrl}/v1/audit-logs`);
-    url.searchParams.set("tenantId", tenantId);
+    url.searchParams.set("tenantId", effectiveTenantId);
     url.searchParams.set("limit", limitParam);
     if (agentId && agentId !== "ALL") {
         url.searchParams.set("agentId", agentId);

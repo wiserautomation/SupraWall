@@ -14,9 +14,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
+    // Resolve mapped tenantId from Firestore
+    const { getAdminDb } = require('@/lib/firebase-admin');
+    const db = getAdminDb();
+    const userDoc = await db.collection("users").doc(tenantId).get();
+    const mappedTenantId = userDoc.data()?.tenantId;
+
+    const queryIds = [tenantId];
+    if (mappedTenantId && mappedTenantId !== tenantId) {
+        queryIds.push(mappedTenantId);
+    }
+
     const result = await query(
-      "SELECT * FROM approval_requests WHERE tenantid = $1 AND status = $2 ORDER BY created_at DESC",
-      [tenantId, status]
+      "SELECT * FROM approval_requests WHERE tenantid = ANY($1) AND status = $2 ORDER BY created_at DESC",
+      [queryIds, status]
     );
     
     return NextResponse.json(result.rows);

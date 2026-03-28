@@ -15,8 +15,17 @@ export async function GET(request: NextRequest) {
     const userId = await verifyAuth(request);
     if (!userId) return unauthorizedResponse();
 
+    // Fetch mapped tenantId if any
+    const userDoc = await db.collection("users").doc(userId).get();
+    const tenantId = userDoc.data()?.tenantId;
+
+    const queryIds = [userId];
+    if (tenantId && tenantId !== userId) {
+      queryIds.push(tenantId);
+    }
+
     const snapshot = await db.collection("agents")
-      .where("userId", "==", userId)
+      .where("userId", "in", queryIds)
       .get();
 
     const agents = snapshot.docs.map(doc => {
@@ -67,17 +76,22 @@ export async function POST(request: NextRequest) {
         }, { status: 403 });
     }
 
+    // Fetch mapped tenantId for creation consistency
+    const userDoc = await db.collection("users").doc(userId).get();
+    const effectiveTenantId = userDoc.data()?.tenantId || userId;
+
     const agentDoc = {
       name,
-      userId,
-      tenantId: userId,
+      userId: effectiveTenantId, // Use tenantId as primary owner
+      tenantId: effectiveTenantId,
       status: 'active',
       apiKey,
       totalCalls: 0,
       totalSpendUsd: 0,
       createdAt: new Date(),
-      verifiedAt: null, // Initialize as null
+      verifiedAt: null,
       scopes: scopes?.length > 0 ? scopes : ["*:*"],
+      ownerFirebaseUid: userId, // Keep link for troubleshooting
     };
 
     const ref = await db.collection("agents").add(agentDoc);
@@ -95,7 +109,16 @@ export async function DELETE(request: NextRequest) {
     if (!userId) return unauthorizedResponse();
 
     // SECURITY: Removed ?all=true global delete. Only tenant-scoped delete allowed.
-    const snapshot = await db.collection("agents").where("userId", "==", userId).get();
+    // Fetch mapped tenantId
+    const userDoc = await db.collection("users").doc(userId).get();
+    const tenantId = userDoc.data()?.tenantId;
+
+    const queryIds = [userId];
+    if (tenantId && tenantId !== userId) {
+      queryIds.push(tenantId);
+    }
+
+    const snapshot = await db.collection("agents").where("userId", "in", queryIds).get();
     const batch = db.batch();
     snapshot.docs.forEach((doc) => batch.delete(doc.ref));
     await batch.commit();
