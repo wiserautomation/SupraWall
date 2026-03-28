@@ -10,15 +10,15 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 ### Reporting Bugs
 
-- Check [GitHub Issues](https://github.com/wiserautomation/SupraWall/issues) to see if the bug has already been reported
-- If not, [open a new issue](https://github.com/wiserautomation/SupraWall/issues/new?template=bug_report.md) with a clear title and detailed description
+- Check [GitHub Issues](https://github.com/wiserautomation/Supra-Wall-Private/issues) to see if the bug has already been reported
+- If not, [open a new issue](https://github.com/wiserautomation/Supra-Wall-Private/issues/new?template=bug_report.md) with a clear title and detailed description
 - Include your SupraWall version, SDK language, framework, and deployment type
 - Provide steps to reproduce and any relevant error output or audit logs
 
 ### Suggesting Features
 
 - Check existing issues and the [public roadmap](https://github.com/orgs/suprawall/projects) first
-- [Open a feature request](https://github.com/wiserautomation/SupraWall/issues/new?template=feature_request.md) with your use case
+- [Open a feature request](https://github.com/wiserautomation/Supra-Wall-Private/issues/new?template=feature_request.md) with your use case
 - Describe the problem you're solving, not just the solution you want
 
 ### Security Vulnerabilities
@@ -49,7 +49,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 ```bash
 # Clone the repository
-git clone https://github.com/wiserautomation/SupraWall.git
+git clone https://github.com/wiserautomation/Supra-Wall-Private.git
 cd suprawall
 
 # Install all dependencies
