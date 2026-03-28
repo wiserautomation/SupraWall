@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -16,31 +15,29 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    const snapshot = await db.collection("threat_events")
-      .where("tenantId", "==", tenantId)
-      .orderBy("timestamp", "desc")
-      .limit(50)
-      .get();
+    // Proxy to the SupraWall Backend (PostgreSQL source of truth)
+    const serverUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
+    const url = new URL(`${serverUrl}/v1/threat/events`);
+    url.searchParams.set("tenantId", tenantId);
 
-    const events = snapshot.docs.map(doc => {
-      const data = doc.data();
-      // Firestore Timestamp to ISO string for frontend compatibility
-      const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
-        if (value && typeof value === 'object' && '_seconds' in value) {
-          return new Date(value._seconds * 1000).toISOString();
+    const response = await fetch(url.toString(), {
+        headers: {
+            "x-api-key": process.env.SUPRAWALL_MASTER_KEY || ""
         }
-        return value;
-      }));
-      return {
-        id: doc.id,
-        createdat: sanitized.timestamp || new Date().toISOString(), // Match frontend expectation
-        ...sanitized
-      };
     });
 
+    if (!response.ok) {
+        const error = await response.text();
+        console.error("[Dashboard Threat Events Proxy] Backend Error:", error);
+        return NextResponse.json({ error: "Backend failure", details: error }, { status: response.status });
+    }
+
+    const events = await response.json();
     return NextResponse.json(events);
+
   } catch (err: any) {
     console.error("[API Threat Events GET] Error:", err);
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+

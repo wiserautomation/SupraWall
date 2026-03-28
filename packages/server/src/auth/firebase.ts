@@ -5,6 +5,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { AuthProvider, AgentInfo } from "./types";
+import type { firestore } from "firebase-admin";
 
 /**
  * Firebase Auth Provider (Optional)
@@ -16,7 +17,7 @@ import { AuthProvider, AgentInfo } from "./types";
  * Config: Set FIREBASE_SERVICE_ACCOUNT env var with the JSON service account.
  */
 export class FirebaseAuthProvider implements AuthProvider {
-    private db: FirebaseFirestore.Firestore | null = null;
+    private db: firestore.Firestore | null = null;
 
     constructor() {
         try {

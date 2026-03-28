@@ -710,7 +710,7 @@ result = secured_agent.invoke({"input": "Summarize the last 10 support tickets"}
             </p>
             <div className="flex justify-center gap-4 flex-wrap">
               <Link
-                href="/login"
+                href="/beta"
                 className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all"
               >
                 Start Free

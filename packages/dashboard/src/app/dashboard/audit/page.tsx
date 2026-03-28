@@ -72,7 +72,7 @@ export default function ForensicAuditPage() {
     const fetchLogs = useCallback(async () => {
         if (!user) return;
         try {
-            const url = new URL("/api/audit-firestore", window.location.origin);
+            const url = new URL("/api/audit", window.location.origin);
             url.searchParams.set("userId", user.uid);
             url.searchParams.set("limit", "200");
             

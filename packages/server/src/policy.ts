@@ -4,12 +4,14 @@
 import { Request, Response } from "express";
 import { pool } from "./db";
 import { logger } from "./logger";
+import { logToFirestore, getFirestore, admin } from "./firebase";
 import { resolveVaultTokens, VaultResolutionResult } from "./vault";
 import { scrubResponse } from "./scrubber";
 import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
 import { TIER_LIMITS, currentMonth } from "./tier-config";
 import type { Tier } from "./tier-config";
+import { checkEvaluationLimit, recordEvaluation, tierLimitError } from "./tier-guard";
 
 export interface EvaluationRequest {
     agentId: string;
@@ -33,64 +35,44 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         }
 
         // 0a. Resolve tenant tier
-        let tenantTier: Tier = "free";
-        try {
-            const tierResult = await pool.query("SELECT tier FROM tenants WHERE id = $1", [tenantId]);
-            tenantTier = (tierResult.rows[0]?.tier as Tier) || "free";
-        } catch { /* default to free */ }
-        const tierLimits = TIER_LIMITS[tenantTier];
+        let tenantTier: Tier = (req as any).tier || "open_source";
+        const tierLimits = (req as any).tierLimits || TIER_LIMITS[tenantTier];
 
-        // 0b. Framework Plugin Enforcement
-        const requestedFramework = (req.headers["x-suprawall-framework"] as string) || (req.body as any).framework || "langchain";
-        if (tierLimits.frameworkPlugins !== "all") {
-            const allowed = Array.isArray(tierLimits.frameworkPlugins) ? tierLimits.frameworkPlugins : [];
-            if (!allowed.includes(requestedFramework.toLowerCase())) {
-                return res.status(403).json({
-                    decision: "DENY",
-                    reason: `Framework '${requestedFramework}' is not supported on your current tier. Upgrade to Business for full SDK plugin support.`,
-                    code: "FRAMEWORK_NOT_SUPPORTED",
-                    upgradeUrl: "https://www.supra-wall.com/pricing",
-                });
+        // 0b. Cost Estimation (Early calculation for budget enforcement)
+        const inputTokens = req.body.inputTokens || 0;
+        const outputTokens = req.body.outputTokens || 0;
+        const model = req.body.model || "gpt-4o-mini";
+        
+        const estimateActionCost = (inT: number, outT: number, mdl: string) => {
+            if (inT > 0 || outT > 0) {
+                const rates: any = { "gpt-4o": 0.005, "gpt-4o-mini": 0.00015, "claude": 0.003 };
+                const rate = rates[Object.keys(rates).find(k => mdl.includes(k)) || "gpt-4o-mini"];
+                return (inT / 1000 * rate) + (outT / 1000 * rate * 3);
             }
+            return 0.0001; // minimal fallback for non-token actions
+        };
+        const estimatedCost = req.body.costUsd ?? estimateActionCost(inputTokens, outputTokens, model);
+
+        // 0c. Monthly Evaluation Limit & Metering
+        const { allowed, current } = await checkEvaluationLimit(tenantId, tierLimits);
+        if (!allowed) {
+            return res.status(402).json(tierLimitError("Monthly evaluations", current, tierLimits.maxEvaluationsPerMonth));
         }
 
-        // 0c. Monthly Operation Limit (free tier only)
-        if (isFinite(tierLimits.maxOpsPerMonth)) {
-            const month = currentMonth();
-            const opsResult = await pool.query(
-                `SELECT operation_count FROM usage_counters WHERE tenant_id = $1 AND month = $2`,
-                [tenantId, month]
-            );
-            const currentOps = opsResult.rows[0]?.operation_count || 0;
-            if (currentOps >= tierLimits.maxOpsPerMonth) {
-                return res.status(429).json({
-                    decision: "DENY",
-                    reason: `Monthly operation limit reached (${currentOps.toLocaleString()}/${tierLimits.maxOpsPerMonth.toLocaleString()}). Upgrade to Business for unlimited operations.`,
-                    upgradeUrl: "https://www.supra-wall.com/pricing",
-                    code: "TIER_LIMIT_EXCEEDED",
-                });
-            }
-        }
-
-        // 0. Budget Enforcement (Cloud/Enterprise only)
+        // 0d. Agent Budget Enforcement
         if (tierLimits.budgetEnforcement) {
             const maxBudget = agent?.max_cost_usd || 10;
-            const spendResult = await pool.query(
-                "SELECT SUM(cost_usd) as total FROM audit_logs WHERE agentid = $1 AND decision = 'ALLOW'",
+            const spendRes = await pool.query(
+                "SELECT SUM(cost_usd) as total FROM audit_logs WHERE agentid = $1",
                 [agentId]
             );
-            const currentSpend = parseFloat(spendResult.rows[0].total || 0);
-
-            if (currentSpend >= maxBudget) {
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
-                     JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
-                );
-
+            const currentSpend = parseFloat(spendRes.rows[0]?.total ?? "0");
+            
+            if (currentSpend + estimatedCost > maxBudget) {
+                logger.warn(`[Budget] Denying request for agent ${agentId} due to budget limit: ${currentSpend + estimatedCost} > ${maxBudget}`);
                 return res.status(403).json({
                     decision: "DENY",
-                    reason: `Budget exceeded: Current spend $${currentSpend.toFixed(2)} exceeds limit $${maxBudget.toFixed(2)}.`
+                    reason: `Agent budget exceeded (${(currentSpend + estimatedCost).toFixed(4)} / ${maxBudget}).`,
                 });
             }
         }
@@ -103,15 +85,21 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             { pattern: /DROP\s+TABLE/i, label: "DROP TABLE" },
             { pattern: /DELETE\s+FROM/i, label: "DELETE FROM" },
             { pattern: /INSERT\s+INTO/i, label: "INSERT INTO" },
-            { pattern: /UPDATE\s+\S+\s+SET/i, label: "UPDATE SET" },
-            { pattern: /UNION\s+SELECT/i, label: "UNION SELECT" },
-            { pattern: /OR\s+['"]?1['"]?\s*=\s*['"]?1/i, label: "OR 1=1" },
-            { pattern: /'\s*OR\s+'[^']*'\s*=\s*'/i, label: "OR tautology" },
-            { pattern: /;\s*--/i, label: "comment terminator" },
-            { pattern: /'\s*;\s*DROP/i, label: "chained DROP" },
-            { pattern: /EXEC(\s+|\()sp_/i, label: "EXEC stored procedure" },
-            { pattern: /xp_cmdshell/i, label: "xp_cmdshell" },
         ];
+
+        // Extended patterns for paid tiers
+        if (tierLimits.threatDetectionPatterns !== 3) {
+            sqlPatterns.push(
+                { pattern: /UPDATE\s+\S+\s+SET/i, label: "UPDATE SET" },
+                { pattern: /UNION\s+SELECT/i, label: "UNION SELECT" },
+                { pattern: /OR\s+['"]?1['"]?\s*=\s*['"]?1/i, label: "OR 1=1" },
+                { pattern: /'\s*OR\s+'[^']*'\s*=\s*'/i, label: "OR tautology" },
+                { pattern: /;\s*--/i, label: "comment terminator" },
+                { pattern: /'\s*;\s*DROP/i, label: "chained DROP" },
+                { pattern: /EXEC(\s+|\()sp_/i, label: "EXEC stored procedure" },
+                { pattern: /xp_cmdshell/i, label: "xp_cmdshell" }
+            );
+        }
 
         for (const { pattern, label } of sqlPatterns) {
             if (pattern.test(argsString)) {
@@ -120,11 +108,22 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
                     [tenantId, agentId, "sql_injection_attempt", "critical", JSON.stringify({ toolName, pattern: label })]
                 ).catch(err => logger.error("Failed to log SQL injection threat", { error: err }));
+                
+                // Mirror to Firestore for dashboard real-time view
+                logToFirestore("threat_events", {
+                    tenantid: tenantId,
+                    agentid: agentId,
+                    event_type: "sql_injection_attempt",
+                    severity: "critical",
+                    details: { toolName, pattern: label }
+                });
+
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
                      JSON.stringify({ reason: `Threat blocked: SQL injection (${label})`, matchedRule: "threat_engine" })]
                 );
+
                 return res.status(403).json({
                     decision: "DENY",
                     reason: `Threat detected: SQL injection pattern (${label}) blocked by SupraWall Threat Engine.`,
@@ -154,11 +153,22 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
                     [tenantId, agentId, "prompt_injection_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
                 ).catch(err => logger.error("Failed to log prompt injection threat", { error: err }));
+
+                // Mirror to Firestore
+                logToFirestore("threat_events", {
+                    tenantid: tenantId,
+                    agentid: agentId,
+                    event_type: "prompt_injection_attempt",
+                    severity: "high",
+                    details: { toolName, matchedPattern: pattern.source }
+                });
+
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
                      JSON.stringify({ reason: "Threat blocked: Prompt injection attempt", matchedRule: "threat_engine" })]
                 );
+
                 return res.status(403).json({
                     decision: "DENY",
                     reason: "Threat detected: Prompt injection attempt blocked by SupraWall Threat Engine.",
@@ -180,12 +190,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             if (pattern.test(argsString)) {
                 logger.warn(`[ThreatEngine] XSS attempt blocked`, { agentId, toolName });
                 pool.query(
-                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                    [tenantId, agentId, "xss_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
-                ).catch(err => logger.error("Failed to log XSS threat", { error: err }));
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
                      JSON.stringify({ reason: "Threat blocked: XSS/script injection attempt", matchedRule: "threat_engine" })]
                 );
                 return res.status(403).json({
@@ -196,53 +202,48 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             }
         }
 
-        // Path Traversal Patterns
-        if (/\.\.[\/\\]/.test(argsString)) {
-            logger.warn(`[ThreatEngine] Path traversal blocked`, { agentId, toolName });
-            pool.query(
-                "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                [tenantId, agentId, "path_traversal_attempt", "high", JSON.stringify({ toolName })]
-            ).catch(err => logger.error("Failed to log path traversal threat", { error: err }));
-            await pool.query(
-                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 90,
-                 JSON.stringify({ reason: "Threat blocked: Path traversal attempt", matchedRule: "threat_engine" })]
-            );
-            return res.status(403).json({
-                decision: "DENY",
-                reason: "Threat detected: Path traversal attempt blocked by SupraWall Threat Engine.",
-                threatType: "path_traversal",
-            });
-        }
-
         // 1. Gatekeeper: Scope Verification (Delegation Chain)
         const { delegationChain } = req.body as EvaluationRequest;
         const chain = delegationChain || [];
         const uniqueChain = Array.from(new Set([...chain, agentId]));
 
+        // Batch-fetch all chain agents in a single query to avoid N+1
+        const chainIdsToFetch = uniqueChain.filter(id => !(agent && agent.id === id));
+        let chainAgentsMap: Map<string, any> = new Map();
+        if (chainIdsToFetch.length > 0) {
+            const batchResult = await pool.query(
+                `SELECT id, tenantid, name, scopes, status, max_cost_usd, budget_alert_usd, slack_webhook
+                 FROM agents WHERE id = ANY($1)`,
+                [chainIdsToFetch]
+            );
+            for (const row of batchResult.rows) {
+                chainAgentsMap.set(row.id, row);
+            }
+        }
+
         for (const actorId of uniqueChain) {
-            const actor = (agent && agent.id === actorId) ? agent : await getAgentById(actorId);
-            
+            const actor = (agent && agent.id === actorId) ? agent : (chainAgentsMap.get(actorId) || null);
+
             if (!actor) {
                 logger.warn(`[Gatekeeper] Actor ${actorId} in chain not found.`);
-                continue; 
+                continue;
             }
 
             const scopes = actor.scopes || [];
-            const isAllowedByScope = scopes.includes("*:*") || 
-                                     scopes.includes(toolName) || 
+            const isAllowedByScope = scopes.includes("*:*") ||
+                                     scopes.includes(toolName) ||
                                      (toolName.includes(":") && scopes.includes(`${toolName.split(":")[0]}:*`));
-            
+
             if (!isAllowedByScope) {
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
                      JSON.stringify({ reason: "Chain scope failure", actorId, requiredScope: toolName, agentScopes: scopes })]
                 );
 
-                return res.status(403).json({ 
-                    decision: "DENY", 
-                    reason: `Unauthorized: Actor '${actorId}' in delegation chain lacks scope for '${toolName}'.` 
+                return res.status(403).json({
+                    decision: "DENY",
+                    reason: `Unauthorized: Actor '${actorId}' in delegation chain lacks scope for '${toolName}'.`
                 });
             }
         }
@@ -253,7 +254,6 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             [tenantId]
         );
         
-        // Advanced matching in JS
         const toolMatches = (ruleTool: string, targetTool: string) => {
             if (!ruleTool || ruleTool === "*" || ruleTool === "" || ruleTool === targetTool) return true;
             if (ruleTool.includes("*")) {
@@ -290,15 +290,16 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 response.decision = decision;
                 response.reason = `Matched rule ${matchedRule}`;
                 
-                // Create approval request in DB
                 try {
                     const approvalRes = await pool.query(
                         "INSERT INTO approval_requests (tenantid, agentid, toolname, parameters, metadata) VALUES ($1, $2, $3, $4, $5) RETURNING id",
                         [tenantId, agentId, toolName, JSON.stringify(args || {}), JSON.stringify({ matchedRule })]
                     );
-                    const approvalId = approvalRes.rows[0].id;
+                    const approvalId = approvalRes.rows[0]?.id;
+                    if (!approvalId) {
+                        return res.status(500).json({ decision: "DENY", reason: "Failed to create approval request." });
+                    }
                     
-                    // Send Slack notification (Paid tiers only)
                     const agentDetails = await getAgentById(agentId);
                     if (tierLimits.slackApprovals && agentDetails?.slack_webhook) {
                         await sendSlackNotification(
@@ -310,11 +311,9 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                         );
                     }
                     
-                    // Attach ID to response for tracking
                     response.approvalId = approvalId;
                 } catch (err) {
                     logger.error("Failed to create approval request", { error: err, agentId, toolName });
-                    // Fallback to DENY if we can't create the approval request
                     decision = "DENY";
                     matchedRule = "approval_system_error";
                     response.decision = decision;
@@ -327,10 +326,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         // 3. Vault: Secret Resolution
         let resolvedArgs = args;
         let vaultResult: VaultResolutionResult | null = null;
-        let hasVaultTokens = false;
-
-        // argsString is already declared above
-        hasVaultTokens = /$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+/.test(argsString);
+        let hasVaultTokens = /$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+/.test(argsString);
 
         if (hasVaultTokens && decision !== "DENY") {
             vaultResult = await resolveVaultTokens(tenantId, agentId, toolName, args);
@@ -340,8 +336,8 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 matchedRule = `vault:${vaultResult.errors.map(e => e.reason).join(",")}`;
 
                 await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95,
+                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+                    [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95, 0,
                      JSON.stringify({ vaultErrors: vaultResult.errors })]
                 );
 
@@ -355,33 +351,53 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             resolvedArgs = vaultResult.resolvedArgs;
         }
 
-        // 3b. Increment monthly operation counter
-        if (decision === "ALLOW") {
-            const month = currentMonth();
-            pool.query(
-                `INSERT INTO usage_counters (tenant_id, month, operation_count)
-                 VALUES ($1, $2, 1)
-                 ON CONFLICT (tenant_id, month)
-                 DO UPDATE SET operation_count = usage_counters.operation_count + 1`,
-                [tenantId, month]
-            ).catch(err => logger.error("[UsageCounter] Failed to increment:", { error: err, tenantId }));
+        // 3b. Record evaluation usage
+        if (decision !== "DENY") {
+            await recordEvaluation(tenantId, tierLimits);
         }
 
         // 4. Audit Logging
+        const auditRecord = {
+            tenantid: tenantId,
+            agentid: agentId,
+            toolname: toolName,
+            parameters: args,
+            decision: decision,
+            riskscore: decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
+            cost_usd: estimatedCost,
+            metadata: {
+                matchedRule,
+                agentName: agent?.name,
+                vaultInjected: hasVaultTokens,
+                vaultSecrets: vaultResult?.injectedSecrets || [],
+                sessionId: req.body.sessionId || null,
+                agentRole: req.body.agentRole || null,
+                isLoop: req.body.isLoop || false
+            }
+        };
+
         await pool.query(
-            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
-            [tenantId, agentId, toolName,
-             JSON.stringify(args || {}),
-             decision,
-             decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
-             JSON.stringify({
-                 matchedRule,
-                 agentName: agent?.name,
-                 vaultInjected: hasVaultTokens,
-                 vaultSecrets: vaultResult?.injectedSecrets || [],
-             })
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [auditRecord.tenantid, auditRecord.agentid, auditRecord.toolname,
+             JSON.stringify(auditRecord.parameters || {}),
+             auditRecord.decision,
+             auditRecord.riskscore,
+             auditRecord.cost_usd,
+             JSON.stringify(auditRecord.metadata)
             ]
         );
+
+        // 5. Mirror to Firestore & Update Agent Stats
+        const firestore = getFirestore();
+        if (firestore) {
+            logToFirestore("audit_logs", auditRecord);
+
+            firestore.collection("agents").doc(agentId).set({
+                totalCalls: (admin as any).firestore.FieldValue.increment(1),
+                totalSpendUsd: (admin as any).firestore.FieldValue.increment(estimatedCost),
+                lastUsedAt: (admin as any).firestore.FieldValue.serverTimestamp()
+            }, { merge: true }).catch((err: any) => logger.error("[Firestore] Failed to update agent stats:", { error: err }));
+        }
 
         if (hasVaultTokens && vaultResult?.success) {
             response.resolvedArguments = resolvedArgs;

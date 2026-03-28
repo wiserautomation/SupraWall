@@ -153,7 +153,7 @@ export default function GalileoClient() {
                     Ready to enforce, not just observe?
                 </p>
                 <Link
-                    href="/login"
+                    href="/beta"
                     className="inline-flex items-center gap-3 px-10 py-5 bg-emerald-500 text-black font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all"
                 >
                     Get Started Free <ArrowRight className="w-4 h-4" />

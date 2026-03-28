@@ -29,33 +29,36 @@ export async function GET(req: NextRequest) {
             fetch(`${serverUrl}/v1/stats?tenantId=${tenantId}`, { cache: 'no-store' }),
         ]);
 
-        const tier = tierRes.ok ? (await tierRes.json()).tier ?? 'free' : 'free';
+        let tier = tierRes.ok ? (await tierRes.json()).tier ?? 'open_source' : 'open_source';
+        // Handle legacy tier names
+        if (tier === 'free') tier = 'open_source';
+        if (tier === 'starter') tier = 'developer';
+        if (tier === 'growth') tier = 'team';
+
         const agents = agentRes.ok ? await agentRes.json() : [];
         const secrets = vaultRes.ok ? await vaultRes.json() : [];
         const stats = opsRes.ok ? await opsRes.json() : {};
 
         const tierLimits: Record<string, any> = {
-            free:       { maxAgents: 3, maxVaultSecrets: 10, auditRetentionDays: 7, maxOpsPerMonth: 10_000 },
-            starter:    { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 90, maxOpsPerMonth: Infinity },
-            growth:     { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 365, maxOpsPerMonth: Infinity },
-            business:   { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 1095, maxOpsPerMonth: Infinity },
-            enterprise: { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 2555, maxOpsPerMonth: Infinity },
-            // Legacy fallback
-            cloud:      { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 1095, maxOpsPerMonth: Infinity },
+            open_source: { maxAgents: 2, maxVaultSecrets: 3, auditRetentionDays: 3, maxEvaluationsPerMonth: 5_000 },
+            developer:   { maxAgents: 5, maxVaultSecrets: 15, auditRetentionDays: 30, maxEvaluationsPerMonth: 25_000 },
+            team:        { maxAgents: 25, maxVaultSecrets: 100, auditRetentionDays: 90, maxEvaluationsPerMonth: 250_000 },
+            business:    { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 365, maxEvaluationsPerMonth: 2_000_000 },
+            enterprise:  { maxAgents: Infinity, maxVaultSecrets: Infinity, auditRetentionDays: 2555, maxEvaluationsPerMonth: Infinity },
         };
 
         return NextResponse.json({
             tier,
-            limits: tierLimits[tier] || tierLimits.free,
+            limits: tierLimits[tier] || tierLimits.open_source,
             usage: {
                 agents: Array.isArray(agents) ? agents.length : 0,
                 vaultSecrets: Array.isArray(secrets) ? secrets.length : 0,
                 opsThisMonth: stats.opsThisMonth ?? null,
             },
-            upgradeUrl: tier === 'free' ? 'https://www.supra-wall.com/pricing' : null,
+            upgradeUrl: tier === 'open_source' ? 'https://www.supra-wall.com/pricing' : null,
         });
     } catch (err: any) {
         console.error('[TierUsage] Error:', err);
-        return NextResponse.json({ tier: 'free', limits: {}, usage: {}, upgradeUrl: 'https://www.supra-wall.com/pricing' });
+        return NextResponse.json({ tier: 'open_source', limits: {}, usage: {}, upgradeUrl: 'https://www.supra-wall.com/pricing' });
     }
 }

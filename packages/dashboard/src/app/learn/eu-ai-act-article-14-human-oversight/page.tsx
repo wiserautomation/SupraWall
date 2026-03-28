@@ -546,7 +546,7 @@ export default function Article14HumanOversightPage() {
                         <h2 className="text-4xl font-black tracking-tighter uppercase italic text-white">Start Compliant.</h2>
                         <p className="text-emerald-100 text-lg font-medium">Generate EU AI Act evidence exports automatically.</p>
                         <div className="flex justify-center gap-4 flex-wrap">
-                            <Link href="/login" className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 inline-flex items-center gap-2">
+                            <Link href="/beta" className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 inline-flex items-center gap-2">
                                 Start Free <ArrowRight className="w-4 h-4" />
                             </Link>
                             <Link href="/learn/eu-ai-act-compliance-ai-agents" className="px-10 py-4 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl">

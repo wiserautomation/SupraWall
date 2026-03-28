@@ -117,11 +117,11 @@ export default function LandingPage() {
                                      <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                             <Link
                                 id="cta-deploy-cloud"
-                                href="/login"
+                                href="/beta"
                                 onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
                                 className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.15)] group flex items-center gap-3"
                             >
-                                Deploy on Cloud <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                                Get Beta Access <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                             </Link>
                             <Link
                                 id="cta-star-github"
@@ -498,11 +498,11 @@ export default function LandingPage() {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                             <Link 
-                                href="/login" 
+                                href="/beta" 
                                 onClick={() => sendGAEvent('event', 'final_cta_click', { type: 'unlock_api_key' })}
                                 className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-pulse tracking-tighter flex items-center gap-4 group"
                             >
-                                UNLOCK API KEY <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
+                                JOIN THE WAITLIST <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                             </Link>
                             <Link href="/docs" className="text-white font-black uppercase tracking-[0.3em] text-sm hover:text-emerald-400 transition-colors underline decoration-white/10 underline-offset-8">
                                 READ THE DOCS

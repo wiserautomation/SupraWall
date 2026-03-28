@@ -149,7 +149,7 @@ export default function ComplianceLandingPage() {
                             
                             <div className="flex flex-col sm:flex-row gap-6 relative z-10">
                                 <Link 
-                                    href="/login" 
+                                    href="/beta" 
                                     className="px-12 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105"
                                 >
                                     Book Compliance Audit

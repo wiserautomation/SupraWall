@@ -13,6 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Shield, ArrowRight, Lock, Mail, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const ADMIN_EMAILS = ["peghin@gmail.com"];
+
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,10 +29,27 @@ export default function LoginPage() {
         setIsLoading(true);
         try {
             if (isRegistering) {
+                // For stealth launch: DISABLE registration for non-admins
+                if (!ADMIN_EMAILS.includes(email)) {
+                    setError("Public registration is currently closed. Please join our beta waitlist.");
+                    setIsLoading(false);
+                    setTimeout(() => router.push("/beta"), 2000);
+                    return;
+                }
                 await createUserWithEmailAndPassword(auth, email, password);
                 sendGAEvent('event', 'sign_up', { method: 'email' });
             } else {
-                await signInWithEmailAndPassword(auth, email, password);
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                if (user.email && !ADMIN_EMAILS.includes(user.email)) {
+                    // Log out if not an admin during stealth launch
+                    await auth.signOut();
+                    setError("Authorized personnel only. Redirecting to beta...");
+                    setTimeout(() => router.push("/beta"), 2000);
+                    return;
+                }
+                
                 sendGAEvent('event', 'login', { method: 'email' });
             }
             router.push("/dashboard");

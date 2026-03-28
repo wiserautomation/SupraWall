@@ -5,6 +5,15 @@ const DEFAULT_CLOUD_FUNCTION_URL =
     "https://www.supra-wall.com/api/v1/evaluate";
 const SDK_VERSION = "1.1.0";
 
+let _tenantIdWarned = false;
+function getDefaultTenantId(): string {
+    if (!_tenantIdWarned && typeof console !== "undefined") {
+        console.warn("[SupraWall SDK] No tenantId provided. Set options.tenantId to your organization ID.");
+        _tenantIdWarned = true;
+    }
+    return "unspecified";
+}
+
 // ---------------------------------------------------------------------------
 // Cost estimation — model token costs (USD per 1k tokens)
 // ---------------------------------------------------------------------------
@@ -326,7 +335,7 @@ async function internalEvaluate(
             toolName,
             arguments: args,
             agentId: sessionId,
-            tenantId: options.tenantId || "default-tenant",
+            tenantId: options.tenantId || getDefaultTenantId(),
             sessionId,
             agentRole: options.agentRole,
             model: metadata.model,
@@ -361,7 +370,7 @@ async function internalEvaluate(
 
         if (!response.ok) {
             if (response.status === 401 && !_hasVerifiedConnection) {
-                throw new SupraWallConnectionError(`Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: ${apiKey.slice(0, 8)}...`);
+                throw new SupraWallConnectionError(`Invalid API key. Check your SUPRAWALL_API_KEY.`);
             }
             if (response.status === 403) {
                 return { decision: "DENY", reason: "Action blocked by SupraWall security policy." };
@@ -477,7 +486,7 @@ async function scrubAfterExecution(
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                tenantId: options.tenantId || "default-tenant",
+                tenantId: options.tenantId || getDefaultTenantId(),
                 secretNames: injectedSecrets,
                 toolResponse: toolResult,
             }),
@@ -497,11 +506,11 @@ export function withSupraWall<T extends AgentInstance>(
 ): T {
     const { apiKey, logger = console } = options;
 
-    if (!apiKey || !apiKey.startsWith("sw_")) {
+    if (!apiKey || !/^(sw_|swc_|ag_)/.test(apiKey)) {
         throw new Error(
             `[SupraWall] Invalid API key: "${apiKey}".\n` +
             `  Get your free key at https://www.supra-wall.com/\n` +
-            `  Expected format: sw_xxxxxxxxxxxxxxxx`
+            `  Expected format: sw_xxxx, swc_xxxx, or ag_xxxx`
         );
     }
 

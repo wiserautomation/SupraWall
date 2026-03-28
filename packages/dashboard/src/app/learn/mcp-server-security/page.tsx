@@ -565,7 +565,7 @@ async def run_research_agent(query: str):
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link
-                                href="/login"
+                                href="/beta"
                                 className="inline-flex items-center justify-center gap-2 px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all"
                             >
                                 Get Started Free <ArrowRight className="w-4 h-4" />

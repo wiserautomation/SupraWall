@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-import { withSupraWall, AgentInstance } from "./src/index";
+import { withSupraWall, AgentInstance } from "../src/index";
 
 async function runSimulation() {
     console.log("Starting SupraWall Simulation...");

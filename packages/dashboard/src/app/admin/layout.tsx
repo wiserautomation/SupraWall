@@ -77,6 +77,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "Published", href: "/admin/published", icon: Layout },
         { name: "Queue", href: "/admin/queue", icon: ListOrdered },
         { name: "Settings", href: "/admin/settings", icon: Settings },
+        { name: "Beta List", href: "/admin/beta", icon: ListOrdered },
     ];
 
     return (

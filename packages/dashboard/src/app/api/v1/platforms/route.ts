@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         const platformData = {
             ownerId: userId,
             name,
-            plan: "starter", // Default free plan
+            plan: "open_source", // Default free plan
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
             connectEnabled: true,
             totalSubKeys: 0,

@@ -4,6 +4,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { admin, getAdminDb } from '@/lib/firebase-admin';
 import { randomBytes } from 'crypto';
+import { checkResourceLimit } from '@/lib/tier-enforcement';
 
 // Use the shared Firebase Admin initialization
 const db = getAdminDb();
@@ -91,34 +92,15 @@ export async function POST(request: NextRequest) {
         }
 
         // --- 2.5 Tier Enforcement: Agent Count ---
-        try {
-            const countSnapshot = await db.collection("agents").where("userId", "==", userId).get();
-            const currentCount = countSnapshot.size;
+        const { allowed, count, limit } = await checkResourceLimit(userId, 'agents', 'userId');
 
-            // Fetch user tier from the backend server
-            let maxAgents = 3; // Default free tier limit
-            const serverUrl = process.env.SUPRAWALL_API_URL || 'http://localhost:3000';
-            try {
-                const tierRes = await fetch(`${serverUrl}/v1/tenants/${userId}`);
-                if (tierRes.ok) {
-                    const tierData = await tierRes.json();
-                    if (['starter', 'growth', 'business', 'enterprise'].includes(tierData.tier)) {
-                        maxAgents = Infinity;
-                    }
-                }
-            } catch (err) {
-                console.warn("[Register API POST Agents] Failed to fetch tier, using fallback limit:", err);
-            }
-
-            if (currentCount >= maxAgents) {
-                return NextResponse.json({ 
-                    error: `Agent limit reached (${currentCount}/${maxAgents}). Upgrade to Business for unlimited access.`,
-                    code: "TIER_LIMIT_EXCEEDED"
-                }, { status: 403 });
-            }
-        } catch (err) {
-            console.error("[Register API POST Agents] Count check error:", err);
+        if (!allowed) {
+            return NextResponse.json({ 
+                error: `Agent limit reached (${count}/${limit}). Upgrade to Business for unlimited access.`,
+                code: "TIER_LIMIT_EXCEEDED"
+            }, { status: 403 });
         }
+
 
         // --- 3. Generate Agent Credentials ---
         const agentApiKey = 'ag_' + randomBytes(24).toString('hex');

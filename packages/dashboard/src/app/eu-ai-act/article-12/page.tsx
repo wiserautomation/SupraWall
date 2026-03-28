@@ -214,7 +214,7 @@ export default function Article12Page() {
                             </p>
                         </div>
                         <Link 
-                            href="/login" 
+                            href="/beta" 
                             className="px-8 py-4 bg-emerald-500 text-black font-bold uppercase tracking-tighter rounded-xl hover:bg-emerald-400 transition-colors flex items-center gap-2 relative z-10 shadow-[0_0_20px_rgba(16,185,129,0.3)]"
                         >
                             View Audit Demo <ArrowRight className="w-5 h-5" />

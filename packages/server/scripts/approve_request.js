@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 
-const { Pool } = require('./node_modules/pg');
-require('dotenv').config({ path: './.env' });
+const { Pool } = require('../node_modules/pg');
+require('dotenv').config({ path: '../.env' });
 
 async function approve() {
     const pool = new Pool({

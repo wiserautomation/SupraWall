@@ -18,7 +18,15 @@
       "Bash(grep -r \"motion\\\\.\" /Users/alejandropeghin/Desktop/AntiG/SupraWall/dashboard/src/components/*.tsx)",
       "Bash(npm run:*)",
       "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall -maxdepth 2 -name docker* -o -name *deployment* -o -name *compose*)",
-      "Bash(render\" when it tries to pass this across the Server→Client boundary to:*)"
+      "Bash(render\" when it tries to pass this across the Server→Client boundary to:*)",
+      "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall/packages -type f -name *.py)",
+      "Bash(find /Users/alejandropeghin/Desktop/AntiG/SupraWall -name .DS_Store -o -name *.docx)",
+      "Bash(git -C /Users/alejandropeghin/Desktop/AntiG/SupraWall ls-files)",
+      "Bash(git -C /Users/alejandropeghin/Desktop/AntiG/SupraWall ls-files --error-unmatch \"SupraWall_Communication_Strategy_v2.docx\")",
+      "Bash(git rm:*)",
+      "Bash(git -C /Users/alejandropeghin/Desktop/AntiG/SupraWall mv packages/sdk-ts/simulate_hitl.ts packages/sdk-ts/examples/simulate_hitl.ts)",
+      "Bash(git mv:*)",
+      "Bash(xargs sed:*)"
     ]
   }
 }

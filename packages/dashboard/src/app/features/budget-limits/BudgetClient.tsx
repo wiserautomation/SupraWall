@@ -222,7 +222,7 @@ function CostCalculator() {
             </div>
 
             <div className="text-center pt-4">
-                <Link href="/login" className="inline-flex items-center gap-2 px-10 py-5 bg-emerald-600 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-500 transition-all">
+                <Link href="/beta" className="inline-flex items-center gap-2 px-10 py-5 bg-emerald-600 text-white font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-500 transition-all">
                     Protect This Budget Now <ArrowRight className="w-4 h-4" />
                 </Link>
             </div>
@@ -346,7 +346,7 @@ export default function BudgetClient() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4">
-                        <Link href="/login" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-sm">
+                        <Link href="/beta" className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-sm">
                             Set Your First Budget <ArrowRight className="w-4 h-4" />
                         </Link>
                         <a href="#cost-calculator" className="inline-flex items-center gap-2 px-10 py-5 bg-transparent text-white border-2 border-amber-500/40 font-black uppercase tracking-widest rounded-2xl hover:border-amber-500 hover:bg-amber-500/5 transition-all text-sm">
@@ -611,7 +611,7 @@ export default function BudgetClient() {
                                 Free tier includes 10,000 operations. No credit card required.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Link href="/login" className="inline-flex items-center gap-2 px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
+                                <Link href="/beta" className="inline-flex items-center gap-2 px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                                     Set Budget Limits <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link href="/docs" className="inline-flex items-center gap-2 px-12 py-5 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all">

@@ -5,7 +5,7 @@
 import { db } from './firebase-admin';
 import * as crypto from 'crypto';
 
-const VAULT_TOKEN_PATTERN = /$SUPRAWALL_VAULT_([A-Z][A-Z0-9_]{2,63})/g;
+const VAULT_TOKEN_PATTERN = /\$SUPRAWALL_VAULT_([A-Z][A-Z0-9_]{2,63})/g;
 const ALGORITHM = 'aes-256-cbc';
 // Use a fixed IV for now to keep it simple, or store it alongside the value.
 // Storing alongside is better. Format: iv:encryptedValue

@@ -16,12 +16,23 @@ export async function POST(req: Request) {
     let event;
 
     try {
+        // Detect if this is a V2 "Thin" event (contains 'v2' in object or type)
+        const isV2 = payload.includes('"object":"v2.core.event"');
+        
+        if (isV2) {
+            // For now, we acknowledge V2 events to prevent Stripe from retrying, 
+            // but our current logic focuses on V1 snapshots for sub management.
+            console.log("🛡️ SupraWall: Received Stripe V2 (Thin) Event. Acknowledged.");
+            return NextResponse.json({ received: true, style: 'v2' });
+        }
+
         event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
     } catch (err: any) {
+        console.error(`[Webhook Signature Check Failed]: ${err.message}`);
         return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
     }
 
-    // Handle the event
+    // Handle the event (Snapshot style)
     switch (event.type) {
         case 'checkout.session.completed': {
             const session = event.data.object as any;
@@ -41,7 +52,7 @@ export async function POST(req: Request) {
                 stripeCustomerId: session.customer,
                 stripeSubscriptionId: subscriptionId,
                 stripeSubscriptionItemId: subscriptionItemId,
-                plan: session.metadata?.plan || 'free',
+                plan: session.metadata?.plan || 'open_source',
                 status: 'active',
                 hasPaymentMethod: true,
                 currentPeriodEnd: admin.firestore.Timestamp.fromMillis(periodEnd * 1000),
@@ -49,7 +60,7 @@ export async function POST(req: Request) {
 
             // Also sync to users collection for evaluate route
             await db.collection('users').doc(userId).set({
-                plan: session.metadata?.plan || 'free',
+                plan: session.metadata?.plan || 'open_source',
             }, { merge: true });
             break;
         }
@@ -69,12 +80,16 @@ export async function POST(req: Request) {
                     status: 'active',
                 });
 
-                // Restore agent permissions on backend
-                await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+                // Restore agent permissions on backend — must succeed for billing integrity
+                const restoreRes = await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'restore', subscriptionId }),
                 });
+                if (!restoreRes.ok) {
+                    console.error(`[Webhook] Failed to restore agent permissions for sub ${subscriptionId}: ${restoreRes.status}`);
+                    return NextResponse.json({ error: 'Backend sync failed' }, { status: 502 });
+                }
             }
             break;
         }
@@ -83,12 +98,16 @@ export async function POST(req: Request) {
             const invoice = event.data.object as any;
             const subscriptionId = invoice.subscription;
 
-            // Call SupraWall API to revoke agent permissions
-            await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+            // Revoke agent permissions — must succeed so Stripe retries on failure
+            const revokeRes = await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ action: 'revoke', subscriptionId }),
             });
+            if (!revokeRes.ok) {
+                console.error(`[Webhook] Failed to revoke agent permissions for sub ${subscriptionId}: ${revokeRes.status}`);
+                return NextResponse.json({ error: 'Backend sync failed' }, { status: 502 });
+            }
             break;
         }
 
@@ -103,12 +122,16 @@ export async function POST(req: Request) {
                 const subscriptionId = subscription.id;
                 await orgQuery.docs[0].ref.update({ status: 'canceled' });
 
-                // Revoke agent permissions on backend
-                await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
+                // Revoke agent permissions on backend — must succeed
+                const deleteRevokeRes = await fetch(`${process.env.SUPRAWALL_API_URL}/v1/stripe-app/budget-ctrl`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ action: 'revoke', subscriptionId }),
                 });
+                if (!deleteRevokeRes.ok) {
+                    console.error(`[Webhook] Failed to revoke on subscription delete for ${subscriptionId}: ${deleteRevokeRes.status}`);
+                    return NextResponse.json({ error: 'Backend sync failed' }, { status: 502 });
+                }
             }
             break;
         }

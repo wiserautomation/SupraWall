@@ -94,7 +94,7 @@ export default function AutoGenIntegrationPage() {
                         </div>
 
                         <div className="flex justify-center gap-6 pt-8">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
                                 Secure My Agents <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -172,7 +172,7 @@ export default function AutoGenIntegrationPage() {
                             Ready to secure <br />your agents?
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
                                 Secure My Loop
                             </Link>
                         </div>

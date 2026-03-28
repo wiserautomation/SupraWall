@@ -118,7 +118,7 @@ export default function vsLakera() {
                             Lakera and SupraWall are complementary. Use <strong className="text-white text-glow">Lakera Guard</strong> as your broad-spectrum linguistic shield, and <strong className="text-emerald-500">SupraWall</strong> as your surgical tool-level firewall. Combining them creates a complete defense-in-depth strategy.
                         </p>
                         <div className="pt-4 flex justify-center">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
+                            <Link href="/beta" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
                             </Link>
                         </div>

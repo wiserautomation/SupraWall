@@ -3,26 +3,38 @@
 
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
+import { verifyAuthFull, unauthorizedResponse } from '@/lib/api-auth';
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
-        const { userId, email, plan } = await req.json();
+        // SECURITY: Authenticate — userId and email come from the verified token
+        const authResult = await verifyAuthFull(req);
+        if (!authResult) return unauthorizedResponse();
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const userId = authResult.uid;
+        const email = authResult.email;
+        const { plan } = await req.json();
+
+        // Map plan to price IDs (Base + Metered)
+        let basePriceId = "";
+        let meteredPriceId = "";
+
+        if (plan === 'developer') {
+            basePriceId = process.env.STRIPE_DEVELOPER_PRICE_ID!;
+            meteredPriceId = process.env.STRIPE_DEVELOPER_METERED_PRICE_ID!;
+        } else if (plan === 'team') {
+            basePriceId = process.env.STRIPE_TEAM_PRICE_ID!;
+            meteredPriceId = process.env.STRIPE_TEAM_METERED_PRICE_ID!;
+        } else if (plan === 'business') {
+            basePriceId = process.env.STRIPE_BUSINESS_PRICE_ID!;
+            meteredPriceId = process.env.STRIPE_BUSINESS_METERED_PRICE_ID!;
         }
 
-        // Map plan to price ID
-        let priceId = process.env.STRIPE_METERED_PRICE_ID; // Default / Business
-        if (plan === 'starter') priceId = process.env.STRIPE_STARTER_PRICE_ID;
-        if (plan === 'growth') priceId = process.env.STRIPE_GROWTH_PRICE_ID;
-        if (plan === 'business') priceId = process.env.STRIPE_BUSINESS_PRICE_ID;
-
-        if (!priceId) {
-            console.error(`No price ID found for plan: ${plan}`);
-            return NextResponse.json({ error: 'Invalid plan selection' }, { status: 400 });
+        if (!basePriceId || !meteredPriceId) {
+            console.error(`Missing Price IDs for plan: ${plan}`);
+            return NextResponse.json({ error: 'Infrastructure Error: Missing Price IDs' }, { status: 500 });
         }
 
         // 1. Create or retrieve Stripe Customer
@@ -37,14 +49,13 @@ export async function POST(req: Request) {
             customerId = customer.id;
         }
 
-        // 2. Create Checkout Session for Metered Subscription
+        // 2. Create Checkout Session for Base + Metered Subscription
         const session = await stripe.checkout.sessions.create({
             customer: customerId,
             billing_address_collection: 'auto',
             line_items: [
-                {
-                    price: priceId,
-                },
+                { price: basePriceId, quantity: 1 },
+                { price: meteredPriceId } // Metered pricing (tracked via usage records)
             ],
             mode: 'subscription',
             success_url: `${req.headers.get('origin')}/dashboard?success=true`,

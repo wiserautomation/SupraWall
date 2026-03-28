@@ -5,123 +5,147 @@
 // Tier Configuration — Single source of truth for all plan limits
 // ---------------------------------------------------------------------------
 
-export type Tier = 'free' | 'starter' | 'growth' | 'business' | 'enterprise';
+export type Tier = 'open_source' | 'developer' | 'team' | 'business' | 'enterprise';
 
 export interface TierLimits {
+    maxEvaluationsPerMonth: number;
+    overageRatePerEval: number | null;  // null = blocked (hard stop)
     maxAgents: number;
     maxVaultSecrets: number;
     auditRetentionDays: number;
-    maxOpsPerMonth: number;
+    maxSeats: number;
+    ssoEnabled: boolean;
     policyEngine: 'regex' | 'ai' | 'advanced';
-    threatDetection: 'regex' | 'ml' | 'advanced';
-    complianceReports: 'json' | 'pdf' | 'full-suite';
-    approvals: 'api-polling' | 'slack-dashboard' | 'advanced';
-    dashboard: 'self-host' | 'full' | 'white-label';
+    threatDetectionPatterns: number | 'full-regex' | 'ml' | 'advanced';
+    complianceReports: 'none' | 'json' | 'pdf' | 'branded';
+    approvals: 'none' | 'api-polling' | 'slack-dashboard' | 'teams-advanced';
+    dashboard: 'none' | 'cloud' | 'vpc';
     frameworkPlugins: string[] | 'all';
-    databaseAdapters: string[] | 'all';
     budgetEnforcement: boolean;
+    tokenCostTracking: 'none' | 'basic' | 'full' | 'full-with-forecasting';
+    anomalyAlerts: boolean;
     euAiActTemplates: boolean;
     pdfReports: boolean;
     slackApprovals: boolean;
     sla: string | null;
-    legalSupport: boolean;
+    slaResponseHours: number | null;
 }
 
 export const TIER_LIMITS: Record<Tier, TierLimits> = {
-    free: { // Developer
-        maxAgents: 3,
-        maxVaultSecrets: 10,
-        auditRetentionDays: 7,
-        maxOpsPerMonth: 10_000,
+    open_source: {
+        maxEvaluationsPerMonth: 5_000,
+        overageRatePerEval: null,            // BLOCKED — hard stop
+        maxAgents: 2,
+        maxVaultSecrets: 3,
+        auditRetentionDays: 3,
+        maxSeats: 1,
+        ssoEnabled: false,
         policyEngine: 'regex',
-        threatDetection: 'regex',
+        threatDetectionPatterns: 3,          // SQLi, XSS, path traversal only
         complianceReports: 'json',
-        approvals: 'api-polling',
-        dashboard: 'self-host',
-        frameworkPlugins: ['langchain', 'vercel-ai'],
-        databaseAdapters: ['postgres'],
+        approvals: 'none',
+        dashboard: 'none',
+        frameworkPlugins: ['langchain'],
         budgetEnforcement: false,
+        tokenCostTracking: 'none',
+        anomalyAlerts: false,
         euAiActTemplates: false,
         pdfReports: false,
         slackApprovals: false,
         sla: null,
-        legalSupport: false,
+        slaResponseHours: null,
     },
-    starter: {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        auditRetentionDays: 90,
-        maxOpsPerMonth: Infinity,
+    developer: {
+        maxEvaluationsPerMonth: 25_000,
+        overageRatePerEval: 0.003,
+        maxAgents: 5,
+        maxVaultSecrets: 15,
+        auditRetentionDays: 30,
+        maxSeats: 1,                         // SOLO tier
+        ssoEnabled: false,
         policyEngine: 'regex',
-        threatDetection: 'regex',
+        threatDetectionPatterns: 'full-regex',
+        complianceReports: 'json',
+        approvals: 'api-polling',
+        dashboard: 'cloud',
+        frameworkPlugins: ['langchain', 'vercel-ai', 'crewai'],
+        budgetEnforcement: false,
+        tokenCostTracking: 'basic',
+        anomalyAlerts: false,
+        euAiActTemplates: false,
+        pdfReports: false,
+        slackApprovals: false,
+        sla: null,
+        slaResponseHours: 48,
+    },
+    team: {
+        maxEvaluationsPerMonth: 250_000,
+        overageRatePerEval: 0.002,
+        maxAgents: 25,
+        maxVaultSecrets: 100,
+        auditRetentionDays: 90,
+        maxSeats: 3,
+        ssoEnabled: false,
+        policyEngine: 'ai',
+        threatDetectionPatterns: 'ml',
         complianceReports: 'pdf',
         approvals: 'slack-dashboard',
-        dashboard: 'full',
+        dashboard: 'cloud',
         frameworkPlugins: 'all',
-        databaseAdapters: 'all',
         budgetEnforcement: true,
+        tokenCostTracking: 'full',
+        anomalyAlerts: true,
         euAiActTemplates: true,
         pdfReports: true,
         slackApprovals: true,
         sla: '99.9%',
-        legalSupport: false,
+        slaResponseHours: 24,
     },
-    growth: {
+    business: {
+        maxEvaluationsPerMonth: 2_000_000,
+        overageRatePerEval: 0.001,
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
         auditRetentionDays: 365,
-        maxOpsPerMonth: Infinity,
+        maxSeats: 10,
+        ssoEnabled: true,
         policyEngine: 'ai',
-        threatDetection: 'ml',
+        threatDetectionPatterns: 'ml',
         complianceReports: 'pdf',
         approvals: 'slack-dashboard',
-        dashboard: 'full',
+        dashboard: 'cloud',
         frameworkPlugins: 'all',
-        databaseAdapters: 'all',
         budgetEnforcement: true,
-        euAiActTemplates: true,
-        pdfReports: true,
-        slackApprovals: true,
-        sla: '99.9%',
-        legalSupport: true,
-    },
-    business: {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        auditRetentionDays: 1095, // 3 years
-        maxOpsPerMonth: Infinity,
-        policyEngine: 'ai',
-        threatDetection: 'ml',
-        complianceReports: 'pdf',
-        approvals: 'slack-dashboard',
-        dashboard: 'full',
-        frameworkPlugins: 'all',
-        databaseAdapters: 'all',
-        budgetEnforcement: true,
+        tokenCostTracking: 'full',
+        anomalyAlerts: true,
         euAiActTemplates: true,
         pdfReports: true,
         slackApprovals: true,
         sla: '99.99%',
-        legalSupport: true,
+        slaResponseHours: 4,
     },
     enterprise: {
+        maxEvaluationsPerMonth: Infinity,
+        overageRatePerEval: null,            // Custom contract rate
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
-        auditRetentionDays: 2555, // 7 years
-        maxOpsPerMonth: Infinity,
+        auditRetentionDays: 2555,
+        maxSeats: Infinity,
+        ssoEnabled: true,
         policyEngine: 'advanced',
-        threatDetection: 'advanced',
-        complianceReports: 'full-suite',
-        approvals: 'advanced',
-        dashboard: 'white-label',
+        threatDetectionPatterns: 'advanced',
+        complianceReports: 'branded',
+        approvals: 'teams-advanced',
+        dashboard: 'vpc',
         frameworkPlugins: 'all',
-        databaseAdapters: 'all',
         budgetEnforcement: true,
+        tokenCostTracking: 'full-with-forecasting',
+        anomalyAlerts: true,
         euAiActTemplates: true,
         pdfReports: true,
         slackApprovals: true,
-        sla: '99.99% (SLA with penalties)',
-        legalSupport: true,
+        sla: '99.99%',
+        slaResponseHours: 1,
     },
 };
 
@@ -142,8 +166,8 @@ export function retentionCutoff(tier: Tier): Date {
 }
 
 /**
- * Returns a friendly upgrade message for free-tier limit errors.
+ * Returns a friendly upgrade message for tier limit errors.
  */
 export function upgradeMessage(feature: string, current: number | string, limit: number | string): string {
-    return `${feature} limit reached (${current}/${limit}). Upgrade to Business for unlimited access: https://www.supra-wall.com/pricing`;
+    return `${feature} limit reached (${current}/${limit}). Upgrade your plan to continue: https://www.supra-wall.com/pricing`;
 }

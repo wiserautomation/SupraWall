@@ -442,7 +442,7 @@ agent.invoke({"input": user_input})  # Trust the model. What could go wrong.`}
                     <div className="bg-emerald-600 rounded-[3rem] p-12 relative overflow-hidden text-center">
                         <h3 className="text-4xl font-black uppercase italic tracking-tighter text-white mb-4">Secure Your Agents<br />Before August 2026</h3>
                         <p className="text-emerald-100 mb-8 max-w-md mx-auto">Join 500+ enterprise teams that have deployed SupraWall runtime security. Get compliant, get protected, and ship with confidence.</p>
-                        <Link href="/login" className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
+                        <Link href="/beta" className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                             Start Free Trial <ArrowRight className="w-5 h-5" />
                         </Link>
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />

@@ -398,7 +398,7 @@ export default function WhatAreAIAgentGuardrailsPage() {
                             <p className="text-neutral-500"># Dangerous calls blocked. All calls logged. Budget capped.</p>
                         </div>
                         <p className="text-neutral-400 text-lg leading-relaxed font-medium">
-                            Define your policies in the <Link href="/login" className="text-emerald-400 hover:text-emerald-300 underline underline-offset-4">SupraWall dashboard</Link> and they propagate to all wrapped agents instantly — no redeployment required.
+                            Define your policies in the <Link href="/beta" className="text-emerald-400 hover:text-emerald-300 underline underline-offset-4">SupraWall dashboard</Link> and they propagate to all wrapped agents instantly — no redeployment required.
                         </p>
                     </section>
 
@@ -459,7 +459,7 @@ export default function WhatAreAIAgentGuardrailsPage() {
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4">
                             <Link
-                                href="/login"
+                                href="/beta"
                                 className="inline-flex items-center justify-center gap-2 px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all"
                             >
                                 Get Started Free <ArrowRight className="w-4 h-4" />

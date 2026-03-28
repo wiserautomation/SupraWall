@@ -267,7 +267,7 @@ async def run_agent(task):
                     {/* CTA */}
                     <div className="bg-emerald-600 rounded-[3rem] p-12 relative overflow-hidden text-center">
                         <h3 className="text-4xl font-black uppercase italic tracking-tighter text-white mb-6">Gain full control <br />over your LLM spend.</h3>
-                        <Link href="/login" className="inline-flex px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
+                        <Link href="/beta" className="inline-flex px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                             Build Your Free Policy
                         </Link>
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2" />

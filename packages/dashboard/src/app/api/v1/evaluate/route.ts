@@ -8,6 +8,7 @@ import { admin } from '@/lib/firebase-admin';
 import * as crypto from 'crypto';
 import { resolveVaultTokens } from '@/lib/vault-server';
 import { scrubPii } from '@/lib/guardrail-scrubber';
+import { pool } from '@/lib/db_sql';
 
 // ── Types ──
 
@@ -90,7 +91,7 @@ export async function POST(req: NextRequest) {
             const platformData = platformSnap.data();
             userId = platformData?.ownerId;
             // Hide branding for any paid tier
-            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(platformData?.plan);
+            showBranding = !['developer', 'team', 'business', 'enterprise'].includes(platformData?.plan);
 
             const basePolicySnap = await db.collection("platforms").doc(platformId!).collection("base_policies").doc("default").get();
             const baseRules: PolicyRule[] = basePolicySnap.data()?.rules ?? [];
@@ -115,7 +116,7 @@ export async function POST(req: NextRequest) {
             const userSnap = await db.collection("users").doc(userId).get();
             const userData = userSnap.data();
             // Hide branding for any paid tier
-            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(userData?.plan);
+            showBranding = !['developer', 'team', 'business', 'enterprise'].includes(userData?.plan);
 
             if (agentData.status && agentData.status !== 'active') {
                 return NextResponse.json({ decision: "DENY", reason: `Agent is ${agentData.status}.` }, { status: 403 });
@@ -145,7 +146,7 @@ export async function POST(req: NextRequest) {
             if (guardrailResult.blocked) {
                 const gr = guardrailResult.reason || 'Blocked by agent guardrail';
                 await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
-                return NextResponse.json({ decision: "DENY", reason: gr });
+                return NextResponse.json({ decision: "DENY", reason: gr }, { status: 403 });
             }
             if (guardrailResult.modifiedArgs) {
                 finalArgs = guardrailResult.modifiedArgs;
@@ -192,11 +193,11 @@ export async function POST(req: NextRequest) {
         let vaultInjected = false;
 
         if (!vaultResult.success) {
-            return NextResponse.json({ 
-                decision: "DENY", 
+            return NextResponse.json({
+                decision: "DENY",
                 reason: `Vault Error: ${vaultResult.errors[0].message}`,
-                branding 
-            });
+                branding
+            }, { status: 403 });
         }
         
         if (vaultResult.injectedSecrets.length > 0) {
@@ -272,7 +273,7 @@ export async function POST(req: NextRequest) {
         // Non-blocking writes
         Promise.all(updates).catch(e => console.error("Evaluate background updates failed:", e));
 
-        return NextResponse.json({
+        const responseBody = {
             decision,
             reason: decisionResult.reason,
             resolvedArguments: vaultInjected ? resolvedArguments : undefined,
@@ -280,7 +281,9 @@ export async function POST(req: NextRequest) {
             injectedSecrets: vaultInjected ? vaultResult.injectedSecrets : undefined,
             branding,
             estimated_cost_usd: estimatedCost
-        });
+        };
+        const status = decision === "DENY" ? 403 : 200;
+        return NextResponse.json(responseBody, { status });
 
     } catch (e: any) {
         console.error("Evaluate error:", e);
@@ -463,15 +466,21 @@ function matchesPattern(toolName: string, pattern: string): boolean {
 
 async function checkRateLimit(key: string, config: RateLimitConfig): Promise<boolean> {
     const now = new Date();
-    const minKey = `rl_${key}_${now.toISOString().slice(0, 16)}`; // simplified
-    const snap = await db.collection("rate_limit_counters").doc(minKey).get();
-    if (snap.exists && (snap.data()?.count || 0) >= config.requestsPerMinute) return false;
-    
-    await db.collection("rate_limit_counters").doc(minKey).set({
-        count: admin.firestore.FieldValue.increment(1),
-        expiresAt: new Date(Date.now() + 60000)
-    }, { merge: true });
-    return true;
+    const minKey = `rl_${key}_${now.toISOString().slice(0, 16)}`;
+    const docRef = db.collection("rate_limit_counters").doc(minKey);
+
+    // Atomic check-and-increment using Firestore transaction
+    const allowed = await db.runTransaction(async (tx) => {
+        const snap = await tx.get(docRef);
+        const current = snap.exists ? (snap.data()?.count || 0) : 0;
+        if (current >= config.requestsPerMinute) return false;
+        tx.set(docRef, {
+            count: admin.firestore.FieldValue.increment(1),
+            expiresAt: new Date(Date.now() + 60000)
+        }, { merge: true });
+        return true;
+    });
+    return allowed;
 }
 
 function estimateActionCost(finalArgs: any, toolName: string, model: string, inT: number, outT: number): number {
@@ -493,8 +502,33 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
 }
 
 async function logAudit(agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
+    // 1. Log to Firestore (Mirror for Dashboard Real-time)
     await db.collection("audit_logs").add({
         agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
         cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
+
+    // 2. Log to PostgreSQL (Source of Truth for Forensic Audit & Compliance)
+    // We need the tenantId/userId to associate the log correctly.
+    // Since we're in a scope where we know agentId, let's look up tenantId if not provided.
+    try {
+        const agentSnap = await db.collection("agents").doc(agentId).get();
+        const tenantId = agentSnap.data()?.userId || "default-tenant";
+
+        await pool.query(
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [
+                tenantId,
+                agentId,
+                toolName,
+                finalArgs,
+                decision,
+                decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
+                cost,
+                JSON.stringify({ reason, sessionId: sId, agentRole: role, isLoop })
+            ]
+        );
+    } catch (e) {
+        console.error("[Dashboard LogAudit] PostgreSQL insertion failed:", e);
+    }
 }

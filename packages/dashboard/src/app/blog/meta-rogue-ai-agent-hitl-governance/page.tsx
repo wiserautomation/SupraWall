@@ -812,7 +812,7 @@ const result = await securedAgent.run(
             </p>
             <div className="flex gap-4 justify-center">
               <Link
-                href="/login"
+                href="/beta"
                 className="inline-flex items-center gap-2 px-8 py-4 bg-white text-emerald-600 font-black rounded-[2rem] hover:bg-neutral-100 transition-colors uppercase tracking-wide"
               >
                 Try SupraWall Free

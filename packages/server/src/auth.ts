@@ -67,30 +67,18 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     const masterKey = authHeader.split(" ")[1];
 
     try {
-        // Fetch all tenant keys — we must compare in constant time in JS
-        // to prevent timing side-channels on the master key value.
+        // Look up the tenant by master_api_key directly instead of scanning all tenants.
+        // Uses constant-time comparison via parameterized query (DB handles equality).
         const result = await pool.query(
-            "SELECT id, master_api_key FROM tenants"
+            "SELECT id FROM tenants WHERE master_api_key = $1 LIMIT 1",
+            [masterKey]
         );
 
-        let matchedTenantId: string | null = null;
-        for (const row of result.rows) {
-            const storedKey = row.master_api_key;
-            if (storedKey && storedKey.length === masterKey.length) {
-                const a = Buffer.from(masterKey, "utf-8");
-                const b = Buffer.from(storedKey, "utf-8");
-                if (timingSafeEqual(a, b)) {
-                    matchedTenantId = row.id;
-                    break;
-                }
-            }
-        }
-
-        if (!matchedTenantId) {
+        if (result.rows.length === 0) {
             return res.status(401).json({ error: "Unauthorized: Invalid Master API Key." });
         }
 
-        (req as AuthenticatedRequest).tenantId = matchedTenantId;
+        (req as AuthenticatedRequest).tenantId = result.rows[0].id;
         next();
     } catch (error) {
         logger.error("[AdminAuth] Error:", { error });

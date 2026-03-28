@@ -21,6 +21,8 @@ build/
 
 # IDE
 .DS_Store
+.!*!.DS_Store
+**/.DS_Store
 *.swp
 *~
 .idea/

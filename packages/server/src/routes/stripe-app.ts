@@ -2,10 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import express, { Request, Response } from "express";
+import Stripe from "stripe";
 import { pool } from "../db";
 import { gatekeeperAuth } from "../auth";
+import { TIER_LIMITS, currentMonth } from "../tier-config";
+import { logger } from "../logger";
 
 const router = express.Router();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
+    apiVersion: "2025-01-27-preview.beta.2" as any,
+});
 
 // ONBOARD: Links Stripe account -> SupraWall tenant
 router.post("/onboard", gatekeeperAuth, async (req: Request, res: Response) => {
@@ -14,65 +20,163 @@ router.post("/onboard", gatekeeperAuth, async (req: Request, res: Response) => {
         if (!stripeAccountId || !tenantId) {
             return res.status(400).json({ error: "Missing stripeAccountId or tenantId" });
         }
-
-        await pool.query(
-            `UPDATE tenants SET stripe_account_id = $1 WHERE id = $2`,
-            [stripeAccountId, tenantId]
-        );
-
+        await pool.query(`UPDATE tenants SET stripe_customer_id = $1 WHERE id = $2`, [stripeAccountId, tenantId]);
         res.json({ success: true, message: "Onboarding complete" });
     } catch (e) {
-        console.error(e);
+        logger.error("[Stripe] Onboarding error:", e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
 
-// USAGE-AUDIT: Returns anomaly analysis of metered billing
-router.get("/usage-audit", gatekeeperAuth, async (req: Request, res: Response) => {
+/**
+ * GET /v1/billing/usage — Returns current month usage and projected overages
+ */
+router.get("/usage", gatekeeperAuth, async (req: Request, res: Response) => {
     try {
         const { tenantId } = req.query;
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
-        // Retrieve metered billing data from audit logs
-        const auditLogs = await pool.query(
-            `SELECT timestamp, cost_usd, agent_id, tool_name, decision FROM audit_logs 
-             WHERE tenantid = $1 AND timestamp > NOW() - INTERVAL '30 days'
-             ORDER BY timestamp DESC`,
-            [tenantId]
+        const month = currentMonth();
+        const usageResult = await pool.query(
+            "SELECT evaluation_count, overage_units FROM tenant_usage WHERE tenant_id = $1 AND month = $2",
+            [tenantId, month]
         );
+        const tenantResult = await pool.query("SELECT tier FROM tenants WHERE id = $1", [tenantId]);
 
-        if (auditLogs.rows.length === 0) {
-            return res.json({ healthScore: 100, totalAnomalies: 0, anomalies: [], avgCost: 0 });
-        }
-
-        // Standard Deviation based anomaly detection
-        const costs = auditLogs.rows.map(log => parseFloat(log.cost_usd || 0));
-        const n = costs.length;
-        const avgCost = costs.reduce((a, b) => a + b, 0) / n;
-        const stdDev = Math.sqrt(costs.map(x => Math.pow(x - avgCost, 2)).reduce((a, b) => a + b, 0) / n);
-        
-        // Flag logs with cost > avg + 2*stdDev (95th percentile)
-        const threshold = avgCost + (2 * stdDev);
-        const anomalies = auditLogs.rows.filter(log => parseFloat(log.cost_usd) > threshold && threshold > 0);
-
-        // Calculate potential savings (sum of excess cost in anomalies)
-        const potentialSavings = anomalies.reduce((sum, log) => sum + (parseFloat(log.cost_usd) - avgCost), 0);
+        const tier = tenantResult.rows[0]?.tier || "open_source";
+        const limits = TIER_LIMITS[tier as keyof typeof TIER_LIMITS];
+        const usage = usageResult.rows[0] || { evaluation_count: 0, overage_units: 0 };
 
         res.json({
-            healthScore: Math.max(0, Math.min(100, 100 - (anomalies.length * 10))),
-            totalAnomalies: anomalies.length,
-            anomalies: anomalies.slice(0, 5).map(log => ({
-                ...log,
-                isAnomaly: true,
-                reason: "Sudden spike in tool cost"
-            })),
-            avgCost,
-            stdDev,
-            threshold,
-            potentialSavings: parseFloat(potentialSavings.toFixed(2))
+            tenantId,
+            month,
+            tier,
+            limits: {
+                maxEvaluations: limits.maxEvaluationsPerMonth,
+                overageRate: limits.overageRatePerEval,
+            },
+            current: {
+                evaluations: usage.evaluation_count,
+                overages: usage.overage_units,
+                projectedOverageCost: usage.overage_units * (limits.overageRatePerEval || 0)
+            }
         });
     } catch (e) {
-        console.error("Usage Audit Error:", e);
+        logger.error("[Stripe] Usage fetch error:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+/**
+ * POST /v1/billing/report-usage — Syncs overages to Stripe metered components
+ */
+router.post("/report-usage", gatekeeperAuth, async (req: Request, res: Response) => {
+    try {
+        const { tenantId } = req.body;
+        if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
+
+        const month = currentMonth();
+        const usageResult = await pool.query(
+            "SELECT overage_units FROM tenant_usage WHERE tenant_id = $1 AND month = $2",
+            [tenantId, month]
+        );
+        const overageUnits = usageResult.rows[0]?.overage_units || 0;
+
+        if (overageUnits === 0) return res.json({ skipped: true, reason: "No overages to report" });
+
+        const tenantResult = await pool.query(
+            "SELECT stripe_subscription_id FROM tenants WHERE id = $1",
+            [tenantId]
+        );
+        const subId = tenantResult.rows[0]?.stripe_subscription_id;
+
+        if (!subId) return res.status(400).json({ error: "Tenant has no active Stripe subscription" });
+
+        // Retrieve subscription items to find the metered one
+        const subscription = await stripe.subscriptions.retrieve(subId);
+        const meteredItem = subscription.items.data.find(item => item.price.recurring?.usage_type === "metered");
+
+        if (!meteredItem) return res.status(400).json({ error: "No metered item found on subscription" });
+
+        await (stripe as any).subscriptionItems.createUsageRecord(meteredItem.id, {
+            quantity: overageUnits,
+            timestamp: Math.floor(Date.now() / 1000),
+            action: "set",
+        });
+
+        res.json({ success: true, reportedUnits: overageUnits });
+    } catch (e) {
+        logger.error("[Stripe] Usage reporting error:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+/**
+ * POST /v1/billing/webhook — Handle Stripe events
+ */
+router.post("/webhook", express.raw({ type: "application/json" }), async (req: Request, res: Response) => {
+    const sig = req.headers["stripe-signature"] as string;
+    let event;
+
+    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+        logger.error("[Stripe Webhook] STRIPE_WEBHOOK_SECRET is not configured. Rejecting request.");
+        return res.status(500).send("Webhook secret not configured");
+    }
+
+    try {
+        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+    } catch (err: any) {
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    try {
+        switch (event.type) {
+            case "customer.subscription.deleted":
+            case "invoice.payment_failed":
+                const subscription = event.data.object as Stripe.Subscription;
+                // Downgrade to open_source or mark for restriction
+                await pool.query(
+                    "UPDATE tenants SET tier = 'open_source' WHERE stripe_subscription_id = $1",
+                    [subscription.id]
+                );
+                logger.info(`[Stripe Webhook] Downgraded tenant for sub ${subscription.id} due to payment failure or cancellation.`);
+                break;
+            // Add more cases as needed
+        }
+    } catch (err) {
+        logger.error("[Stripe Webhook] Processing error:", err);
+    }
+
+    res.json({ received: true });
+});
+
+// BUDGET-CTRL: Revoke/Restore based on billing state
+router.post("/budget-ctrl", async (req: Request, res: Response) => {
+    try {
+        const { action, subscriptionId } = req.body;
+        if (!action || !subscriptionId) return res.status(400).json({ error: "Missing action or subscriptionId" });
+
+        if (action === "revoke") {
+            // Drop to open_source
+            await pool.query(
+                "UPDATE tenants SET tier = 'open_source' WHERE stripe_subscription_id = $1",
+                [subscriptionId]
+            );
+            logger.warn(`[Stripe Budget] REVOKE: Downgraded tenant for sub ${subscriptionId}`);
+        } else if (action === "restore") {
+            const sub = await stripe.subscriptions.retrieve(subscriptionId);
+            const tier = (sub.metadata as any).plan || "developer";
+            await pool.query(
+                "UPDATE tenants SET tier = $1 WHERE stripe_subscription_id = $2",
+                [tier, subscriptionId]
+            );
+            logger.info(`[Stripe Budget] RESTORE: Tier ${tier} restored for sub ${subscriptionId}`);
+        }
+
+        res.json({ success: true });
+    } catch (e) {
+        logger.error("[Stripe Budget] Control error:", e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -83,52 +187,16 @@ router.post("/vault-proxy", gatekeeperAuth, async (req: Request, res: Response) 
         const { tenantId, apiKey, label } = req.body;
         if (!apiKey || !tenantId) return res.status(400).json({ error: "Missing apiKey or tenantId" });
 
-        // In a real scenario, we'd encrypt the key and store it in vault_secrets
-        // Using existing vault logic or similar
         const secretName = `STRIPE_RAK_${Date.now()}`;
-        
         await pool.query(
             `INSERT INTO vault_secrets (tenant_id, secret_name, encrypted_value, description)
              VALUES ($1, $2, pgp_sym_encrypt($3, $4), $5)`,
             [tenantId, secretName, apiKey, process.env.VAULT_ENCRYPTION_KEY, label || "Stripe Proxy Key"]
         );
 
-        res.json({
-            success: true,
-            vaultToken: `$SUPRAWALL_VAULT_${secretName}`
-        });
+        res.json({ success: true, vaultToken: `$SUPRAWALL_VAULT_${secretName}` });
     } catch (e) {
-        console.error(e);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
-});
-
-// BUDGET-CTRL: Auto-revoke agent permissions on payment failure
-router.post("/budget-ctrl", gatekeeperAuth, async (req: Request, res: Response) => {
-    try {
-        const { action, subscriptionId, tenantId } = req.body;
-        if (!action || !subscriptionId) return res.status(400).json({ error: "Missing action or subscriptionId" });
-
-        if (action === "revoke") {
-            // Revoke logic: mark all agents for this tenant as inactive
-            await pool.query(
-                `UPDATE agents SET status = 'inactive' WHERE tenant_id = (
-                    SELECT id FROM tenants WHERE stripe_subscription_id = $1
-                )`,
-                [subscriptionId]
-            );
-        } else if (action === "restore") {
-            await pool.query(
-                `UPDATE agents SET status = 'active' WHERE tenant_id = (
-                    SELECT id FROM tenants WHERE stripe_subscription_id = $1
-                )`,
-                [subscriptionId]
-            );
-        }
-
-        res.json({ success: true, action });
-    } catch (e) {
-        console.error(e);
+        logger.error("[Stripe Proxy] Error:", e);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });

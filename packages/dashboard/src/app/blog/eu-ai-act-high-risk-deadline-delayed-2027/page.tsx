@@ -893,7 +893,7 @@ export default function EUIAActDelayPost() {
               </p>
             </div>
 
-            <Link href="/login">
+            <Link href="/beta">
               <button className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-white text-emerald-600 font-black uppercase tracking-wide hover:bg-emerald-50 transition">
                 Get Started with SupraWall <ArrowRight className="w-5 h-5" />
               </button>

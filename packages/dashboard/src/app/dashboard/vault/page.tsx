@@ -134,6 +134,7 @@ export default function VaultPage() {
         if (!user) return;
 
         const pollAgents = async () => {
+            if (document.hidden) return; // Skip polling when tab is not visible
             try {
                 const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
                 if (res.ok) {
@@ -148,11 +149,15 @@ export default function VaultPage() {
         pollAgents();
         const int = setInterval(pollAgents, 10000);
 
+        // Pause/resume polling on visibility change
+        const onVisibility = () => { if (!document.hidden) pollAgents(); };
+        document.addEventListener("visibilitychange", onVisibility);
+
         if (tab === "secrets") fetchSecrets();
         else if (tab === "rules") { fetchRules(); fetchSecrets(); }
         else if (tab === "log") fetchLog();
 
-        return () => clearInterval(int);
+        return () => { clearInterval(int); document.removeEventListener("visibilitychange", onVisibility); };
     }, [tab, user]);
 
     if (authLoading) {
@@ -186,6 +191,7 @@ export default function VaultPage() {
     };
 
     const handleCreateOrUpdateSecret = async () => {
+        if (!user?.uid) { setError("Not authenticated"); return; }
         setError(null);
         setLoading(true);
         try {
@@ -232,10 +238,12 @@ export default function VaultPage() {
                 headers,
                 body: JSON.stringify(body),
             });
-            const data = await res.json();
-            if (!res.ok) { 
-              setError(data.error + (data.message ? ": " + data.message : "")); 
-              return; 
+            if (!res.ok) {
+              try {
+                const data = await res.json();
+                setError(data.error + (data.message ? ": " + data.message : ""));
+              } catch { setError(`Request failed (${res.status})`); }
+              return;
             }
             setShowCreateSecret(false);
             setEditingSecretId(null);
@@ -248,16 +256,28 @@ export default function VaultPage() {
     };
 
     const handleDeleteSecret = async (id: string) => {
+        if (!user?.uid) { setError("Not authenticated"); return; }
         if (!confirm("Delete this secret? All associated access rules will also be removed.")) return;
-        const headers = await getAuthHeaders();
-        await fetch(`${API_BASE}/secrets/${id}?tenantId=${user?.uid}`, { 
-            method: "DELETE",
-            headers
-        });
-        await fetchSecrets();
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_BASE}/secrets/${id}?tenantId=${user.uid}`, {
+                method: "DELETE",
+                headers
+            });
+            if (!res.ok) {
+                try { const data = await res.json(); setError(data.error || `Delete failed (${res.status})`); }
+                catch { setError(`Delete failed (${res.status})`); }
+                return;
+            }
+            await fetchSecrets();
+        } catch (err) {
+            setError("Failed to delete secret");
+            console.error("Delete secret error:", err);
+        }
     };
 
     const handleRotate = async (id: string) => {
+        if (!user?.uid) { setError("Not authenticated"); return; }
         setError(null);
         setLoading(true);
         try {
@@ -267,8 +287,11 @@ export default function VaultPage() {
                 headers,
                 body: JSON.stringify({ tenantId: user?.uid, newValue: rotateValue }),
             });
-            const data = await res.json();
-            if (!res.ok) { setError(data.error); return; }
+            if (!res.ok) {
+                try { const data = await res.json(); setError(data.error); }
+                catch { setError(`Rotation failed (${res.status})`); }
+                return;
+            }
             setShowRotate(null);
             setRotateValue("");
             await fetchSecrets();
@@ -278,6 +301,7 @@ export default function VaultPage() {
     };
 
     const handleCreateRule = async () => {
+        if (!user?.uid) { setError("Not authenticated"); return; }
         setError(null);
         setLoading(true);
         try {
@@ -296,8 +320,11 @@ export default function VaultPage() {
                     requiresApproval: newRuleApproval,
                 }),
             });
-            const data = await res.json();
-            if (!res.ok) { setError(data.error); return; }
+            if (!res.ok) {
+                try { const data = await res.json(); setError(data.error); }
+                catch { setError(`Rule creation failed (${res.status})`); }
+                return;
+            }
             setShowCreateRule(false);
             setNewRuleAgent(""); setNewRuleSecret(""); setNewRuleTools(""); setNewRuleRate("100"); setNewRuleApproval(false);
             await fetchRules();
@@ -307,12 +334,23 @@ export default function VaultPage() {
     };
 
     const handleDeleteRule = async (id: string) => {
-        const headers = await getAuthHeaders();
-        await fetch(`${API_BASE}/rules/${id}?tenantId=${user?.uid}`, { 
-            method: "DELETE",
-            headers
-        });
-        await fetchRules();
+        if (!user?.uid) { setError("Not authenticated"); return; }
+        try {
+            const headers = await getAuthHeaders();
+            const res = await fetch(`${API_BASE}/rules/${id}?tenantId=${user.uid}`, {
+                method: "DELETE",
+                headers
+            });
+            if (!res.ok) {
+                try { const data = await res.json(); setError(data.error || `Delete failed (${res.status})`); }
+                catch { setError(`Delete failed (${res.status})`); }
+                return;
+            }
+            await fetchRules();
+        } catch (err) {
+            setError("Failed to delete rule");
+            console.error("Delete rule error:", err);
+        }
     };
 
     const handleBulkImport = async () => {
@@ -378,9 +416,9 @@ export default function VaultPage() {
 
             {/* Tier Upgrade Nudge */}
             <TierBanner
-                tier="free"
+                tier="open_source"
                 usages={[
-                    { current: secrets.length, max: 5, label: 'Vault Secrets', upgradeFeature: 'Unlimited + HSM on Cloud' },
+                    { current: secrets.length, max: 3, label: 'Vault Secrets', upgradeFeature: '15 Secrets on Developer ($39)' },
                 ]}
             />
 

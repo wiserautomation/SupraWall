@@ -746,7 +746,7 @@ secured = protect(
                 See Budget Limits
               </Link>
               <Link
-                href="/login"
+                href="/beta"
                 className="px-10 py-4 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all"
               >
                 Start Free

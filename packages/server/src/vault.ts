@@ -3,7 +3,7 @@
 
 import { pool } from "./db";
 
-const VAULT_TOKEN_PATTERN = /$SUPRAWALL_VAULT_([A-Z][A-Z0-9_]{2,63})/g;
+const VAULT_TOKEN_PATTERN = /\$SUPRAWALL_VAULT_([A-Z][A-Z0-9_]{2,63})/g;
 
 export interface VaultResolutionResult {
     success: boolean;
@@ -117,9 +117,16 @@ export async function resolveVaultTokens(
         return { success: false, resolvedArgs: args, injectedSecrets: [], secretValues: [], errors };
     }
 
+    let parsedArgs;
+    try {
+        parsedArgs = JSON.parse(resolvedArgsString);
+    } catch (parseErr) {
+        return { success: false, resolvedArgs: args, injectedSecrets: [], secretValues: [], errors: ["Failed to parse resolved arguments after vault injection."] };
+    }
+
     return {
         success: true,
-        resolvedArgs: JSON.parse(resolvedArgsString),
+        resolvedArgs: parsedArgs,
         injectedSecrets,
         secretValues,
         errors: []
@@ -158,9 +165,9 @@ async function incrementRateLimit(
 }
 
 function getHourWindow(): Date {
+    // Use UTC to ensure consistent windows across servers/timezones
     const now = new Date();
-    now.setMinutes(0, 0, 0);
-    return now;
+    return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), now.getUTCHours()));
 }
 
 async function logVaultAccess(

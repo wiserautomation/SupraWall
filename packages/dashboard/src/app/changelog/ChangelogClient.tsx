@@ -94,7 +94,7 @@ export default function ChangelogClient() {
                         Don&apos;t build on stagnant tech. Join the world&apos;s most active agentic security community.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href="/login" className="px-16 py-8 bg-rose-600 text-white font-black text-3xl rounded-3xl hover:bg-rose-500 transition-all shadow-[0_0_100px_rgba(225,29,72,0.3)] tracking-tighter flex items-center gap-4 group">
+                        <Link href="/beta" className="px-16 py-8 bg-rose-600 text-white font-black text-3xl rounded-3xl hover:bg-rose-500 transition-all shadow-[0_0_100px_rgba(225,29,72,0.3)] tracking-tighter flex items-center gap-4 group">
                              Get Your Keys <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

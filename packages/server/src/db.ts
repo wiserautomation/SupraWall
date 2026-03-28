@@ -4,12 +4,13 @@
 import { Pool } from "pg";
 import dotenv from "dotenv";
 import { logger } from "./logger";
+import { TIER_LIMITS, Tier } from "./tier-config";
 
 if (!process.env.VERCEL) {
     dotenv.config();
 }
 
-const rawUrl = process.env.DATABASE_URL || "";
+const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
 // Mask password for safe logging
 const maskedUrl = rawUrl.replace(/(postgresql?:\/\/)([^:]+):([^@]+)(@)/, "$1$2:****$4");
 if (maskedUrl) {
@@ -83,28 +84,64 @@ export const initDb = async () => {
             name VARCHAR(255),
             master_api_key VARCHAR(255),
             slack_webhook_url TEXT,
-            tier VARCHAR(20) DEFAULT 'free',
-            subscription_id VARCHAR(255),
+            tier VARCHAR(20) DEFAULT 'open_source',
+            stripe_customer_id TEXT,
+            stripe_subscription_id TEXT,
+            billing_cycle_start TIMESTAMP DEFAULT NOW(),
             tier_expires_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT NOW()
         );
 
-        -- Ensure tier column exists for existing deployments
+        -- Ensure modern billing columns exist for existing deployments
         DO $$ BEGIN
-            IF NOT EXISTS (
-                SELECT 1 FROM information_schema.columns
-                WHERE table_name='tenants' AND column_name='tier'
-            ) THEN
-                ALTER TABLE tenants ADD COLUMN tier VARCHAR(20) DEFAULT 'free';
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='stripe_customer_id') THEN
+                ALTER TABLE tenants ADD COLUMN stripe_customer_id TEXT;
             END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='stripe_subscription_id') THEN
+                ALTER TABLE tenants ADD COLUMN stripe_subscription_id TEXT;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='billing_cycle_start') THEN
+                ALTER TABLE tenants ADD COLUMN billing_cycle_start TIMESTAMP DEFAULT NOW();
+            END IF;
+            -- Migrate legacy 'free' tier name to 'open_source' if present
+            UPDATE tenants SET tier = 'open_source' WHERE tier = 'free';
+            ALTER TABLE tenants ALTER COLUMN tier SET DEFAULT 'open_source';
         END $$;
 
-        -- Monthly operation counters for free-tier metering
-        CREATE TABLE IF NOT EXISTS usage_counters (
+        -- Usage Metering (Usage-based billing)
+        CREATE TABLE IF NOT EXISTS tenant_usage (
             tenant_id VARCHAR(255) NOT NULL,
-            month VARCHAR(7) NOT NULL,
-            operation_count INTEGER DEFAULT 0,
+            month VARCHAR(7) NOT NULL, -- YYYY-MM
+            evaluation_count INTEGER DEFAULT 0,
+            overage_units INTEGER DEFAULT 0,
+            overage_billed_usd DECIMAL(10,4) DEFAULT 0,
+            last_updated TIMESTAMP DEFAULT NOW(),
             PRIMARY KEY (tenant_id, month)
+        );
+
+        -- Seats / Organization Members
+        CREATE TABLE IF NOT EXISTS organization_members (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            tenant_id VARCHAR(255) NOT NULL REFERENCES tenants(id),
+            user_email VARCHAR(255) NOT NULL,
+            user_id VARCHAR(255), -- Firebase UID
+            role VARCHAR(50) NOT NULL DEFAULT 'member', -- owner | admin | member | viewer
+            status VARCHAR(50) DEFAULT 'pending', -- pending | active | removed
+            invited_at TIMESTAMP DEFAULT NOW(),
+            accepted_at TIMESTAMP,
+            UNIQUE(tenant_id, user_email)
+        );
+
+        -- SSO Configuration
+        CREATE TABLE IF NOT EXISTS sso_configs (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            tenant_id VARCHAR(255) NOT NULL UNIQUE REFERENCES tenants(id),
+            provider VARCHAR(100) NOT NULL, -- okta | azure-ad | google
+            client_id TEXT,
+            client_secret_encrypted BYTEA,
+            domain TEXT,
+            enabled BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW()
         );
 
         -- Enable encryption (pgcrypto)
@@ -118,6 +155,7 @@ export const initDb = async () => {
             encrypted_value BYTEA NOT NULL,
             description TEXT,
             expires_at TIMESTAMP,
+            assigned_agents TEXT[] DEFAULT '{}',
             last_rotated_at TIMESTAMP DEFAULT NOW(),
             created_at TIMESTAMP DEFAULT NOW(),
             UNIQUE(tenant_id, secret_name)
@@ -132,7 +170,8 @@ export const initDb = async () => {
             allowed_tools TEXT[] NOT NULL DEFAULT '{}',
             max_uses_per_hour INT DEFAULT 100,
             requires_approval BOOLEAN DEFAULT FALSE,
-            created_at TIMESTAMP DEFAULT NOW()
+            created_at TIMESTAMP DEFAULT NOW(),
+            UNIQUE(tenant_id, agent_id, secret_id)
         );
 
         -- Threat Intel
@@ -186,3 +225,30 @@ export const initDb = async () => {
     `;
     await pool.query(query);
 };
+
+/**
+ * Daily Background Task: Purges logs older than tenant-specific retention limits.
+ */
+export async function purgeOldLogs(): Promise<void> {
+    logger.info("[Purge] Starting daily audit log cleanup...");
+    try {
+        const tiers = (Object.entries(TIER_LIMITS) as [Tier, typeof TIER_LIMITS[Tier]][]).map(
+            ([id, cfg]) => ({ id, days: cfg.auditRetentionDays })
+        );
+
+        for (const tier of tiers) {
+            const result = await pool.query(
+                `DELETE FROM audit_logs WHERE tenantid IN (
+                    SELECT id FROM tenants WHERE tier = $1
+                 ) AND timestamp < NOW() - ($2 || ' days')::INTERVAL`,
+                [tier.id, tier.days]
+            );
+            if (result.rowCount && result.rowCount > 0) {
+                logger.info(`[Purge] Cleared ${result.rowCount} logs for ${tier.id} tier.`);
+            }
+        }
+        logger.info("[Purge] Audit log cleanup complete.");
+    } catch (err) {
+        logger.error("[Purge] Failed to cleanup logs:", err);
+    }
+}

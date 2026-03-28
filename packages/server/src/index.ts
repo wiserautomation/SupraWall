@@ -4,7 +4,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { initDb, pool } from "./db";
+import { initDb, pool, purgeOldLogs } from "./db";
 import { evaluatePolicy, scrubToolResponse } from "./policy";
 import complianceRouter from "./routes/compliance";
 import vaultRouter from "./routes/vault";
@@ -18,6 +18,8 @@ import tenantsRouter from "./routes/tenants";
 import statsRouter from "./routes/stats";
 import contentRouter from "./routes/content";
 import shieldRouter from "./routes/shield";
+import membersRouter from "./routes/members";
+import { resolveTier } from "./tier-guard";
 import { gatekeeperAuth } from "./auth";
 import { rateLimit } from "./rate-limit";
 
@@ -41,6 +43,9 @@ app.get("/health", async (req, res) => {
         res.status(503).json({ status: "degraded", database: "disconnected" });
     }
 });
+
+// Global Tier Resolution for all V1 routes
+app.use("/v1", resolveTier);
 
 // Policy Evaluation Webhook (rate limited: 120 req/min per IP)
 const evaluateRateLimit = rateLimit({ max: 120, windowMs: 60_000, message: "Evaluate rate limit exceeded. Upgrade your plan or reduce request frequency." });
@@ -83,35 +88,35 @@ app.use("/v1/content", contentRouter);
 // Shield Status Route
 app.use("/v1/shield", shieldRouter);
 
+// Organization Members Route
+app.use("/v1/members", membersRouter);
+
 // Export the app for Vercel
 export default app;
 
 // Only start the server listener if not on Vercel
 if (process.env.NODE_ENV !== 'test' && (process.env.NODE_ENV !== "production" || !process.env.VERCEL)) {
-    const startServer = async () => {
+    const start = async () => {
         try {
             await initDb();
-            logger.info("Database initialized");
+            logger.info("[Database] Schema initialized.");
+
+            // Start daily log purging
+            purgeOldLogs().catch(err => logger.error("[Purge] Startup error:", err));
+            setInterval(purgeOldLogs, 24 * 60 * 60 * 1000); // Once every 24h
+
             app.listen(port, () => {
-                const banner = `
-╔══════════════════════════════════════════╗
-║           SUPRAWALL v1.0.0               ║
-║                                          ║
-║  Status:     🟢 ACTIVE                   ║
-║  Database:   ✅ PostgreSQL connected     ║
-║  API:        http://localhost:${port.toString().padEnd(15, " ")}║
-║                                          ║
-║  Ready to protect your AI agents.        ║
-╚══════════════════════════════════════════╝`;
-                logger.info(banner);
-                logger.info(`SupraWall Server running on port ${port}`);
+                logger.info(`[SupraWall] Gateway listening on port ${port} (Mode: ${process.env.SUPRAWALL_MODE || 'cloud'})`);
             });
         } catch (e) {
-            logger.error("Failed to start server", { error: e });
+            logger.error("[Startup] Critical failure:", e);
             process.exit(1);
         }
     };
-    startServer();
+
+    if (require.main === module) {
+        start();
+    }
 }
  else {
     // On Vercel, we still need to ensure DB is initialized

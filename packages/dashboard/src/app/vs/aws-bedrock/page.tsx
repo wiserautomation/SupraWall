@@ -118,7 +118,7 @@ export default function vsAwsBedrock() {
                             SupraWall integrates with <strong className="text-white text-glow">AWS Security Hub</strong>. You don't have to choose between AWS infrastructure and SupraWall security. Use Bedrock for compute, and SupraWall for the cross-platform, framework-layer audit trail your compliance team needs.
                         </p>
                         <div className="pt-4 flex justify-center">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
+                            <Link href="/beta" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
                             </Link>
                         </div>

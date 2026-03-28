@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { admin } from '@/lib/firebase-admin';
 import { encrypt } from '@/lib/vault-server';
+import { checkResourceLimit } from '@/lib/tier-enforcement';
 
 export async function GET(req: NextRequest) {
     try {
@@ -39,6 +40,15 @@ export async function POST(req: NextRequest) {
 
         if (!tenantId || !secretName || !secretValue) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
+
+        // --- Tier Enforcement: Secret Count ---
+        const { allowed, count, limit } = await checkResourceLimit(tenantId, 'vault_secrets', 'tenant_id');
+        if (!allowed) {
+            return NextResponse.json({ 
+                error: `Vault secret limit reached (${count}/${limit}). Upgrade your plan to store more secrets.`,
+                code: "TIER_LIMIT_EXCEEDED"
+            }, { status: 403 });
         }
 
         // Check if secret already exists

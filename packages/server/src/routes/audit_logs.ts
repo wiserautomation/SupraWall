@@ -15,7 +15,7 @@ router.get("/", resolveTier, async (req: Request, res: Response) => {
         const { tenantId, limit = 50, offset = 0 } = req.query;
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
-        const tier = (req as TieredRequest).tier || "free";
+        const tier = (req as TieredRequest).tier || "open_source";
         const cutoff = retentionCutoff(tier);
 
         const result = await pool.query(
@@ -29,7 +29,7 @@ router.get("/", resolveTier, async (req: Request, res: Response) => {
             rows: result.rows,
             retentionDays: (req as TieredRequest).tierLimits?.auditRetentionDays,
             tier,
-            upgradeUrl: tier === "free" ? "https://www.supra-wall.com/pricing" : undefined,
+            upgradeUrl: tier === "open_source" || tier === "developer" ? "https://www.supra-wall.com/pricing" : undefined,
         });
     } catch (e) {
         logger.error("[AuditLogs] Error:", { error: e });

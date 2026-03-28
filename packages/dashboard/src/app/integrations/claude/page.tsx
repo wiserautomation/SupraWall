@@ -54,7 +54,7 @@ export default function ClaudeIntegrationPage() {
                         </div>
 
                         <div className="flex justify-center gap-6 pt-10">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all flex items-center gap-2 shadow-2xl">
+                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all flex items-center gap-2 shadow-2xl">
                                 Secure My Claude Agent <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -129,7 +129,7 @@ export default function ClaudeIntegrationPage() {
                             Govern Your <br />Claude Swarm.
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all">
+                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all">
                                 Secure My App
                             </Link>
                         </div>

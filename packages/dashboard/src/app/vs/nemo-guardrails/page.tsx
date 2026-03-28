@@ -185,7 +185,7 @@ export default function vsNemoGuardrailsPage() {
                                     Use <strong className="text-white">NeMo Guardrails</strong> if you are building a pure chat interface with light content filtering needs. Choose <strong className="text-emerald-500 uppercase italic">SupraWall</strong> if you are building autonomous agents that interact with production APIs, databases, or file systems and require absolute runtime reliability.
                                 </p>
                                 <div className="pt-6">
-                                    <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit">
+                                    <Link href="/beta" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit">
                                         Secure My Swarm <ArrowRight className="w-4 h-4" />
                                     </Link>
                                 </div>
