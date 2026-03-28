@@ -34,7 +34,8 @@ export default function LandingPage() {
             "Policy Engine — Deterministic ALLOW/BLOCK rules",
             "PII Shield — Automatic outbound data scrubbing",
             "Audit Trail — EU AI Act evidence reports",
-            "Prompt Injection Shield — SDK-level enforcement"
+            "Prompt Injection Shield — SDK-level enforcement",
+            "AI Semantic Analysis — LLM-powered contextual threat detection"
         ]
     };
 
@@ -52,10 +53,18 @@ export default function LandingPage() {
             },
             {
                 "@type": "Question",
-                "name": "What six threats does SupraWall protect against?",
+                "name": "What seven threats does SupraWall protect against?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "SupraWall protects against credential theft (Vault), runaway costs (Budget Limits), unauthorized actions (Policy Engine), data leakage (PII Shield), missing audit trails (Compliance Reports), and prompt injection attacks (Injection Shield)."
+                    "text": "SupraWall protects against credential theft (Vault), runaway costs (Budget Limits), unauthorized actions (Policy Engine), data leakage (PII Shield), missing audit trails (Compliance Reports), prompt injection attacks (Injection Shield), and context-dependent attacks (AI Semantic Layer)."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "What is SupraWall's two-layer defense architecture?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "SupraWall runs deterministic regex rules first (Layer 1, <2ms) to catch known threats with zero false negatives. Calls that pass Layer 1 are optionally analyzed by an AI semantic layer (Layer 2) that detects context-dependent attacks, unusual argument combinations, and behavioral anomalies. Layer 2 is available on Growth tier and above."
                 }
             },
             {
@@ -111,8 +120,9 @@ export default function LandingPage() {
                                 <span className="text-white font-bold">Scrub</span> PII.{' '}
                                 <span className="text-white font-bold">Generate</span> audit trails.{' '}
                                 <span className="text-white font-bold">Stop</span> prompt injections.{' '}
+                                <span className="text-white font-bold">Analyze</span> context with AI.{' '}
                                 <br className="hidden md:block" />
-                                <span className="text-emerald-400 italic">Open source. One line of code. Six threats neutralized.</span>
+                                <span className="text-emerald-400 italic">Open source. One line of code. Seven threats neutralized.</span>
                             </p>
                                      <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                             <Link

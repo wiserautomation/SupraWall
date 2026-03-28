@@ -61,9 +61,10 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
     {
         category: 'Threat Detection',
         rows: [
-            { name: 'Basic regex patterns', free: true, cloud: true, enterprise: true },
-            { name: 'ML-powered threat intel', free: false, cloud: true, enterprise: true, highlight: true },
-            { name: 'Custom threat models', free: false, cloud: false, enterprise: true },
+            { name: 'Layer 1: Regex patterns (<2ms)', free: true, cloud: true, enterprise: true },
+            { name: 'Layer 2: AI Semantic Analysis', free: false, cloud: 'Growth+', enterprise: true, highlight: true },
+            { name: 'Behavioral anomaly detection', free: false, cloud: 'Business+', enterprise: true, highlight: true },
+            { name: 'Custom fine-tuned threat model', free: false, cloud: false, enterprise: true },
         ],
     },
     {
@@ -293,8 +294,8 @@ export default function PricingPage() {
                                     'Unlimited agents',
                                     'Unlimited vault secrets (HSM)',
                                     '90-day to 3-year retention',
-                                    'AI-powered policies',
-                                    'ML threat detection',
+                                    'Layer 1 + Layer 2: AI semantic analysis',
+                                    'Behavioral anomaly detection (Business+)',
                                     'Slack + Dashboard approvals',
                                     'PDF compliance reports',
                                     'All framework plugins (CrewAI, etc.)',
@@ -334,13 +335,13 @@ export default function PricingPage() {
                                 {[
                                     'Everything in Cloud',
                                     'Self-hosted / VPC / Air-gapped',
+                                    'Layer 1 + Layer 2 + custom AI model',
                                     'EU AI Act Compliance Suite',
                                     'SSO + SCIM',
                                     'White-label dashboard',
                                     '7+ year audit retention',
                                     'SOC 2 certified',
                                     'Custom KMS + HSM',
-                                    'Custom threat models',
                                     '24/7 dedicated support + SLA',
                                     'Annual contracts + POs',
                                 ].map((item, i) => (
@@ -353,6 +354,70 @@ export default function PricingPage() {
                         <button className="mt-10 w-full py-4 rounded-xl border-2 border-white/10 text-white font-black uppercase tracking-tighter text-lg hover:border-blue-500/50 hover:bg-blue-500/5 transition-all">
                             Contact Sales
                         </button>
+                    </div>
+                </div>
+
+                {/* Two-Layer Architecture Explainer */}
+                <div className="mb-24">
+                    <h2 className="text-4xl font-black italic uppercase tracking-tighter text-center mb-4">
+                        Two-Layer <span className="text-emerald-500">Defense Architecture</span>
+                    </h2>
+                    <p className="text-center text-neutral-500 text-sm font-medium italic mb-12 max-w-2xl mx-auto">
+                        Regex catches what you know. AI catches what you don&apos;t.
+                    </p>
+
+                    <div className="grid lg:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                        {/* Layer 1 */}
+                        <div className="p-8 rounded-[2rem] bg-neutral-900/40 border border-white/[0.06] space-y-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+                                    <Shield className="w-5 h-5 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase tracking-tighter text-white italic">Layer 1 — Deterministic</h3>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">All tiers</p>
+                                </div>
+                            </div>
+                            <ul className="space-y-3">
+                                {[
+                                    'Sub-2ms latency, zero network calls',
+                                    'Zero false negatives on known patterns',
+                                    '26+ regex rules (SQLi, XSS, prompt injection)',
+                                    'Budget caps, vault, scope verification',
+                                    'Deterministic — same input, same decision',
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-start gap-3 text-[10px] font-bold text-neutral-400 uppercase tracking-widest italic">
+                                        <Check className="w-3 h-3 text-emerald-500 mt-0.5 flex-shrink-0" />{item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+
+                        {/* Layer 2 */}
+                        <div className="p-8 rounded-[2rem] bg-emerald-500/5 border border-emerald-500/20 space-y-6">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-emerald-500/20 rounded-xl border border-emerald-500/30">
+                                    <Zap className="w-5 h-5 text-emerald-400" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-black uppercase tracking-tighter text-white italic">Layer 2 — AI Semantic</h3>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Growth tier and above</p>
+                                </div>
+                            </div>
+                            <ul className="space-y-3">
+                                {[
+                                    'Context-aware argument analysis (LLM-powered)',
+                                    'Cross-tool attack sequence detection',
+                                    'Behavioral anomaly scoring (Business+)',
+                                    'Confidence routing: DENY / HITL / FLAG',
+                                    'Custom fine-tuned models (Enterprise)',
+                                ].map((item, i) => (
+                                    <li key={i} className="flex items-start gap-3 text-[10px] font-bold text-neutral-300 uppercase tracking-widest italic">
+                                        <Check className="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0" />{item}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     </div>
                 </div>
 

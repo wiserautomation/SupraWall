@@ -37,6 +37,10 @@ export async function resolveTier(req: TieredRequest, res: Response, next: NextF
         const tier: Tier = (result.rows[0]?.tier as Tier) || "free";
         req.tier = tier;
         req.tierLimits = TIER_LIMITS[tier];
+
+        if (req.tierLimits.semanticLayer !== 'none') {
+            console.info(`[TierGuard] Semantic layer enabled: ${req.tierLimits.semanticLayer} for tenant ${tenantId}`);
+        }
     } catch (err) {
         // Fail-open: default to free tier if DB resolution fails
         console.warn("[TierGuard] Failed to resolve tier, defaulting to free:", err);

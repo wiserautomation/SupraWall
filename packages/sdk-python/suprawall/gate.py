@@ -479,11 +479,19 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
     return data
 
 
-def _handle_decision(decision: str, reason: Optional[str], tool_name: str) -> Optional[str]:
+def _handle_decision(decision: str, reason: Optional[str], tool_name: str,
+                     semantic_score: Optional[float] = None,
+                     semantic_reasoning: Optional[str] = None) -> Optional[str]:
     """
     Returns an error string if the action should be blocked, or None if allowed.
     None = proceed with original call.
+
+    If the response includes Layer 2 semantic analysis fields (semanticScore,
+    semanticReasoning), these are logged for observability.
     """
+    if semantic_score is not None:
+        log.info(f"[SupraWall] Semantic score for '{tool_name}': {semantic_score:.2f}"
+                 + (f" — {semantic_reasoning}" if semantic_reasoning else ""))
     if decision == "ALLOW":
         return None
     if decision == "DENY":
@@ -561,7 +569,7 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         async def secured_async(tool_name: str = "", args: Any = None, *a, **kw):
             try:
                 data = await _evaluate_async(tool_name, args, options)
-                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
                 if blocked is not None:
                     return blocked
                 return await original_method(tool_name, args, *a, **kw)
@@ -579,7 +587,7 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         def secured_sync(tool_name: str = "", args: Any = None, *a, **kw):
             try:
                 data = _evaluate(tool_name, args, options)
-                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
                 if blocked is not None:
                     return blocked
                 return original_method(tool_name, args, *a, **kw)
@@ -707,7 +715,7 @@ class SupraWallMiddleware:
         self.budget.record()
         try:
             data = _evaluate(tool_name, args, self.options)
-            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
             if blocked is not None:
                 return blocked
             execution_args = data.get("resolvedArguments", args) if data.get("vaultInjected") else args
@@ -736,7 +744,7 @@ class SupraWallMiddleware:
         self.budget.record()
         try:
             data = await _evaluate_async(tool_name, args, self.options)
-            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
             if blocked is not None:
                 return blocked
             result = next_fn()

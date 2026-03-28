@@ -10,6 +10,8 @@ import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
 import { TIER_LIMITS, currentMonth } from "./tier-config";
 import type { Tier } from "./tier-config";
+import { analyzeCall, type SemanticAnalysisResult } from "./semantic";
+import { updateBaseline } from "./behavioral";
 
 export interface EvaluationRequest {
     agentId: string;
@@ -367,6 +369,80 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             ).catch(err => logger.error("[UsageCounter] Failed to increment:", { error: err, tenantId }));
         }
 
+        // ── Layer 2: AI Semantic Analysis (Growth+ tiers only) ──
+        let semanticResult: SemanticAnalysisResult | null = null;
+
+        if (decision === "ALLOW" && tierLimits.semanticLayer !== 'none') {
+            try {
+                // Check for custom endpoint (enterprise)
+                let customEndpoint: string | undefined;
+                if (tierLimits.semanticLayer === 'custom') {
+                    const epResult = await pool.query(
+                        "SELECT endpoint_url FROM custom_model_endpoints WHERE tenant_id = $1 AND enabled = true",
+                        [tenantId]
+                    );
+                    if (epResult.rows.length > 0) {
+                        customEndpoint = epResult.rows[0].endpoint_url;
+                    }
+                }
+
+                semanticResult = await analyzeCall({
+                    tenantId,
+                    agentId,
+                    toolName,
+                    args: resolvedArgs,
+                    argsString: JSON.stringify(resolvedArgs),
+                    delegationChain: chain,
+                    semanticLayer: tierLimits.semanticLayer,
+                    customEndpoint,
+                });
+
+                // Override decision if Layer 2 flags a threat
+                if (semanticResult.decision === 'DENY') {
+                    decision = "DENY";
+                    matchedRule = `semantic:${semanticResult.reasoning}`;
+                    response.decision = decision;
+                    response.reason = `AI semantic analysis: ${semanticResult.reasoning}`;
+                    response.semanticScore = semanticResult.semanticScore;
+                } else if (semanticResult.decision === 'REQUIRE_APPROVAL') {
+                    decision = "REQUIRE_APPROVAL";
+                    matchedRule = `semantic:approval_required`;
+                    response.decision = decision;
+                    response.reason = `AI flagged for review: ${semanticResult.reasoning}`;
+                    response.semanticScore = semanticResult.semanticScore;
+
+                    // Create approval request for semantic flags
+                    try {
+                        const approvalRes = await pool.query(
+                            "INSERT INTO approval_requests (tenantid, agentid, toolname, parameters, metadata) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+                            [tenantId, agentId, toolName, JSON.stringify(args || {}),
+                             JSON.stringify({ matchedRule, semanticScore: semanticResult.semanticScore })]
+                        );
+                        response.approvalId = approvalRes.rows[0].id;
+                    } catch (err) {
+                        logger.error("[Layer2] Failed to create approval request", { error: err });
+                        decision = "DENY";
+                        response.decision = decision;
+                        response.reason = "Semantic analysis flagged for review but approval system unavailable";
+                    }
+                } else if (semanticResult.decision === 'FLAG') {
+                    // Don't change decision, but attach metadata
+                    response.semanticFlag = true;
+                    response.semanticScore = semanticResult.semanticScore;
+                    response.semanticReasoning = semanticResult.reasoning;
+                }
+            } catch (err) {
+                logger.error("[Layer2] Semantic analysis failed", { error: err });
+                // NEVER block on Layer 2 failure — continue with Layer 1 decision
+            }
+        }
+
+        // Update behavioral baseline (async, non-blocking, business+ only)
+        if (decision === "ALLOW" &&
+            (tierLimits.semanticLayer === 'behavioral' || tierLimits.semanticLayer === 'custom')) {
+            updateBaseline(tenantId, agentId, toolName, resolvedArgs).catch(() => {});
+        }
+
         // 4. Audit Logging
         await pool.query(
             "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7)",
@@ -379,6 +455,12 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                  agentName: agent?.name,
                  vaultInjected: hasVaultTokens,
                  vaultSecrets: vaultResult?.injectedSecrets || [],
+                 ...(semanticResult ? {
+                     semanticScore: semanticResult.semanticScore,
+                     anomalyScore: semanticResult.anomalyScore,
+                     semanticDecision: semanticResult.decision,
+                     semanticLatencyMs: semanticResult.latencyMs,
+                 } : {}),
              })
             ]
         );

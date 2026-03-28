@@ -7,6 +7,8 @@
 
 export type Tier = 'free' | 'starter' | 'growth' | 'business' | 'enterprise';
 
+export type SemanticLayerMode = 'none' | 'semantic' | 'behavioral' | 'custom';
+
 export interface TierLimits {
     maxAgents: number;
     maxVaultSecrets: number;
@@ -14,6 +16,8 @@ export interface TierLimits {
     maxOpsPerMonth: number;
     policyEngine: 'regex' | 'ai' | 'advanced';
     threatDetection: 'regex' | 'ml' | 'advanced';
+    semanticLayer: SemanticLayerMode;
+    maxSemanticCallsPerHour: number;
     complianceReports: 'json' | 'pdf' | 'full-suite';
     approvals: 'api-polling' | 'slack-dashboard' | 'advanced';
     dashboard: 'self-host' | 'full' | 'white-label';
@@ -35,6 +39,8 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         maxOpsPerMonth: 10_000,
         policyEngine: 'regex',
         threatDetection: 'regex',
+        semanticLayer: 'none',
+        maxSemanticCallsPerHour: 0,
         complianceReports: 'json',
         approvals: 'api-polling',
         dashboard: 'self-host',
@@ -54,6 +60,8 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         maxOpsPerMonth: Infinity,
         policyEngine: 'regex',
         threatDetection: 'regex',
+        semanticLayer: 'none',
+        maxSemanticCallsPerHour: 0,
         complianceReports: 'pdf',
         approvals: 'slack-dashboard',
         dashboard: 'full',
@@ -73,6 +81,8 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         maxOpsPerMonth: Infinity,
         policyEngine: 'ai',
         threatDetection: 'ml',
+        semanticLayer: 'semantic',
+        maxSemanticCallsPerHour: 500,
         complianceReports: 'pdf',
         approvals: 'slack-dashboard',
         dashboard: 'full',
@@ -92,6 +102,8 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         maxOpsPerMonth: Infinity,
         policyEngine: 'ai',
         threatDetection: 'ml',
+        semanticLayer: 'behavioral',
+        maxSemanticCallsPerHour: 5000,
         complianceReports: 'pdf',
         approvals: 'slack-dashboard',
         dashboard: 'full',
@@ -111,6 +123,8 @@ export const TIER_LIMITS: Record<Tier, TierLimits> = {
         maxOpsPerMonth: Infinity,
         policyEngine: 'advanced',
         threatDetection: 'advanced',
+        semanticLayer: 'custom',
+        maxSemanticCallsPerHour: Infinity,
         complianceReports: 'full-suite',
         approvals: 'advanced',
         dashboard: 'white-label',

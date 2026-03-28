@@ -265,6 +265,19 @@ const THREAT_CARDS = [
         href: "/features/prompt-shield",
         code: `shield: { enforce_deterministic: true, block_context_override: true }`,
     },
+    {
+        id: "context-attacks",
+        threat: "Context-Dependent Attacks",
+        solution: "AI Semantic Layer",
+        icon: <Brain className="w-7 h-7" />,
+        threatColor: "purple",
+        pain: "Your agent calls shutil.rmtree with target_dir set to '/'. Regex sees no banned string. The combination is the attack.",
+        stat: "Layer 2",
+        statLabel: "catches what regex can't see",
+        fix: "Layer 1 catches known patterns in <2ms. Layer 2 uses LLM analysis to detect context-dependent attacks that emerge from argument combinations, not individual strings.",
+        href: "/features/semantic-layer",
+        code: `semantic: { layer: "ai", thresholds: { deny: 0.85, review: 0.60 } }`,
+    },
 ];
 
 export function ThreatCardsGrid() {

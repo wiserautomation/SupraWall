@@ -4,7 +4,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Shield, AlertTriangle, Activity, Skull, Filter, RefreshCw, ChevronRight } from "lucide-react";
+import { Shield, AlertTriangle, Activity, Skull, Filter, RefreshCw, ChevronRight, Brain, BarChart3, Lock } from "lucide-react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "@/lib/firebase";
 
@@ -26,12 +26,39 @@ interface ThreatSummary {
     last_updated: string;
 }
 
+interface SemanticEntry {
+    id: number;
+    agent_id: string;
+    tool_name: string;
+    semantic_score: number;
+    anomaly_score: number | null;
+    confidence: string;
+    decision_override: string | null;
+    reasoning: string;
+    model_used: string;
+    latency_ms: number;
+    timestamp: string;
+}
+
+interface BaselineEntry {
+    agent_id: string;
+    tool_name: string;
+    avg_args_length: number;
+    avg_calls_per_hour: number;
+    common_arg_patterns: string[];
+    total_samples: number;
+    last_updated: string;
+}
+
 export default function ThreatIntelligencePage() {
     const [user] = useAuthState(auth);
     const [events, setEvents] = useState<ThreatEvent[]>([]);
     const [summaries, setSummaries] = useState<ThreatSummary[]>([]);
+    const [semanticEntries, setSemanticEntries] = useState<SemanticEntry[]>([]);
+    const [baselines, setBaselines] = useState<BaselineEntry[]>([]);
     const [loading, setLoading] = useState(true);
     const [aggregating, setAggregating] = useState(false);
+    const [activeTab, setActiveTab] = useState<'events' | 'semantic' | 'baselines'>('events');
 
     const API_BASE = "/api";
 
@@ -41,13 +68,17 @@ export default function ThreatIntelligencePage() {
         try {
             const tenantId = user.uid;
 
-            const [eventsRes, summaryRes] = await Promise.all([
+            const [eventsRes, summaryRes, semanticRes, baselinesRes] = await Promise.all([
                 fetch(`${API_BASE}/v1/threat/events?tenantId=${tenantId}`),
-                fetch(`${API_BASE}/v1/threat/summary?tenantId=${tenantId}`)
+                fetch(`${API_BASE}/v1/threat/summary?tenantId=${tenantId}`),
+                fetch(`${API_BASE}/v1/threat/semantic?tenantId=${tenantId}`),
+                fetch(`${API_BASE}/v1/threat/baselines?tenantId=${tenantId}`),
             ]);
 
             if (eventsRes.ok) setEvents(await eventsRes.json());
             if (summaryRes.ok) setSummaries(await summaryRes.json());
+            if (semanticRes.ok) setSemanticEntries(await semanticRes.json());
+            if (baselinesRes.ok) setBaselines(await baselinesRes.json());
         } catch (e) {
             console.error(e);
         } finally {
@@ -105,6 +136,31 @@ export default function ThreatIntelligencePage() {
                     </button>
                 </div>
             </div>
+
+            {/* Tab Navigation */}
+            <div className="flex gap-2 border-b border-white/[0.06] pb-0">
+                {([
+                    { key: 'events', label: 'Layer 1 Events', icon: Activity },
+                    { key: 'semantic', label: 'AI Semantic (Layer 2)', icon: Brain },
+                    { key: 'baselines', label: 'Behavioral Baselines', icon: BarChart3 },
+                ] as const).map(({ key, label, icon: Icon }) => (
+                    <button
+                        key={key}
+                        onClick={() => setActiveTab(key)}
+                        className={`flex items-center gap-2 px-4 py-3 text-[10px] font-black uppercase tracking-widest transition-all border-b-2 -mb-px ${
+                            activeTab === key
+                                ? 'border-emerald-500 text-emerald-400'
+                                : 'border-transparent text-neutral-500 hover:text-neutral-300'
+                        }`}
+                    >
+                        <Icon className="w-3 h-3" />
+                        {label}
+                    </button>
+                ))}
+            </div>
+
+            {/* ── Tab: Layer 1 Events ── */}
+            {activeTab === 'events' && <>
 
             {/* Aggregated Scores */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -185,6 +241,171 @@ export default function ThreatIntelligencePage() {
                     )}
                 </div>
             </div>
+
+            </>}
+
+            {/* ── Tab: AI Semantic Analysis (Layer 2) ── */}
+            {activeTab === 'semantic' && (
+                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/40 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.05] flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Brain className="w-3.5 h-3.5 text-emerald-400" />
+                            <h2 className="text-[11px] font-black uppercase tracking-widest text-white">Semantic Analysis Feed</h2>
+                        </div>
+                        <span className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">
+                            {semanticEntries.length} entries
+                        </span>
+                    </div>
+
+                    {semanticEntries.length === 0 && !loading ? (
+                        <div className="p-12 text-center">
+                            <Lock className="w-8 h-8 mx-auto mb-3 text-neutral-700" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">AI Semantic Layer</p>
+                            <p className="text-[10px] text-neutral-600">
+                                Upgrade to Growth tier for AI-powered contextual threat detection.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[10px]">
+                                <thead>
+                                    <tr className="border-b border-white/[0.06] text-neutral-500 font-black uppercase tracking-widest">
+                                        <th className="px-4 py-3 text-left">Timestamp</th>
+                                        <th className="px-4 py-3 text-left">Agent</th>
+                                        <th className="px-4 py-3 text-left">Tool</th>
+                                        <th className="px-4 py-3 text-center">Score</th>
+                                        <th className="px-4 py-3 text-center">Anomaly</th>
+                                        <th className="px-4 py-3 text-center">Confidence</th>
+                                        <th className="px-4 py-3 text-center">Decision</th>
+                                        <th className="px-4 py-3 text-left">Reasoning</th>
+                                        <th className="px-4 py-3 text-right">Latency</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/[0.04]">
+                                    {semanticEntries.map((entry) => (
+                                        <tr key={entry.id} className="hover:bg-white/[0.03] transition-colors">
+                                            <td className="px-4 py-3 text-neutral-400 whitespace-nowrap">
+                                                {new Date(entry.timestamp).toLocaleString()}
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <code className="text-emerald-400 bg-emerald-500/5 px-1 rounded">{entry.agent_id.slice(0, 12)}</code>
+                                            </td>
+                                            <td className="px-4 py-3 text-white font-bold">{entry.tool_name}</td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span className={`font-black ${
+                                                    entry.semantic_score >= 0.85 ? 'text-rose-400' :
+                                                    entry.semantic_score >= 0.6 ? 'text-amber-400' :
+                                                    entry.semantic_score >= 0.35 ? 'text-yellow-400' :
+                                                    'text-emerald-400'
+                                                }`}>
+                                                    {entry.semantic_score.toFixed(2)}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-center text-neutral-400">
+                                                {entry.anomaly_score !== null ? entry.anomaly_score.toFixed(2) : '—'}
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${
+                                                    entry.confidence === 'high' ? 'bg-rose-500/10 text-rose-400' :
+                                                    entry.confidence === 'medium' ? 'bg-amber-500/10 text-amber-400' :
+                                                    'bg-emerald-500/10 text-emerald-400'
+                                                }`}>
+                                                    {entry.confidence}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-center">
+                                                {entry.decision_override ? (
+                                                    <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase ${
+                                                        entry.decision_override === 'DENY' ? 'bg-rose-500/10 text-rose-400' :
+                                                        entry.decision_override === 'REQUIRE_APPROVAL' ? 'bg-amber-500/10 text-amber-400' :
+                                                        'bg-blue-500/10 text-blue-400'
+                                                    }`}>
+                                                        {entry.decision_override}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-neutral-600">—</span>
+                                                )}
+                                            </td>
+                                            <td className="px-4 py-3 text-neutral-400 max-w-[200px] truncate" title={entry.reasoning}>
+                                                {entry.reasoning}
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-neutral-500">{entry.latency_ms}ms</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* ── Tab: Behavioral Baselines ── */}
+            {activeTab === 'baselines' && (
+                <div className="rounded-2xl border border-white/[0.06] bg-neutral-900/40 overflow-hidden">
+                    <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.05] flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <BarChart3 className="w-3.5 h-3.5 text-emerald-400" />
+                            <h2 className="text-[11px] font-black uppercase tracking-widest text-white">Agent Behavioral Baselines</h2>
+                        </div>
+                        <span className="text-[9px] font-black text-neutral-500 uppercase tracking-widest">
+                            {baselines.length} baselines
+                        </span>
+                    </div>
+
+                    {baselines.length === 0 && !loading ? (
+                        <div className="p-12 text-center">
+                            <BarChart3 className="w-8 h-8 mx-auto mb-3 text-neutral-700" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">No Baselines Yet</p>
+                            <p className="text-[10px] text-neutral-600">
+                                Behavioral baselines are built automatically as agents make calls. Available on Business tier and above.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-[10px]">
+                                <thead>
+                                    <tr className="border-b border-white/[0.06] text-neutral-500 font-black uppercase tracking-widest">
+                                        <th className="px-4 py-3 text-left">Agent</th>
+                                        <th className="px-4 py-3 text-left">Tool</th>
+                                        <th className="px-4 py-3 text-right">Avg Args Length</th>
+                                        <th className="px-4 py-3 text-right">Calls/Hour</th>
+                                        <th className="px-4 py-3 text-left">Known Patterns</th>
+                                        <th className="px-4 py-3 text-right">Samples</th>
+                                        <th className="px-4 py-3 text-right">Last Updated</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/[0.04]">
+                                    {baselines.map((b, i) => (
+                                        <tr key={i} className="hover:bg-white/[0.03] transition-colors">
+                                            <td className="px-4 py-3">
+                                                <code className="text-emerald-400 bg-emerald-500/5 px-1 rounded">{b.agent_id.slice(0, 12)}</code>
+                                            </td>
+                                            <td className="px-4 py-3 text-white font-bold">{b.tool_name}</td>
+                                            <td className="px-4 py-3 text-right text-neutral-400">{Math.round(b.avg_args_length)}</td>
+                                            <td className="px-4 py-3 text-right text-neutral-400">{b.avg_calls_per_hour.toFixed(1)}</td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex gap-1 flex-wrap max-w-[200px]">
+                                                    {(b.common_arg_patterns || []).slice(0, 5).map((p: string, j: number) => (
+                                                        <span key={j} className="px-1.5 py-0.5 bg-white/[0.05] border border-white/[0.06] rounded text-[8px] text-neutral-400">{p}</span>
+                                                    ))}
+                                                    {(b.common_arg_patterns || []).length > 5 && (
+                                                        <span className="text-[8px] text-neutral-600">+{b.common_arg_patterns.length - 5}</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3 text-right text-neutral-400">{b.total_samples}</td>
+                                            <td className="px-4 py-3 text-right text-neutral-500 whitespace-nowrap">
+                                                {new Date(b.last_updated).toLocaleDateString()}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            )}
+
         </div>
     );
 }

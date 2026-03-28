@@ -41,14 +41,46 @@ helm install suprawall ./charts/suprawall -n suprawall-system --create-namespace
 
 ## API Endpoints
 
-- \`GET /health\` - Liveness probe
-- \`POST /v1/evaluate\` - Evaluates policy
+- `GET /health` - Liveness probe
+- `POST /v1/evaluate` - Evaluates policy (Layer 1 + optional Layer 2)
 
 Example Evaluate payload:
-\`\`\`json
+```json
 {
   "agentId": "agent_test",
   "toolName": "os.run",
   "arguments": { "command": "ls -la" }
 }
-\`\`\`
+```
+
+## Layer 2: AI Semantic Analysis Configuration
+
+Layer 2 adds LLM-powered contextual threat detection on top of the deterministic regex engine. It is tier-gated and requires an OpenAI API key.
+
+### Environment Variables
+
+| Variable | Default | Description |
+| -------- | ------- | ----------- |
+| `SUPRAWALL_SEMANTIC_LLM_KEY` | — | OpenAI API key for semantic analysis. Without this, Layer 2 silently degrades to passthrough. |
+| `SUPRAWALL_SEMANTIC_MODEL` | `gpt-4o-mini` | LLM model for analysis |
+| `SUPRAWALL_SEMANTIC_TIMEOUT_MS` | `300` | Max LLM call duration before abort |
+| `SUPRAWALL_DENY_THRESHOLD` | `0.85` | Score above which Layer 2 auto-DENYs |
+| `SUPRAWALL_APPROVAL_THRESHOLD` | `0.60` | Score above which Layer 2 routes to HITL |
+| `SUPRAWALL_FLAG_THRESHOLD` | `0.35` | Score above which Layer 2 flags in audit |
+
+### Database Tables
+
+Layer 2 creates three additional tables (auto-created by `initDb()`):
+
+- **`semantic_analysis_log`** — Audit trail for every Layer 2 decision (score, anomaly, confidence, reasoning, latency)
+- **`agent_behavioral_baselines`** — Running averages per agent/tool pair (args length, call patterns, sample count)
+- **`custom_model_endpoints`** — Enterprise customers' fine-tuned model configuration
+
+### Tier Gating
+
+| Tier | Semantic Layer |
+| ---- | -------------- |
+| Free / Starter | None (Layer 1 only) |
+| Growth | AI semantic analysis |
+| Business | Semantic + behavioral anomaly |
+| Enterprise | Semantic + behavioral + custom model |

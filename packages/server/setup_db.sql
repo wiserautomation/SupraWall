@@ -96,3 +96,56 @@ CREATE TABLE IF NOT EXISTS vault_secrets (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(tenant_id, secret_name)
 );
+
+-- ══════════════════════════════════════════════════════════════
+-- Layer 2: AI Semantic Analysis Engine
+-- ══════════════════════════════════════════════════════════════
+
+-- Behavioral Baselines — per-agent/per-tool running averages
+CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    avg_args_length FLOAT DEFAULT 0,
+    avg_calls_per_hour FLOAT DEFAULT 0,
+    common_arg_patterns JSONB DEFAULT '[]',
+    total_samples INTEGER DEFAULT 0,
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, agent_id, tool_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_baselines_tenant_agent
+    ON agent_behavioral_baselines(tenant_id, agent_id);
+
+-- Semantic Analysis Log — audit trail for every Layer 2 decision
+CREATE TABLE IF NOT EXISTS semantic_analysis_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    semantic_score FLOAT NOT NULL,
+    anomaly_score FLOAT,
+    confidence TEXT NOT NULL,
+    decision_override TEXT,
+    reasoning TEXT,
+    model_used TEXT,
+    latency_ms INTEGER,
+    parameters JSONB,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_semantic_log_tenant
+    ON semantic_analysis_log(tenant_id, timestamp DESC);
+
+-- Custom Model Endpoints — enterprise customers' fine-tuned models
+CREATE TABLE IF NOT EXISTS custom_model_endpoints (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id TEXT NOT NULL UNIQUE,
+    endpoint_url TEXT NOT NULL,
+    auth_header TEXT,
+    model_name TEXT,
+    max_latency_ms INTEGER DEFAULT 500,
+    enabled BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

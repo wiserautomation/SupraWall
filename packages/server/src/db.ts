@@ -183,6 +183,53 @@ export const initDb = async () => {
             published_at TIMESTAMP,
             created_at TIMESTAMP DEFAULT NOW()
         );
+
+        -- Layer 2: AI Semantic Analysis Engine
+        CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
+            id SERIAL PRIMARY KEY,
+            tenant_id VARCHAR(255) NOT NULL,
+            agent_id VARCHAR(255) NOT NULL,
+            tool_name VARCHAR(255) NOT NULL,
+            avg_args_length FLOAT DEFAULT 0,
+            avg_calls_per_hour FLOAT DEFAULT 0,
+            common_arg_patterns JSONB DEFAULT '[]',
+            total_samples INTEGER DEFAULT 0,
+            last_updated TIMESTAMP DEFAULT NOW(),
+            UNIQUE(tenant_id, agent_id, tool_name)
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_baselines_tenant_agent
+            ON agent_behavioral_baselines(tenant_id, agent_id);
+
+        CREATE TABLE IF NOT EXISTS semantic_analysis_log (
+            id SERIAL PRIMARY KEY,
+            tenant_id VARCHAR(255) NOT NULL,
+            agent_id VARCHAR(255) NOT NULL,
+            tool_name VARCHAR(255) NOT NULL,
+            semantic_score FLOAT NOT NULL,
+            anomaly_score FLOAT,
+            confidence VARCHAR(20) NOT NULL,
+            decision_override VARCHAR(20),
+            reasoning TEXT,
+            model_used VARCHAR(100),
+            latency_ms INTEGER,
+            parameters JSONB,
+            timestamp TIMESTAMP DEFAULT NOW()
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_semantic_log_tenant
+            ON semantic_analysis_log(tenant_id, timestamp DESC);
+
+        CREATE TABLE IF NOT EXISTS custom_model_endpoints (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            tenant_id VARCHAR(255) NOT NULL UNIQUE,
+            endpoint_url VARCHAR(500) NOT NULL,
+            auth_header VARCHAR(500),
+            model_name VARCHAR(100),
+            max_latency_ms INTEGER DEFAULT 500,
+            enabled BOOLEAN DEFAULT true,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
     `;
     await pool.query(query);
 };
