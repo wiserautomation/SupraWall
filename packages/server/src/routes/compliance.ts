@@ -5,6 +5,7 @@ import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import PDFDocument from "pdfkit";
 import { randomUUID } from "crypto";
+import { adminAuth, AuthenticatedRequest } from "../auth";
 import { logger } from "../logger";
 import { resolveTier, TieredRequest } from "../tier-guard";
 
@@ -12,9 +13,17 @@ const router = Router();
 
 // ─── GET /v1/compliance/status ────────────────────────────────────────────────
 
-router.get("/status", async (req: Request, res: Response) => {
+router.get("/status", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        // Security: Ensure query tenantId matches authenticated tenantId
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access compliance status of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const [approvalResult, auditResult, denyResult, oldestResult] = await Promise.all([
@@ -94,9 +103,17 @@ router.get("/status", async (req: Request, res: Response) => {
 
 // ─── GET /v1/compliance/report ────────────────────────────────────────────────
 
-router.get("/report", resolveTier, async (req: Request, res: Response) => {
+router.get("/report", adminAuth, resolveTier, async (req: Request, res: Response) => {
     try {
-        const { agentId, tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { agentId, tenantId: queryTenantId } = req.query;
+        
+        // Security: Ensure query tenantId matches authenticated tenantId
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access compliance report of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const tieredReq = req as TieredRequest;

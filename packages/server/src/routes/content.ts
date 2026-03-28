@@ -5,12 +5,20 @@ import express from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, gatekeeperAuth, AuthenticatedRequest } from "../auth";
+
 const router = express.Router();
 
-// GET /api/v1/content/published
-router.get("/published", async (req, res) => {
+// GET /api/v1/content/published (Admin Protected)
+router.get("/published", adminAuth, async (req, res) => {
     try {
-        const tenantId = req.query.tenantId || "default-tenant";
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access content of another tenant" });
+        }
         const result = await pool.query(
             `SELECT * FROM content_tasks 
              WHERE tenantid = $1 AND status = 'published' 
@@ -24,10 +32,12 @@ router.get("/published", async (req, res) => {
     }
 });
 
-// POST /api/v1/content/task (For agents to report published content)
-router.post("/task", async (req, res) => {
+// POST /api/v1/content/task (For agents to report published content - Gatekeeper Protected)
+router.post("/task", gatekeeperAuth, async (req, res) => {
     try {
-        const { tenantId, url, type, primary_keyword, status, published_at } = req.body;
+        const agent = (req as AuthenticatedRequest).agent!;
+        const tenantId = agent.tenantId;
+        const { url, type, primary_keyword, status, published_at } = req.body;
         
         const result = await pool.query(
             `INSERT INTO content_tasks (tenantid, url, type, primary_keyword, status, published_at)

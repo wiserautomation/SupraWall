@@ -8,7 +8,7 @@
 import { scrubResponse } from "../../src/scrubber";
 
 describe("Vault Scrubber", () => {
-    const secret = "sk_live_SUPERSECRET123abc";
+    const secret = "sk_live_@SUPER#SECRET$123";
 
     test("scrubs exact secret value from response string", () => {
         const result = scrubResponse(`The key is ${secret} please use it`, [secret]);

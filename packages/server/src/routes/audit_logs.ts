@@ -3,6 +3,7 @@
 
 import express, { Request, Response } from "express";
 import { pool } from "../db";
+import { adminAuth, AuthenticatedRequest } from "../auth";
 import { resolveTier, TieredRequest } from "../tier-guard";
 import { retentionCutoff } from "../tier-config";
 import { logger } from "../logger";
@@ -10,9 +11,17 @@ import { logger } from "../logger";
 const router = express.Router();
 
 // GET audit logs for a tenant (retention window enforced by tier)
-router.get("/", resolveTier, async (req: Request, res: Response) => {
+router.get("/", adminAuth, resolveTier, async (req: Request, res: Response) => {
     try {
-        const { tenantId, limit = 50, offset = 0 } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId, limit = 50, offset = 0 } = req.query;
+        
+        // Security: Ensure query tenantId matches authenticated tenantId
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access logs of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const tier = (req as TieredRequest).tier || "open_source";

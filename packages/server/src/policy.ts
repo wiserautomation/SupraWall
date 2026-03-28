@@ -353,7 +353,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         let hasVaultTokens = false;
 
         // argsString is already declared above
-        hasVaultTokens = /$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+/.test(argsString);
+        hasVaultTokens = /\$SUPRAWALL_VAULT_[A-Z][A-Z0-9_]+/.test(argsString);
 
         if (hasVaultTokens && decision !== "DENY") {
             vaultResult = await resolveVaultTokens(tenantId, agentId, toolName, args);

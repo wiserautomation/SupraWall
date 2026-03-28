@@ -5,12 +5,22 @@ import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = express.Router();
 
-// GET aggregate stats for a tenant
-router.get("/", async (req: Request, res: Response) => {
+// GET aggregate stats for a tenant (Admin Protected)
+router.get("/", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        // Security: Ensure query tenantId matches authenticated tenantId
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access stats of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         // Total calls

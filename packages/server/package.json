@@ -13,7 +13,8 @@
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",
-    "testTimeout": 30000
+    "testTimeout": 30000,
+    "setupFilesAfterEnv": ["<rootDir>/tests/setup.ts"]
   },
   "author": "SupraWall",
   "license": "Apache-2.0",

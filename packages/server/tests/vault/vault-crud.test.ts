@@ -31,6 +31,7 @@ describe("Vault CRUD — Secrets", () => {
     test("creates a secret and returns metadata (no value)", async () => {
         const res = await request(app)
             .post("/v1/vault/secrets")
+            .set("Authorization", "Bearer sw_admin_test")
             .send({
                 tenantId: TENANT,
                 secretName: "TEST_API_KEY",
@@ -49,7 +50,8 @@ describe("Vault CRUD — Secrets", () => {
 
     test("lists secrets without exposing encrypted values", async () => {
         const res = await request(app)
-            .get(`/v1/vault/secrets?tenantId=${TENANT}`);
+            .get(`/v1/vault/secrets?tenantId=${TENANT}`)
+            .set("Authorization", "Bearer sw_admin_test");
 
         expect(res.status).toBe(200);
         expect(res.body.length).toBeGreaterThan(0);
@@ -63,13 +65,15 @@ describe("Vault CRUD — Secrets", () => {
 
     test("rotates a secret and updates last_rotated_at", async () => {
         const originalRes = await request(app)
-            .get(`/v1/vault/secrets?tenantId=${TENANT}`);
+            .get(`/v1/vault/secrets?tenantId=${TENANT}`)
+            .set("Authorization", "Bearer sw_admin_test");
         const originalRotatedAt = originalRes.body[0].last_rotated_at;
 
         await new Promise(r => setTimeout(r, 10)); // ensure time difference
 
         const res = await request(app)
             .put(`/v1/vault/secrets/${createdId}/rotate`)
+            .set("Authorization", "Bearer sw_admin_test")
             .send({ tenantId: TENANT, newValue: "sk_test_newvalue" });
 
         expect(res.status).toBe(200);
@@ -81,6 +85,7 @@ describe("Vault CRUD — Secrets", () => {
     test("rejects duplicate secret names per tenant", async () => {
         const res = await request(app)
             .post("/v1/vault/secrets")
+            .set("Authorization", "Bearer sw_admin_test")
             .send({
                 tenantId: TENANT,
                 secretName: "TEST_API_KEY",
@@ -96,6 +101,7 @@ describe("Vault CRUD — Secrets", () => {
         for (const name of invalidNames) {
             const res = await request(app)
                 .post("/v1/vault/secrets")
+                .set("Authorization", "Bearer sw_admin_test")
                 .send({ tenantId: TENANT, secretName: name, secretValue: "val" });
             expect(res.status).toBe(400);
         }
@@ -105,21 +111,25 @@ describe("Vault CRUD — Secrets", () => {
         // Create a second secret and a rule for it
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set("Authorization", "Bearer sw_admin_test")
             .send({ tenantId: TENANT, secretName: "DELETE_ME_KEY", secretValue: "todelete" });
         const secretId = secretRes.body.id;
 
         await request(app)
             .post("/v1/vault/rules")
+            .set("Authorization", "Bearer sw_admin_test")
             .send({ tenantId: TENANT, agentId: "agent_test", secretId, allowedTools: [] });
 
         // Delete the secret
         const deleteRes = await request(app)
-            .delete(`/v1/vault/secrets/${secretId}?tenantId=${TENANT}`);
+            .delete(`/v1/vault/secrets/${secretId}?tenantId=${TENANT}`)
+            .set("Authorization", "Bearer sw_admin_test");
         expect(deleteRes.status).toBe(200);
 
         // Verify the access rule was also deleted (cascade)
         const rulesRes = await request(app)
-            .get(`/v1/vault/rules?tenantId=${TENANT}&agentId=agent_test`);
+            .get(`/v1/vault/rules?tenantId=${TENANT}&agentId=agent_test`)
+            .set("Authorization", "Bearer sw_admin_test");
         const rulesForDeleted = rulesRes.body.filter((r: any) => r.secret_id === secretId);
         expect(rulesForDeleted).toHaveLength(0);
     });

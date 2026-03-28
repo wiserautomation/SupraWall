@@ -183,6 +183,77 @@ router.post("/secrets", adminAuth, resolveTier, async (req: Request, res: Respon
     }
 });
 
+// POST /v1/vault/secrets/bulk — Bulk import secrets (Auth required)
+router.post("/secrets/bulk", adminAuth, resolveTier, async (req: Request, res: Response) => {
+    try {
+        const tenantId = (req as AuthenticatedRequest).tenantId!;
+        const { secrets } = req.body;
+        const tierLimits = (req as TieredRequest).tierLimits!;
+
+        if (!secrets || !Array.isArray(secrets)) {
+            return res.status(400).json({ error: "Missing or invalid 'secrets' array" });
+        }
+
+        if (secrets.length > 100) {
+            return res.status(400).json({ error: "Bulk import limit is 100 secrets per request." });
+        }
+
+        const stats = { created: [] as any[], skipped: [] as any[], errors: [] as any[] };
+
+        for (const item of secrets) {
+            const { secretName, secretValue, description, expiresAt, assignedAgents } = item;
+
+            if (!SECRET_NAME_PATTERN.test(secretName)) {
+                stats.errors.push({ secretName, error: "Invalid name format" });
+                continue;
+            }
+
+            try {
+                // Tier check inside loop (could be optimized)
+                const countRes = await pool.query("SELECT COUNT(*) FROM vault_secrets WHERE tenant_id = $1", [tenantId]);
+                if (parseInt(countRes.rows[0].count, 10) >= tierLimits.maxVaultSecrets) {
+                    stats.errors.push({ secretName, error: "Tier limit reached" });
+                    break; 
+                }
+
+                const result = await pool.query(
+                    `INSERT INTO vault_secrets (tenant_id, secret_name, encrypted_value, description, expires_at, assigned_agents)
+                     VALUES ($1, $2, pgp_sym_encrypt($3, $4), $5, $6, $7)
+                     RETURNING id, secret_name`,
+                    [tenantId, secretName, secretValue, process.env.VAULT_ENCRYPTION_KEY, description || null, expiresAt || null, assignedAgents || []]
+                );
+
+                const secret = result.rows[0];
+
+                // Sync rules
+                if (Array.isArray(assignedAgents)) {
+                    for (const agId of assignedAgents) {
+                        await pool.query(
+                            `INSERT INTO vault_access_rules (tenant_id, agent_id, secret_id, allowed_tools, max_uses_per_hour)
+                             VALUES ($1, $2, $3, '{}', 100)
+                             ON CONFLICT DO NOTHING`,
+                            [tenantId, agId, secret.id]
+                        );
+                    }
+                }
+
+                stats.created.push(secret);
+            } catch (e: any) {
+                if (e.code === "23505") {
+                    stats.skipped.push({ secretName });
+                } else {
+                    stats.errors.push({ secretName, error: e.message });
+                }
+            }
+        }
+
+        res.status(207).json(stats);
+    } catch (e: any) {
+        logger.error("Vault bulk import error:", e);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 // PATCH /v1/vault/secrets/:id — Update secret metadata and assignments (Auth required)
 router.patch("/secrets/:id", adminAuth, resolveTier, async (req: Request, res: Response) => {
     try {

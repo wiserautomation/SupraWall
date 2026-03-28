@@ -5,6 +5,8 @@ import { Router } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = Router();
 
 // GET /v1/approvals/status/:id - Poll for decision (SDK use case)
@@ -27,21 +29,23 @@ router.get("/status/:id", async (req, res) => {
 });
 
 // POST /v1/approvals/respond - Decision from Dashboard
-router.post("/respond", async (req, res) => {
+router.post("/respond", adminAuth, async (req, res) => {
     try {
-        const { id, decision, comment, userId } = req.body; // decision: approved | denied
+        const { id, decision, comment, userId } = req.body; 
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
 
+        // decision: approved | denied
         if (!['approved', 'denied'].includes(decision)) {
             return res.status(400).json({ error: "Invalid decision" });
         }
 
         const result = await pool.query(
-            "UPDATE approval_requests SET status = $1, decision_at = NOW(), decision_comment = $2, decision_by = $3 WHERE id = $4 RETURNING *",
-            [decision, comment, userId, id]
+            "UPDATE approval_requests SET status = $1, decision_at = NOW(), decision_comment = $2, decision_by = $3 WHERE id = $4 AND tenantid = $5 RETURNING *",
+            [decision, comment, userId, id, authenticatedTenantId]
         );
 
         if (result.rows.length === 0) {
-            return res.status(404).json({ error: "Approval request not found" });
+            return res.status(404).json({ error: "Approval request not found or unauthorized" });
         }
 
         res.json({ success: true, request: result.rows[0] });
@@ -51,13 +55,19 @@ router.post("/respond", async (req, res) => {
     }
 });
 
-// GET /v1/approvals/pending/:tenantId - List pending for dashboard
-router.get("/pending/:tenantId", async (req, res) => {
+// GET /v1/approvals/pending/:tenantId - List pending for dashboard (Admin Protected)
+router.get("/pending/:tenantId", adminAuth, async (req, res) => {
     try {
-        const { tenantId } = req.params;
+        const { tenantId: requestedTenantId } = req.params;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+
+        if (requestedTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access approvals of another tenant" });
+        }
+
         const result = await pool.query(
             "SELECT * FROM approval_requests WHERE tenantid = $1 AND status = 'pending' ORDER BY createdat DESC",
-            [tenantId]
+            [authenticatedTenantId]
         );
         res.json(result.rows);
     } catch (e) {

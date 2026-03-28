@@ -5,12 +5,22 @@ import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = express.Router();
 
 // ─── GET /v1/policies ──────────────────────────────────────────────────
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        // Security: Ensure query tenantId matches authenticated tenantId
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access policies of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
@@ -25,9 +35,16 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // ─── POST /v1/policies ─────────────────────────────────────────────────
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId, name, toolName, ruleType, description } = req.body;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: bodyTenantId, name, toolName, ruleType, description } = req.body;
+        
+        const tenantId = bodyTenantId || authenticatedTenantId;
+        if (bodyTenantId && bodyTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot create policies for another tenant" });
+        }
+
         if (!tenantId || !name || !ruleType) {
             return res.status(400).json({ error: "Missing required fields" });
         }
@@ -44,10 +61,17 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 // ─── DELETE /v1/policies/:id ───────────────────────────────────────────
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot delete policies of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         await pool.query(

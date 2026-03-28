@@ -86,7 +86,10 @@ export default function AgentDetailPage() {
     const pollAgent = async () => {
         if (!user || !agentId) return;
         try {
-            const res = await fetch(`/api/v1/agents/${agentId}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/agents/${agentId}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const data = await res.json() as Agent;
                 if (data.userId !== user.uid && data.tenantId !== user.uid) {
@@ -109,7 +112,10 @@ export default function AgentDetailPage() {
     const pollAudit = async () => {
         if (!user || !agentId) return;
         try {
-            const res = await fetch(`/api/v1/audit-logs?agentId=${agentId}&tenantId=${user.uid}&limit=50`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/audit-logs?agentId=${agentId}&tenantId=${user.uid}&limit=50`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const logs = await res.json();
                 setAuditLogs(logs);
@@ -122,7 +128,10 @@ export default function AgentDetailPage() {
     const pollPolicies = async () => {
         if (!user || !agentId) return;
         try {
-            const res = await fetch(`/api/v1/policies?agentId=${agentId}&tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/policies?agentId=${agentId}&tenantId=${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setAgentPolicies(data);
@@ -135,7 +144,10 @@ export default function AgentDetailPage() {
     const fetchSecrets = async () => {
         if (!user || !agentId) return;
         try {
-            const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/vault/secrets?tenantId=${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const allSecrets = await res.json() as VaultSecret[];
                 setAgentSecrets(allSecrets.filter(s => s.assigned_agents?.includes(agentId)));
@@ -165,12 +177,16 @@ export default function AgentDetailPage() {
     }, [user, agentId, authLoading]);
 
     const toggleStatus = async () => {
-        if (!agent) return;
+        if (!agent || !user) return;
         const newStatus = agent.status === 'active' ? 'paused' : 'active';
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/agents/${agentId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({ status: newStatus }),
             });
             if (res.ok) {
@@ -182,11 +198,15 @@ export default function AgentDetailPage() {
     };
 
     const handleUpdateAgent = async () => {
-        if (!agent) return;
+        if (!agent || !user) return;
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/agents/${agentId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({
                     name: editName,
                     scopes: editScopes
@@ -216,13 +236,17 @@ export default function AgentDetailPage() {
     };
 
     const handleRotateKey = async () => {
-        if (!agent || !confirm("Generating a new API key will immediately invalidate the current one. Continue?")) return;
+        if (!agent || !user || !confirm("Generating a new API key will immediately invalidate the current one. Continue?")) return;
         setIsRotatingKey(true);
         const newKey = generateApiKey();
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/agents/${agentId}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({ apiKey: newKey }),
             });
             if (res.ok) {
@@ -445,7 +469,7 @@ export default function AgentDetailPage() {
 
             {activeTab === 'guardrails' && (
                 <div className="max-w-3xl mx-auto">
-                    <GuardrailsPanel agent={agent} agentId={agentId} />
+                    <GuardrailsPanel agent={agent} agentId={agentId} user={user} />
                 </div>
             )}
 
@@ -740,7 +764,7 @@ Verify that calls to sensitive tools like \`db.drop_table\` are blocked.`;
     );
 }
 
-function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) {
+function GuardrailsPanel({ agent, agentId, user }: { agent: Agent; agentId: string; user: any }) {
     const [saving, setSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -765,6 +789,7 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
     const toList = (s: string) => s.split(',').map(x => x.trim()).filter(Boolean);
 
     const handleSave = async () => {
+        if (!user) return;
         setSaving(true);
         const guardrails: any = {};
         if (budgetEnabled && limitUsd) {
@@ -776,9 +801,13 @@ function GuardrailsPanel({ agent, agentId }: { agent: Agent; agentId: string }) 
             guardrails.piiScrubbing = { enabled: true, patterns: piiPatterns, action: piiAction };
         }
         try {
+            const idToken = await user.getIdToken();
             await fetch(`/api/v1/agents/${agentId}/guardrails`, {
                 method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
                 body: JSON.stringify(guardrails),
             });
             setSaveSuccess(true);

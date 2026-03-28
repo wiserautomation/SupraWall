@@ -12,9 +12,7 @@ beforeAll(async () => {
     await pool.query("DELETE FROM vault_secrets WHERE tenant_id = $1", [TENANT]);
 });
 
-afterAll(async () => {
-    await pool.query("DELETE FROM vault_secrets WHERE tenant_id = $1", [TENANT]);
-});
+const AUTH = { "Authorization": "Bearer sw_admin_test_bulk" };
 
 describe("Vault Bulk Import", () => {
     test("imports multiple secrets in one request", async () => {
@@ -26,6 +24,7 @@ describe("Vault Bulk Import", () => {
 
         const res = await request(app)
             .post("/v1/vault/secrets/bulk")
+            .set(AUTH)
             .send({ tenantId: TENANT, secrets });
 
         expect(res.status).toBe(207);
@@ -46,6 +45,7 @@ describe("Vault Bulk Import", () => {
 
         const res = await request(app)
             .post("/v1/vault/secrets/bulk")
+            .set(AUTH)
             .send({ tenantId: TENANT, secrets });
 
         expect(res.status).toBe(207);
@@ -62,6 +62,7 @@ describe("Vault Bulk Import", () => {
 
         const res = await request(app)
             .post("/v1/vault/secrets/bulk")
+            .set(AUTH)
             .send({ tenantId: TENANT, secrets });
 
         expect(res.status).toBe(207);
@@ -78,6 +79,7 @@ describe("Vault Bulk Import", () => {
 
         const res = await request(app)
             .post("/v1/vault/secrets/bulk")
+            .set(AUTH)
             .send({ tenantId: TENANT, secrets });
 
         expect(res.status).toBe(400);

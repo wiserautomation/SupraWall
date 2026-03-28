@@ -6,12 +6,21 @@ import { pool } from "../db";
 import { enforceSeatLimit, inviteMember } from "../seats";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = Router();
 
-// GET /v1/members — List organization members
-router.get("/", async (req: Request, res: Response) => {
+// GET /v1/members — List organization members (Admin Protected)
+router.get("/", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access members of another organization" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
@@ -26,10 +35,17 @@ router.get("/", async (req: Request, res: Response) => {
     }
 });
 
-// POST /v1/members/invite — Invite a new member
-router.post("/invite", enforceSeatLimit, async (req: Request, res: Response) => {
+// POST /v1/members/invite — Invite a new member (Admin Protected)
+router.post("/invite", adminAuth, enforceSeatLimit, async (req: Request, res: Response) => {
     try {
-        const { tenantId, email, role } = req.body;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: bodyTenantId, email, role } = req.body;
+        
+        const tenantId = bodyTenantId || authenticatedTenantId;
+        if (bodyTenantId && bodyTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot invite members to another organization" });
+        }
+
         if (!tenantId || !email) return res.status(400).json({ error: "Missing tenantId or email" });
 
         await inviteMember(tenantId as string, email as string, (role as string) || "member");
@@ -43,11 +59,18 @@ router.post("/invite", enforceSeatLimit, async (req: Request, res: Response) => 
     }
 });
 
-// DELETE /v1/members/:id — Remove a member
-router.delete("/:id", async (req: Request, res: Response) => {
+// DELETE /v1/members/:id — Remove a member (Admin Protected)
+router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot remove members from another organization" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
@@ -63,11 +86,18 @@ router.delete("/:id", async (req: Request, res: Response) => {
     }
 });
 
-// PATCH /v1/members/:id/role — Update member role
-router.patch("/:id/role", async (req: Request, res: Response) => {
+// PATCH /v1/members/:id/role — Update member role (Admin Protected)
+router.patch("/:id/role", adminAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { tenantId, role } = req.body;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: bodyTenantId, role } = req.body;
+        
+        const tenantId = bodyTenantId || authenticatedTenantId;
+        if (bodyTenantId && bodyTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot update roles in another organization" });
+        }
+
         if (!tenantId || !role) return res.status(400).json({ error: "Missing tenantId or role" });
 
         const result = await pool.query(

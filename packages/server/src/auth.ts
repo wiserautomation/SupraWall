@@ -4,6 +4,7 @@
 import { Request, Response, NextFunction } from "express";
 import { timingSafeEqual } from "crypto";
 import { pool } from "./db";
+import { getAuth } from "./firebase";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
 import { logger } from "./logger";
@@ -67,19 +68,30 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     const masterKey = authHeader.split(" ")[1];
 
     try {
-        // Look up the tenant by master_api_key directly instead of scanning all tenants.
-        // Uses constant-time comparison via parameterized query (DB handles equality).
+        // 1. Try resolving via Master API Key
         const result = await pool.query(
             "SELECT id FROM tenants WHERE master_api_key = $1 LIMIT 1",
             [masterKey]
         );
 
-        if (result.rows.length === 0) {
-            return res.status(401).json({ error: "Unauthorized: Invalid Master API Key." });
+        if (result.rows.length > 0) {
+            (req as AuthenticatedRequest).tenantId = result.rows[0].id;
+            return next();
         }
 
-        (req as AuthenticatedRequest).tenantId = result.rows[0].id;
-        next();
+        // 2. Try resolving via Firebase ID Token
+        const firebaseAdmin = require("./firebase").admin;
+        if (firebaseAdmin) {
+            try {
+                const decodedToken = await firebaseAdmin.auth().verifyIdToken(masterKey);
+                (req as AuthenticatedRequest).tenantId = decodedToken.uid;
+                return next();
+            } catch (fbErr) {
+                // Not a valid Firebase token either
+            }
+        }
+
+        return res.status(401).json({ error: "Unauthorized: Invalid Master API Key or Session Token." });
     } catch (error) {
         logger.error("[AdminAuth] Error:", { error });
         res.status(500).json({ error: "Internal authentication error" });
@@ -90,9 +102,34 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
  * Gatekeeper authentication middleware.
  * Validates agent API keys using the configured AuthProvider.
  */
-export const gatekeeperAuth = async (req: Request, res: Response, next: NextFunction) => {
-    // 1. Extract API Key
-    const apiKey = (req.headers["x-api-key"] as string) || req.body.apiKey;
+export async function gatekeeperAuth(req: Request, res: Response, next: NextFunction) {
+    let apiKey = req.body.apiKey || req.headers["x-api-key"];
+    const authHeader = req.headers.authorization;
+
+    // Support Bearer Token (Master Key or Firebase Token) in gatekeeper as well
+    if (!apiKey && authHeader && authHeader.startsWith("Bearer ")) {
+        const token = authHeader.substring(7);
+        
+        // 1. Try resolving as Master API Key
+        const masterRes = await pool.query(
+            "SELECT id FROM tenants WHERE master_api_key = $1",
+            [token]
+        );
+        if (masterRes.rows.length === 0) {
+            // 2. Try Firebase ID Token
+            try {
+                const firebaseAuth = getAuth();
+                const decoded = await firebaseAuth.verifyIdToken(token);
+                (req as AuthenticatedRequest).tenantId = decoded.uid;
+                return next();
+            } catch (e) {
+                // Fall through to error
+            }
+        } else {
+            (req as AuthenticatedRequest).tenantId = masterRes.rows[0].id;
+            return next();
+        }
+    }
 
     if (!apiKey) {
         return res.status(401).json({

@@ -26,6 +26,7 @@ beforeAll(async () => {
     // Create test secret
     const res = await request(app)
         .post("/v1/vault/secrets")
+        .set(AUTH)
         .send({ tenantId: TENANT, secretName: SECRET_NAME, secretValue: SECRET_VALUE });
     secretId = res.body.id;
 });
@@ -38,10 +39,13 @@ function vaultToken(name: string) {
     return `$SUPRAWALL_VAULT_${name}`;
 }
 
+const AUTH = { "Authorization": "Bearer sw_admin_test_injection" };
+
 describe("Vault Injection — Policy Evaluation", () => {
     test("does not modify arguments with no vault tokens", async () => {
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({ agentId: AGENT, toolName: TOOL, arguments: { amount: 100 }, tenantId: TENANT });
 
         expect(res.body.decision).toBe("ALLOW");
@@ -52,6 +56,7 @@ describe("Vault Injection — Policy Evaluation", () => {
     test("denies when agent lacks access rule (no rule created)", async () => {
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: TOOL,
@@ -66,6 +71,7 @@ describe("Vault Injection — Policy Evaluation", () => {
     test("logs NOT_FOUND for missing secret", async () => {
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: TOOL,
@@ -76,7 +82,8 @@ describe("Vault Injection — Policy Evaluation", () => {
         expect(res.body.decision).toBe("DENY");
 
         const logRes = await request(app)
-            .get(`/v1/vault/log?tenantId=${TENANT}&limit=5`);
+            .get(`/v1/vault/log?tenantId=${TENANT}&limit=5`)
+            .set(AUTH);
         const notFound = logRes.body.find((e: any) => e.action === "NOT_FOUND");
         expect(notFound).toBeDefined();
     });
@@ -85,6 +92,7 @@ describe("Vault Injection — Policy Evaluation", () => {
         beforeAll(async () => {
             await request(app)
                 .post("/v1/vault/rules")
+                .set(AUTH)
                 .send({
                     tenantId: TENANT,
                     agentId: AGENT,
@@ -97,6 +105,7 @@ describe("Vault Injection — Policy Evaluation", () => {
         test("resolves token when agent has access", async () => {
             const res = await request(app)
                 .post("/v1/evaluate")
+                .set(AUTH)
                 .send({
                     agentId: AGENT,
                     toolName: TOOL,
@@ -113,6 +122,7 @@ describe("Vault Injection — Policy Evaluation", () => {
         test("denies when tool is not in allowed_tools list", async () => {
             const res = await request(app)
                 .post("/v1/evaluate")
+                .set(AUTH)
                 .send({
                     agentId: AGENT,
                     toolName: "bash",
@@ -126,7 +136,8 @@ describe("Vault Injection — Policy Evaluation", () => {
 
         test("logs every vault access with correct action", async () => {
             const logRes = await request(app)
-                .get(`/v1/vault/log?tenantId=${TENANT}&limit=20`);
+                .get(`/v1/vault/log?tenantId=${TENANT}&limit=20`)
+                .set(AUTH);
 
             const actions = logRes.body.map((e: any) => e.action);
             expect(actions).toContain("INJECTED");
@@ -137,13 +148,16 @@ describe("Vault Injection — Policy Evaluation", () => {
             // Create a second secret and rule
             const res2 = await request(app)
                 .post("/v1/vault/secrets")
+                .set(AUTH)
                 .send({ tenantId: TENANT, secretName: "SECOND_TEST_KEY", secretValue: "second_value_xyz" });
             await request(app)
                 .post("/v1/vault/rules")
+                .set(AUTH)
                 .send({ tenantId: TENANT, agentId: AGENT, secretId: res2.body.id, allowedTools: [TOOL] });
 
             const res = await request(app)
                 .post("/v1/evaluate")
+                .set(AUTH)
                 .send({
                     agentId: AGENT,
                     toolName: TOOL,
@@ -163,6 +177,7 @@ describe("Vault Injection — Policy Evaluation", () => {
         test("fails closed (DENY) if any token fails to resolve", async () => {
             const res = await request(app)
                 .post("/v1/evaluate")
+                .set(AUTH)
                 .send({
                     agentId: AGENT,
                     toolName: TOOL,
@@ -181,6 +196,7 @@ describe("Vault Injection — Policy Evaluation", () => {
         // Create a secret with past expiry
         const expiredRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({
                 tenantId: TENANT,
                 secretName: "EXPIRED_KEY",
@@ -189,10 +205,12 @@ describe("Vault Injection — Policy Evaluation", () => {
             });
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId: expiredRes.body.id, allowedTools: [] });
 
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: TOOL,

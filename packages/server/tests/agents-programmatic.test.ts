@@ -16,16 +16,18 @@ jest.mock("../src/db", () => ({
 }));
 
 // Mock firebase
+const mockFirestore = {
+    collection: jest.fn().mockReturnThis(),
+    doc: jest.fn().mockReturnThis(),
+    set: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn().mockResolvedValue({ exists: true, data: () => ({}) }),
+    delete: jest.fn().mockResolvedValue(undefined),
+    where: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+};
+
 jest.mock("../src/firebase", () => ({
-    getFirestore: jest.fn(() => ({
-        collection: jest.fn().mockReturnThis(),
-        doc: jest.fn().mockReturnThis(),
-        set: jest.fn().mockResolvedValue(undefined),
-        get: jest.fn().mockResolvedValue({ exists: true, data: () => ({}) }),
-        delete: jest.fn().mockResolvedValue(undefined),
-        where: jest.fn().mockReturnThis(),
-        limit: jest.fn().mockReturnThis(),
-    })),
+    getFirestore: jest.fn(() => mockFirestore),
     logToFirestore: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -57,11 +59,14 @@ describe("Programmatic Agent API (Mocked)", () => {
 
     describe("Agent Creation (POST /v1/agents)", () => {
         test("successfully creates an agent with guardrails", async () => {
-            // Mock auth lookup
+            // 1. adminAuth
             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ id: TENANT_ID }] });
 
-            // Mock resolveTier middleware (returns 'developer' tier)
+            // 2. resolveTier
             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ tier: 'developer' }] });
+
+            // 3. Agent count check (if tier limits are enforced)
+            (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ count: '0' }] });
 
             // Mock DB client for transaction
             const mockClient = {
@@ -122,9 +127,8 @@ describe("Programmatic Agent API (Mocked)", () => {
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
 
             // Verify Firestore write
-            const db = getFirestore();
-            expect(db?.collection).toHaveBeenCalledWith("agents");
-            expect(db?.doc).toHaveBeenCalled();
+            expect(mockFirestore.collection).toHaveBeenCalledWith("agents");
+            expect(mockFirestore.doc).toHaveBeenCalled();
         });
     });
 
@@ -144,7 +148,7 @@ describe("Programmatic Agent API (Mocked)", () => {
         });
     });
 
-    describe("Agent Revenue (DELETE /v1/agents/:id)", () => {
+    describe("Agent Revocation (DELETE /v1/agents/:id)", () => {
         test("successfully revokes an agent", async () => {
             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ id: TENANT_ID }] });
             
@@ -164,8 +168,7 @@ describe("Programmatic Agent API (Mocked)", () => {
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
-            const db = getFirestore();
-            expect(db?.doc).toHaveBeenCalledWith("some-id");
+            expect(mockFirestore.doc).toHaveBeenCalledWith("some-id");
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
         });
     });

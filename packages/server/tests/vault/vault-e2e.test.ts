@@ -23,11 +23,14 @@ afterAll(async () => {
     await pool.query("DELETE FROM vault_secrets WHERE tenant_id = $1", [TENANT]);
 });
 
+const AUTH = { "Authorization": "Bearer sw_admin_test_e2e" };
+
 describe("Vault E2E", () => {
     test("Full flow: create secret → create rule → evaluate with token → get resolved args", async () => {
         // 1. Create secret
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({ tenantId: TENANT, secretName: "E2E_STRIPE_KEY", secretValue: "sk_live_e2e_test_abc" });
         expect(secretRes.status).toBe(201);
         const secretId = secretRes.body.id;
@@ -35,12 +38,14 @@ describe("Vault E2E", () => {
         // 2. Create access rule
         const ruleRes = await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId, allowedTools: ["charge_card"], maxUsesPerHour: 10 });
         expect(ruleRes.status).toBe(201);
 
         // 3. Evaluate with vault token
         const evalRes = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "charge_card",
@@ -56,7 +61,8 @@ describe("Vault E2E", () => {
 
         // 4. Verify audit log
         const logRes = await request(app)
-            .get(`/v1/vault/log?tenantId=${TENANT}&agentId=${AGENT}`);
+            .get(`/v1/vault/log?tenantId=${TENANT}&agentId=${AGENT}`)
+            .set(AUTH);
         const injected = logRes.body.find((e: any) => e.action === "INJECTED" && e.secret_name === "E2E_STRIPE_KEY");
         expect(injected).toBeDefined();
     });
@@ -64,11 +70,13 @@ describe("Vault E2E", () => {
     test("Full flow: agent without access → DENY", async () => {
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({ tenantId: TENANT, secretName: "RESTRICTED_KEY", secretValue: "restricted_value" });
         // No access rule created for AGENT
 
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "any_tool",
@@ -82,15 +90,18 @@ describe("Vault E2E", () => {
     test("Full flow: correct tool → INJECT, wrong tool → DENY", async () => {
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({ tenantId: TENANT, secretName: "TOOL_SCOPED_KEY", secretValue: "scoped_value_xyz" });
         const secretId = secretRes.body.id;
 
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId, allowedTools: ["allowed_tool"] });
 
         const allowed = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "allowed_tool",
@@ -102,6 +113,7 @@ describe("Vault E2E", () => {
 
         const denied = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "wrong_tool",
@@ -114,16 +126,19 @@ describe("Vault E2E", () => {
     test("Full flow: secret rotation → next call gets new value", async () => {
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({ tenantId: TENANT, secretName: "ROTATABLE_KEY", secretValue: "old_value" });
         const secretId = secretRes.body.id;
 
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId, allowedTools: [] });
 
         // Call before rotation
         const before = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "some_tool",
@@ -135,11 +150,13 @@ describe("Vault E2E", () => {
         // Rotate
         await request(app)
             .put(`/v1/vault/secrets/${secretId}/rotate`)
+            .set(AUTH)
             .send({ tenantId: TENANT, newValue: "new_rotated_value" });
 
         // Call after rotation
         const after = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: "some_tool",
@@ -153,10 +170,12 @@ describe("Vault E2E", () => {
         const SECRET_VALUE = "sk_live_scrub_test_abc123";
         const secretRes = await request(app)
             .post("/v1/vault/secrets")
+            .set(AUTH)
             .send({ tenantId: TENANT, secretName: "SCRUB_TEST_KEY", secretValue: SECRET_VALUE });
 
         const scrubRes = await request(app)
             .post("/v1/scrub")
+            .set(AUTH)
             .send({
                 tenantId: TENANT,
                 secretNames: ["SCRUB_TEST_KEY"],

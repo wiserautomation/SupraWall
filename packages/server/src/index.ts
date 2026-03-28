@@ -31,6 +31,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Global Middleware
 app.use(cors());
 app.use(express.json());
 
@@ -43,9 +44,6 @@ app.get("/health", async (req, res) => {
         res.status(503).json({ status: "degraded", database: "disconnected" });
     }
 });
-
-// Global Tier Resolution for all V1 routes
-app.use("/v1", resolveTier);
 
 // Policy Evaluation Webhook (rate limited: 120 req/min per IP)
 const evaluateRateLimit = rateLimit({ max: 120, windowMs: 60_000, message: "Evaluate rate limit exceeded. Upgrade your plan or reduce request frequency." });
@@ -103,7 +101,9 @@ if (process.env.NODE_ENV !== 'test' && (process.env.NODE_ENV !== "production" ||
 
             // Start daily log purging
             purgeOldLogs().catch(err => logger.error("[Purge] Startup error:", err));
-            setInterval(purgeOldLogs, 24 * 60 * 60 * 1000); // Once every 24h
+            if (process.env.NODE_ENV !== 'test') {
+                setInterval(purgeOldLogs, 24 * 60 * 60 * 1000); // Once every 24h
+            }
 
             app.listen(port, () => {
                 logger.info(`[SupraWall] Gateway listening on port ${port} (Mode: ${process.env.SUPRAWALL_MODE || 'cloud'})`);

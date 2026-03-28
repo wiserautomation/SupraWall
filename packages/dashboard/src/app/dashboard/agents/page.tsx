@@ -201,7 +201,12 @@ export default function AgentsPage() {
         // Poll Agents from our internal API (bypasses ad-blockers)
         const loadAgents = async () => {
             try {
-                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                const idToken = await user.getIdToken();
+                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`, {
+                    headers: {
+                        'Authorization': `Bearer ${idToken}`
+                    }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     setAgents(data.sort((a: Agent, b: Agent) => {
@@ -323,9 +328,13 @@ export default function AgentsPage() {
         const apiKey = generateApiKey();
 
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch('/api/v1/agents', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${idToken}`
+                },
                 body: JSON.stringify({
                     name: newAgentName,
                     userId: user.uid,
@@ -357,10 +366,14 @@ export default function AgentsPage() {
     };
 
     const deleteAgent = async (agentId: string) => {
-        if (!confirm("Are you sure you want to delete this agent? This action is irreversible.")) return;
+        if (!user || !confirm("Are you sure you want to delete this agent? This action is irreversible.")) return;
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/agents/${agentId}`, {
                 method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${idToken}`
+                }
             });
             if (!res.ok) {
                 const data = await res.json();

@@ -16,6 +16,8 @@ const SECRET_NAME = "RATE_TEST_KEY";
 
 let secretId: string;
 
+const AUTH = { "Authorization": "Bearer sw_admin_test_ratelimit" };
+
 beforeAll(async () => {
     await pool.query("DELETE FROM vault_access_rules WHERE tenant_id = $1", [TENANT]);
     await pool.query("DELETE FROM vault_access_log WHERE tenant_id = $1", [TENANT]);
@@ -24,6 +26,7 @@ beforeAll(async () => {
 
     const res = await request(app)
         .post("/v1/vault/secrets")
+        .set(AUTH)
         .send({ tenantId: TENANT, secretName: SECRET_NAME, secretValue: "rate_test_value" });
     secretId = res.body.id;
 });
@@ -36,10 +39,12 @@ describe("Vault Rate Limiting", () => {
     test("allows calls within rate limit", async () => {
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId, allowedTools: [], maxUsesPerHour: 3 });
 
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT,
                 toolName: TOOL,
@@ -52,14 +57,19 @@ describe("Vault Rate Limiting", () => {
 
     test("blocks calls exceeding rate limit", async () => {
         // Delete existing rule and create one with limit=1
-        const rulesRes = await request(app).get(`/v1/vault/rules?tenantId=${TENANT}&agentId=${AGENT}`);
+        const rulesRes = await request(app)
+            .get(`/v1/vault/rules?tenantId=${TENANT}&agentId=${AGENT}`)
+            .set(AUTH);
         for (const rule of rulesRes.body) {
-            await request(app).delete(`/v1/vault/rules/${rule.id}?tenantId=${TENANT}`);
+            await request(app)
+                .delete(`/v1/vault/rules/${rule.id}?tenantId=${TENANT}`)
+                .set(AUTH);
         }
         await pool.query("DELETE FROM vault_rate_limits WHERE tenant_id = $1", [TENANT]);
 
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT, secretId, allowedTools: [], maxUsesPerHour: 1 });
 
         const payload = {
@@ -70,11 +80,11 @@ describe("Vault Rate Limiting", () => {
         };
 
         // First call: should be ALLOW (uses up the 1 allowed)
-        const first = await request(app).post("/v1/evaluate").send(payload);
+        const first = await request(app).post("/v1/evaluate").set(AUTH).send(payload);
         expect(first.body.decision).toBe("ALLOW");
 
         // Second call: should be DENY (rate limit exceeded)
-        const second = await request(app).post("/v1/evaluate").send(payload);
+        const second = await request(app).post("/v1/evaluate").set(AUTH).send(payload);
         expect(second.body.decision).toBe("DENY");
         expect(second.body.reason).toContain("Vault access denied");
     });
@@ -83,9 +93,13 @@ describe("Vault Rate Limiting", () => {
         const AGENT_B = "other-agent";
 
         // Give AGENT_B its own rule and clean rate limit state
-        const rulesRes = await request(app).get(`/v1/vault/rules?tenantId=${TENANT}&agentId=${AGENT_B}`);
+        const rulesRes = await request(app)
+            .get(`/v1/vault/rules?tenantId=${TENANT}&agentId=${AGENT_B}`)
+            .set(AUTH);
         for (const rule of rulesRes.body) {
-            await request(app).delete(`/v1/vault/rules/${rule.id}?tenantId=${TENANT}`);
+            await request(app)
+                .delete(`/v1/vault/rules/${rule.id}?tenantId=${TENANT}`)
+                .set(AUTH);
         }
         await pool.query(
             "DELETE FROM vault_rate_limits WHERE tenant_id = $1 AND agent_id = $2",
@@ -94,10 +108,12 @@ describe("Vault Rate Limiting", () => {
 
         await request(app)
             .post("/v1/vault/rules")
+            .set(AUTH)
             .send({ tenantId: TENANT, agentId: AGENT_B, secretId, allowedTools: [], maxUsesPerHour: 5 });
 
         const res = await request(app)
             .post("/v1/evaluate")
+            .set(AUTH)
             .send({
                 agentId: AGENT_B,
                 toolName: TOOL,

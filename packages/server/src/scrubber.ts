@@ -7,13 +7,24 @@ export function scrubResponse(response: any, secretValues: string[]): any {
     let responseString = typeof response === "string" ? response : JSON.stringify(response);
 
     for (const secret of secretValues) {
-        responseString = responseString.split(secret).join("[REDACTED]");
-
+        // Specialized encodings FIRST
         const base64 = Buffer.from(secret).toString("base64");
-        responseString = responseString.split(base64).join("[REDACTED_B64]");
+        if (base64 !== secret) {
+            responseString = responseString.split(base64).join("[REDACTED_B64]");
+        }
 
         const urlEncoded = encodeURIComponent(secret);
-        responseString = responseString.split(urlEncoded).join("[REDACTED_URL]");
+        if (urlEncoded !== secret) {
+            responseString = responseString.split(urlEncoded).join("[REDACTED_URL]");
+        }
+
+        const hexEncoded = Buffer.from(secret).toString("hex");
+        if (hexEncoded !== secret) {
+            responseString = responseString.split(hexEncoded).join("[REDACTED_HEX]");
+        }
+
+        // Plain secret LAST
+        responseString = responseString.split(secret).join("[REDACTED]");
 
         if (secret.length > 12) {
             const partialStart = secret.substring(0, 8);
@@ -24,11 +35,6 @@ export function scrubResponse(response: any, secretValues: string[]): any {
             if (partialEnd.length >= 6) {
                 responseString = responseString.split(partialEnd).join("[REDACTED_PARTIAL]");
             }
-        }
-
-        const hexEncoded = Buffer.from(secret).toString("hex");
-        if (hexEncoded !== secret) {
-            responseString = responseString.split(hexEncoded).join("[REDACTED_HEX]");
         }
     }
 

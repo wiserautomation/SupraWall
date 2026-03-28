@@ -18,12 +18,14 @@ interface RateLimitEntry {
 const store = new Map<string, RateLimitEntry>();
 
 // Clean up expired entries every 60 seconds to prevent memory leaks
-setInterval(() => {
-    const now = Date.now();
-    for (const [key, entry] of store) {
-        if (now > entry.resetAt) store.delete(key);
-    }
-}, 60_000);
+if (process.env.NODE_ENV !== 'test') {
+    setInterval(() => {
+        const now = Date.now();
+        for (const [key, entry] of store) {
+            if (now > entry.resetAt) store.delete(key);
+        }
+    }, 60_000);
+}
 
 interface RateLimitOptions {
     /** Maximum requests per window */

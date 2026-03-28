@@ -42,6 +42,7 @@ try {
 }
 
 export const getFirestore = () => db;
+export const getAuth = () => admin ? admin.auth() : null;
 
 /**
  * Mirror an audit log to Firestore.

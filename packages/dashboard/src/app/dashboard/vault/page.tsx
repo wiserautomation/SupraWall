@@ -143,7 +143,8 @@ export default function VaultPage() {
         const pollAgents = async () => {
             if (document.hidden) return; // Skip polling when tab is not visible
             try {
-                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                const headers = await getAuthHeaders();
+                const res = await fetch(`/api/v1/agents?tenantId=${user.uid}`, { headers });
                 if (res.ok) {
                     const data = await res.json();
                     setAgents(data);

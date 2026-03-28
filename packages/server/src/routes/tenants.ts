@@ -5,12 +5,19 @@ import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = express.Router();
 
-// GET tenant settings
-router.get("/:id", async (req: Request, res: Response) => {
+// GET tenant settings (Admin Protected)
+router.get("/:id", adminAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+
+        if (id !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access settings of another tenant" });
+        }
         const result = await pool.query("SELECT * FROM tenants WHERE id = $1", [id]);
         if (result.rows.length === 0) {
             // Auto-create tenant on first access if needed, or return empty
@@ -23,10 +30,15 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 });
 
-// UPDATE tenant settings
-router.post("/:id", async (req: Request, res: Response) => {
+// UPDATE tenant settings (Admin Protected)
+router.post("/:id", adminAuth, async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+
+        if (id !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot update settings of another tenant" });
+        }
         const body = req.body;
 
         // Whitelist allowed columns to prevent SQL injection

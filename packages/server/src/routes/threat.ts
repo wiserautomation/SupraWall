@@ -5,6 +5,8 @@ import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
+import { adminAuth, AuthenticatedRequest } from "../auth";
+
 const router = Router();
 
 // ─── POST /v1/threat/log ───────────────────────────────────────────────────
@@ -31,9 +33,16 @@ router.post("/log", async (req: Request, res: Response) => {
 });
 
 // ─── GET /v1/threat/events ────────────────────────────────────────────────
-router.get("/events", async (req: Request, res: Response) => {
+router.get("/events", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId, limit = 50, offset = 0 } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId, limit = 50, offset = 0 } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access threat events of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
@@ -49,9 +58,16 @@ router.get("/events", async (req: Request, res: Response) => {
 });
 
 // ─── GET /v1/threat/summary ────────────────────────────────────────────────
-router.get("/summary", async (req: Request, res: Response) => {
+router.get("/summary", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.query;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: queryTenantId } = req.query;
+        
+        const tenantId = queryTenantId || authenticatedTenantId;
+        if (queryTenantId && queryTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot access threat summary of another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
@@ -68,9 +84,16 @@ router.get("/summary", async (req: Request, res: Response) => {
 
 // ─── POST /v1/threat/aggregate ─────────────────────────────────────────────
 // Manually trigger aggregation (normally a cron job)
-router.post("/aggregate", async (req: Request, res: Response) => {
+router.post("/aggregate", adminAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId } = req.body;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
+        const { tenantId: bodyTenantId } = req.body;
+        
+        const tenantId = bodyTenantId || authenticatedTenantId;
+        if (bodyTenantId && bodyTenantId !== authenticatedTenantId) {
+            return res.status(403).json({ error: "Forbidden: Cannot aggregate threat data for another tenant" });
+        }
+
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         // Simple aggregation logic: 
