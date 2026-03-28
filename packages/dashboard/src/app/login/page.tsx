@@ -18,7 +18,7 @@ const ADMIN_EMAILS = ["peghin@gmail.com"];
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [isRegistering, setIsRegistering] = useState(false);
+    const isRegistering = false; // Registration disabled
     const [error, setError] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const router = useRouter();
@@ -172,19 +172,9 @@ export default function LoginPage() {
                     </form>
 
                     <div className="mt-10 text-center">
-                        <button
-                            onClick={() => {
-                                setIsRegistering(!isRegistering);
-                                setError("");
-                            }}
-                            className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-600 hover:text-emerald-400 transition-all group"
-                        >
-                            {isRegistering ? (
-                                <>Return to <span className="text-neutral-400 group-hover:text-emerald-400">Login Base</span></>
-                            ) : (
-                                <>Authorized Access Only • <span className="text-neutral-400 group-hover:text-emerald-400 underline underline-offset-4 decoration-white/10">Register Operator</span></>
-                            )}
-                        </button>
+                        <p className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-600 italic">
+                            Authorized Access Only • System Locked
+                        </p>
                     </div>
                 </div>
 

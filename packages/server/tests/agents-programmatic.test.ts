@@ -58,11 +58,14 @@ describe("Programmatic Agent API (Mocked)", () => {
         test("successfully creates an agent with guardrails", async () => {
             // Mock auth lookup
             (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ id: TENANT_ID }] });
-            
+
+            // Mock resolveTier middleware (returns 'developer' tier)
+            (pool.query as jest.Mock).mockResolvedValueOnce({ rows: [{ tier: 'developer' }] });
+
             // Mock DB client for transaction
             const mockClient = {
-                query: jest.fn().mockResolvedValue({ 
-                    rows: [{ id: "new-agent-id", name: "test-agent", createdat: new Date() }] 
+                query: jest.fn().mockResolvedValue({
+                    rows: [{ id: "new-agent-id", name: "test-agent", createdat: new Date() }]
                 }),
                 release: jest.fn(),
             };

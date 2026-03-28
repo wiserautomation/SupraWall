@@ -121,7 +121,17 @@ export async function resolveVaultTokens(
     try {
         parsedArgs = JSON.parse(resolvedArgsString);
     } catch (parseErr) {
-        return { success: false, resolvedArgs: args, injectedSecrets: [], secretValues: [], errors: ["Failed to parse resolved arguments after vault injection."] };
+        return {
+            success: false,
+            resolvedArgs: args,
+            injectedSecrets: [],
+            secretValues: [],
+            errors: [{
+                secretName: "unknown",
+                reason: "EXPIRED",
+                message: "Failed to parse resolved arguments after vault injection."
+            }]
+        };
     }
 
     return {

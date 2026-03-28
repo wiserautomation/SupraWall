@@ -51,6 +51,7 @@ export function Footer() {
                     <ul className="space-y-4">
                         <li><Link href="/eu-ai-act" className="hover:text-emerald-500 transition-colors italic">EU AI Act Suite</Link></li>
                         <li><Link href="/security" className="hover:text-emerald-500 transition-colors">Trust Center</Link></li>
+                        <li><Link href="/login" className="hover:text-neutral-800 transition-colors">Policy Regulations</Link></li>
                         <li><Link href="/legal/dpa" className="hover:text-emerald-500 transition-colors">Privacy DPA</Link></li>
                         <li><Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
                         <li><Link href="/certificate" className="hover:text-emerald-500 transition-colors">SOC 2 Portal</Link></li>
