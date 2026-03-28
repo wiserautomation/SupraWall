@@ -143,7 +143,7 @@ export function Navbar() {
                             Deploy on Cloud <ArrowRight className="w-3 h-3" />
                         </Link>
                         <Link 
-                            href="/self-host" 
+                            href="/beta" 
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'self_host' })}
                             className="hidden sm:flex px-5 py-2.5 border border-white/10 text-white font-black rounded-xl hover:bg-white/5 transition-all flex items-center gap-2"
                         >

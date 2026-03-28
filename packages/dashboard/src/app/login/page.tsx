@@ -102,9 +102,12 @@ export default function LoginPage() {
                     {/* Top accent line */}
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
-                    <h2 className="text-2xl font-black text-white italic uppercase tracking-tight mb-8">
+                    <h2 className="text-2xl font-black text-white italic uppercase tracking-tight mb-2">
                         {isRegistering ? "Create Operator Account" : "Operator Login"}
                     </h2>
+                    <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/60 mb-8 italic">
+                        Stealth Launch Active • Authorized Admins Only
+                    </p>
 
                     <form onSubmit={handleAuth} className="space-y-6">
                         <div className="space-y-2">

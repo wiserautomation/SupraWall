@@ -16,7 +16,9 @@ export interface TieredRequest extends Request {
  * Middleware that resolves the tenant's billing tier and injects
  * `req.tier` and `req.tierLimits` for downstream enforcement.
  *
- * Falls back to 'open_source' if tenant has no subscription or if resolution fails.
+ * Falls back to 'open_source' if the tenant has no subscription or if
+ * DB resolution fails. When SUPRAWALL_MODE=local, always uses open_source
+ * limits regardless of any DB state (correct behavior for self-hosters).
  */
 export async function resolveTier(req: TieredRequest, res: Response, next: NextFunction) {
     // SECURITY: tenantId must come from auth middleware, never from client input
@@ -30,7 +32,7 @@ export async function resolveTier(req: TieredRequest, res: Response, next: NextF
 
     req.tenantId = tenantId;
 
-    // SUPRAWALL_MODE: 'local' forces Open Source tier regardless of DB status
+    // SUPRAWALL_MODE=local: enforce open_source limits for all self-hosted deployments
     if (process.env.SUPRAWALL_MODE === "local") {
         req.tier = "open_source";
         req.tierLimits = TIER_LIMITS["open_source"];
@@ -43,15 +45,19 @@ export async function resolveTier(req: TieredRequest, res: Response, next: NextF
             [tenantId]
         );
 
-        const tier: Tier = (result.rows[0]?.tier as Tier) || "open_source";
+        // Validate the DB-stored tier is a known value; fall back to open_source if not
+        const rawTier = result.rows[0]?.tier;
+        const knownTiers: Tier[] = ['open_source', 'developer', 'team', 'business', 'enterprise'];
+        const tier: Tier = knownTiers.includes(rawTier) ? rawTier : 'open_source';
+
         req.tier = tier;
         req.tierLimits = TIER_LIMITS[tier];
 
         if (req.tierLimits.semanticLayer !== 'none') {
-            console.info(`[TierGuard] Semantic layer enabled: ${req.tierLimits.semanticLayer} for tenant ${tenantId}`);
+            logger.info(`[TierGuard] Semantic layer enabled: ${req.tierLimits.semanticLayer}`, { tenantId });
         }
     } catch (err) {
-        logger.warn("[TierGuard] Failed to resolve tier, defaulting to open_source:", { tenantId, error: err });
+        logger.warn("[TierGuard] Failed to resolve tier, defaulting to open_source", { tenantId, error: err });
         req.tier = "open_source";
         req.tierLimits = TIER_LIMITS["open_source"];
     }

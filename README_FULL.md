@@ -34,7 +34,7 @@
 
 AI agents execute tool calls autonomously. Without guardrails, they can leak credentials, run destructive commands, exfiltrate PII, and generate unbounded costs. The EU AI Act (enforcement begins August 2026) requires deterministic risk management, tamper-proof audit trails, and human oversight for high-risk AI systems.
 
-SupraWall wraps your agent in one line of code and solves all six threats at the tool-call boundary:
+SupraWall wraps your agent in one line of code and solves all seven threats at the tool-call boundary:
 
 | Threat | How SupraWall Stops It | Article |
 |--------|----------------------|---------|
@@ -44,6 +44,21 @@ SupraWall wraps your agent in one line of code and solves all six threats at the
 | **PII Exposure** | Response scrubbing redacts secrets in 5+ encoding formats | Art. 13 |
 | **No Audit Trail** | RSA-signed logs with risk scores, exportable as evidence | Art. 13 |
 | **No Human Oversight** | REQUIRE_APPROVAL pauses agents, notifies human | Art. 14 |
+| **Context-Dependent Attacks** | AI semantic layer catches attacks regex can't see | Art. 9 |
+
+### Two-Layer Defense Architecture
+
+**Layer 1 — Deterministic (all tiers):** Regex-based pattern matching in <2ms with zero network calls. Hard DENY on known attack patterns (SQLi, XSS, prompt injection), budget caps, vault token injection, and scope verification.
+
+**Layer 2 — AI Semantic (Growth tier+):** LLM-powered contextual analysis of tool + argument combinations (~80-150ms). Catches attacks that emerge from context, not from any single string pattern. Confidence-based routing: high confidence → DENY, medium → human review, low → flag for audit.
+
+```
+Tool Call → [Layer 1: Regex <2ms] → DENY known threats
+                    ↓ (if ALLOW)
+            [Layer 2: AI Semantic ~100ms] → DENY / REQUIRE_APPROVAL / FLAG
+                    ↓
+            Final Decision
+```
 
 ---
 
@@ -105,11 +120,19 @@ Your Agent (LangChain, CrewAI, AutoGen, Vercel AI, etc.)
 SupraWall SDK  <-- intercepts every tool call
     |
     v
-Policy Engine  <-- evaluates against your rules (<10ms)
+[Layer 1] Deterministic Engine  <-- regex, budget, vault (<2ms)
+    |  SQLi / XSS / Prompt Injection / Scope Verification
+    |
+    |---> DENY (known threats)
+    |
+    v  (if ALLOW passes through)
+[Layer 2] AI Semantic Layer  <-- LLM contextual analysis (~100ms)
+    |  Argument combination analysis, behavioral anomaly detection
     |
     |---> ALLOW            --> tool executes, decision logged
     |---> DENY             --> tool blocked, reason logged        (Article 9)
     |---> REQUIRE_APPROVAL --> agent paused, human notified       (Article 14)
+    |---> FLAG             --> allowed, flagged in audit trail
     |                                        |
     v                                        v
 Credential Vault                        Audit Log
@@ -151,7 +174,9 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 - **Credential Vault** — JIT secret injection via `$SUPRAWALL_VAULT_*` tokens. Agents never see real API keys.
 - **Response Scrubbing** — Redacts leaked secrets from tool responses (Base64, hex, URL-encoded, partial match)
 - **Budget Enforcement** — Hard caps per agent with per-model cost tracking (GPT-4o, Claude 3.5, Gemini, Llama, etc.)
-- **Threat Detection** — SQL injection and prompt injection pattern matching with severity scoring
+- **Threat Detection (Layer 1)** — SQL injection, XSS, prompt injection, path traversal regex patterns with severity scoring
+- **AI Semantic Analysis (Layer 2)** — LLM-powered contextual threat detection for attacks regex can't see (Growth+)
+- **Behavioral Anomaly Detection** — Historical baseline comparison flags unusual agent behavior (Business+)
 - **Loop Detection** — Circuit breaker stops infinite tool call loops
 
 ### Compliance & Oversight
@@ -332,6 +357,8 @@ suprawall/
 |---------|-----------|--------|---------------|-----------------|
 | Open Source | Apache 2.0 | Closed | Open Source | Open Source |
 | Policy Engine | ALLOW/DENY/REQUIRE_APPROVAL | DENY only | DENY only | DENY only |
+| AI Semantic Layer | LLM contextual analysis | Pattern-based | No | No |
+| Behavioral Anomaly | Per-agent baselines | No | No | No |
 | Credential Vault | JIT injection + scrubbing | No | No | No |
 | Human Approvals | Slack + Dashboard + API | No | No | No |
 | EU AI Act Reports | PDF evidence export | No | No | No |

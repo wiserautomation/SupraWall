@@ -60,7 +60,7 @@ export function Footer() {
                     <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Open Source</h4>
                     <ul className="space-y-4">
                         <li><Link href="https://github.com/suprawall/suprawall" className="hover:text-emerald-500 transition-colors">GitHub Repository</Link></li>
-                        <li><Link href="/self-host" className="hover:text-emerald-500 transition-colors">Self-Host Guide</Link></li>
+                        <li><Link href="/beta" className="hover:text-emerald-400 transition-colors">Self-Host Guide</Link></li>
                         <li><Link href="https://github.com/suprawall/suprawall/blob/main/CONTRIBUTING.md" className="hover:text-emerald-500 transition-colors">Contributing</Link></li>
                         <li><Link href="https://github.com/suprawall/suprawall/blob/main/LICENSE" className="hover:text-emerald-500 transition-colors">Apache 2.0</Link></li>
                     </ul>

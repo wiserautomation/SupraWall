@@ -2,140 +2,213 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // ---------------------------------------------------------------------------
-// Tier Configuration — Single source of truth for all plan limits
+// Tier Configuration — Single source of truth for all plan limits.
+//
+// Canonical tier names used across the entire monorepo:
+//   open_source | developer | team | business | enterprise
+//
+// These names match the DB column `tenants.tier`, all route enforcement,
+// the Stripe webhook handlers, and the pricing page UI.
 // ---------------------------------------------------------------------------
 
-export type Tier = 'free' | 'starter' | 'growth' | 'business' | 'enterprise';
+export type Tier = 'open_source' | 'developer' | 'team' | 'business' | 'enterprise';
 
 export type SemanticLayerMode = 'none' | 'semantic' | 'behavioral' | 'custom';
 
 export interface TierLimits {
+    // Core resource caps
     maxAgents: number;
     maxVaultSecrets: number;
+    maxSeats: number;
     auditRetentionDays: number;
-    maxOpsPerMonth: number;
+
+    // Evaluation metering
+    maxEvaluationsPerMonth: number;
+    overageRatePerEval: number | null; // null = hard stop (no overage)
+
+    // Security engine
     policyEngine: 'regex' | 'ai' | 'advanced';
     threatDetection: 'regex' | 'ml' | 'advanced';
     semanticLayer: SemanticLayerMode;
     maxSemanticCallsPerHour: number;
-    complianceReports: 'json' | 'pdf' | 'full-suite';
-    approvals: 'api-polling' | 'slack-dashboard' | 'advanced';
-    dashboard: 'self-host' | 'full' | 'white-label';
+
+    // Access & integrations
     frameworkPlugins: string[] | 'all';
     databaseAdapters: string[] | 'all';
-    budgetEnforcement: boolean;
+    dashboard: 'self-host' | 'full' | 'white-label';
+    ssoEnabled: boolean;
+    approvals: 'none' | 'api-polling' | 'slack-dashboard' | 'advanced';
+
+    // Compliance & reporting
+    complianceReports: 'json' | 'pdf' | 'full-suite';
     euAiActTemplates: boolean;
     pdfReports: boolean;
+
+    // Budget & spend
+    budgetEnforcement: boolean;
+
+    // Notifications
     slackApprovals: boolean;
+
+    // SLA
     sla: string | null;
-    legalSupport: boolean;
+    slaResponseHours: number | null;
 }
 
 export const TIER_LIMITS: Record<Tier, TierLimits> = {
-    free: { // Developer
-        maxAgents: 3,
-        maxVaultSecrets: 10,
-        auditRetentionDays: 7,
-        maxOpsPerMonth: 10_000,
+    open_source: {
+        maxAgents: 2,
+        maxVaultSecrets: 3,
+        maxSeats: 1,
+        auditRetentionDays: 3,
+
+        maxEvaluationsPerMonth: 5_000,
+        overageRatePerEval: null,            // Hard stop — no overage allowed
+
         policyEngine: 'regex',
         threatDetection: 'regex',
         semanticLayer: 'none',
         maxSemanticCallsPerHour: 0,
-        complianceReports: 'json',
-        approvals: 'api-polling',
-        dashboard: 'self-host',
-        frameworkPlugins: ['langchain', 'vercel-ai'],
+
+        frameworkPlugins: ['langchain'],
         databaseAdapters: ['postgres'],
-        budgetEnforcement: false,
+        dashboard: 'self-host',
+        ssoEnabled: false,
+        approvals: 'none',
+
+        complianceReports: 'json',
         euAiActTemplates: false,
         pdfReports: false,
+
+        budgetEnforcement: false,
         slackApprovals: false,
+
         sla: null,
-        legalSupport: false,
+        slaResponseHours: null,
     },
-    starter: {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        auditRetentionDays: 90,
-        maxOpsPerMonth: Infinity,
+
+    developer: {
+        maxAgents: 5,
+        maxVaultSecrets: 15,
+        maxSeats: 1,
+        auditRetentionDays: 30,
+
+        maxEvaluationsPerMonth: 25_000,
+        overageRatePerEval: 0.003,
+
         policyEngine: 'regex',
         threatDetection: 'regex',
         semanticLayer: 'none',
         maxSemanticCallsPerHour: 0,
-        complianceReports: 'pdf',
-        approvals: 'slack-dashboard',
+
+        frameworkPlugins: ['langchain', 'vercel-ai', 'crewai'],
+        databaseAdapters: ['postgres', 'mysql'],
         dashboard: 'full',
-        frameworkPlugins: 'all',
-        databaseAdapters: 'all',
-        budgetEnforcement: true,
-        euAiActTemplates: true,
-        pdfReports: true,
-        slackApprovals: true,
-        sla: '99.9%',
-        legalSupport: false,
+        ssoEnabled: false,
+        approvals: 'api-polling',
+
+        complianceReports: 'json',
+        euAiActTemplates: false,
+        pdfReports: false,
+
+        budgetEnforcement: false,
+        slackApprovals: false,
+
+        sla: null,
+        slaResponseHours: 48,
     },
-    growth: {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        auditRetentionDays: 365,
-        maxOpsPerMonth: Infinity,
+
+    team: {
+        maxAgents: 25,
+        maxVaultSecrets: 100,
+        maxSeats: 3,
+        auditRetentionDays: 90,
+
+        maxEvaluationsPerMonth: 250_000,
+        overageRatePerEval: 0.002,
+
         policyEngine: 'ai',
         threatDetection: 'ml',
         semanticLayer: 'semantic',
         maxSemanticCallsPerHour: 500,
-        complianceReports: 'pdf',
-        approvals: 'slack-dashboard',
-        dashboard: 'full',
+
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
-        budgetEnforcement: true,
+        dashboard: 'full',
+        ssoEnabled: false,
+        approvals: 'slack-dashboard',
+
+        complianceReports: 'pdf',
         euAiActTemplates: true,
         pdfReports: true,
+
+        budgetEnforcement: true,
         slackApprovals: true,
+
         sla: '99.9%',
-        legalSupport: true,
+        slaResponseHours: 24,
     },
+
     business: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
-        auditRetentionDays: 1095, // 3 years
-        maxOpsPerMonth: Infinity,
+        maxSeats: 10,
+        auditRetentionDays: 365,
+
+        maxEvaluationsPerMonth: 2_000_000,
+        overageRatePerEval: 0.001,
+
         policyEngine: 'ai',
         threatDetection: 'ml',
         semanticLayer: 'behavioral',
-        maxSemanticCallsPerHour: 5000,
-        complianceReports: 'pdf',
-        approvals: 'slack-dashboard',
-        dashboard: 'full',
+        maxSemanticCallsPerHour: 5_000,
+
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
-        budgetEnforcement: true,
+        dashboard: 'full',
+        ssoEnabled: true,
+        approvals: 'slack-dashboard',
+
+        complianceReports: 'pdf',
         euAiActTemplates: true,
         pdfReports: true,
+
+        budgetEnforcement: true,
         slackApprovals: true,
+
         sla: '99.99%',
-        legalSupport: true,
+        slaResponseHours: 4,
     },
+
     enterprise: {
         maxAgents: Infinity,
         maxVaultSecrets: Infinity,
-        auditRetentionDays: 2555, // 7 years
-        maxOpsPerMonth: Infinity,
+        maxSeats: Infinity,
+        auditRetentionDays: 2_555,           // 7 years
+
+        maxEvaluationsPerMonth: Infinity,
+        overageRatePerEval: null,            // Custom contract rate
+
         policyEngine: 'advanced',
         threatDetection: 'advanced',
         semanticLayer: 'custom',
         maxSemanticCallsPerHour: Infinity,
-        complianceReports: 'full-suite',
-        approvals: 'advanced',
-        dashboard: 'white-label',
+
         frameworkPlugins: 'all',
         databaseAdapters: 'all',
-        budgetEnforcement: true,
+        dashboard: 'white-label',
+        ssoEnabled: true,
+        approvals: 'advanced',
+
+        complianceReports: 'full-suite',
         euAiActTemplates: true,
         pdfReports: true,
+
+        budgetEnforcement: true,
         slackApprovals: true,
+
         sla: '99.99% (SLA with penalties)',
-        legalSupport: true,
+        slaResponseHours: 1,
     },
 };
 
@@ -156,8 +229,8 @@ export function retentionCutoff(tier: Tier): Date {
 }
 
 /**
- * Returns a friendly upgrade message for free-tier limit errors.
+ * Returns a friendly upgrade message for limit errors.
  */
 export function upgradeMessage(feature: string, current: number | string, limit: number | string): string {
-    return `${feature} limit reached (${current}/${limit}). Upgrade to Business for unlimited access: https://www.supra-wall.com/pricing`;
+    return `${feature} limit reached (${current}/${limit}). Upgrade at https://www.supra-wall.com/pricing`;
 }

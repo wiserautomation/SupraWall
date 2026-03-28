@@ -9,25 +9,24 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
         const { name, surname, email, framework, agentsCount, mainRisk } = body;
 
-        if (!name || !surname || !email || !framework || !agentsCount || !mainRisk) {
+        if (!email || !framework || !agentsCount || !mainRisk) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
         // Auto-qualification logic
-        // Qualify if agentsCount > 5 OR mainRisk contains certain keywords
-        const count = parseInt(agentsCount);
-        const highRiskKeywords = ["pci", "hipaa", "financial", "bank", "health", "audit", "compliance", "eu ai act", "leak", "rogue"];
+        // Qualify if agentsCount is "10+" OR mainRisk contains certain keywords
+        const highRiskKeywords = ["pci", "hipaa", "financial", "bank", "health", "audit", "compliance", "eu ai act", "leak", "rogue", "governance", "security"];
         const riskLower = mainRisk.toLowerCase();
         const isHighRisk = highRiskKeywords.some(kw => riskLower.includes(kw));
         
-        const isQualified = count >= 5 || isHighRisk;
-
+        const isQualified = agentsCount === "10+" || isHighRisk;
+        
         const leadData = {
-            name,
-            surname,
+            name: name || "",
+            surname: surname || "",
             email,
             framework,
-            agentsCount: count,
+            agentsCount,
             mainRisk,
             isQualified,
             status: "pending",

@@ -3,6 +3,8 @@
 
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { 
@@ -13,6 +15,13 @@ import Link from "next/link";
 import { TagBadge } from "../HomeClient";
 
 export default function SelfHostPage() {
+    const router = useRouter();
+
+    useEffect(() => {
+        // Stealth launch redirect
+        router.push('/beta');
+    }, [router]);
+
     return (
         <div className="min-h-screen bg-black text-neutral-200 font-sans selection:bg-emerald-500/30">
             <Navbar />

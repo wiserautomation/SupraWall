@@ -147,6 +147,12 @@ export default function PricingPage() {
     const [operations, setOperations] = useState(100000);
     const [user] = useAuthState(auth);
     const router = useRouter();
+
+    React.useEffect(() => {
+        // Stealth launch redirect
+        router.push('/beta');
+    }, [router]);
+
     const [loadingCheckout, setLoadingCheckout] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState<'starter' | 'growth' | 'business'>('growth');
 

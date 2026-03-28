@@ -269,6 +269,16 @@ export const initDb = async () => {
             enabled BOOLEAN DEFAULT true,
             created_at TIMESTAMP DEFAULT NOW()
         );
+
+        CREATE TABLE IF NOT EXISTS beta_testers (
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+            email VARCHAR(255) UNIQUE NOT NULL,
+            framework VARCHAR(100),
+            agent_count VARCHAR(50),
+            main_risk TEXT,
+            is_qualified BOOLEAN DEFAULT FALSE,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
     `;
     await pool.query(query);
 };

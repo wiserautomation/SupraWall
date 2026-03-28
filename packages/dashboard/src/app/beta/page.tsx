@@ -210,37 +210,38 @@ export default function BetaLandingPage() {
 
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Framework</label>
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">What framework are you using?</label>
                                                 <select
                                                     name="framework"
                                                     value={formData.framework}
                                                     onChange={handleChange}
                                                     className="flex h-14 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 appearance-none"
                                                 >
-                                                    <option value="langchain">LangChain</option>
-                                                    <option value="crewai">CrewAI</option>
-                                                    <option value="autogen">AutoGen</option>
-                                                    <option value="vercel-ai">Vercel AI SDK</option>
-                                                    <option value="llamaindex">LlamaIndex</option>
-                                                    <option value="other">Other / Custom</option>
+                                                    <option value="LangChain">LangChain</option>
+                                                    <option value="CrewAI">CrewAI</option>
+                                                    <option value="AutoGen">AutoGen</option>
+                                                    <option value="Vercel AI">Vercel AI SDK</option>
+                                                    <option value="Other">Other / Custom</option>
                                                 </select>
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Agents in Prod</label>
-                                                <Input
+                                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">AI agents in production?</label>
+                                                <select
                                                     name="agentsCount"
-                                                    type="number"
                                                     value={formData.agentsCount}
                                                     onChange={handleChange}
-                                                    required
-                                                    className="h-14 bg-black border-white/10 focus:border-emerald-500/50 text-white rounded-xl font-bold"
-                                                    placeholder="e.g. 5"
-                                                />
+                                                    className="flex h-14 w-full rounded-xl border border-white/10 bg-black px-3 py-2 text-sm font-bold text-white focus:outline-none focus:ring-1 focus:ring-emerald-500/50 appearance-none"
+                                                >
+                                                    <option value="">Select count...</option>
+                                                    <option value="1–3">1–3</option>
+                                                    <option value="4–10">4–10</option>
+                                                    <option value="10+">10+</option>
+                                                </select>
                                             </div>
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">Primary Security Concern</label>
+                                            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500 ml-1">One sentence: what's the main risk you're trying to control?</label>
                                             <textarea
                                                 name="mainRisk"
                                                 value={formData.mainRisk}

@@ -11,6 +11,7 @@ import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
 import { TIER_LIMITS, currentMonth } from "./tier-config";
 import type { Tier } from "./tier-config";
+import { checkEvaluationLimit, recordEvaluation } from "./tier-guard";
 import { analyzeCall, type SemanticAnalysisResult } from "./semantic";
 import { updateBaseline } from "./behavioral";
 
@@ -51,12 +52,19 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         const estimatedCost = req.body.costUsd ?? estimateActionCost(inputTokens, outputTokens, model);
 
         // 0a. Resolve tenant tier
-        let tenantTier: Tier = "free";
-        try {
-            const tierResult = await pool.query("SELECT tier FROM tenants WHERE id = $1", [tenantId]);
-            tenantTier = (tierResult.rows[0]?.tier as Tier) || "free";
-        } catch { /* default to free */ }
-        const tierLimits = TIER_LIMITS[tenantTier];
+        // resolveTier middleware already ran at app.use("/v1", resolveTier) — use it.
+        // Fall back to a fresh DB query only if not already on the request (defensive).
+        let tenantTier: Tier = (authReq.tier as Tier) || "open_source";
+        let tierLimits = authReq.tierLimits || TIER_LIMITS["open_source"];
+        if (!authReq.tierLimits) {
+            try {
+                const tierResult = await pool.query("SELECT tier FROM tenants WHERE id = $1", [tenantId]);
+                const rawTier = tierResult.rows[0]?.tier;
+                const knownTiers: Tier[] = ['open_source', 'developer', 'team', 'business', 'enterprise'];
+                tenantTier = knownTiers.includes(rawTier) ? rawTier : 'open_source';
+                tierLimits = TIER_LIMITS[tenantTier];
+            } catch { /* keep open_source default */ }
+        }
 
         // 0b. Framework Plugin Enforcement
         const requestedFramework = (req.headers["x-suprawall-framework"] as string) || (req.body as any).framework || "langchain";
@@ -72,18 +80,15 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             }
         }
 
-        // 0c. Monthly Operation Limit (free tier only)
-        if (isFinite(tierLimits.maxOpsPerMonth)) {
-            const month = currentMonth();
-            const opsResult = await pool.query(
-                `SELECT operation_count FROM usage_counters WHERE tenant_id = $1 AND month = $2`,
-                [tenantId, month]
-            );
-            const currentOps = opsResult.rows[0]?.operation_count || 0;
-            if (currentOps >= tierLimits.maxOpsPerMonth) {
-                return res.status(429).json({
+        // 0c. Monthly Evaluation Limit
+        // Uses tenant_usage table via checkEvaluationLimit (same table as recordEvaluation).
+        // open_source hard-stops at 5K; paid tiers allow overage.
+        if (isFinite(tierLimits.maxEvaluationsPerMonth)) {
+            const { allowed, current } = await checkEvaluationLimit(tenantId, tierLimits);
+            if (!allowed) {
+                return res.status(402).json({
                     decision: "DENY",
-                    reason: `Monthly operation limit reached (${currentOps.toLocaleString()}/${tierLimits.maxOpsPerMonth.toLocaleString()}). Upgrade to Business for unlimited operations.`,
+                    reason: `Monthly evaluation limit reached (${current.toLocaleString()}/${tierLimits.maxEvaluationsPerMonth.toLocaleString()}). Upgrade your plan to continue.`,
                     upgradeUrl: "https://www.supra-wall.com/pricing",
                     code: "TIER_LIMIT_EXCEEDED",
                 });
@@ -373,16 +378,11 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             resolvedArgs = vaultResult.resolvedArgs;
         }
 
-        // 3b. Increment monthly operation counter
+        // 3b. Record evaluation usage (writes to tenant_usage, tracks overage)
         if (decision === "ALLOW") {
-            const month = currentMonth();
-            pool.query(
-                `INSERT INTO usage_counters (tenant_id, month, operation_count)
-                 VALUES ($1, $2, 1)
-                 ON CONFLICT (tenant_id, month)
-                 DO UPDATE SET operation_count = usage_counters.operation_count + 1`,
-                [tenantId, month]
-            ).catch(err => logger.error("[UsageCounter] Failed to increment:", { error: err, tenantId }));
+            recordEvaluation(tenantId, tierLimits).catch(err =>
+                logger.error("[TierGuard] Failed to record evaluation:", { error: err, tenantId })
+            );
         }
 
         // ── Layer 2: AI Semantic Analysis (Growth+ tiers only) ──
