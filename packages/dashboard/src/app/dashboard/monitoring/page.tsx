@@ -42,7 +42,10 @@ export default function MonitoringPage() {
     const fetchAgents = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const list = await res.json();
                 setAgents(list);
@@ -52,10 +55,14 @@ export default function MonitoringPage() {
         }
     };
 
+
     const fetchLogs = async () => {
         if (!user) return;
         try {
-            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=50`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=50`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 setLogs(data);
@@ -65,6 +72,7 @@ export default function MonitoringPage() {
             console.error(e);
         }
     };
+
 
     useEffect(() => {
         if (!user) return;

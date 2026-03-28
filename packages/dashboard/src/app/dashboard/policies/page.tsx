@@ -54,15 +54,18 @@ export default function PoliciesPage() {
 
         const loadData = async () => {
             try {
+                const idToken = await user.getIdToken();
+                const headers = { 'Authorization': `Bearer ${idToken}` };
+
                 // 1. Fetch Agents via internal API (bypasses ad-blockers)
-                const agentsRes = await fetch(`/api/v1/agents?tenantId=${user.uid}`);
+                const agentsRes = await fetch(`/api/v1/agents?tenantId=${user.uid}`, { headers });
                 if (agentsRes.ok) {
                     const list = await agentsRes.json();
                     setAgents(list);
                 }
 
                 // 2. Fetch Policies via internal API
-                const policiesRes = await fetch(`/api/v1/policies?tenantId=${user.uid}`);
+                const policiesRes = await fetch(`/api/v1/policies?tenantId=${user.uid}`, { headers });
                 if (policiesRes.ok) {
                     const list = await policiesRes.json();
                     setPolicies(list);

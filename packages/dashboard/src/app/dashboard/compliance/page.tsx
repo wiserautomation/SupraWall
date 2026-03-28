@@ -160,7 +160,9 @@ export default function CompliancePage() {
         setLoading(true);
         setError(null);
         try {
-            const res = await fetch(`/api/v1/compliance/status?tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const headers = { 'Authorization': `Bearer ${idToken}` };
+            const res = await fetch(`/api/v1/compliance/status?tenantId=${user.uid}`, { headers });
             if (!res.ok) throw new Error(`Server returned ${res.status}`);
             const data = await res.json();
             setStatus(data);
@@ -184,10 +186,14 @@ export default function CompliancePage() {
         setCertLoading(true);
         setCertError(null);
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch("/api/compliance/certificate", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId: user.uid }),
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
+                body: JSON.stringify({ tenantId: user.uid })
             });
             const data = await res.json();
             if (!res.ok) throw new Error(data?.error || "Failed to generate certificate");

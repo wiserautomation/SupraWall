@@ -56,7 +56,6 @@ jest.mock("../src/db", () => {
         pool: {
             query: jest.fn(async (text: string, params: any[]) => {
                 const queryText = text.replace(/\s+/g, " ");
-                console.log(`[MockDB] Pool Query: ${queryText}`, params);
 
                 // Return tenant for auth
                 if (queryText.includes("SELECT id FROM tenants WHERE master_api_key = $1") || 

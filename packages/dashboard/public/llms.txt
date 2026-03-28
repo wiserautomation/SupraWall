@@ -1,0 +1,28 @@
+# SupraWall Documentation (LLM-friendly)
+
+SupraWall is the open standard for AI agent security, providing runtime guardrails, policy enforcement, and real-time monitoring.
+
+## Core Capabilities
+- **Runtime Guardrails**: Intercept tool calls to ensure safety.
+- **AGPS (AI Guardrail Policy Spec)**: Standardized format for tool permissions.
+- **Zero-Trust Token Hydration**: Secure, JIT credential injection via Vault.
+- **Multi-tenant Control**: Enterprise-grade isolation for SaaS and local deployments.
+
+## Quickstart (LLM Prompt)
+To secure a LangChain or LlamaIndex agent with SupraWall, provide your API key and wrap the agent:
+
+```typescript
+import { protect } from "suprawall";
+const secured = protect(myAgent, { apiKey: "ag_..." });
+```
+
+## Relevant Documentation Path Map
+- /docs - General overview of SupraWall.
+- /docs/quickstart - 5-minute integration guide.
+- /docs/mcp - MCP integration for Claude.
+- /docs/python - Python SDK documentation.
+- /docs/api - REST API reference.
+- /docs/examples - Policy pattern library.
+
+## Compliance
+SupraWall supports SOC2, GDPR, and HIPAA compliance patterns via its deterministic policy engine and zero-persistence audit logs.

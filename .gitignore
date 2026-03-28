@@ -56,12 +56,12 @@ Blog/
 agent-skills/
 agent-outputs/
 agent-plan/
-admin/
-content/
-governance/
-Implementation Plan/
-mcp-publisher
-supra-wall.plugin
+/admin/
+/content/
+/governance/
+/Implementation Plan/
+/mcp-publisher
+/supra-wall.plugin
 *.docx
 SEO_*.md
 GSC_*.md

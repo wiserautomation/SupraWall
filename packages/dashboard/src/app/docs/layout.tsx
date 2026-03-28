@@ -5,7 +5,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign, Sparkles } from "lucide-react";
+import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign, Sparkles, Search } from "lucide-react";
+import { AskAI } from "@/components/AskAI";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -92,7 +93,23 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                 </div>
             </aside>
             <main className="flex-1 overflow-y-auto relative z-10 scroll-smooth">
-                <div className="p-8 md:p-12 max-w-5xl mx-auto min-h-full">
+                <header className="sticky top-0 z-30 h-16 w-full border-b border-white/5 bg-black/80 backdrop-blur-md px-8 flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-bold text-neutral-500 uppercase tracking-widest">
+                        Documentation / {pathname.split("/").pop() || "Index"}
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:flex relative group">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-600 group-focus-within:text-emerald-500 transition-colors" />
+                            <input 
+                                type="text" 
+                                placeholder="Search documentation... (⌘K)"
+                                className="h-9 w-64 pl-9 pr-4 bg-white/5 border border-white/10 rounded-lg text-xs placeholder:text-neutral-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500/50 transition-all font-medium"
+                            />
+                        </div>
+                        <AskAI />
+                    </div>
+                </header>
+                <div id="docs-content" className="p-8 md:p-12 max-w-5xl mx-auto min-h-full">
                     {children}
                 </div>
             </main>

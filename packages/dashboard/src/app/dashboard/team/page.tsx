@@ -43,7 +43,10 @@ export default function TeamPage() {
     const fetchMembers = useCallback(async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/v1/members?tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/v1/members?tenantId=${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (!res.ok) throw new Error("Failed to fetch members");
             const data = await res.json();
             setMembers(data);
@@ -67,9 +70,13 @@ export default function TeamPage() {
         setErrorMsg(null);
 
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch("/v1/members/invite", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({
                     tenantId: user.uid,
                     email: inviteEmail,
@@ -105,8 +112,10 @@ export default function TeamPage() {
         if (!confirm("Are you sure you want to remove this team member? This will immediately revoke their access.")) return;
 
         try {
+            const idToken = await user.getIdToken();
             const res = await fetch(`/v1/members/${memberId}?tenantId=${user.uid}`, {
-                method: "DELETE"
+                method: "DELETE",
+                headers: { 'Authorization': `Bearer ${idToken}` }
             });
             if (res.ok) {
                 await fetchMembers();

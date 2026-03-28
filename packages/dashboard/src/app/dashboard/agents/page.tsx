@@ -209,11 +209,14 @@ export default function AgentsPage() {
                 });
                 if (res.ok) {
                     const data = await res.json();
+                    console.info(`[AgentsPage] Successfully loaded ${data.length} agents.`);
                     setAgents(data.sort((a: Agent, b: Agent) => {
                         const dateA = new Date(a.createdAt).getTime();
                         const dateB = new Date(b.createdAt).getTime();
                         return dateB - dateA;
                     }));
+                } else {
+                    console.error(`[AgentsPage] API returned ${res.status}:`, await res.text().catch(() => "N/A"));
                 }
                 setLoading(false);
             } catch (e) {

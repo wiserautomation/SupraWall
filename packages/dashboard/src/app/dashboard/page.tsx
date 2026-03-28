@@ -220,8 +220,11 @@ export default function OverviewPage() {
     const fetchData = async () => {
         if (!user) return;
         try {
+            const idToken = await user.getIdToken();
+            const headers = { 'Authorization': `Bearer ${idToken}` };
+
             // 1. Fetch Stats
-            const statsRes = await fetch(`${API_BASE}/v1/stats?tenantId=${user.uid}`);
+            const statsRes = await fetch(`${API_BASE}/v1/stats?tenantId=${user.uid}`, { headers });
             if (statsRes.ok) {
                 const s = await statsRes.json();
                 setStats({
@@ -235,7 +238,7 @@ export default function OverviewPage() {
             }
 
             // 2. Fetch Recent Logs
-            const logsRes = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=10`);
+            const logsRes = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=10`, { headers });
             if (logsRes.ok) {
                 const logs = await logsRes.json();
                 setRecentLogs(logs);
@@ -250,10 +253,13 @@ export default function OverviewPage() {
     useEffect(() => {
         if (!user) return;
         
-        // 2. Poll Agents from our internal API (bypasses ad-blockers)
+        // 2. Poll Agents from our internal API
         const loadAgents = async () => {
             try {
-                const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`);
+                const idToken = await user.getIdToken();
+                const res = await fetch(`${API_BASE}/v1/agents?tenantId=${user.uid}`, {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     setAgents(data.sort((a: Agent, b: Agent) => {
