@@ -147,6 +147,14 @@ export interface SupraWallResponse {
         url: string;
         format: "text" | "markdown" | "html";
     };
+    /** Layer 2 semantic threat score (0.0–1.0). Present on Growth tier and above. */
+    semanticScore?: number;
+    /** True when Layer 2 flagged the call but still allowed it. */
+    semanticFlag?: boolean;
+    /** LLM-generated explanation of the semantic assessment. */
+    semanticReasoning?: string;
+    /** Behavioral anomaly score (0.0–1.0). Present on Business tier and above. */
+    anomalyScore?: number;
 }
 
 export interface SupraWallOptions {

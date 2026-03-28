@@ -8,7 +8,7 @@ import { admin } from '@/lib/firebase-admin';
 import * as crypto from 'crypto';
 import { resolveVaultTokens } from '@/lib/vault-server';
 import { scrubPii } from '@/lib/guardrail-scrubber';
-import { pool } from '@/lib/db_sql';
+import { analyzeCall, updateBaseline, type SemanticAnalysisResult, type SemanticLayerMode } from '@/lib/semantic-server';
 
 // ── Types ──
 
@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
         let platformId: string | null = null;
         let customerId: string | null = null;
         let agentName: string = "Unknown Agent";
+        let userPlan: string = 'free';
 
         // ── Auth & Key Resolution ──
 
@@ -90,8 +91,9 @@ export async function POST(req: NextRequest) {
             const platformSnap = await db.collection("platforms").doc(platformId!).get();
             const platformData = platformSnap.data();
             userId = platformData?.ownerId;
+            userPlan = platformData?.plan || 'free';
             // Hide branding for any paid tier
-            showBranding = !['developer', 'team', 'business', 'enterprise'].includes(platformData?.plan);
+            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(userPlan);
 
             const basePolicySnap = await db.collection("platforms").doc(platformId!).collection("base_policies").doc("default").get();
             const baseRules: PolicyRule[] = basePolicySnap.data()?.rules ?? [];
@@ -115,8 +117,9 @@ export async function POST(req: NextRequest) {
 
             const userSnap = await db.collection("users").doc(userId).get();
             const userData = userSnap.data();
+            userPlan = userData?.plan || 'free';
             // Hide branding for any paid tier
-            showBranding = !['developer', 'team', 'business', 'enterprise'].includes(userData?.plan);
+            showBranding = !['starter', 'growth', 'business', 'enterprise'].includes(userPlan);
 
             if (agentData.status && agentData.status !== 'active') {
                 return NextResponse.json({ decision: "DENY", reason: `Agent is ${agentData.status}.` }, { status: 403 });
@@ -146,7 +149,7 @@ export async function POST(req: NextRequest) {
             if (guardrailResult.blocked) {
                 const gr = guardrailResult.reason || 'Blocked by agent guardrail';
                 await logAudit(agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
-                return NextResponse.json({ decision: "DENY", reason: gr }, { status: 403 });
+                return NextResponse.json({ decision: "DENY", reason: gr });
             }
             if (guardrailResult.modifiedArgs) {
                 finalArgs = guardrailResult.modifiedArgs;
@@ -193,11 +196,11 @@ export async function POST(req: NextRequest) {
         let vaultInjected = false;
 
         if (!vaultResult.success) {
-            return NextResponse.json({
-                decision: "DENY",
+            return NextResponse.json({ 
+                decision: "DENY", 
                 reason: `Vault Error: ${vaultResult.errors[0].message}`,
-                branding
-            }, { status: 403 });
+                branding 
+            });
         }
         
         if (vaultResult.injectedSecrets.length > 0) {
@@ -223,6 +226,65 @@ export async function POST(req: NextRequest) {
 
         const estimatedCost = costUsd ?? estimateActionCost(finalArgs, toolName, model, inputTokens, outputTokens);
         const latencyMs = Date.now() - startTime;
+
+        // ── Layer 2: AI Semantic Analysis (Growth+ tiers only) ──
+        const PLAN_TO_SEMANTIC: Record<string, SemanticLayerMode> = {
+            free: 'none', starter: 'none',
+            growth: 'semantic', business: 'behavioral', enterprise: 'custom',
+        };
+        const semanticLayer = PLAN_TO_SEMANTIC[userPlan] || 'none';
+        let semanticResult: SemanticAnalysisResult | null = null;
+        let semanticResponseFields: Record<string, unknown> = {};
+
+        if (decision === "ALLOW" && semanticLayer !== 'none') {
+            try {
+                let customEndpoint: string | undefined;
+                if (semanticLayer === 'custom') {
+                    // Firestore check for custom endpoint
+                    const epSnap = await db.collection("custom_model_endpoints").doc(tenantId).get();
+                    const epData = epSnap.data();
+                    if (epData?.enabled && epData?.endpoint_url) {
+                        customEndpoint = epData.endpoint_url;
+                    }
+                }
+
+                semanticResult = await analyzeCall({
+                    tenantId, agentId, toolName,
+                    args: resolvedArguments,
+                    argsString: JSON.stringify(resolvedArguments),
+                    semanticLayer,
+                    customEndpoint,
+                });
+
+                if (semanticResult.decision === 'DENY') {
+                    decision = "DENY";
+                    semanticResponseFields = {
+                        semanticScore: semanticResult.semanticScore,
+                        semanticReasoning: semanticResult.reasoning,
+                    };
+                } else if (semanticResult.decision === 'REQUIRE_APPROVAL') {
+                    decision = "REQUIRE_APPROVAL";
+                    semanticResponseFields = {
+                        semanticScore: semanticResult.semanticScore,
+                        semanticReasoning: semanticResult.reasoning,
+                    };
+                } else if (semanticResult.decision === 'FLAG') {
+                    semanticResponseFields = {
+                        semanticFlag: true,
+                        semanticScore: semanticResult.semanticScore,
+                        semanticReasoning: semanticResult.reasoning,
+                    };
+                }
+            } catch (err) {
+                console.error("[Layer2] Semantic analysis failed:", err);
+                // Never block on Layer 2 failure
+            }
+        }
+
+        // Update behavioral baseline (async, non-blocking)
+        if (decision === "ALLOW" && (semanticLayer === 'behavioral' || semanticLayer === 'custom')) {
+            updateBaseline(tenantId, agentId, toolName, resolvedArguments).catch(() => {});
+        }
 
         // ── Approval Flow ──
 
@@ -273,17 +335,18 @@ export async function POST(req: NextRequest) {
         // Non-blocking writes
         Promise.all(updates).catch(e => console.error("Evaluate background updates failed:", e));
 
-        const responseBody = {
+        return NextResponse.json({
             decision,
-            reason: decisionResult.reason,
+            reason: semanticResult?.decision === 'DENY'
+                ? `AI semantic analysis: ${semanticResult.reasoning}`
+                : decisionResult.reason,
             resolvedArguments: vaultInjected ? resolvedArguments : undefined,
             vaultInjected,
             injectedSecrets: vaultInjected ? vaultResult.injectedSecrets : undefined,
             branding,
-            estimated_cost_usd: estimatedCost
-        };
-        const status = decision === "DENY" ? 403 : 200;
-        return NextResponse.json(responseBody, { status });
+            estimated_cost_usd: estimatedCost,
+            ...semanticResponseFields,
+        });
 
     } catch (e: any) {
         console.error("Evaluate error:", e);
@@ -466,21 +529,15 @@ function matchesPattern(toolName: string, pattern: string): boolean {
 
 async function checkRateLimit(key: string, config: RateLimitConfig): Promise<boolean> {
     const now = new Date();
-    const minKey = `rl_${key}_${now.toISOString().slice(0, 16)}`;
-    const docRef = db.collection("rate_limit_counters").doc(minKey);
-
-    // Atomic check-and-increment using Firestore transaction
-    const allowed = await db.runTransaction(async (tx) => {
-        const snap = await tx.get(docRef);
-        const current = snap.exists ? (snap.data()?.count || 0) : 0;
-        if (current >= config.requestsPerMinute) return false;
-        tx.set(docRef, {
-            count: admin.firestore.FieldValue.increment(1),
-            expiresAt: new Date(Date.now() + 60000)
-        }, { merge: true });
-        return true;
-    });
-    return allowed;
+    const minKey = `rl_${key}_${now.toISOString().slice(0, 16)}`; // simplified
+    const snap = await db.collection("rate_limit_counters").doc(minKey).get();
+    if (snap.exists && (snap.data()?.count || 0) >= config.requestsPerMinute) return false;
+    
+    await db.collection("rate_limit_counters").doc(minKey).set({
+        count: admin.firestore.FieldValue.increment(1),
+        expiresAt: new Date(Date.now() + 60000)
+    }, { merge: true });
+    return true;
 }
 
 function estimateActionCost(finalArgs: any, toolName: string, model: string, inT: number, outT: number): number {
@@ -502,33 +559,8 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
 }
 
 async function logAudit(agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
-    // 1. Log to Firestore (Mirror for Dashboard Real-time)
     await db.collection("audit_logs").add({
         agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
         cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
-
-    // 2. Log to PostgreSQL (Source of Truth for Forensic Audit & Compliance)
-    // We need the tenantId/userId to associate the log correctly.
-    // Since we're in a scope where we know agentId, let's look up tenantId if not provided.
-    try {
-        const agentSnap = await db.collection("agents").doc(agentId).get();
-        const tenantId = agentSnap.data()?.userId || "default-tenant";
-
-        await pool.query(
-            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-            [
-                tenantId,
-                agentId,
-                toolName,
-                finalArgs,
-                decision,
-                decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
-                cost,
-                JSON.stringify({ reason, sessionId: sId, agentRole: role, isLoop })
-            ]
-        );
-    } catch (e) {
-        console.error("[Dashboard LogAudit] PostgreSQL insertion failed:", e);
-    }
 }

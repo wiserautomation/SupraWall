@@ -1,169 +1,151 @@
--- SupraWall Database Schema
--- This file mirrors what db.ts creates dynamically.
--- Use for documentation and fresh installs.
--- db.ts remains authoritative for migrations.
-
--- Extensions
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+-- Agents
+CREATE TABLE IF NOT EXISTS agents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenantid TEXT NOT NULL,
+    name TEXT NOT NULL,
+    apikey TEXT UNIQUE NOT NULL,
+    scopes TEXT[] DEFAULT '{}',
+    status TEXT DEFAULT 'active',
+    max_cost_usd DECIMAL(10,4) DEFAULT 10.0,
+    budget_alert_usd DECIMAL(10,4) DEFAULT 8.0,
+    max_iterations INTEGER DEFAULT 50,
+    loop_detection BOOLEAN DEFAULT true,
+    slack_webhook TEXT,
+    last_active_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Tenants / Workspaces
 CREATE TABLE IF NOT EXISTS tenants (
-    id VARCHAR(255) PRIMARY KEY,         -- Firebase UID
-    name VARCHAR(255),
-    master_api_key VARCHAR(255),
+    id TEXT PRIMARY KEY, -- Firebase UID
+    name TEXT,
+    master_api_key TEXT,
     slack_webhook_url TEXT,
-    tier VARCHAR(20) DEFAULT 'open_source',
-    stripe_customer_id TEXT,
-    stripe_subscription_id TEXT,
-    billing_cycle_start TIMESTAMP DEFAULT NOW(),
-    tier_expires_at TIMESTAMP,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-
--- Agents
-CREATE TABLE IF NOT EXISTS agents (
-    id VARCHAR(255) PRIMARY KEY,
-    tenantid VARCHAR(255) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    apikeyhash VARCHAR(255),
-    scopes TEXT[] DEFAULT '{}',
-    status VARCHAR(50) DEFAULT 'active',
-    slack_webhook VARCHAR(255),
-    max_cost_usd FLOAT DEFAULT 10,
-    budget_alert_usd FLOAT DEFAULT 8,
-    max_iterations INTEGER DEFAULT 50,
-    loop_detection BOOLEAN DEFAULT FALSE,
-    createdat TIMESTAMP DEFAULT NOW()
+    notification_email TEXT,
+    webhook_url TEXT,
+    webhook_secret TEXT,
+    db_type TEXT DEFAULT 'postgres',
+    db_string TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Policies
 CREATE TABLE IF NOT EXISTS policies (
-    id SERIAL PRIMARY KEY,
-    tenantid VARCHAR(255) NOT NULL,
-    name VARCHAR(255),
-    agentid VARCHAR(255),
-    toolname VARCHAR(255) NOT NULL,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenantid TEXT NOT NULL,
+    agentid TEXT, -- optional, if null apply to all agents in tenant
+    toolname TEXT NOT NULL,
     condition TEXT,
-    ruletype VARCHAR(50) NOT NULL,
+    ruletype TEXT NOT NULL, -- ALLOW, DENY, REQUIRE_APPROVAL
     priority INTEGER DEFAULT 100,
-    isdryrun BOOLEAN DEFAULT FALSE,
+    isdryrun BOOLEAN DEFAULT false,
     description TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Approval Queue
+-- Approval Requests
 CREATE TABLE IF NOT EXISTS approval_requests (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenantid VARCHAR(255) NOT NULL,
-    agentid VARCHAR(255) NOT NULL,
-    toolname VARCHAR(255) NOT NULL,
-    parameters JSONB,
-    status VARCHAR(50) DEFAULT 'PENDING',   -- PENDING | APPROVED | REJECTED
-    decision_by VARCHAR(255),
-    decision_at TIMESTAMP,
+    tenantid TEXT NOT NULL,
+    agentid TEXT NOT NULL,
+    toolname TEXT NOT NULL,
+    parameters TEXT,
+    status TEXT DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED
+    decision_by TEXT,
+    decision_at TIMESTAMP WITH TIME ZONE,
     decision_comment TEXT,
-    metadata JSONB,
-    created_at TIMESTAMP DEFAULT NOW()
+    metadata TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Audit Logs
 CREATE TABLE IF NOT EXISTS audit_logs (
-    id SERIAL PRIMARY KEY,
-    tenantid VARCHAR(255) NOT NULL,
-    agentid VARCHAR(255),
-    toolname VARCHAR(255),
-    decision VARCHAR(50),
-    riskscore INTEGER,
-    cost_usd FLOAT DEFAULT 0,
-    reason TEXT,
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenantid TEXT NOT NULL,
+    agentid TEXT NOT NULL,
+    toolname TEXT NOT NULL,
     arguments TEXT,
-    timestamp TIMESTAMP DEFAULT NOW(),
+    riskscore INTEGER,
     parameters JSONB,
-    metadata JSONB
+    metadata JSONB,
+    decision TEXT NOT NULL,
+    reason TEXT,
+    sessionid TEXT,
+    agentrole TEXT,
+    cost_usd DECIMAL(10,6),
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Threat Events
 CREATE TABLE IF NOT EXISTS threat_events (
-    id SERIAL PRIMARY KEY,
-    tenantid VARCHAR(255) NOT NULL,
-    agentid VARCHAR(255),
-    event_type VARCHAR(100) NOT NULL,
-    severity VARCHAR(50) DEFAULT 'medium',
-    details JSONB,
-    timestamp TIMESTAMP DEFAULT NOW()
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenantid TEXT NOT NULL,
+    agentid TEXT NOT NULL,
+    event_type TEXT NOT NULL,
+    severity TEXT NOT NULL,
+    details TEXT,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Threat Summaries (per-entity risk scores)
-CREATE TABLE IF NOT EXISTS threat_summaries (
-    id SERIAL PRIMARY KEY,
-    tenantid VARCHAR(255) NOT NULL,
-    entity_id VARCHAR(255) NOT NULL,
-    entity_type VARCHAR(50) NOT NULL,   -- agent | tenant
-    threat_score FLOAT DEFAULT 0,
-    total_events INTEGER DEFAULT 0,
-    last_updated TIMESTAMP DEFAULT NOW(),
-    UNIQUE(tenantid, entity_id, entity_type)
-);
-
--- Vault: encrypted secret storage
+-- Vault Secrets
 CREATE TABLE IF NOT EXISTS vault_secrets (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id VARCHAR(255) NOT NULL,
-    secret_name VARCHAR(255) NOT NULL,
+    tenant_id TEXT NOT NULL,
+    secret_name TEXT NOT NULL,
     encrypted_value BYTEA NOT NULL,
-    description TEXT,
-    expires_at TIMESTAMP,
-    assigned_agents TEXT[] DEFAULT '{}',
-    last_rotated_at TIMESTAMP DEFAULT NOW(),
-    created_at TIMESTAMP DEFAULT NOW(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(tenant_id, secret_name)
 );
 
--- Vault: per-agent access rules
-CREATE TABLE IF NOT EXISTS vault_access_rules (
+-- ══════════════════════════════════════════════════════════════
+-- Layer 2: AI Semantic Analysis Engine
+-- ══════════════════════════════════════════════════════════════
+
+-- Behavioral Baselines — per-agent/per-tool running averages
+CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id VARCHAR(255) NOT NULL,
-    agent_id VARCHAR(255) NOT NULL,
-    secret_id UUID REFERENCES vault_secrets(id) ON DELETE CASCADE,
-    allowed_tools TEXT[] NOT NULL DEFAULT '{}',
-    max_uses_per_hour INT DEFAULT 100,
-    requires_approval BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(tenant_id, agent_id, secret_id)
+    tenant_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    avg_args_length FLOAT DEFAULT 0,
+    avg_calls_per_hour FLOAT DEFAULT 0,
+    common_arg_patterns JSONB DEFAULT '[]',
+    total_samples INTEGER DEFAULT 0,
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, agent_id, tool_name)
 );
 
--- Usage Metering (usage-based billing)
-CREATE TABLE IF NOT EXISTS tenant_usage (
-    tenant_id VARCHAR(255) NOT NULL,
-    month VARCHAR(7) NOT NULL,           -- YYYY-MM
-    evaluation_count INTEGER DEFAULT 0,
-    overage_units INTEGER DEFAULT 0,
-    overage_billed_usd DECIMAL(10,4) DEFAULT 0,
-    last_updated TIMESTAMP DEFAULT NOW(),
-    PRIMARY KEY (tenant_id, month)
+CREATE INDEX IF NOT EXISTS idx_baselines_tenant_agent
+    ON agent_behavioral_baselines(tenant_id, agent_id);
+
+-- Semantic Analysis Log — audit trail for every Layer 2 decision
+CREATE TABLE IF NOT EXISTS semantic_analysis_log (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id TEXT NOT NULL,
+    agent_id TEXT NOT NULL,
+    tool_name TEXT NOT NULL,
+    semantic_score FLOAT NOT NULL,
+    anomaly_score FLOAT,
+    confidence TEXT NOT NULL,
+    decision_override TEXT,
+    reasoning TEXT,
+    model_used TEXT,
+    latency_ms INTEGER,
+    parameters JSONB,
+    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Seats / Organization Members
-CREATE TABLE IF NOT EXISTS organization_members (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id VARCHAR(255) NOT NULL REFERENCES tenants(id),
-    user_email VARCHAR(255) NOT NULL,
-    user_id VARCHAR(255),                -- Firebase UID
-    role VARCHAR(50) NOT NULL DEFAULT 'member',  -- owner | admin | member | viewer
-    status VARCHAR(50) DEFAULT 'pending',        -- pending | active | removed
-    invited_at TIMESTAMP DEFAULT NOW(),
-    accepted_at TIMESTAMP,
-    UNIQUE(tenant_id, user_email)
-);
+CREATE INDEX IF NOT EXISTS idx_semantic_log_tenant
+    ON semantic_analysis_log(tenant_id, timestamp DESC);
 
--- SSO Configuration (Business+ tiers)
-CREATE TABLE IF NOT EXISTS sso_configs (
+-- Custom Model Endpoints — enterprise customers' fine-tuned models
+CREATE TABLE IF NOT EXISTS custom_model_endpoints (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tenant_id VARCHAR(255) NOT NULL UNIQUE REFERENCES tenants(id),
-    provider VARCHAR(100) NOT NULL,      -- okta | azure-ad | google
-    client_id TEXT,
-    client_secret_encrypted BYTEA,
-    domain TEXT,
-    enabled BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT NOW()
+    tenant_id TEXT NOT NULL UNIQUE,
+    endpoint_url TEXT NOT NULL,
+    auth_header TEXT,
+    model_name TEXT,
+    max_latency_ms INTEGER DEFAULT 500,
+    enabled BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

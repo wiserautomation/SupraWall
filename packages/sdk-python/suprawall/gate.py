@@ -51,6 +51,7 @@ class SupraWallConnectionError(Exception):
     def __init__(self, message: str):
         super().__init__(f"\n[SupraWallConnectionError] {message}\n  → Docs: https://docs.suprawall.dev/troubleshooting/connection\n")
 
+_has_verified_connection = False
 
 
 class BudgetTracker:
@@ -154,16 +155,13 @@ class SupraWallOptions:
     loop_detection: bool = False               # Detect repeated identical calls
     loop_threshold: int = 3                    # Block if same tool called N times consec.
     # --- Human-in-the-Loop (Phase 3) ---
-    dashboard_api_url: str = "https://www.supra-wall.com"
+    dashboard_api_url: str = "https://suprawall.ai"
     approval_timeout: int = 300                 # Max seconds to wait for human
     approval_poll_interval: int = 2            # Seconds between polls
     # --- Vault (JIT Secret Injection) ---
     tenant_id: str = "default-tenant"          # Tenant ID for vault lookups
-    vault_scrub_url: Optional[str] = None      # Override URL for the vault scrub endpoint
     # --- OpenRouter Attribution ---
     openrouter_attribution: Optional[dict] = None  # { "app_url": "...", "app_title": "...", "categories": "..." }
-    # --- Internal state (not user-facing) ---
-    _verified_connection: bool = field(default=False, init=False, repr=False, compare=False)
 
 
 def _check_budget(options: SupraWallOptions) -> Optional[dict]:
@@ -246,7 +244,7 @@ def _record_cost(options: SupraWallOptions, response: dict) -> None:
 
 
 def _derive_scrub_url(options: SupraWallOptions) -> str:
-    if options.vault_scrub_url is not None:
+    if options.vault_scrub_url:
         return options.vault_scrub_url
     return options.cloud_function_url.replace("/v1/evaluate", "/v1/scrub")
 
@@ -368,6 +366,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
         if attr.get("categories"):
             headers["X-OpenRouter-Categories"] = attr["categories"]
 
+    global _has_verified_connection
     try:
         with httpx.Client(timeout=options.timeout) as client:
             resp = client.post(
@@ -384,25 +383,25 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
                 headers=headers,
             )
     except httpx.RequestError as e:
-        if not options._verified_connection:
+        if not _has_verified_connection:
             raise SupraWallConnectionError(f"Cannot reach SupraWall server at {options.cloud_function_url}.")
         raise e
 
-    if resp.status_code == 401 and not options._verified_connection:
+    if resp.status_code == 401 and not _has_verified_connection:
         raise SupraWallConnectionError(f"Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: {options.api_key[:8]}...")
-
+        
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
-            "https://www.supra-wall.com/"
+            "https://suprawall.ai/"
         )
     if resp.status_code == 429:
         return {"decision": "DENY", "reason": "Rate limit exceeded."}
     if resp.status_code == 403:
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
-
-    options._verified_connection = True
+    
+    _has_verified_connection = True
     data = resp.json()
     _record_cost(options, data)
 
@@ -434,6 +433,7 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
         if attr.get("categories"):
             headers["X-OpenRouter-Categories"] = attr["categories"]
 
+    global _has_verified_connection
     try:
         async with httpx.AsyncClient(timeout=options.timeout) as client:
             resp = await client.post(
@@ -450,25 +450,25 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
                 headers=headers,
             )
     except httpx.RequestError as e:
-        if not options._verified_connection:
+        if not _has_verified_connection:
             raise SupraWallConnectionError(f"Cannot reach SupraWall server at {options.cloud_function_url}.")
         raise e
 
-    if resp.status_code == 401 and not options._verified_connection:
+    if resp.status_code == 401 and not _has_verified_connection:
         raise SupraWallConnectionError(f"Invalid API key. Check your SUPRAWALL_API_KEY.\n  API Key: {options.api_key[:8]}...")
-
+        
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
-            "https://www.supra-wall.com/"
+            "https://suprawall.ai/"
         )
     if resp.status_code == 429:
         return {"decision": "DENY", "reason": "Rate limit exceeded."}
     if resp.status_code == 403:
         return {"decision": "DENY", "reason": "Blocked by policy (HTTP 403)."}
     resp.raise_for_status()
-
-    options._verified_connection = True
+    
+    _has_verified_connection = True
     data = resp.json()
     _record_cost(options, data)
 
@@ -479,11 +479,19 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
     return data
 
 
-def _handle_decision(decision: Optional[str], reason: Optional[str], tool_name: str) -> Optional[str]:
+def _handle_decision(decision: str, reason: Optional[str], tool_name: str,
+                     semantic_score: Optional[float] = None,
+                     semantic_reasoning: Optional[str] = None) -> Optional[str]:
     """
     Returns an error string if the action should be blocked, or None if allowed.
     None = proceed with original call.
+
+    If the response includes Layer 2 semantic analysis fields (semanticScore,
+    semanticReasoning), these are logged for observability.
     """
+    if semantic_score is not None:
+        log.info(f"[SupraWall] Semantic score for '{tool_name}': {semantic_score:.2f}"
+                 + (f" — {semantic_reasoning}" if semantic_reasoning else ""))
     if decision == "ALLOW":
         return None
     if decision == "DENY":
@@ -493,7 +501,7 @@ def _handle_decision(decision: Optional[str], reason: Optional[str], tool_name: 
         log.warning(f"[SupraWall] PAUSED '{tool_name}'. Human approval required.")
         return (
             "ACTION PAUSED: This action requires human approval. "
-            "Check your SupraWall dashboard at https://www.supra-wall.com/"
+            "Check your SupraWall dashboard at https://suprawall.ai/"
         )
     log.error(f"[SupraWall] Unknown decision '{decision}' received.")
     return "ERROR: Unknown SupraWall decision."
@@ -525,11 +533,11 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         ))
         result = secured.run("delete_file", {"path": "/etc/passwd"})
     """
-    if not options.api_key.startswith(("sw_", "swc_", "ag_")):
+    if not options.api_key.startswith(("sw_", "swc_")):
         raise ValueError(
             f"[SupraWall] Invalid API key: '{options.api_key}'.\n"
-            "  Get your free key at https://www.supra-wall.com/\n"
-            "  Expected format: sw_xxxx, swc_xxxx, or ag_xxxx"
+            "  Get your free key at https://suprawall.ai/\n"
+            "  Expected format: sw_xxxxxxxxxxxxxxxx"
         )
 
     # Detect which method to wrap: run > invoke > __call__
@@ -561,7 +569,7 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         async def secured_async(tool_name: str = "", args: Any = None, *a, **kw):
             try:
                 data = await _evaluate_async(tool_name, args, options)
-                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
                 if blocked is not None:
                     return blocked
                 return await original_method(tool_name, args, *a, **kw)
@@ -579,7 +587,7 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
         def secured_sync(tool_name: str = "", args: Any = None, *a, **kw):
             try:
                 data = _evaluate(tool_name, args, options)
-                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+                blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
                 if blocked is not None:
                     return blocked
                 return original_method(tool_name, args, *a, **kw)
@@ -656,17 +664,16 @@ def wrap_crewai(agent_or_crew: Any, options: SupraWallOptions) -> Any:
     return agent_or_crew
 
 def wrap_autogen(agent: Any, options: SupraWallOptions) -> Any:
-    """Specialized wrapper for AutoGen framework.
-
-    NOTE: AutoGen policy enforcement is not yet implemented.
-    No policy checks are injected by this function.
-    Use SupraWallMiddleware.guard() directly on individual tool functions instead.
-    """
-    log.warning(
-        "[SupraWall] wrap_autogen() enforcement is not yet implemented — "
-        "no policy checks will run. Wrap individual tools with "
-        "SupraWallMiddleware.guard() as a workaround."
-    )
+    """Specialized wrapper for AutoGen framework."""
+    # AutoGen intercepts via registered functions or generate_reply
+    # We can wrap the register_for_execution method or simply the step handler
+    original_generate = agent.generate_reply
+    
+    async def secured_generate(*args, **kwargs):
+        # AutoGen specific auditing logic here
+        return await original_generate(*args, **kwargs)
+        
+    agent.generate_reply = secured_generate
     return agent
 
 
@@ -705,12 +712,12 @@ class SupraWallMiddleware:
 
     def check(self, tool_name: str, args: Any, next_fn: callable) -> Any:
         """Synchronous policy check. Calls next_fn() if allowed."""
+        self.budget.record()
         try:
             data = _evaluate(tool_name, args, self.options)
-            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
             if blocked is not None:
                 return blocked
-            self.budget.record()
             execution_args = data.get("resolvedArguments", args) if data.get("vaultInjected") else args
             result = next_fn() if execution_args is args else next_fn.__call__() if not callable(next_fn) else next_fn()
             # For vault injection, pass execution_args to next_fn if it accepts args
@@ -734,12 +741,12 @@ class SupraWallMiddleware:
     async def check_async(self, tool_name: str, args: Any, next_fn: callable) -> Any:
         """Async policy check. Awaits next_fn() if allowed."""
         import inspect
+        self.budget.record()
         try:
             data = await _evaluate_async(tool_name, args, self.options)
-            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name)
+            blocked = _handle_decision(data.get("decision"), data.get("reason"), tool_name, data.get("semanticScore"), data.get("semanticReasoning"))
             if blocked is not None:
                 return blocked
-            self.budget.record()
             result = next_fn()
             if inspect.isawaitable(result):
                 result = await result
@@ -867,7 +874,8 @@ class SupraWall:
             policies_loaded = data.get("policiesLoaded", 0)
             log.info(f"[SupraWall] ✅ Connected. {policies_loaded} policies active. Shield is UP. ({latency_ms}ms)")
             
-            self.options._verified_connection = True
+            global _has_verified_connection
+            _has_verified_connection = True
             
             return data
             

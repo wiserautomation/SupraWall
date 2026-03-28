@@ -46,6 +46,10 @@ export async function resolveTier(req: TieredRequest, res: Response, next: NextF
         const tier: Tier = (result.rows[0]?.tier as Tier) || "open_source";
         req.tier = tier;
         req.tierLimits = TIER_LIMITS[tier];
+
+        if (req.tierLimits.semanticLayer !== 'none') {
+            console.info(`[TierGuard] Semantic layer enabled: ${req.tierLimits.semanticLayer} for tenant ${tenantId}`);
+        }
     } catch (err) {
         logger.warn("[TierGuard] Failed to resolve tier, defaulting to open_source:", { tenantId, error: err });
         req.tier = "open_source";
