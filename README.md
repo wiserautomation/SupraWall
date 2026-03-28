@@ -7,7 +7,7 @@
 **The deterministic security layer for AI agents.**
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com)
+[![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
 
 </div>
 
@@ -73,7 +73,7 @@ The codebase is complete and in final review. We are onboarding a small group of
 
 ## Join the Waitlist
 
-**[→ Request early access at supra-wall.com](https://www.supra-wall.com)**
+**[→ Request early access at supra-wall.com/beta](https://www.supra-wall.com/beta)**
 
 We will onboard in small batches. Early partners get:
 - Free Team tier access during beta ($79/mo value)
@@ -91,6 +91,6 @@ The complete README, architecture docs, and integration guides are available at
 
 <div align="center">
 
-[Website](https://www.supra-wall.com) · [Early Access](https://www.supra-wall.com) · [License: Apache 2.0](LICENSE)
+[Website](https://www.supra-wall.com) · [Early Access](https://www.supra-wall.com/beta) · [License: Apache 2.0](LICENSE)
 
 </div>
