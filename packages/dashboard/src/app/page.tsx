@@ -64,7 +64,7 @@ export default function LandingPage() {
                 "name": "What is SupraWall's two-layer defense architecture?",
                 "acceptedAnswer": {
                     "@type": "Answer",
-                    "text": "SupraWall runs deterministic regex rules first (Layer 1, <2ms) to catch known threats with zero false negatives. Calls that pass Layer 1 are optionally analyzed by an AI semantic layer (Layer 2) that detects context-dependent attacks, unusual argument combinations, and behavioral anomalies. Layer 2 is available on Growth tier and above."
+                    "text": "SupraWall runs deterministic regex rules first (Layer 1, <2ms) to catch known threats with zero false negatives. Calls that pass Layer 1 are optionally analyzed by an AI semantic layer (Layer 2) that detects context-dependent attacks, unusual argument combinations, and behavioral anomalies. Layer 2 is available on Team tier and above."
                 }
             },
             {

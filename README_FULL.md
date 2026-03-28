@@ -50,7 +50,7 @@ SupraWall wraps your agent in one line of code and solves all seven threats at t
 
 **Layer 1 — Deterministic (all tiers):** Regex-based pattern matching in <2ms with zero network calls. Hard DENY on known attack patterns (SQLi, XSS, prompt injection), budget caps, vault token injection, and scope verification.
 
-**Layer 2 — AI Semantic (Growth tier+):** LLM-powered contextual analysis of tool + argument combinations (~80-150ms). Catches attacks that emerge from context, not from any single string pattern. Confidence-based routing: high confidence → DENY, medium → human review, low → flag for audit.
+**Layer 2 — AI Semantic (Team tier+):** LLM-powered contextual analysis of tool + argument combinations (~80-150ms). Catches attacks that emerge from context, not from any single string pattern. Confidence-based routing: high confidence → DENY, medium → human review, low → flag for audit.
 
 ```
 Tool Call → [Layer 1: Regex <2ms] → DENY known threats
@@ -175,7 +175,7 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 - **Response Scrubbing** — Redacts leaked secrets from tool responses (Base64, hex, URL-encoded, partial match)
 - **Budget Enforcement** — Hard caps per agent with per-model cost tracking (GPT-4o, Claude 3.5, Gemini, Llama, etc.)
 - **Threat Detection (Layer 1)** — SQL injection, XSS, prompt injection, path traversal regex patterns with severity scoring
-- **AI Semantic Analysis (Layer 2)** — LLM-powered contextual threat detection for attacks regex can't see (Growth+)
+- **AI Semantic Analysis (Layer 2)** — LLM-powered contextual threat detection for attacks regex can't see (Team+)
 - **Behavioral Anomaly Detection** — Historical baseline comparison flags unusual agent behavior (Business+)
 - **Loop Detection** — Circuit breaker stops infinite tool call loops
 

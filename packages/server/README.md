@@ -80,7 +80,7 @@ Layer 2 creates three additional tables (auto-created by `initDb()`):
 
 | Tier | Semantic Layer |
 | ---- | -------------- |
-| Free / Starter | None (Layer 1 only) |
-| Growth | AI semantic analysis |
+| Open Source / Developer | None (Layer 1 only) |
+| Team | AI semantic analysis |
 | Business | Semantic + behavioral anomaly |
 | Enterprise | Semantic + behavioral + custom model |

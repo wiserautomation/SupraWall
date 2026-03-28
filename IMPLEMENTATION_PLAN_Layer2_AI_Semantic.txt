@@ -93,7 +93,7 @@ Key architectural constraint:
   --------------|---------------------------|------------------------------
   open_source   | 3 regex patterns          | NONE
   developer     | Full 26+ regex patterns   | NONE
-  team ($79)    | Full regex + AI policies  | AI semantic check (standard)
+  team ($149)   | Full regex + AI policies  | AI semantic check (standard)
   business      | Full regex + AI policies  | AI semantic + behavioral anomaly
   enterprise    | Full regex + AI policies  | AI semantic + behavioral + custom model
 
@@ -754,7 +754,7 @@ CHANGES:
      Updated tagline:
        "Open source. One line of code. Seven threats neutralized."
 
-  b) In the existing "Six threats. One SDK." section or equivalent
+  b) In the existing "Seven threats. One SDK." section or equivalent
      feature grid, ADD a 7th card:
 
      Icon: Brain or Cpu (from lucide-react)

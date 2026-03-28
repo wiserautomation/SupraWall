@@ -262,7 +262,7 @@ export default function ThreatIntelligencePage() {
                             <Lock className="w-8 h-8 mx-auto mb-3 text-neutral-700" />
                             <p className="text-[10px] font-black uppercase tracking-widest text-neutral-500 mb-2">AI Semantic Layer</p>
                             <p className="text-[10px] text-neutral-600">
-                                Upgrade to Growth tier for AI-powered contextual threat detection.
+                                Upgrade to Team tier for AI-powered contextual threat detection.
                             </p>
                         </div>
                     ) : (

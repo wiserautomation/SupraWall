@@ -62,7 +62,7 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
         category: 'Threat Detection',
         rows: [
             { name: 'Layer 1: Regex patterns (<2ms)', free: true, cloud: true, enterprise: true },
-            { name: 'Layer 2: AI Semantic Analysis', free: false, cloud: 'Growth+', enterprise: true, highlight: true },
+            { name: 'Layer 2: AI Semantic Analysis', free: false, cloud: 'Team+', enterprise: true, highlight: true },
             { name: 'Behavioral anomaly detection', free: false, cloud: 'Business+', enterprise: true, highlight: true },
             { name: 'Custom fine-tuned threat model', free: false, cloud: false, enterprise: true },
         ],
@@ -154,9 +154,9 @@ export default function PricingPage() {
     }, [router]);
 
     const [loadingCheckout, setLoadingCheckout] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState<'starter' | 'growth' | 'business'>('growth');
+    const [selectedPlan, setSelectedPlan] = useState<'starter' | 'team' | 'business'>('team');
 
-    const cloudPrices = { starter: 49, growth: 149, business: 499 };
+    const cloudPrices = { starter: 49, team: 149, business: 499 };
     const overage = Math.max(0, calculateCost(operations));
     const planBase = cloudPrices[selectedPlan];
 
@@ -273,7 +273,7 @@ export default function PricingPage() {
 
                             {/* Plan selector */}
                             <div className="grid grid-cols-3 gap-2 bg-emerald-700/40 p-1 rounded-xl">
-                                {(['starter', 'growth', 'business'] as const).map(plan => (
+                                {(['starter', 'team', 'business'] as const).map(plan => (
                                     <button
                                         key={plan}
                                         onClick={() => setSelectedPlan(plan)}
@@ -291,7 +291,7 @@ export default function PricingPage() {
                                 <div className="text-5xl font-black italic tracking-tighter">${cloudPrices[selectedPlan]}<span className="text-2xl">/mo</span></div>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-emerald-200 mt-2">
                                     {selectedPlan === 'starter' && '+ $0.002/eval after 50K'}
-                                    {selectedPlan === 'growth' && '+ $0.002/eval after 500K'}
+                                    {selectedPlan === 'team' && '+ $0.002/eval after 500K'}
                                     {selectedPlan === 'business' && '+ $0.001/eval after 5M'}
                                 </p>
                             </div>
@@ -407,7 +407,7 @@ export default function PricingPage() {
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-black uppercase tracking-tighter text-white italic">Layer 2 — AI Semantic</h3>
-                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Growth tier and above</p>
+                                    <p className="text-[9px] font-black uppercase tracking-widest text-emerald-500">Team tier and above</p>
                                 </div>
                             </div>
                             <ul className="space-y-3">

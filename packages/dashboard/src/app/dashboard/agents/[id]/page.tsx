@@ -536,8 +536,21 @@ export default function AgentDetailPage() {
                                                 </td>
                                                 <td className="px-6 py-5">
                                                     <div className="flex flex-col">
-                                                        <span className="text-sm font-bold text-white font-mono">{log.toolName}</span>
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-sm font-bold text-white font-mono">{log.toolName}</span>
+                                                            {log.semanticScore !== null && (
+                                                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-500/10 border border-emerald-500/20" title={log.semanticReasoning || "AI Semantic analysis active"}>
+                                                                    <Brain className="w-3 h-3 text-emerald-400" />
+                                                                    <span className="text-[9px] font-black text-emerald-400">{log.semanticScore?.toFixed(2)}</span>
+                                                                </div>
+                                                            )}
+                                                        </div>
                                                         <span className="text-[10px] text-neutral-600 font-mono truncate max-w-[250px]">{log.arguments || "{}"}</span>
+                                                        {log.semanticFlag && (
+                                                            <span className="text-[9px] text-amber-500 font-medium italic mt-1 flex items-center gap-1">
+                                                                <AlertTriangle className="w-2.5 h-2.5" /> AI Flag: {log.semanticReasoning}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 </td>
                                                 <td className="px-6 py-5 text-right">

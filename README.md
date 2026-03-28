@@ -36,14 +36,25 @@ secured_agent = secure_agent(agent, api_key="ag_your_key")
 # Every tool call is now policy-checked, vault-protected, and audit-logged.
 ```
 
-### Six threats. One SDK.
+### Two layers. Seven threats. One SDK.
 
+- 🧠 **AI Semantic Layer** — LLM-powered contextual threat detection (Cloud only)
 - 🔐 **Vault** — agents never see real credentials (JIT injection)
 - 💸 **Hard budget caps** — deterministic spend limits with circuit breakers
 - 🚫 **Policy engine** — ALLOW / DENY / REQUIRE_APPROVAL per tool
 - 🧹 **PII Shield** — scrubs sensitive data before execution
 - 📋 **Audit Trail** — RSA-signed, EU AI Act Article 9/13/14 ready
 - 🛡️ **Injection Shield** — blocks prompt injection at the runtime boundary
+
+---
+
+## Two-Layer Architecture
+
+SupraWall employs a defense-in-depth strategy:
+1. **Layer 1: Deterministic Engine (<2ms)** — Catches known patterns (SQLi, XSS, Prompt Injection) with zero false negatives. Available in all tiers.
+2. **Layer 2: AI Semantic Analysis** — Analyzes context, behavioral anomalies, and cross-tool attack sequences. Available on Cloud Team+ tiers.
+
+---
 
 Supports: LangChain, CrewAI, AutoGen, Vercel AI · Python, TypeScript, Go, and more.
 

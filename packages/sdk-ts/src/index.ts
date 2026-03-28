@@ -147,7 +147,7 @@ export interface SupraWallResponse {
         url: string;
         format: "text" | "markdown" | "html";
     };
-    /** Layer 2 semantic threat score (0.0–1.0). Present on Growth tier and above. */
+    /** Layer 2 semantic threat score (0.0–1.0). Present on Team tier and above. */
     semanticScore?: number;
     /** True when Layer 2 flagged the call but still allowed it. */
     semanticFlag?: boolean;

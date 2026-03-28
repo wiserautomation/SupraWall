@@ -59,13 +59,13 @@ withSupraWall(agent, { apiKey: "ag_xxx", onNetworkError: "fail-closed" });
 
 ## Layer 2: AI Semantic Analysis
 
-If your organization is on Growth tier or above, the evaluate response may include additional fields from SupraWall's AI semantic analysis layer. Layer 2 runs server-side and requires no SDK changes.
+If your organization is on Team tier or above, the evaluate response may include additional fields from SupraWall's AI semantic analysis layer. Layer 2 runs server-side and requires no SDK changes.
 
 | Field | Type | Tier | Description |
 | ----- | ---- | ---- | ----------- |
-| `semanticScore` | `number` (0-1) | Growth+ | AI-assessed threat score |
-| `semanticFlag` | `boolean` | Growth+ | True if flagged but allowed |
-| `semanticReasoning` | `string` | Growth+ | LLM explanation of assessment |
+| `semanticScore` | `number` (0-1) | Team+ | AI-assessed threat score |
+| `semanticFlag` | `boolean` | Team+ | True if flagged but allowed |
+| `semanticReasoning` | `string` | Team+ | LLM explanation of assessment |
 | `anomalyScore` | `number` (0-1) | Business+ | Behavioral deviation from baseline |
 
 ## SupraWall Connect (multi-tenant)

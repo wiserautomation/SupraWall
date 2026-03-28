@@ -231,7 +231,7 @@ export async function POST(req: NextRequest) {
         // ── Layer 2: AI Semantic Analysis (Growth+ tiers only) ──
         const PLAN_TO_SEMANTIC: Record<string, SemanticLayerMode> = {
             free: 'none', starter: 'none',
-            growth: 'semantic', business: 'behavioral', enterprise: 'custom',
+            team: 'semantic', business: 'behavioral', enterprise: 'custom',
         };
         const semanticLayer = PLAN_TO_SEMANTIC[userPlan] || 'none';
         let semanticResult: SemanticAnalysisResult | null = null;
