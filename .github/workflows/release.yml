@@ -103,6 +103,6 @@ jobs:
             go get github.com/suprawall/suprawall-go
             ```
 
-            See the [CHANGELOG](https://github.com/suprawall/suprawall/blob/main/CHANGELOG.md) for full details.
+            See the [CHANGELOG](https://github.com/wiserautomation/SupraWall/blob/main/CHANGELOG.md) for full details.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

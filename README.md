@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Marketing/Logo/universal_upscale_0_d36e7b33-b656-4c57-8697-25a28f1f7d40_0.jpg" alt="SupraWall Logo" width="120">
+<img src="assets/logo.jpg" alt="SupraWall Logo" width="120">
 
 # SupraWall
 
@@ -17,7 +17,7 @@
 
 ### Your AI agent will go rogue. SupraWall makes sure it can't.
 
-<img src="Marketing/Attack Stop .gif" alt="SupraWall intercepting a dangerous tool call" width="700">
+<img src="assets/demo.gif" alt="SupraWall intercepting a dangerous tool call" width="700">
 
 </div>
 

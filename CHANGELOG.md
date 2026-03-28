@@ -40,4 +40,4 @@ SupraWall is now open source under the Apache 2.0 license. This is the first pub
 - CI/CD with GitHub Actions (build, test, lint on every PR)
 - Automated npm and PyPI publishing on release tags
 
-[1.0.0]: https://github.com/suprawall/suprawall/releases/tag/v1.0.0
+[1.0.0]: https://github.com/wiserautomation/SupraWall/releases/tag/v1.0.0

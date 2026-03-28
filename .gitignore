@@ -18,8 +18,9 @@ build/
 
 # Local development
 .vercel/
+.vercel
 
-# IDE
+# IDE & AI tools
 .DS_Store
 .!*!.DS_Store
 **/.DS_Store
@@ -27,6 +28,9 @@ build/
 *~
 .idea/
 .vscode/
+.claude/
+.cursor/
+.gemini/
 
 # Firebase
 .firebase/
@@ -50,8 +54,11 @@ Marketing/
 PR_DRAFTS/
 Blog/
 agent-skills/
+agent-outputs/
 agent-plan/
 admin/
+content/
+governance/
 Implementation Plan/
 mcp-publisher
 supra-wall.plugin
@@ -61,18 +68,30 @@ GSC_*.md
 SUBMISSION_*.md
 QUICK_SUBMIT.md
 MCP_SUBMISSION_README.md
+IMPLEMENTATION_PLAN_*.txt
+TIER_SYSTEM_FIXES_SUMMARY.md
+TESTING_CHECKLIST.md
 github-outreach-report-*.md
-blog-post-eu-ai-act-langchain.md
+blog-post-*.md
 dev-prompt-compliance-features.md
 agent-automation-tasks.md
 build_pricing_explanation.js
 VAULT-IMPLEMENTATION-PLAN.md
-TESTING_CHECKLIST.md
 server*.json
+submit-to-mcp-registry.sh
+
+# Debug / scratch scripts
+check_*.js
+debug_*.js
+debug_*.ts
+SKILL.md
+Task List.md
+
+# Deployment configs (keep private)
+vercel_env.json
 
 # Proprietary (keep separate)
 suprawall-cloud/
 cloudflare-edge/
 claude-plugins-official/
-.vercel
 .env*.local

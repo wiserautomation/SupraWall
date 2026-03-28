@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="Marketing/Logo/universal_upscale_0_d36e7b33-b656-4c57-8697-25a28f1f7d40_0.jpg" alt="SupraWall Logo" width="120">
+<img src="assets/logo.jpg" alt="SupraWall Logo" width="120">
 
 # SupraWall
 
@@ -11,7 +11,7 @@
 [![npm version](https://img.shields.io/npm/v/@suprawall/sdk-ts?label=npm&color=22c55e)](https://www.npmjs.com/package/@suprawall/sdk-ts)
 [![PyPI version](https://img.shields.io/pypi/v/suprawall?color=22c55e)](https://pypi.org/project/suprawall/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![GitHub Stars](https://img.shields.io/github/stars/suprawall/suprawall?style=social)](https://github.com/suprawall/suprawall)
+[![GitHub Stars](https://img.shields.io/github/stars/wiserautomation/SupraWall?style=social)](https://github.com/wiserautomation/SupraWall)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da)](https://discord.gg/suprawall)
 
 [Quick Start](#-quick-start) · [Why SupraWall](#-why-suprawall) · [EU AI Act](#-eu-ai-act-compliance) · [Self-Host vs Cloud](#-run-anywhere) · [Docs](https://www.supra-wall.com/docs) · [Contributing](CONTRIBUTING.md)
@@ -24,7 +24,7 @@
 
 ### Your AI agent will go rogue. SupraWall makes sure it can't.
 
-<img src="Marketing/Attack Stop .gif" alt="SupraWall intercepting a dangerous tool call" width="700">
+<img src="assets/demo.gif" alt="SupraWall intercepting a dangerous tool call" width="700">
 
 </div>
 
@@ -251,7 +251,7 @@ Includes: managed Vault with HSM encryption, Slack approval routing, PDF complia
 Run SupraWall on your own infrastructure. Free forever under Apache 2.0.
 
 ```bash
-git clone https://github.com/suprawall/suprawall.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall/packages/server
 docker compose up -d
 ```
@@ -261,7 +261,7 @@ This starts the SupraWall server + PostgreSQL. Point your SDK at `http://localho
 ### Local Development
 
 ```bash
-git clone https://github.com/suprawall/suprawall.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall
 npm install
 npm run build
@@ -377,7 +377,7 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for guidelines and **[CODE_OF_CONDUCT
 ### Quick Contributing Steps
 
 ```bash
-git clone https://github.com/suprawall/suprawall.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall
 npm install
 npm run build
@@ -399,7 +399,7 @@ For managed hosting, compliance tools, and enterprise features, see **[SupraWall
 
 <div align="center">
 
-**If SupraWall helps secure your AI agents, [give us a star](https://github.com/suprawall/suprawall) — it helps more developers discover the project.**
+**If SupraWall helps secure your AI agents, [give us a star](https://github.com/wiserautomation/SupraWall) — it helps more developers discover the project.**
 
 [Website](https://www.supra-wall.com) · [Docs](https://www.supra-wall.com/docs) · [Discord](https://discord.gg/suprawall) · [Twitter](https://twitter.com/suprawall)
 
