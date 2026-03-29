@@ -573,6 +573,7 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
 async function logAudit(tenantId: string, agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
     // Primary: Firestore (real-time agent spend tracking)
     await db.collection("audit_logs").add({
+        userId: tenantId, 
         agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
         cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
     });
