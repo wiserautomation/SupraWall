@@ -21,15 +21,28 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
 
+        // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+        let effectiveTenantId = tenantId;
+        try {
+            const { getAdminDb } = require('@/lib/firebase-admin');
+            const db = getAdminDb();
+            const userDoc = await db.collection("users").doc(tenantId).get();
+            if (userDoc.exists && userDoc.data()?.tenantId) {
+                effectiveTenantId = userDoc.data().tenantId;
+            }
+        } catch (e) {
+            // Fallback
+        }
+
         const result = await pool.query(
             `SELECT id, agent_id, tool_name, semantic_score, anomaly_score,
                     confidence, decision_override, reasoning, model_used,
                     latency_ms, timestamp
              FROM semantic_analysis_log
-             WHERE tenant_id = $1
+             WHERE tenant_id = $1 OR tenant_id = $2
              ORDER BY timestamp DESC
-             LIMIT $2`,
-            [tenantId, limit]
+             LIMIT $3`,
+            [tenantId, effectiveTenantId, limit]
         );
 
         return NextResponse.json(result.rows);
@@ -38,3 +51,4 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
     }
 }
+

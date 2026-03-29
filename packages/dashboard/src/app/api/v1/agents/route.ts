@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { db as firestore } from '@/lib/firebase-admin';
 import { checkResourceLimit } from '@/lib/tier-enforcement';
 import { verifyAuth, unauthorizedResponse } from '@/lib/api-auth';
+import { pool } from "@/lib/db_sql";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -16,35 +17,44 @@ export async function GET(request: NextRequest) {
     if (!userId) return unauthorizedResponse();
 
     // Fetch mapped tenantId if any
-    const userDoc = await db.collection("users").doc(userId).get();
-    const tenantId = userDoc.data()?.tenantId;
+    const userDoc = await firestore.collection("users").doc(userId).get();
+    const tenantId = userDoc.data()?.tenantId || userId;
 
-    const queryIds = [userId];
-    if (tenantId && tenantId !== userId) {
-      queryIds.push(tenantId);
-    }
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS agents (
+            id VARCHAR(255) PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            apikeyhash VARCHAR(255),
+            scopes TEXT[] DEFAULT '{}',
+            status VARCHAR(50) DEFAULT 'active',
+            slack_webhook VARCHAR(255),
+            max_cost_usd FLOAT DEFAULT 10,
+            budget_alert_usd FLOAT DEFAULT 8,
+            max_iterations INTEGER DEFAULT 50,
+            loop_detection BOOLEAN DEFAULT FALSE,
+            createdat TIMESTAMP DEFAULT NOW()
+        );
+    `);
 
-    const snapshot = await db.collection("agents")
-      .where("userId", "in", queryIds)
-      .get();
+    const result = await pool.query(
+        "SELECT * FROM agents WHERE tenantid = $1 OR tenantid = $2 ORDER BY createdat DESC",
+        [userId, tenantId]
+    );
 
-    const agents = snapshot.docs.map(doc => {
-      const data = doc.data();
-      const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
-        if (value && typeof value === 'object' && '_seconds' in value) {
-          return new Date(value._seconds * 1000).toISOString();
-        }
-        return value;
-      }));
-      return {
-        id: doc.id,
-        ...sanitized
-      };
-    }).sort((a: any, b: any) => {
-        const dateA = new Date(a.createdAt || 0).getTime();
-        const dateB = new Date(b.createdAt || 0).getTime();
-        return dateB - dateA;
-    });
+    const agents = result.rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        tenantId: row.tenantid,
+        userId: row.tenantid, // UI consistency
+        status: row.status,
+        createdAt: row.createdat,
+        scopes: row.scopes,
+        max_cost_usd: row.max_cost_usd,
+        budget_alert_usd: row.budget_alert_usd,
+        max_iterations: row.max_iterations,
+        loop_detection: row.loop_detection,
+    }));
 
     return NextResponse.json(agents);
   } catch (err: any) {
@@ -66,7 +76,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // --- Tier Enforcement: Agent Count ---
+    // --- Tier Enforcement ---
     const { allowed, count, limit } = await checkResourceLimit(userId, 'agents', 'userId');
 
     if (!allowed) {
@@ -76,26 +86,23 @@ export async function POST(request: NextRequest) {
         }, { status: 403 });
     }
 
-    // Fetch mapped tenantId for creation consistency
-    const userDoc = await db.collection("users").doc(userId).get();
+    const userDoc = await firestore.collection("users").doc(userId).get();
     const effectiveTenantId = userDoc.data()?.tenantId || userId;
 
-    const agentDoc = {
-      name,
-      userId: effectiveTenantId, // Use tenantId as primary owner
-      tenantId: effectiveTenantId,
-      status: 'active',
-      apiKey,
-      totalCalls: 0,
-      totalSpendUsd: 0,
-      createdAt: new Date(),
-      verifiedAt: null,
-      scopes: scopes?.length > 0 ? scopes : ["*:*"],
-      ownerFirebaseUid: userId, // Keep link for troubleshooting
-    };
+    const agentId = `agent_${Math.random().toString(36).substring(2, 11)}`;
+    
+    await pool.query(`
+        INSERT INTO agents (id, tenantid, name, apikeyhash, scopes, status)
+        VALUES ($1, $2, $3, $4, $5, $6)
+    `, [agentId, effectiveTenantId, name, apiKey, scopes || ["*:*"], 'active']);
 
-    const ref = await db.collection("agents").add(agentDoc);
-    return NextResponse.json({ id: ref.id, ...agentDoc });
+    return NextResponse.json({ 
+        id: agentId, 
+        name, 
+        tenantId: effectiveTenantId, 
+        status: 'active',
+        createdAt: new Date().toISOString()
+    });
   } catch (err: any) {
     console.error("[API Agents POST] Error:", err);
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
@@ -104,28 +111,21 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // SECURITY: Authenticate and derive tenantId from token
     const userId = await verifyAuth(request);
     if (!userId) return unauthorizedResponse();
 
-    // SECURITY: Removed ?all=true global delete. Only tenant-scoped delete allowed.
-    // Fetch mapped tenantId
-    const userDoc = await db.collection("users").doc(userId).get();
-    const tenantId = userDoc.data()?.tenantId;
+    const userDoc = await firestore.collection("users").doc(userId).get();
+    const tenantId = userDoc.data()?.tenantId || userId;
 
-    const queryIds = [userId];
-    if (tenantId && tenantId !== userId) {
-      queryIds.push(tenantId);
-    }
+    const result = await pool.query(
+        "DELETE FROM agents WHERE tenantid = $1 OR tenantid = $2",
+        [userId, tenantId]
+    );
 
-    const snapshot = await db.collection("agents").where("userId", "in", queryIds).get();
-    const batch = db.batch();
-    snapshot.docs.forEach((doc) => batch.delete(doc.ref));
-    await batch.commit();
-
-    return NextResponse.json({ message: `Successfully deleted ${snapshot.docs.length} agents for tenant.` });
+    return NextResponse.json({ message: `Successfully deleted ${result.rowCount} agents for tenant.` });
   } catch (err: any) {
     console.error("[API Agents DELETE] Error:", err);
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+

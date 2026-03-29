@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
+import { pool } from "@/lib/db_sql";
 
 export const dynamic = "force-dynamic";
 
@@ -10,11 +11,29 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
     const agentId = searchParams.get('agentId');
-    const limitParam = searchParams.get('limit') || '50';
+    const limitParam = parseInt(searchParams.get('limit') || '50', 10);
     
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
+
+    // Ensure table exists (Self-healing schema)
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS audit_logs (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            agentid VARCHAR(255),
+            toolname VARCHAR(255),
+            decision VARCHAR(50),
+            riskscore INTEGER,
+            cost_usd FLOAT DEFAULT 0,
+            reason TEXT,
+            arguments TEXT,
+            timestamp TIMESTAMP DEFAULT NOW(),
+            parameters JSONB,
+            metadata JSONB
+        );
+    `);
 
     // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
     let effectiveTenantId = tenantId;
@@ -26,32 +45,23 @@ export async function GET(request: NextRequest) {
             effectiveTenantId = userDoc.data().tenantId;
         }
     } catch (e) {
-        console.warn("[Audit Proxy] Failed to resolve mapped tenantId, using original:", tenantId);
+        // Fallback to the provided tenantId (UID)
     }
 
-    // Proxy to the SupraWall Backend (PostgreSQL source of truth)
-    const serverUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
-    const url = new URL(`${serverUrl}/v1/audit-logs`);
-    url.searchParams.set("tenantId", effectiveTenantId);
-    url.searchParams.set("limit", limitParam);
+    // Query Postgres directly
+    let query = "SELECT * FROM audit_logs WHERE tenantid = $1";
+    const params: any[] = [effectiveTenantId];
+
     if (agentId && agentId !== "ALL") {
-        url.searchParams.set("agentId", agentId);
+        params.push(agentId);
+        query += ` AND agentid = $${params.length}`;
     }
+    
+    query += ` ORDER BY timestamp DESC LIMIT $${params.length + 1}`;
+    params.push(limitParam);
 
-    const response = await fetch(url.toString(), {
-        headers: {
-            "x-api-key": process.env.SUPRAWALL_MASTER_KEY || ""
-        }
-    });
-
-    if (!response.ok) {
-        const error = await response.text();
-        console.error("[Dashboard Audit Proxy] Backend Error:", error);
-        return NextResponse.json({ error: "Backend failure", details: error }, { status: response.status });
-    }
-
-    const data = await response.json();
-    const rows = data.rows || [];
+    const result = await pool.query(query, params);
+    const rows = result.rows || [];
 
     // Map to common dashboard format
     const logs = rows.map((row: any) => {
@@ -59,7 +69,9 @@ export async function GET(request: NextRequest) {
         return {
             id: row.id,
             agentId: row.agentid,
+            agentid: row.agentid, // UI consistency
             toolName: row.toolname,
+            toolname: row.toolname, // UI consistency
             decision: row.decision,
             reason: row.reason || metadata.reason || null,
             cost_usd: row.cost_usd || 0,
@@ -83,7 +95,8 @@ export async function GET(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Audit Logs GET] Fatal Error:", err);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error", details: err.message }, { status: 500 });
   }
 }
+
 

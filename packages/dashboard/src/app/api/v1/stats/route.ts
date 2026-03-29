@@ -4,7 +4,8 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/firebase-admin';
+import { db as firestore } from '@/lib/firebase-admin';
+import { pool } from "@/lib/db_sql";
 
 export async function GET(request: NextRequest) {
     try {
@@ -16,56 +17,86 @@ export async function GET(request: NextRequest) {
         }
 
         // 1. Fetch Effective Tenant IDs (Firebase UID + mapped Tenant ID)
-        const userDoc = await db.collection("users").doc(tenantId).get();
-        const mappedTenantId = userDoc.data()?.tenantId;
+        const userDoc = await firestore.collection("users").doc(tenantId).get();
+        const mappedTenantId = userDoc.data()?.tenantId || tenantId;
 
-        const queryIds = [tenantId];
-        if (mappedTenantId && mappedTenantId !== tenantId) {
-            queryIds.push(mappedTenantId);
-        }
+        // Ensure tables exist
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS audit_logs (
+                id SERIAL PRIMARY KEY,
+                tenantid VARCHAR(255) NOT NULL,
+                agentid VARCHAR(255),
+                toolname VARCHAR(255),
+                decision VARCHAR(50),
+                riskscore INTEGER,
+                cost_usd FLOAT DEFAULT 0,
+                reason TEXT,
+                arguments TEXT,
+                timestamp TIMESTAMP DEFAULT NOW(),
+                parameters JSONB,
+                metadata JSONB
+            );
+            CREATE TABLE IF NOT EXISTS approval_requests (
+                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+                tenantid VARCHAR(255) NOT NULL,
+                agentid VARCHAR(255) NOT NULL,
+                toolname VARCHAR(255) NOT NULL,
+                parameters JSONB,
+                status VARCHAR(50) DEFAULT 'PENDING',
+                decision_by VARCHAR(255),
+                decision_at TIMESTAMP,
+                decision_comment TEXT,
+                metadata JSONB,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+        `);
 
-        const agentsSnap = await db.collection('agents').where('userId', 'in', queryIds).get();
-        const agentDocs = agentsSnap.docs.map(d => d.data());
-        
-        let totalCalls = 0;
-        let actualSpend = 0;
-        
-        agentDocs.forEach(agent => {
-            totalCalls += (agent.totalCalls || 0);
-            actualSpend += (agent.totalSpendUsd || 0);
-        });
+        // 2. Fetch Aggregated Data from Postgres
+        const statsResult = await pool.query(`
+            SELECT 
+                COUNT(*) as total_calls,
+                SUM(cost_usd) as total_spend,
+                COUNT(*) FILTER (WHERE decision = 'DENY') as blocked_actions
+            FROM audit_logs
+            WHERE tenantid = $1 OR tenantid = $2
+        `, [tenantId, mappedTenantId]);
 
-        // 2. Fetch Pending Approvals
-        const approvalsSnap = await db.collection('approvalRequests')
-            .where('userId', 'in', queryIds)
-            .where('status', '==', 'pending')
-            .get();
-        const pendingApprovalsCount = approvalsSnap.size;
+        const statsRow = statsResult.rows[0];
+        const totalCalls = parseInt(statsRow.total_calls || "0", 10);
+        const actualSpend = parseFloat(statsRow.total_spend || "0");
+        const blockedActions = parseInt(statsRow.blocked_actions || "0", 10);
 
-        // 3. Fetch Blocked Actions from Audit Logs (decision === 'DENY')
-        const blockedSnap = await db.collection('audit_logs')
-            .where('userId', 'in', queryIds)
-            .where('decision', '==', 'DENY')
-            .limit(100) 
-            .get();
-        
-        // Note: Firestore doesn't support complex cross-collection joins easily.
-        // For a true count, we'd need a separate counter or a better index.
-        // We'll use the size for now as a representative sample or mock a bit higher if needed.
-        const blockedActions = blockedSnap.size || Math.floor(totalCalls * 0.05); // Fallback to 5% if no logs
+        // 3. Fetch Pending Approvals
+        const approvalsResult = await pool.query(`
+            SELECT COUNT(*) FROM approval_requests 
+            WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING'
+        `, [tenantId, mappedTenantId]);
+        const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 
-        // 4. Generate some chart data (mocked for now, or could aggregate logs by date)
-        const chartData = [
-            { name: 'Mon', calls: Math.floor(totalCalls * 0.1) },
-            { name: 'Tue', calls: Math.floor(totalCalls * 0.15) },
-            { name: 'Wed', calls: Math.floor(totalCalls * 0.2) },
-            { name: 'Thu', calls: Math.floor(totalCalls * 0.25) },
-            { name: 'Fri', calls: Math.floor(totalCalls * 0.18) },
-            { name: 'Sat', calls: Math.floor(totalCalls * 0.07) },
-            { name: 'Sun', calls: Math.floor(totalCalls * 0.05) },
+        // 4. Generate chart data for the last 7 days
+        const chartResult = await pool.query(`
+            SELECT 
+                TO_CHAR(timestamp, 'Dy') as day_name,
+                COUNT(*) as call_count
+            FROM audit_logs
+            WHERE (tenantid = $1 OR tenantid = $2) 
+              AND timestamp > NOW() - INTERVAL '7 days'
+            GROUP BY TO_CHAR(timestamp, 'Dy'), DATE_TRUNC('day', timestamp)
+            ORDER BY DATE_TRUNC('day', timestamp)
+        `, [tenantId, mappedTenantId]);
+
+        const chartData = chartResult.rows.map(row => ({
+            name: row.day_name,
+            calls: parseInt(row.call_count || "0", 10)
+        }));
+
+        // Fill in if chart data is empty
+        const finalChartData = chartData.length > 0 ? chartData : [
+            { name: 'Mon', calls: 0 }, { name: 'Tue', calls: 0 }, { name: 'Wed', calls: 0 },
+            { name: 'Thu', calls: 0 }, { name: 'Fri', calls: 0 }, { name: 'Sat', calls: 0 }, { name: 'Sun', calls: 0 }
         ];
 
-        const costSaved = blockedActions * 0.25;
+        const costSaved = blockedActions * 0.25; // Estimated $0.25 saved per blocked harmful action
 
         return NextResponse.json({
             totalCalls,
@@ -73,11 +104,11 @@ export async function GET(request: NextRequest) {
             actualSpend,
             costSaved,
             pendingApprovalsCount,
-            chartData
+            chartData: finalChartData
         });
 
     } catch (error: any) {
         console.error('[API Stats GET] Error:', error);
-        return NextResponse.json({ error: 'Failed' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to fetch dashboard statistics from Postgres' }, { status: 500 });
     }
 }

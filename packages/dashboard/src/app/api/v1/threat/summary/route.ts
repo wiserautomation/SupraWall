@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
+import { pool } from "@/lib/db_sql";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,29 +16,31 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    // Proxy to the SupraWall Backend (PostgreSQL source of truth)
-    const serverUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
-    const url = new URL(`${serverUrl}/v1/threat/summary`);
-    url.searchParams.set("tenantId", tenantId);
+    // Ensure table exists
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS threat_summaries (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            entity_id VARCHAR(255) NOT NULL, 
+            entity_type VARCHAR(50) NOT NULL,
+            threat_score FLOAT DEFAULT 0,
+            total_events INTEGER DEFAULT 0,
+            last_updated TIMESTAMP DEFAULT NOW(),
+            UNIQUE(tenantid, entity_id, entity_type)
+        );
+    `);
 
-    const response = await fetch(url.toString(), {
-        headers: {
-            "x-api-key": process.env.SUPRAWALL_MASTER_KEY || ""
-        }
-    });
+    const result = await pool.query(
+        "SELECT * FROM threat_summaries WHERE tenantid = $1 ORDER BY threat_score DESC",
+        [tenantId]
+    );
 
-    if (!response.ok) {
-        const error = await response.text();
-        console.error("[Dashboard Threat Summary Proxy] Backend Error:", error);
-        return NextResponse.json({ error: "Backend failure", details: error }, { status: response.status });
-    }
-
-    const summaries = await response.json();
-    return NextResponse.json(summaries);
+    return NextResponse.json(result.rows);
 
   } catch (err: any) {
     console.error("[API Threat Summary GET] Error:", err);
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+
 

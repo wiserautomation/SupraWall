@@ -2,11 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
+import { pool } from "@/lib/db_sql";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
-
-import { pool } from "@/lib/db_sql";
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,6 +16,19 @@ export async function GET(request: NextRequest) {
 
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+    }
+
+    // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+    let effectiveTenantId = tenantId;
+    try {
+        const { getAdminDb } = require('@/lib/firebase-admin');
+        const db = getAdminDb();
+        const userDoc = await db.collection("users").doc(tenantId).get();
+        if (userDoc.exists && userDoc.data()?.tenantId) {
+            effectiveTenantId = userDoc.data().tenantId;
+        }
+    } catch (e) {
+        // Fallback to the provided tenantId (UID)
     }
 
     await pool.query(`
@@ -31,9 +43,10 @@ export async function GET(request: NextRequest) {
         );
     `);
 
+    // Alias timestamp as createdat for UI compatibility
     const result = await pool.query(
-        "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3",
-        [tenantId, limit, offset]
+        "SELECT *, timestamp as createdat FROM threat_events WHERE tenantid = $1 OR tenantid = $2 ORDER BY timestamp DESC LIMIT $3 OFFSET $4",
+        [tenantId, effectiveTenantId, limit, offset]
     );
 
     return NextResponse.json(result.rows);
@@ -43,4 +56,5 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
   }
 }
+
 
