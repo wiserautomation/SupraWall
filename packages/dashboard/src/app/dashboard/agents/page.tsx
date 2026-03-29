@@ -484,11 +484,11 @@ ADMIN_KEY=${adminKey}
 AGENT_KEY=${agent.apiKey}
 AGENT_ID=${agent.id}`;
 
-            const blob = new Blob([envContent], { type: "text/plain" });
+            const blob = new Blob([envContent], { type: "application/octet-stream" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = `.env.${safeName}`;
+            a.download = `agent-${safeName}.env`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -529,7 +529,7 @@ AGENT_ID=${agent.id}`;
             const isAll = agentList.length === agents.length;
             const filename = isAll ? `suprawall-all-agents.env` : `suprawall-selected-${agentList.length}-agents.env`;
 
-            const blob = new Blob([fileContent], { type: "text/plain" });
+            const blob = new Blob([fileContent], { type: "application/octet-stream" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
