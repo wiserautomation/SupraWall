@@ -7,15 +7,15 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "State of AI Agent Security 2026 | SupraWall Research",
-    description: "Original research on the state of AI agent security in 2026. Key findings: 67% of enterprise AI deployments have zero runtime controls, $2.3M average cost of an agent security incident.",
-    keywords: ["AI agent security 2026", "state of AI security", "AI agent security report", "agentic AI risks 2026", "AI agent threats 2026"],
+    title: "AI Agent Security in 2026: Threats, Gaps & How to Fix Them",
+    description: "The 7 live threats in production AI agents — prompt injection, credential leaks, PII exfiltration, and cost overruns.",
+    keywords: ["AI agent security 2026", "AI threat landscape", "LLM security gaps", "production AI risks", "AI agent vulnerabilities"],
     alternates: {
         canonical: "https://www.supra-wall.com/blog/state-of-ai-agent-security-2026",
     },
     openGraph: {
-        title: "State of AI Agent Security 2026 | SupraWall Research",
-        description: "Original research on the state of AI agent security in 2026. Key findings: 67% of enterprise AI deployments have zero runtime controls, $2.3M average cost of an agent security incident.",
+        title: "AI Agent Security in 2026: Threats, Gaps & How to Fix Them",
+        description: "The 7 live threats in production AI agents — prompt injection, credential leaks, PII exfiltration, and cost overruns.",
     },
 };
 

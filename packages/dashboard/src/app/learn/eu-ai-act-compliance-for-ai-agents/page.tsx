@@ -18,24 +18,16 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "EU AI Act Compliance for AI Agents 2026 | SupraWall",
-    description:
-        "The EU AI Act enforcement begins August 2026. Learn which articles apply to autonomous AI agents, what human oversight means in practice, and how to comply.",
-    keywords: [
-        "EU AI Act AI agents",
-        "EU AI Act compliance 2026",
-        "Article 14 AI agents",
-        "high-risk AI compliance",
-        "AI Act August deadline",
-    ],
+    title: "EU AI Act Compliance for AI Agents — August 2026 Requirements",
+    description: "Learn how articles 9, 12 & 14 of the EU AI Act apply to autonomous AI agents. Implementation guide for human oversight and mandatory audit trails.",
+    keywords: ["EU AI Act AI agents", "EU AI Act compliance 2026", "Article 14 AI agents", "high-risk AI compliance", "AI Act August deadline", "AI agent audit trails", "human oversight AI"],
     alternates: {
-        canonical: "https://www.supra-wall.com/learn/eu-ai-act-compliance-ai-agents",
+        canonical: "https://www.supra-wall.com/learn/eu-ai-act-compliance-for-ai-agents",
     },
     openGraph: {
-        title: "EU AI Act Compliance for AI Agents 2026 | SupraWall",
-        description:
-            "The EU AI Act enforcement begins August 2026. Learn which articles apply to autonomous AI agents, what human oversight means in practice, and how to comply.",
-        url: "https://www.supra-wall.com/learn/eu-ai-act-compliance-ai-agents",
+        title: "EU AI Act Compliance for AI Agents — August 2026 Deadline",
+        description: "Learn how articles 9, 12 & 14 of the EU AI Act apply to autonomous AI agents. Implementation guide for human oversight and mandatory audit trails.",
+        url: "https://www.supra-wall.com/learn/eu-ai-act-compliance-for-ai-agents",
         siteName: "SupraWall",
         type: "article",
     },
@@ -442,16 +434,25 @@ export default function EUAIActCompliancePage() {
                         </div>
                     </section>
 
-                    {/* Related Articles */}
+                    {/* Related Articles — Part of SEO Cluster */}
                     <section className="space-y-6">
                         <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
-                            Related Articles
+                            Compliance Cluster
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link href="/learn/eu-ai-act-august-2026-deadline" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
-                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">EU AI Act August 2026 Deadline</h4>
-                                <p className="text-sm text-neutral-500 mt-2">5-month compliance roadmap for the August 2, 2026 deadline.</p>
-                            </Link>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                            {[
+                                { title: "EU AI Act Audit Trail Guide", url: "/learn/eu-ai-act-audit-trail", desc: "Technical implementation of Article 12 mandatory logging." },
+                                { title: "August 2026 Checklist", url: "/blog/eu-ai-act-august-2026-checklist", desc: "The definitive 5-step roadmap to compliance." },
+                                { title: "What are AI Agent Guardrails?", url: "/learn/what-are-ai-agent-guardrails", desc: "The foundation of agentic security and enforcement." },
+                                { title: "AI Agent Secrets Management", url: "/learn/ai-agent-vault-secrets-management", desc: "Handling credentials in a compliant manner (Article 10)." },
+                                { title: "LangChain Integration", url: "/integrations/langchain", desc: "Secure your LangChain agents for EU audit readiness." },
+                                { title: "SupraWall for MCP", url: "/integrations/mcp", desc: "Compliance middleware for Model Context Protocol agents." }
+                            ].map((article, i) => (
+                                <Link key={i} href={article.url} className="group p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                    <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors italic uppercase tracking-tight">{article.title}</h4>
+                                    <p className="text-sm text-neutral-500 mt-2 font-medium leading-relaxed">{article.desc}</p>
+                                </Link>
+                            ))}
                         </div>
                     </section>
 

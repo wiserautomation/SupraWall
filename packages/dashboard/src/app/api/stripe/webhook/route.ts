@@ -43,9 +43,9 @@ export async function POST(req: Request) {
             const subscription = await stripe.subscriptions.retrieve(subscriptionId);
             const subscriptionItemId = subscription.items.data[0].id;
 
-            // In Stripe SDK v18+, current_period_end is on each subscription item
+            // In Stripe SDK v16+, current_period_end is on each subscription item rather than the root
             const periodEnd = (subscription as any).current_period_end
-                ?? subscription.items.data[0]?.current_period_end
+                ?? (subscription.items.data[0] as any)?.current_period_end
                 ?? Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60;
 
             await db.collection('organizations').doc(userId).set({

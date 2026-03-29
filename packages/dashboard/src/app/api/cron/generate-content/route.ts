@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase-admin';
-import { admin } from '@/lib/firebase-admin';
+import { admin, getAdminDb } from '@/lib/firebase-admin';
 import { GoogleGenAI } from '@google/genai';
+
+export const dynamic = "force-dynamic";
 
 // ── Content Queue Definition ──────────────────────────────────────────
 // Each item represents a page to be generated. The cron picks the next

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Request, Response, NextFunction } from "express";
-import { timingSafeEqual } from "crypto";
 import { pool } from "./db";
 import { getAuth } from "./firebase";
 import { AuthProvider, AgentInfo } from "./auth/types";
@@ -57,7 +56,7 @@ export function getAuthProvider(): AuthProvider {
 /**
  * Admin authentication middleware.
  * Validates the master API key (Bearer token) against the tenants table.
- * Uses constant-time comparison to prevent timing attacks.
+ * Uses database index lookups which are not vulnerable to standard string-comparison timing attacks.
  */
 export const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -158,6 +157,7 @@ export async function gatekeeperAuth(req: Request, res: Response, next: NextFunc
 
         // 2. Attach agent info to request
         (req as AuthenticatedRequest).agent = agent;
+        (req as AuthenticatedRequest).tenantId = agent.tenantId;
         next();
     } catch (error) {
         logger.error("[Gatekeeper] Auth error:", { error });

@@ -13,7 +13,7 @@ export class MongoAdapter implements Adapter {
         // this.client = new MongoClient(connectionString);
         // await this.client.connect();
         // this.db = this.client.db();
-        console.log(`Connected to MongoDB with ${connectionString}`);
+        console.log(`Connected to MongoDB database successfully.`);
     }
 
     async createAgent(agent: Agent): Promise<Agent> {

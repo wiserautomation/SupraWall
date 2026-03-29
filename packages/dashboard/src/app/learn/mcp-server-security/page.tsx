@@ -20,23 +20,22 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "MCP Server Security for AI Agents | SupraWall",
-    description:
-        "MCP servers give AI agents access to powerful tools. Learn how to secure MCP deployments, restrict tool scopes, and prevent agents from abusing server capabilities.",
+    title: "MCP Server Security for AI Agents — Protecting Tool Servers",
+    description: "Secure your Model Context Protocol (MCP) deployments. Prevent prompt injection via MCP resources and enforce per-tool authorization for autonomous agents.",
     keywords: [
         "MCP server security",
         "Model Context Protocol security",
         "MCP guardrails",
         "Claude MCP security",
         "MCP tool safety",
+        "AI agent tool governance",
     ],
     alternates: {
         canonical: "https://www.supra-wall.com/learn/mcp-server-security",
     },
     openGraph: {
-        title: "MCP Server Security: Protecting Tool Servers from AI Agents | SupraWall",
-        description:
-            "MCP servers give AI agents access to powerful tools. Learn how to secure MCP deployments, restrict tool scopes, and prevent agents from abusing server capabilities.",
+        title: "MCP Server Security for AI Agents — Protecting Tool Servers",
+        description: "Secure your Model Context Protocol (MCP) deployments. Prevent prompt injection via MCP resources and enforce per-tool authorization for autonomous agents.",
         url: "https://www.supra-wall.com/learn/mcp-server-security",
         siteName: "SupraWall",
         type: "article",

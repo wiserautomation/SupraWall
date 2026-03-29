@@ -1,13 +1,12 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
-import { admin, getAdminDb } from '@/lib/firebase-admin';
+import { admin, db } from '@/lib/firebase-admin';
 import { randomBytes } from 'crypto';
 import { checkResourceLimit } from '@/lib/tier-enforcement';
-
-// Use the shared Firebase Admin initialization
-const db = getAdminDb();
 
 /**
  * POST /api/agents/register

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 const API_URL = process.env.NEXT_PUBLIC_SUPRAWALL_API_URL || "http://localhost:3000";
 
@@ -478,10 +479,10 @@ export default function CompliancePage() {
 
                                     <div className="mb-4 flex flex-col sm:flex-row items-start sm:items-center gap-6">
                                         <div className="space-y-2">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
+                                            <Image
                                                 src={`/api/badge/cert/${certificate.certId}${badgeTheme === "light" ? "?theme=light" : ""}`}
                                                 alt="EU AI Act Compliance Badge"
+                                                width={280}
                                                 height={64}
                                                 className="rounded-xl shadow-lg border border-white/5"
                                             />

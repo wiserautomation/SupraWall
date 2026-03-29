@@ -13,7 +13,7 @@ export class SupabaseAdapter implements Adapter {
         // const supabaseUrl = process.env.SUPABASE_URL || connectionString;
         // const supabaseKey = process.env.SUPABASE_KEY;
         // this.supabase = createClient(supabaseUrl, supabaseKey);
-        console.log(`Connected to Supabase with ${connectionString}`);
+        console.log(`Connected to Supabase database successfully.`);
     }
 
     async createAgent(agent: Agent): Promise<Agent> {

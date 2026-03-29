@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default function VercelIntegrationPage() {
-    const jsonLd = {
+    const softwareAppSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Vercel AI SDK",
@@ -41,11 +41,44 @@ export default function VercelIntegrationPage() {
         ]
     };
 
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to secure Vercel AI SDK agents",
+        "description": "Step-by-step guide to securing your Next.js AI agents using SupraWall edge-native shim.",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Install the SDK",
+                "text": "Run 'npm install @suprawall/vercel-ai' in your project directory."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Initialize the protector",
+                "text": "Import and initialize the SupraWall client in your Next.js API route using your API key."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Wrap your tools",
+                "text": "Wrap your Vercel AI SDK tools object with the 'protect' helper to enable runtime interception."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Deploy and monitor",
+                "text": "Deploy to Vercel and monitor tool call telemetry in the SupraWall dashboard."
+            }
+        ]
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 font-sans">
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
             <Navbar />
 

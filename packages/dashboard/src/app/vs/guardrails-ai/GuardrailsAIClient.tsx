@@ -4,7 +4,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, X, Zap, Info, BarChart2 } from "lucide-react";
+import { Check, X, Zap, Info, BarChart2, Code2, Globe, Box, ShieldCheck } from "lucide-react";
 
 interface ComparisonRow {
     feature: string;
@@ -102,6 +102,118 @@ export default function GuardrailsAIClient({ comparisonData }: { comparisonData:
                     </table>
                 </div>
             </div>
+            {/* Code Comparison */}
+            <div className="space-y-12">
+                <div className="flex items-center gap-3">
+                    <Code2 className="w-6 h-6 text-emerald-500" />
+                    <h2 className="text-2xl font-black uppercase tracking-tight">Code Comparison</h2>
+                </div>
+                
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest pl-4">Guardrails AI (Validation Approach)</p>
+                        <div className="p-8 rounded-[2.5rem] bg-neutral-900 border border-white/5 font-mono text-xs leading-relaxed overflow-x-auto h-[400px]">
+                            <pre className="text-neutral-500">{`# 1. Define your guard instructions
+rail_str = """
+<rail version="0.1">
+<output>
+    <string 
+        name="tool_call" 
+        format="valid-tool-call" 
+        on-fail-valid-tool-call="reask" 
+    />
+</output>
+</rail>
+"""
+
+# 2. Initialize guard
+guard = Guard.from_rail_string(rail_str)
+
+# 3. Wrap LLM call
+# Issues: Tool call is validated AFTER generation.
+# If it fails, you must re-prompt.
+# No native way to block the ACTUAL execution 
+# without manual downstream checks.`}</pre>
+                        </div>
+                    </div>
+
+                    <div className="space-y-4">
+                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest pl-4">SupraWall (Runtime Interception)</p>
+                        <div className="p-8 rounded-[2.5rem] bg-neutral-900 border border-emerald-500/10 font-mono text-xs leading-relaxed overflow-x-auto h-[400px]">
+                            <pre className="text-emerald-400">{`# 1. Initialize the firewall
+sw = SupraWall(api_key="sw_live_...")
+
+# 2. Apply deterministic policies
+sw.apply_policies([
+    {"tool": "payment_*", "action": "DENY"},
+    {"tool": "db_read", "action": "ALLOW"}
+])
+
+# 3. Deep-wrap the agent
+# INTERCEPTS at the stack level.
+# Blocks execution BEFORE compute starts.
+# No re-prompting needed.
+agent = sw.protect(langchain_agent)
+agent.run("...")`}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Verdict Section */}
+            <div className="relative p-1 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-[3rem]">
+                <div className="bg-black rounded-[2.8rem] p-16 space-y-10 text-center relative overflow-hidden">
+                    <div className="relative z-10 space-y-6">
+                        <h2 className="text-4xl md:text-6xl font-black uppercase italic tracking-tighter">The Verdict</h2>
+                        <div className="max-w-2xl mx-auto space-y-8">
+                            <p className="text-neutral-400 font-medium leading-relaxed italic text-lg">
+                                Guardrails AI is a brilliant tool for **Output Validation**. If your goal is to ensure your LLM returns valid JSON or follows a specific schema for a data pipeline, it is the industry standard.
+                            </p>
+                            <p className="text-white font-black leading-relaxed text-2xl uppercase tracking-tight">
+                                However, if you are building an <span className="text-emerald-500">Autonomous Agent</span> with access to tools, emails, or databases, SupraWall is essential.
+                            </p>
+                            <p className="text-neutral-400 font-medium leading-relaxed italic text-lg">
+                                SupraWall operates at the **Action Layer**, not the **Language Layer**. It ensures that even if an agent is successfully prompted to do something malicious, the physical execution can never occur.
+                            </p>
+                        </div>
+                    </div>
+                    {/* Decorative background element */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-emerald-500/5 blur-[120px] rounded-full" />
+                </div>
+            </div>
+
+            {/* Content Expansion for SEO */}
+            <div className="prose prose-invert prose-emerald max-w-none space-y-16 py-20">
+                <section className="space-y-6">
+                    <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mb-8">Why Action-Level Security Matters</h2>
+                    <p className="text-neutral-400 text-lg leading-relaxed font-medium">
+                        The fundamental difference between SupraWall and traditional LLM guardrails lies in the placement of the security control. Most guardrails, including Guardrails AI, operate on the model's text output. They parse the text, look for violations, and potentially ask the model to try again (re-asking).
+                    </p>
+                    <p className="text-neutral-400 text-lg leading-relaxed font-medium">
+                        In an agentic workflow, the delta between "LLM Output" and "Execution" is where the most dangerous vulnerabilities live. An agent might decide to call a tool, generate the tool call arguments, and execute them in a matter of milliseconds. If your security layer is waiting for the full response to finish before validating, you are already too late.
+                    </p>
+                </section>
+                
+                <section className="space-y-6">
+                    <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mb-8">Indirect Prompt Injection Resistance</h2>
+                    <p className="text-neutral-400 text-lg leading-relaxed font-medium">
+                        One of the most insidious threats in 2026 is **Indirect Prompt Injection**. This occurs when an agent reads external data (like a website or a document) that contains hidden instructions. Because the agent believes these instructions are part of its legitimate task, it will bypass most text-based validators.
+                    </p>
+                    <div className="bg-rose-500/5 border border-rose-500/20 rounded-[2.5rem] p-10 space-y-4 my-12">
+                        <p className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em]">The Security Gap</p>
+                        <p className="text-neutral-300 font-medium italic">
+                            "Text-based guardrails can be convinced to ignore their previous instructions. An execution boundary cannot be convinced to ignore its hard-coded policy."
+                        </p>
+                    </div>
+                </section>
+            </div>
         </div>
     );
 }
+
+const benefits = [
+    { title: "Edge Native", desc: "Built for Vercel Edge Runtime and optimized for sub-1ms execution.", icon: Globe },
+    { title: "Stream Guard", desc: "Real-time monitoring of AI SDK streams for emergent security threats.", icon: Zap },
+    { title: "Type Safe", desc: "First-class support for TypeScript and the Vercel AI SDK 'tool' interface.", icon: Box },
+    { title: "Cold Start Ready", desc: "Zero weight implementation that doesn't bloat your Lambda/Edge functions.", icon: ShieldCheck }
+];

@@ -20,7 +20,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@langchain/core": "1.1.36",
-    "@suprawall/core": "*",
+    "@suprawall/core": "file:../core",
     "@types/pdfkit": "^0.17.5",
     "ai": "6.0.138",
     "cors": "^2.8.6",

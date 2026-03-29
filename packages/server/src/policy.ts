@@ -23,6 +23,27 @@ export interface EvaluationRequest {
     delegationChain?: string[]; 
 }
 
+async function insertAuditLog(
+    tenantid: string,
+    agentid: string | undefined,
+    toolname: string,
+    args: any,
+    decision: string,
+    riskscore: number,
+    cost_usd: number,
+    metadata: any
+) {
+    if (!tenantid) return;
+    try {
+        await pool.query(
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
+            [tenantid, agentid || null, toolname, JSON.stringify(args || {}), decision, riskscore, cost_usd, JSON.stringify(metadata || {})]
+        );
+    } catch (e) {
+        logger.error("Failed to insert audit log", { error: e });
+    }
+}
+
 export const evaluatePolicy = async (req: Request, res: Response) => {
     try {
         const authReq = req as any;
@@ -105,10 +126,9 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             const currentSpend = parseFloat(spendResult.rows[0].total || 0);
 
             if (currentSpend + estimatedCost >= maxBudget) {
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
-                     JSON.stringify({ reason: "Budget exceeded", currentSpend, maxBudget })]
+                await insertAuditLog(
+                    tenantId, agentId, toolName, args, "DENY", 100, 0,
+                    { reason: "Budget exceeded", currentSpend, maxBudget }
                 );
 
                 return res.status(403).json({
@@ -121,121 +141,69 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
         // 0. Threat Detection (Blocking — returns DENY on match)
         const argsString = JSON.stringify(args || {});
 
-        // SQL Injection Patterns
-        const sqlPatterns = [
-            { pattern: /DROP\s+TABLE/i, label: "DROP TABLE" },
-            { pattern: /DELETE\s+FROM/i, label: "DELETE FROM" },
-            { pattern: /INSERT\s+INTO/i, label: "INSERT INTO" },
-            { pattern: /UPDATE\s+\S+\s+SET/i, label: "UPDATE SET" },
-            { pattern: /UNION\s+SELECT/i, label: "UNION SELECT" },
-            { pattern: /OR\s+['"]?1['"]?\s*=\s*['"]?1/i, label: "OR 1=1" },
-            { pattern: /'\s*OR\s+'[^']*'\s*=\s*'/i, label: "OR tautology" },
-            { pattern: /;\s*--/i, label: "comment terminator" },
-            { pattern: /'\s*;\s*DROP/i, label: "chained DROP" },
-            { pattern: /EXEC(\s+|\()sp_/i, label: "EXEC stored procedure" },
-            { pattern: /xp_cmdshell/i, label: "xp_cmdshell" },
+        const THREAT_RULES: { type: string, severity: string, riskScore: number, labelPrefix: string, patterns: { pattern: RegExp, label?: string }[] }[] = [
+            { type: "sql_injection", severity: "critical", riskScore: 100, labelPrefix: "SQL injection", patterns: [
+                { pattern: /DROP\s+TABLE/i, label: "DROP TABLE" },
+                { pattern: /DELETE\s+FROM/i, label: "DELETE FROM" },
+                { pattern: /INSERT\s+INTO/i, label: "INSERT INTO" },
+                { pattern: /UPDATE\s+\S+\s+SET/i, label: "UPDATE SET" },
+                { pattern: /UNION\s+SELECT/i, label: "UNION SELECT" },
+                { pattern: /OR\s+['"]?1['"]?\s*=\s*['"]?1/i, label: "OR 1=1" },
+                { pattern: /'\s*OR\s+'[^']*'\s*=\s*'/i, label: "OR tautology" },
+                { pattern: /;\s*--/i, label: "comment terminator" },
+                { pattern: /'\s*;\s*DROP/i, label: "chained DROP" },
+                { pattern: /EXEC(\s+|\()sp_/i, label: "EXEC stored procedure" },
+                { pattern: /xp_cmdshell/i, label: "xp_cmdshell" },
+            ]},
+            { type: "prompt_injection", severity: "high", riskScore: 95, labelPrefix: "Prompt injection", patterns: [
+                { pattern: /Ignore\s+(all\s+)?previous\s+instructions/i },
+                { pattern: /System\s+bypass/i },
+                { pattern: /You\s+are\s+now\s+(a|an|the)\s/i },
+                { pattern: /Forget\s+(all\s+)?(your|previous)\s+instructions/i },
+                { pattern: /IGNORE\s+PREVIOUS/i },
+                { pattern: /Do\s+not\s+follow\s+(your|the|any)\s+(previous|original)/i },
+                { pattern: /Override\s+(system|safety|security)/i },
+                { pattern: /Disregard\s+(all|any|your)\s+(previous|prior|safety)/i },
+                { pattern: /Act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i },
+                { pattern: /Reveal\s+(your|the)\s+(system\s+)?prompt/i },
+            ]},
+            { type: "xss_injection", severity: "high", riskScore: 95, labelPrefix: "XSS/script injection", patterns: [
+                { pattern: /<script[\s>]/i },
+                { pattern: /javascript\s*:/i },
+                { pattern: /on(error|load|click|mouseover)\s*=/i },
+                { pattern: /<iframe[\s>]/i },
+                { pattern: /<img[^>]+onerror/i },
+            ]},
+            { type: "path_traversal", severity: "high", riskScore: 90, labelPrefix: "Path traversal", patterns: [
+                { pattern: /\.\.[\/\\]/ },
+            ]},
         ];
 
-        for (const { pattern, label } of sqlPatterns) {
-            if (pattern.test(argsString)) {
-                logger.warn(`[ThreatEngine] SQL Injection blocked: ${label}`, { agentId, toolName });
-                pool.query(
-                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                    [tenantId, agentId, "sql_injection_attempt", "critical", JSON.stringify({ toolName, pattern: label })]
-                ).catch(err => logger.error("Failed to log SQL injection threat", { error: err }));
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
-                     JSON.stringify({ reason: `Threat blocked: SQL injection (${label})`, matchedRule: "threat_engine" })]
-                );
-                return res.status(403).json({
-                    decision: "DENY",
-                    reason: `Threat detected: SQL injection pattern (${label}) blocked by SupraWall Threat Engine.`,
-                    threatType: "sql_injection",
-                });
+        for (const rule of THREAT_RULES) {
+            for (const item of rule.patterns) {
+                if (item.pattern.test(argsString)) {
+                    const labelDesc = item.label ? `${rule.labelPrefix} pattern (${item.label})` : `${rule.labelPrefix} attempt`;
+                    const logPattern = item.label || item.pattern.source || "path_traversal";
+                    
+                    logger.warn(`[ThreatEngine] ${labelDesc} blocked`, { agentId, toolName, pattern: logPattern });
+                    
+                    pool.query(
+                        "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
+                        [tenantId, agentId, `${rule.type}_attempt`, rule.severity, JSON.stringify({ toolName, pattern: logPattern })]
+                    ).catch(err => logger.error(`Failed to log ${rule.type} threat`, { error: err }));
+                    
+                    await insertAuditLog(
+                        tenantId, agentId, toolName, args, "DENY", rule.riskScore, 0,
+                        { reason: `Threat blocked: ${labelDesc}`, matchedRule: "threat_engine" }
+                    );
+                    
+                    return res.status(403).json({
+                        decision: "DENY",
+                        reason: `Threat detected: ${labelDesc} blocked by SupraWall Threat Engine.`,
+                        threatType: rule.type,
+                    });
+                }
             }
-        }
-
-        // Prompt Injection Patterns
-        const promptPatterns = [
-            /Ignore\s+(all\s+)?previous\s+instructions/i,
-            /System\s+bypass/i,
-            /You\s+are\s+now\s+(a|an|the)\s/i,
-            /Forget\s+(all\s+)?(your|previous)\s+instructions/i,
-            /IGNORE\s+PREVIOUS/i,
-            /Do\s+not\s+follow\s+(your|the|any)\s+(previous|original)/i,
-            /Override\s+(system|safety|security)/i,
-            /Disregard\s+(all|any|your)\s+(previous|prior|safety)/i,
-            /Act\s+as\s+if\s+you\s+have\s+no\s+restrictions/i,
-            /Reveal\s+(your|the)\s+(system\s+)?prompt/i,
-        ];
-
-        for (const pattern of promptPatterns) {
-            if (pattern.test(argsString)) {
-                logger.warn(`[ThreatEngine] Prompt Injection blocked`, { agentId, toolName, pattern: pattern.source });
-                pool.query(
-                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                    [tenantId, agentId, "prompt_injection_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
-                ).catch(err => logger.error("Failed to log prompt injection threat", { error: err }));
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
-                     JSON.stringify({ reason: "Threat blocked: Prompt injection attempt", matchedRule: "threat_engine" })]
-                );
-                return res.status(403).json({
-                    decision: "DENY",
-                    reason: "Threat detected: Prompt injection attempt blocked by SupraWall Threat Engine.",
-                    threatType: "prompt_injection",
-                });
-            }
-        }
-
-        // XSS / Script Injection Patterns
-        const xssPatterns = [
-            /<script[\s>]/i,
-            /javascript\s*:/i,
-            /on(error|load|click|mouseover)\s*=/i,
-            /<iframe[\s>]/i,
-            /<img[^>]+onerror/i,
-        ];
-
-        for (const pattern of xssPatterns) {
-            if (pattern.test(argsString)) {
-                logger.warn(`[ThreatEngine] XSS attempt blocked`, { agentId, toolName });
-                pool.query(
-                    "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                    [tenantId, agentId, "xss_attempt", "high", JSON.stringify({ toolName, pattern: pattern.source })]
-                ).catch(err => logger.error("Failed to log XSS threat", { error: err }));
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 95, 0,
-                     JSON.stringify({ reason: "Threat blocked: XSS/script injection attempt", matchedRule: "threat_engine" })]
-                );
-                return res.status(403).json({
-                    decision: "DENY",
-                    reason: "Threat detected: XSS/script injection attempt blocked by SupraWall Threat Engine.",
-                    threatType: "xss_injection",
-                });
-            }
-        }
-
-        // Path Traversal Patterns
-        if (/\.\.[\/\\]/.test(argsString)) {
-            logger.warn(`[ThreatEngine] Path traversal blocked`, { agentId, toolName });
-            pool.query(
-                "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
-                [tenantId, agentId, "path_traversal_attempt", "high", JSON.stringify({ toolName })]
-            ).catch(err => logger.error("Failed to log path traversal threat", { error: err }));
-            await pool.query(
-                "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 90, 0,
-                 JSON.stringify({ reason: "Threat blocked: Path traversal attempt", matchedRule: "threat_engine" })]
-            );
-            return res.status(403).json({
-                decision: "DENY",
-                reason: "Threat detected: Path traversal attempt blocked by SupraWall Threat Engine.",
-                threatType: "path_traversal",
-            });
         }
 
         // 1. Gatekeeper: Scope Verification (Delegation Chain)
@@ -257,10 +225,9 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                                      (toolName.includes(":") && scopes.includes(`${toolName.split(":")[0]}:*`));
             
             if (!isAllowedByScope) {
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), "DENY", 100, 0,
-                     JSON.stringify({ reason: "Chain scope failure", actorId, requiredScope: toolName, agentScopes: scopes })]
+                await insertAuditLog(
+                    tenantId, agentId, toolName, args, "DENY", 100, 0,
+                    { reason: "Chain scope failure", actorId, requiredScope: toolName, agentScopes: scopes }
                 );
 
                 return res.status(403).json({ 
@@ -286,7 +253,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             return false;
         };
 
-        const policies = result.rows.filter(p => toolMatches(p.toolname, toolName));
+        const policies = result.rows.filter(p => toolMatches(p.toolname, toolName)).sort((a, b) => a.priority - b.priority);
 
         let decision = "ALLOW";
         let matchedRule = "default";
@@ -362,13 +329,12 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                 decision = "DENY";
                 matchedRule = `vault:${vaultResult.errors.map(e => e.reason).join(",")}`;
 
-                await pool.query(
-                    "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-                    [tenantId, agentId, toolName, JSON.stringify(args || {}), decision, 95, 0,
-                     JSON.stringify({ vaultErrors: vaultResult.errors })]
+                await insertAuditLog(
+                    tenantId, agentId, toolName, args, decision, 95, 0,
+                    { vaultErrors: vaultResult.errors }
                 );
 
-                return res.json({
+                return res.status(403).json({
                     decision: "DENY",
                     reason: `Vault access denied: ${vaultResult.errors.map(e => e.message).join("; ")}`,
                     vaultErrors: vaultResult.errors,
@@ -482,15 +448,15 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             }
         };
 
-        await pool.query(
-            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-            [auditRecord.tenantid, auditRecord.agentid, auditRecord.toolname,
-             JSON.stringify(auditRecord.parameters || {}),
-             auditRecord.decision,
-             auditRecord.riskscore,
-             auditRecord.cost_usd,
-             JSON.stringify(auditRecord.metadata)
-            ]
+        await insertAuditLog(
+            auditRecord.tenantid,
+            auditRecord.agentid,
+            auditRecord.toolname,
+            auditRecord.parameters,
+            auditRecord.decision,
+            auditRecord.riskscore,
+            auditRecord.cost_usd,
+            auditRecord.metadata
         );
 
         // 5. Mirror to Firestore & Update Agent Stats

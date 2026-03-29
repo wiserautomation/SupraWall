@@ -11,7 +11,7 @@ export class PostgresAdapter implements Adapter {
         // const { Client } = require('pg');
         // this.client = new Client({ connectionString });
         // await this.client.connect();
-        console.log(`Connected to Postgres with ${connectionString}`);
+        console.log(`Connected to Postgres database successfully.`);
     }
 
     async createAgent(agent: Agent): Promise<Agent> {

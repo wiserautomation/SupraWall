@@ -20,23 +20,15 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "AI Agent Guardrails: Complete Guide 2026 | SupraWall",
-    description:
-        "Learn what AI agent guardrails are, why LLM guardrails fail for autonomous agents, and how deterministic runtime enforcement protects production systems.",
-    keywords: [
-        "AI agent guardrails",
-        "guardrails for AI agents",
-        "LLM guardrails",
-        "agentic guardrails",
-        "AI safety guardrails",
-    ],
+    title: "AI Agent Guardrails: What They Are & How to Enforce Them",
+    description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute.",
+    keywords: ["AI agent guardrails", "LLM security guardrails", "agentic guardrails", "output filters vs guardrails", "deterministic AI security", "runtime guardrails"],
     alternates: {
         canonical: "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails",
     },
     openGraph: {
-        title: "AI Agent Guardrails: Complete Guide 2026 | SupraWall",
-        description:
-            "Learn what AI agent guardrails are, why LLM guardrails fail for autonomous agents, and how deterministic runtime enforcement protects production systems.",
+        title: "AI Agent Guardrails: What They Are & How to Enforce Them",
+        description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute.",
         url: "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails",
         siteName: "SupraWall",
         type: "article",
@@ -435,16 +427,25 @@ export default function WhatAreAIAgentGuardrailsPage() {
                         </div>
                     </section>
 
-                    {/* Related Articles */}
+                    {/* Related Articles — Part of SEO Cluster */}
                     <section className="space-y-6">
                         <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
-                            Related Articles
+                            Explore More
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <Link href="/blog/agentic-ai-security-checklist-2026" className="group p-6 rounded-2xl bg-white/[0.05] border border-white/5 hover:border-emerald-500/30 transition-all">
-                                <h4 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">Agentic AI Security Checklist 2026</h4>
-                                <p className="text-sm text-neutral-500 mt-2">Essential checklist for securing autonomous agents in production.</p>
-                            </Link>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+                            {[
+                                { title: "EU AI Act Compliance Guide", url: "/learn/eu-ai-act-compliance-for-ai-agents", desc: "How to prepare your agents for the 2026 enforcement deadline." },
+                                { title: "AI Agent Secrets Management", url: "/learn/ai-agent-vault-secrets-management", desc: "Never pass plaintext API keys to an LLM again." },
+                                { title: "LangChain Integration", url: "/integrations/langchain", desc: "Add guardrails to your LangChain agents in 5 minutes." },
+                                { title: "CrewAI Security", url: "/integrations/crewai", desc: "Secure your multi-agent swarms from lateral movement." },
+                                { title: "AutoGen Interception", url: "/integrations/autogen", desc: "Deterministic controls for Microsoft AutoGen conversations." },
+                                { title: "What is Agent Runtime Security?", url: "/learn/what-is-agent-runtime-security", desc: "Move beyond prompt engineering to real enforcement." }
+                            ].map((article, i) => (
+                                <Link key={i} href={article.url} className="group p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all">
+                                    <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors italic uppercase tracking-tight">{article.title}</h4>
+                                    <p className="text-sm text-neutral-500 mt-2 font-medium leading-relaxed">{article.desc}</p>
+                                </Link>
+                            ))}
                         </div>
                     </section>
 

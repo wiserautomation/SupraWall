@@ -529,24 +529,25 @@ agent = AgentExecutor(
             </div>
           </section>
 
-          {/* Related Links */}
-          <section className="space-y-4">
-            <p className="text-neutral-500 text-[10px] font-black uppercase tracking-[0.2em]">
-              Related Resources
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Link
-                href="/integrations/langchain"
-                className="px-6 py-3 bg-neutral-900 border border-white/5 rounded-2xl text-sm text-neutral-300 hover:border-emerald-500/30 hover:text-white transition-all font-medium"
-              >
-                LangChain Integration →
-              </Link>
-              <Link
-                href="/learn/what-is-agent-runtime-security"
-                className="px-6 py-3 bg-neutral-900 border border-white/5 rounded-2xl text-sm text-neutral-300 hover:border-emerald-500/30 hover:text-white transition-all font-medium"
-              >
-                Agent Runtime Security →
-              </Link>
+          {/* Related Resources — Part of SEO Cluster */}
+          <section className="space-y-6">
+            <h2 className="text-3xl font-black italic text-white flex items-center gap-4">
+              Security Cluster
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
+              {[
+                { title: "What are AI Agent Guardrails?", url: "/learn/what-are-ai-agent-guardrails", desc: "The foundation of agentic security and enforcement." },
+                { title: "EU AI Act Compliance Guide", url: "/learn/eu-ai-act-compliance-for-ai-agents", desc: "How to prepare your agents for the 2026 enforcement deadline." },
+                { title: "Protect API Keys from AI Agents", url: "/learn/protect-api-keys-from-ai-agents", desc: "Specific techniques for credential isolation." },
+                { title: "LangChain Integration", url: "/integrations/langchain", desc: "Add vault protection to your LangChain agents in 2 minutes." },
+                { title: "AutoGen Interception", url: "/integrations/autogen", desc: "Secure multi-agent conversations and tool calls." },
+                { title: "CrewAI Multi-Agent Security", url: "/integrations/crewai", desc: "Vault bindings for complex agent swarms." }
+              ].map((article, i) => (
+                <Link key={i} href={article.url} className="group p-8 rounded-3xl bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all text-left">
+                  <h4 className="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors italic uppercase tracking-tight">{article.title}</h4>
+                  <p className="text-sm text-neutral-500 mt-2 font-medium leading-relaxed">{article.desc}</p>
+                </Link>
+              ))}
             </div>
           </section>
 

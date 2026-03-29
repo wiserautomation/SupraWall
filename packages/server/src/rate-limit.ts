@@ -2,30 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Request, Response, NextFunction } from "express";
+import { pool } from "./db";
 
 // ---------------------------------------------------------------------------
-// In-Memory Rate Limiter
+// DB-Backed Distributed Rate Limiter
 // ---------------------------------------------------------------------------
-// A lightweight sliding-window rate limiter. For production deployments at
-// scale, replace with a Redis-backed implementation (e.g. `rate-limiter-flexible`).
-// ---------------------------------------------------------------------------
-
-interface RateLimitEntry {
-    count: number;
-    resetAt: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries every 60 seconds to prevent memory leaks
-if (process.env.NODE_ENV !== 'test') {
-    setInterval(() => {
-        const now = Date.now();
-        for (const [key, entry] of store) {
-            if (now > entry.resetAt) store.delete(key);
-        }
-    }, 60_000);
-}
 
 interface RateLimitOptions {
     /** Maximum requests per window */
@@ -39,10 +20,7 @@ interface RateLimitOptions {
 }
 
 /**
- * Creates an Express rate limiter middleware.
- *
- * Usage:
- *   app.use("/v1/vault", rateLimit({ max: 60, windowMs: 60_000 }), vaultRouter);
+ * Creates an Express rate limiter middleware backed by PostgreSQL.
  */
 export function rateLimit(opts: RateLimitOptions) {
     const {
@@ -52,32 +30,59 @@ export function rateLimit(opts: RateLimitOptions) {
         message = "Too many requests. Please try again later.",
     } = opts;
 
-    return (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         const key = keyGenerator(req);
-        const now = Date.now();
-        let entry = store.get(key);
+        
+        try {
+            // Ensure table exists (optimistic approach: setup script usually handles this, 
+            // but we do it gracefully here or assume it's created, we will create it if not exists)
+            await pool.query(`
+                CREATE TABLE IF NOT EXISTS api_rate_limits (
+                    key TEXT PRIMARY KEY,
+                    count INTEGER NOT NULL,
+                    reset_at BIGINT NOT NULL
+                );
+            `);
 
-        if (!entry || now > entry.resetAt) {
-            entry = { count: 0, resetAt: now + windowMs };
-            store.set(key, entry);
+            const now = Date.now();
+            const resetAt = now + windowMs;
+
+            // Delete expired first to handle cleanup
+            await pool.query(`DELETE FROM api_rate_limits WHERE reset_at < $1`, [now]);
+
+            // Upsert the limit key
+            const upsertResult = await pool.query(`
+                INSERT INTO api_rate_limits (key, count, reset_at)
+                VALUES ($1, 1, $2)
+                ON CONFLICT (key) DO UPDATE SET
+                    count = api_rate_limits.count + 1,
+                    reset_at = GREATEST(api_rate_limits.reset_at, $2)
+                RETURNING count, reset_at;
+            `, [key, resetAt]);
+
+            const row = upsertResult.rows[0];
+            const currentCount = row.count;
+            const currentResetAt = Number(row.reset_at);
+
+            // Set standard rate-limit headers
+            res.setHeader("X-RateLimit-Limit", max);
+            res.setHeader("X-RateLimit-Remaining", Math.max(0, max - currentCount));
+            res.setHeader("X-RateLimit-Reset", Math.ceil(currentResetAt / 1000));
+
+            if (currentCount > max) {
+                res.setHeader("Retry-After", Math.ceil((currentResetAt - now) / 1000));
+                return res.status(429).json({
+                    error: message,
+                    code: "RATE_LIMIT_EXCEEDED",
+                    retryAfter: Math.ceil((currentResetAt - now) / 1000),
+                });
+            }
+
+            next();
+        } catch (error) {
+            console.error("[Rate Limit] DB Error:", error);
+            // Fail open on DB error so we don't break the API completely if the DB is momentarily slow for rate limiting
+            next();
         }
-
-        entry.count++;
-
-        // Set standard rate-limit headers
-        res.setHeader("X-RateLimit-Limit", max);
-        res.setHeader("X-RateLimit-Remaining", Math.max(0, max - entry.count));
-        res.setHeader("X-RateLimit-Reset", Math.ceil(entry.resetAt / 1000));
-
-        if (entry.count > max) {
-            res.setHeader("Retry-After", Math.ceil((entry.resetAt - now) / 1000));
-            return res.status(429).json({
-                error: message,
-                code: "RATE_LIMIT_EXCEEDED",
-                retryAfter: Math.ceil((entry.resetAt - now) / 1000),
-            });
-        }
-
-        next();
     };
 }

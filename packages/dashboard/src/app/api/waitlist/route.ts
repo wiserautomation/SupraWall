@@ -1,6 +1,8 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from "next/server";
 import { db, admin } from "@/lib/firebase-admin";
 
@@ -39,6 +41,6 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ success: true });
     } catch (err: any) {
         console.error("[Waitlist API Error]:", err);
-        return NextResponse.json({ error: "Internal Server Error", details: err.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

@@ -14,26 +14,25 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Set Token Limits on AI Agents (2026) | SupraWall",
+  title: "How to Set Token Limits on AI Agents (LangChain, Vercel, CrewAI)",
   description:
-    "Hard cap vs. soft limit: which token control strategy actually prevents runaway AI agent costs? Step-by-step implementation guide for LangChain, CrewAI, AutoGen.",
+    "Step-by-step guide to enforcing per-call and monthly token limits on AI agents — with code examples in Python and TypeScript.",
   keywords: [
-    "AI agent token limits",
-    "set token limit AI agent",
-    "LLM token budget",
-    "agent token cap",
-    "how to limit LLM token usage",
-    "AI agent max tokens",
+    "set AI agent token limits",
+    "LangChain token budget",
+    "Vercel AI SDK token cap",
+    "CrewAI cost control",
+    "LLM usage limits",
+    "AI agent cost management",
   ],
   alternates: {
     canonical:
       "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
   },
   openGraph: {
-    title:
-      "How to Set Token Limits on AI Agents: Hard Caps vs. Soft Limits",
+    title: "How to Set Token Limits on AI Agents (LangChain, Vercel, CrewAI)",
     description:
-      "Hard cap vs. soft limit: which token control strategy actually prevents runaway AI agent costs? Step-by-step implementation guide for LangChain, CrewAI, AutoGen.",
+      "Step-by-step guide to enforcing per-call and monthly token limits on AI agents — with code examples in Python and TypeScript.",
     url: "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
     siteName: "SupraWall",
     type: "article",

@@ -15,6 +15,7 @@ import {
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
+import Image from "next/image";
 
 // ── Shared Components ──
 
@@ -46,9 +47,12 @@ export function SwarmVisualization() {
     return (
         <div suppressHydrationWarning className="w-full max-w-lg aspect-square bg-[#0D0D0D] border border-white/10 rounded-[3rem] shadow-[0_0_100px_rgba(16,185,129,0.15)] overflow-hidden font-mono text-sm relative group text-left">
             <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/10 to-transparent mix-blend-overlay pointer-events-none z-10" />
-            <img
+            <Image
                 src="/network-nodes.png"
                 alt="SupraWall Secure Agent Infrastructure"
+                width={512}
+                height={512}
+                priority
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000 ease-in-out"
             />
             <div className="absolute bottom-6 left-6 z-20">

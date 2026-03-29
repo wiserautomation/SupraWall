@@ -1,6 +1,8 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+export const dynamic = 'force-dynamic';
+
 import { NextRequest } from 'next/server';
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js';
 import { createSupraWallMCPServer } from '../../../lib/mcp-server';

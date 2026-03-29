@@ -68,3 +68,5 @@ class SupraWall {
 
 export const suprawall = new SupraWall();
 export * from "./types";
+export * from "./semantic";
+export * from "./vault";

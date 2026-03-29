@@ -14,24 +14,24 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Runaway Costs: Prevention Guide 2026 | SupraWall",
+  title: "Stop Runaway AI Agent Costs — Hard Budget Caps That Work",
   description:
-    "AI agents with no budget limits can burn thousands overnight through infinite loops and recursive calls. Real incidents, root causes, and how to set hard caps.",
+    "Set deterministic token limits and spend caps on LangChain & Vercel AI agents. Under 2ms latency. Free tier available.",
   keywords: [
     "AI agent runaway costs",
-    "AI agent cost control",
-    "LLM runaway costs",
-    "prevent AI agent overspending",
-    "AI agent overnight bill",
-    "agent token budget",
+    "LLM token limits",
+    "stop AI agent overspending",
+    "AI agent budget caps",
+    "LangChain token management",
+    "Vercel AI SDK security",
   ],
   alternates: {
     canonical: "https://www.supra-wall.com/learn/ai-agent-runaway-costs",
   },
   openGraph: {
-    title: "AI Agent Runaway Costs: Real Incidents and How to Prevent Them",
+    title: "Stop Runaway AI Agent Costs — Hard Budget Caps That Work",
     description:
-      "AI agents with no budget limits can burn thousands overnight through infinite loops and recursive calls. Real incidents, root causes, and how to set hard caps.",
+      "Set deterministic token limits and spend caps on LangChain & Vercel AI agents. Under 2ms latency. Free tier available.",
     url: "https://www.supra-wall.com/learn/ai-agent-runaway-costs",
     siteName: "SupraWall",
     type: "article",
@@ -56,6 +56,14 @@ export default function AIAgentRunawayCostsPage() {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: [
+      {
+        "@type": "Question",
+        name: "How do we prevent a single AI agent or feature from consuming runaway LLM tokens?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "The most effective way is to implement deterministic budget caps at the tool-call boundary. SupraWall allows you to set per-agent and per-session hard limits on token usage and dollar spend, halting the agent instantly if a threshold is reached.",
+        },
+      },
       {
         "@type": "Question",
         name: "What is an AI agent runaway cost?",

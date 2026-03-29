@@ -7,15 +7,15 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Build vs Buy: AI Agent Security Infrastructure | SupraWall",
-    description: "Should you build your own AI agent security layer or buy a platform? Analysis of the real engineering cost of building runtime guardrails, audit trails, and policy engines in-house.",
-    keywords: ["AI agent security platform", "build vs buy AI security", "AI agent guardrails build", "agent security infrastructure", "LLM security platform"],
+    title: "Build vs Buy AI Agent Security in 2026 — The Real Numbers",
+    description: "Build your own policy layer or use SupraWall? We break down engineering hours, audit risk, and EU AI Act exposure.",
+    keywords: ["AI agent security platform", "build vs buy AI security", "AI agent guardrails build", "agent security infrastructure", "LLM security platform", "engineering cost AI security"],
     alternates: {
         canonical: "https://www.supra-wall.com/blog/build-vs-buy-ai-agent-security",
     },
     openGraph: {
-        title: "Build vs Buy: AI Agent Security Infrastructure | SupraWall",
-        description: "Should you build your own AI agent security layer or buy a platform? Analysis of the real engineering cost of building runtime guardrails, audit trails, and policy engines in-house.",
+        title: "Build vs Buy AI Agent Security in 2026 — The Real Numbers",
+        description: "Build your own policy layer or use SupraWall? We break down engineering hours, audit risk, and EU AI Act exposure.",
     },
 };
 

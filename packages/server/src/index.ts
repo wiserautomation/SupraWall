@@ -32,7 +32,12 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Global Middleware
-app.use(cors());
+const allowedOrigins = [
+    'https://www.supra-wall.com',
+    'https://supra-wall.com',
+    'http://localhost:3000'
+];
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 // Healthcheck with DB status
@@ -51,7 +56,7 @@ app.post("/v1/evaluate", evaluateRateLimit, gatekeeperAuth, evaluatePolicy);
 app.post("/v1/evaluateAction", evaluateRateLimit, gatekeeperAuth, evaluatePolicy); // Alias for MCP compatibility
 
 // Vault scrub endpoint
-app.post("/v1/scrub", scrubToolResponse);
+app.post("/v1/scrub", gatekeeperAuth, scrubToolResponse);
 
 // Compliance Routes
 app.use("/v1/compliance", complianceRouter);

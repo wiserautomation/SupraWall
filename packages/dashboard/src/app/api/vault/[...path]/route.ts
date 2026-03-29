@@ -4,6 +4,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth } from "@/lib/firebase-admin";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest, props: { params: Promise<{ path: string[] }> }) {
     const params = await props.params;
     return handleProxy(req, params.path);

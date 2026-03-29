@@ -146,15 +146,15 @@ export default function LandingPage() {
               </div>
 
                         <div className="pt-12 flex flex-col items-center gap-6">
-                            <div className="flex items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all">
-                                <Link href="https://github.com/suprawall/suprawall" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors">
-                                    <Github className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">1.4k Stars</span>
-                                </Link>
-                                <Link href="https://www.npmjs.com/package/suprawall" target="_blank" className="flex items-center gap-2 hover:text-white transition-colors">
-                                    <Activity className="w-4 h-4" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">12k Weekly Downloads</span>
-                                </Link>
+                            <div className="flex flex-wrap items-center justify-center gap-8 opacity-80 transition-all">
+                                <div className="flex items-center gap-2">
+                                     <Users className="w-4 h-4 text-emerald-500" />
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Private Beta — 47 Teams Waiting</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                     <Activity className="w-4 h-4 text-blue-500" />
+                                     <span className="text-[10px] font-black uppercase tracking-widest text-white">Design Partners: Fintech & HealthTech</span>
+                                </div>
                                 <div className="flex items-center gap-2">
                                     <Shield className="w-4 h-4" />
                                     <span className="text-[10px] font-black uppercase tracking-widest">Apache 2.0</span>

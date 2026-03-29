@@ -41,6 +41,35 @@ export default function LangChainIntegrationPage() {
         ]
     };
 
+    const howToSchema = {
+        "@context": "https://schema.org",
+        "@type": "HowTo",
+        "name": "How to secure LangChain agents",
+        "description": "Step-by-step guide to securing your LangChain agents using SupraWall runtime guardrails.",
+        "step": [
+            {
+                "@type": "HowToStep",
+                "name": "Install the SDK",
+                "text": "Run 'pip install suprawall' for Python or 'npm install @suprawall/sdk' for Node.js."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Initialize the protector",
+                "text": "Import the 'protect' helper from 'suprawall.langchain' in your Python script."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Wrap your agent",
+                "text": "Wrap your LangChain AgentExecutor or Graph with the 'protect' helper to enable zero-trust interception."
+            },
+            {
+                "@type": "HowToStep",
+                "name": "Configure policies",
+                "text": "Define tool-level ALLOW/DENY rules in the SupraWall dashboard for real-time enforcement."
+            }
+        ]
+    };
+
     const faqJsonLd = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -69,6 +98,10 @@ export default function LangChainIntegrationPage() {
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
             <script
                 type="application/ld+json"

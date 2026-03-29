@@ -10,7 +10,7 @@ export class MySQLAdapter implements Adapter {
         // In a real implementation we would use 'mysql2' package:
         // const mysql = require('mysql2/promise');
         // this.connection = await mysql.createConnection(connectionString);
-        console.log(`Connected to MySQL with ${connectionString}`);
+        console.log(`Connected to MySQL database successfully.`);
     }
 
     async createAgent(agent: Agent): Promise<Agent> {

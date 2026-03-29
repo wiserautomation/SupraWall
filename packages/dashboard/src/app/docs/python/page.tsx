@@ -138,21 +138,60 @@ crew.kickoff()`}
                 </div>
             </section>
 
+            {/* Policy Enforcement — Token Limits & PII */}
+            <section className="mb-16">
+                <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-emerald-500" /> Runtime Enforcement
+                </h2>
+                <p className="text-neutral-400 mb-6">
+                    Define deterministic policies for <code className="text-emerald-400">token_limits</code>, <code className="text-emerald-400">budget_caps</code>, 
+                    and <code className="text-emerald-400">pii_scrubbing</code>.
+                </p>
+                <div className="space-y-6">
+                    <div className="p-8 rounded-2xl bg-white/[0.05] border border-white/5">
+                        <h3 className="text-lg font-semibold mb-4 text-white">Token & Budget Limits</h3>
+                        <CodeBlock 
+                            id="token-limits"
+                            code={`# Set per-call and monthly token limits for LLM agents
+supra.enforce("token_limit", { 
+    max_tokens: 4000, 
+    monthly_budget_usd: 50.0 
+})
+
+# Automatic circuit breaker for infinite loops
+supra.enforce("loop_detection", { threshold: 5, action: "BLOCK" })`}
+                        />
+                    </div>
+
+                    <div className="p-8 rounded-2xl bg-white/[0.05] border border-white/5">
+                        <h3 className="text-lg font-semibold mb-4 text-white">PII Scrubbing & Redaction</h3>
+                        <CodeBlock 
+                            id="pii-scrubbing"
+                            code={`# Redact sensitive data from outbound tool calls
+supra.redact("email", "phone", "ssn")
+
+# Use custom regex for proprietary secret patterns
+supra.redact(pattern=r"sk-prod-[a-zA-Z0-9]{32}")`}
+                        />
+                    </div>
+                </div>
+            </section>
+
             {/* Vault Injection */}
             <section className="mb-16">
                 <h2 className="text-2xl font-semibold mb-6 flex items-center gap-2">
                     <Shield className="w-5 h-5 text-emerald-500" /> Vault & Zero-Trust
                 </h2>
                 <p className="text-neutral-400 mb-6">
-                    Never expose raw API keys to your agents. Use SupraWall Vault tokens and let the SDK resolve them at runtime.
+                    Suprawall Python SDK's vault injection prevents secret exfiltration from LLM context windows. 
+                    Tokens like <code className="text-emerald-400">$SUPRAWALL_VAULT_...</code> are resolved just-in-time.
                 </p>
                 <CodeBlock 
                     id="vault"
                     code={`from suprawall import SupraWall
-
 supra = SupraWall("ag_...")
 
-# Tool arguments containing Vault tokens are resolved automatically
+# Resolve secrets at the edge for zero-knowledge tool execution
 result = supra.protect(my_tool).run({
     "api_key": "$SUPRAWALL_VAULT_SENDGRID_KEY",
     "recipient": "user@example.com"

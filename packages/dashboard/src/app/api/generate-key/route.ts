@@ -1,11 +1,17 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes, createHash } from "crypto";
+import { verifyAuth, unauthorizedResponse } from "@/lib/api-auth";
 
 export async function POST(req: NextRequest) {
     try {
+        const userId = await verifyAuth(req);
+        if (!userId) return unauthorizedResponse();
+
         const { prefix = "sw_" } = await req.json();
         
         // Generate a cryptographically secure random key

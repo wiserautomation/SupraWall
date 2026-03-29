@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getAdminDb } from '@/lib/firebase-admin';
+import { db } from '@/lib/firebase-admin';
 
-const db = getAdminDb();
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/approvals
