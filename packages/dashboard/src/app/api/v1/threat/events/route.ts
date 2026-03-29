@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await pool.query(
-        "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY createdat DESC LIMIT $2 OFFSET $3",
+        "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3",
         [tenantId, limit, offset]
     );
 
