@@ -19,6 +19,18 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS threat_events (
+            id SERIAL PRIMARY KEY,
+            tenantid VARCHAR(255) NOT NULL,
+            agentid VARCHAR(255),
+            event_type VARCHAR(100) NOT NULL,
+            severity VARCHAR(50) DEFAULT 'medium',
+            details JSONB,
+            timestamp TIMESTAMP DEFAULT NOW()
+        );
+    `);
+
     const result = await pool.query(
         "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3",
         [tenantId, limit, offset]

@@ -580,10 +580,34 @@ async function logAudit(tenantId: string, agentId: string, toolName: string, fin
 
     // Secondary: PostgreSQL (forensic audit trail — non-blocking, never fails the request)
     const riskScore = decision === "DENY" ? 90 : decision === "REQUIRE_APPROVAL" ? 60 : 10;
-    pgPool.query(
-        `INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-        [tenantId, agentId, toolName, finalArgs, decision, riskScore, cost,
-         JSON.stringify({ reason, sessionId: sId, agentRole: role, is_loop: isLoop })]
-    ).catch((err: unknown) => console.error("[AuditLog] PostgreSQL write failed (non-fatal):", err));
+    
+    // Non-blocking schema sync + write
+    (async () => {
+        try {
+            await pgPool.query(`
+                CREATE TABLE IF NOT EXISTS audit_logs (
+                    id SERIAL PRIMARY KEY,
+                    tenantid VARCHAR(255) NOT NULL,
+                    agentid VARCHAR(255),
+                    toolname VARCHAR(255),
+                    decision VARCHAR(50),
+                    riskscore INTEGER,
+                    cost_usd FLOAT DEFAULT 0,
+                    reason TEXT,
+                    arguments TEXT,
+                    timestamp TIMESTAMP DEFAULT NOW(),
+                    parameters JSONB,
+                    metadata JSONB
+                );
+            `);
+            await pgPool.query(
+                `INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+                [tenantId, agentId, toolName, finalArgs, decision, riskScore, cost,
+                 JSON.stringify({ reason, sessionId: sId, agentRole: role, is_loop: isLoop })]
+            );
+        } catch (err) {
+            console.error("[AuditLog] PostgreSQL write failed (non-fatal):", err);
+        }
+    })();
 }
