@@ -26,7 +26,8 @@ import {
     ArrowRight,
     Loader2,
     AlertOctagon,
-    Download
+    Download,
+    Check
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
@@ -195,7 +196,7 @@ export default function AgentsPage() {
     const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
     const [showBulkConfirm, setShowBulkConfirm] = useState(false);
-    const [isDownloadingEnv, setIsDownloadingEnv] = useState(false);
+    const [copiedAgentId, setCopiedAgentId] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) return;
@@ -467,7 +468,6 @@ export default function AgentsPage() {
 
     const handleDownloadEnv = async (agent: Agent) => {
         if (!user) return;
-        setIsDownloadingEnv(true);
         try {
             const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/tenants/${user.uid}`, {
@@ -478,31 +478,21 @@ export default function AgentsPage() {
                 const data = await res.json();
                 adminKey = data.master_api_key || "";
             }
-            const safeName = agent.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const envContent = `BASE_URL=https://www.supra-wall.com
 ADMIN_KEY=${adminKey}
 AGENT_KEY=${agent.apiKey}
 AGENT_ID=${agent.id}`;
 
-            const blob = new Blob([envContent], { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `agent-${safeName}.env`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            await navigator.clipboard.writeText(envContent);
+            setCopiedAgentId(agent.id);
+            setTimeout(() => setCopiedAgentId(null), 2000);
         } catch (e) {
-            console.error("Error downloading env", e);
-        } finally {
-            setIsDownloadingEnv(false);
+            console.error("Error copying env", e);
         }
     };
 
     const handleBulkDownloadEnv = async (agentList: Agent[]) => {
         if (!user || agentList.length === 0) return;
-        setIsDownloadingEnv(true);
         try {
             const idToken = await user.getIdToken();
             const res = await fetch(`/api/v1/tenants/${user.uid}`, {
@@ -515,10 +505,7 @@ AGENT_ID=${agent.id}`;
             }
 
             const sections = agentList.map((agent) => [
-                `# ============================================================`,
                 `# Agent: ${agent.name}`,
-                `# Status: ${agent.status}`,
-                `# ============================================================`,
                 `BASE_URL=https://www.supra-wall.com`,
                 `ADMIN_KEY=${adminKey}`,
                 `AGENT_KEY=${agent.apiKey}`,
@@ -526,22 +513,11 @@ AGENT_ID=${agent.id}`;
             ].join('\n'));
 
             const fileContent = sections.join('\n\n');
-            const isAll = agentList.length === agents.length;
-            const filename = isAll ? `suprawall-all-agents.env` : `suprawall-selected-${agentList.length}-agents.env`;
-
-            const blob = new Blob([fileContent], { type: "application/octet-stream" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            await navigator.clipboard.writeText(fileContent);
+            setCopiedAgentId('bulk');
+            setTimeout(() => setCopiedAgentId(null), 2000);
         } catch (e) {
-            console.error("Error bulk downloading env", e);
-        } finally {
-            setIsDownloadingEnv(false);
+            console.error("Error bulk copying env", e);
         }
     };
 
@@ -652,11 +628,11 @@ AGENT_ID=${agent.id}`;
                     </div>
                     <Button
                         onClick={() => handleBulkDownloadEnv(agents)}
-                        disabled={agents.length === 0 || isDownloadingEnv}
-                        className="bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 font-black uppercase tracking-wider text-[11px] h-[42px] px-5 rounded-xl transition-all flex items-center gap-2 disabled:opacity-40"
+                        disabled={agents.length === 0}
+                        className={`${copiedAgentId === 'bulk' ? 'bg-emerald-500 text-black border-emerald-500' : 'bg-white/5 text-neutral-300 border-white/10 hover:bg-white/10'} border font-black uppercase tracking-wider text-[11px] h-[42px] px-5 rounded-xl transition-all flex items-center gap-2`}
                     >
-                        <Download className="w-3.5 h-3.5" />
-                        Export All
+                        {copiedAgentId === 'bulk' ? <Check className="w-3.5 h-3.5" /> : <Download className="w-3.5 h-3.5" />}
+                        {copiedAgentId === 'bulk' ? 'Copied All!' : 'Export All'}
                     </Button>
                     <Button 
                         onClick={() => {
@@ -864,11 +840,14 @@ AGENT_ID=${agent.id}`;
                                                         e.stopPropagation();
                                                         handleDownloadEnv(agent);
                                                     }}
-                                                    title="Download .env config"
-                                                    disabled={isDownloadingEnv}
-                                                    className="p-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-40"
+                                                    title="Copy config to clipboard"
+                                                    className={`p-2 border rounded-lg transition-all ${
+                                                        copiedAgentId === agent.id 
+                                                            ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' 
+                                                            : 'bg-emerald-500/5 border-emerald-500/10 text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/20'
+                                                    }`}
                                                 >
-                                                    <Download className="w-4 h-4" />
+                                                    {copiedAgentId === agent.id ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
                                                 </button>
                                                 <button 
                                                     onClick={(e) => {
@@ -916,16 +895,15 @@ AGENT_ID=${agent.id}`;
                             Clear
                         </button>
                         <Button
-                            onClick={() => {
-                                const selectedAgents = agents.filter(a => selectedAgentIds.has(a.id));
-                                handleBulkDownloadEnv(selectedAgents);
-                            }}
-                            disabled={isDownloadingEnv}
-                            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2 disabled:opacity-40"
-                        >
-                            <Download className="w-3.5 h-3.5" />
-                            Download .env
-                        </Button>
+                                    onClick={() => {
+                                        const selectedAgents = agents.filter(a => selectedAgentIds.has(a.id));
+                                        handleBulkDownloadEnv(selectedAgents);
+                                    }}
+                                    className={`${copiedAgentId === 'bulk' ? 'bg-emerald-500 text-black border-emerald-500' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20'} font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2 transition-all`}
+                                >
+                                    {copiedAgentId === 'bulk' ? <Check className="w-3.5 h-3.5" /> : <Download className="w-3.5 h-3.5" />}
+                                    {copiedAgentId === 'bulk' ? 'Copied Selected!' : 'Copy Config'}
+                                </Button>
                         <Button
                             onClick={() => setShowBulkConfirm(true)}
                             className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2"
@@ -1615,12 +1593,15 @@ AGENT_ID=${agent.id}`;
                                         </Button>
                                         <Button 
                                             variant="outline"
-                                            className="h-11 rounded-xl px-6 border-white/10 font-bold hover:bg-white/10 text-white transition-all"
+                                            className={`h-11 rounded-xl px-6 font-bold transition-all ${
+                                                copiedAgentId === selectedAgent.id 
+                                                    ? 'bg-emerald-500 text-black border-emerald-500 hover:bg-emerald-500' 
+                                                    : 'border-white/10 hover:bg-white/10 text-white'
+                                            }`}
                                             onClick={() => handleDownloadEnv(selectedAgent)}
-                                            disabled={isDownloadingEnv}
                                         >
-                                            <Download className="w-4 h-4 mr-2" />
-                                            {isDownloadingEnv ? "Downloading..." : "Download .env"}
+                                            {copiedAgentId === selectedAgent.id ? <Check className="w-4 h-4 mr-2" /> : <Download className="w-4 h-4 mr-2" />}
+                                            {copiedAgentId === selectedAgent.id ? "Copied!" : "Copy Config"}
                                         </Button>
                                     </div>
                                     <Button 
