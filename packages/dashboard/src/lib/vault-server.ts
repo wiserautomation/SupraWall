@@ -250,6 +250,10 @@ export async function resolveSecret(
         // 1. Resolve Agent
         const agentSnap = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
         if (agentSnap.empty) {
+            // Log before returning so vault failures are never silent in server logs
+            console.warn(`[Vault] resolveSecret: No agent found for apiKey prefix "${apiKey?.slice(0, 8)}...". ` +
+                `secretName="${secretName}", toolName="${toolName ?? 'sdk:direct'}". ` +
+                `This is likely an SDK misconfiguration — ensure the apiKey is the agent key, not a vault token.`);
             return { success: false, error: "Invalid API Key", status: 403 };
         }
 
