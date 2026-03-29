@@ -25,7 +25,8 @@ import {
     ShieldCheck,
     ArrowRight,
     Loader2,
-    AlertOctagon
+    AlertOctagon,
+    Download
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
@@ -194,6 +195,7 @@ export default function AgentsPage() {
     const [selectedAgentIds, setSelectedAgentIds] = useState<Set<string>>(new Set());
     const [isBulkDeleting, setIsBulkDeleting] = useState(false);
     const [showBulkConfirm, setShowBulkConfirm] = useState(false);
+    const [isDownloadingEnv, setIsDownloadingEnv] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -460,6 +462,37 @@ export default function AgentsPage() {
             console.error("Error rotating key:", error);
         } finally {
             setIsRotatingKey(false);
+        }
+    };
+
+    const handleDownloadEnv = async () => {
+        if (!selectedAgent || !user) return;
+        setIsDownloadingEnv(true);
+        try {
+            const res = await fetch(`/api/v1/tenants/${user.uid}`);
+            let adminKey = "";
+            if (res.ok) {
+                const data = await res.json();
+                adminKey = data.master_api_key || "";
+            }
+            const envContent = `BASE_URL=https://www.supra-wall.com
+ADMIN_KEY=${adminKey}
+AGENT_KEY=${selectedAgent.apiKey}
+AGENT_ID=${selectedAgent.id}`;
+
+            const blob = new Blob([envContent], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = ".env";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error("Error downloading env", e);
+        } finally {
+            setIsDownloadingEnv(false);
         }
     };
 
@@ -1485,21 +1518,32 @@ export default function AgentsPage() {
 
                                 {/* Shared Footer Controls */}
                                 <div className="p-6 border-t border-white/5 bg-black z-10 flex items-center justify-between mt-auto">
-                                    <Button 
-                                        variant="outline" 
-                                        className={`h-11 rounded-xl px-6 border-white/10 font-bold transition-all shadow-[0_0_15px_rgba(255,255,255,0.02)] ${
-                                            selectedAgent.status === 'active' 
-                                                ? 'text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/20' 
-                                                : 'text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/20'
-                                        }`}
-                                        onClick={() => toggleStatus(selectedAgent)}
-                                    >
-                                        {selectedAgent.status === 'active' ? (
-                                            <><Lock className="w-4 h-4 mr-2" /> Suspend Operations</>
-                                        ) : (
-                                            <><Unlock className="w-4 h-4 mr-2" /> Resume Operations</>
-                                        )}
-                                    </Button>
+                                    <div className="flex gap-4">
+                                        <Button 
+                                            variant="outline" 
+                                            className={`h-11 rounded-xl px-6 border-white/10 font-bold transition-all shadow-[0_0_15px_rgba(255,255,255,0.02)] ${
+                                                selectedAgent.status === 'active' 
+                                                    ? 'text-amber-400 bg-amber-500/5 hover:bg-amber-500/10 hover:border-amber-500/20' 
+                                                    : 'text-emerald-400 bg-emerald-500/5 hover:bg-emerald-500/10 hover:border-emerald-500/20'
+                                            }`}
+                                            onClick={() => toggleStatus(selectedAgent)}
+                                        >
+                                            {selectedAgent.status === 'active' ? (
+                                                <><Lock className="w-4 h-4 mr-2" /> Suspend Operations</>
+                                            ) : (
+                                                <><Unlock className="w-4 h-4 mr-2" /> Resume Operations</>
+                                            )}
+                                        </Button>
+                                        <Button 
+                                            variant="outline"
+                                            className="h-11 rounded-xl px-6 border-white/10 font-bold hover:bg-white/10 text-white transition-all"
+                                            onClick={handleDownloadEnv}
+                                            disabled={isDownloadingEnv}
+                                        >
+                                            <Download className="w-4 h-4 mr-2" />
+                                            {isDownloadingEnv ? "Downloading..." : "Download .env"}
+                                        </Button>
+                                    </div>
                                     <Button 
                                         variant="ghost" 
                                         className="h-11 rounded-xl px-6 text-rose-500 font-bold hover:bg-rose-500/10 uppercase tracking-widest text-[10px]"
