@@ -4,6 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from "next/server";
+import { pool } from "@/lib/db_sql";
 
 export async function GET(req: NextRequest) {
     try {
@@ -12,28 +13,33 @@ export async function GET(req: NextRequest) {
         const agentId = searchParams.get("agentId");
         const decision = searchParams.get("decision");
         const search = searchParams.get("search");
-        const limitParam = searchParams.get("limit") || "100";
+        const limitParam = parseInt(searchParams.get("limit") || "100", 10);
 
         if (!userId) {
             return NextResponse.json({ error: "userId (tenantId) is required" }, { status: 400 });
         }
 
-        const serverBaseUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
-        const url = new URL(`${serverBaseUrl}/v1/audit-logs`);
-        url.searchParams.set("tenantId", userId);
-        url.searchParams.set("limit", limitParam);
+        console.log(`[AuditDB] Fetching logs directly for UID: ${userId}`);
+        
+        // Build base query
+        let query = "SELECT * FROM audit_logs WHERE tenantid = $1";
+        const params: any[] = [userId];
 
-        console.log(`[AuditProxy] Fetching logs for UID: ${userId} from ${url.toString()}`);
-
-        const response = await fetch(url.toString());
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("[Dashboard Audit Proxy] Server returned error:", errorText);
-            return NextResponse.json({ error: "Server API error", details: errorText }, { status: response.status });
+        if (agentId && agentId !== "ALL") {
+            params.push(agentId);
+            query += ` AND agentid = $${params.length}`;
         }
+        
+        if (decision && decision !== "ALL") {
+            params.push(decision);
+            query += ` AND decision = $${params.length}`;
+        }
+        
+        query += ` ORDER BY timestamp DESC LIMIT $${params.length + 1}`;
+        params.push(limitParam);
 
-        const data = await response.json();
-        const rows = data.rows || [];
+        const result = await pool.query(query, params);
+        const rows = result.rows || [];
 
         // 3. Post-fetch filters and mapping
         let logs = rows.map((row: any) => {
@@ -63,15 +69,7 @@ export async function GET(req: NextRequest) {
             };
         });
 
-        // Agent ID filter
-        if (agentId && agentId !== "ALL") {
-            logs = logs.filter((l: any) => l.agentId === agentId);
-        }
 
-        // Decision filter
-        if (decision && decision !== "ALL") {
-            logs = logs.filter((l: any) => l.decision === decision);
-        }
 
         // Text search filter (client-side)
         if (search) {

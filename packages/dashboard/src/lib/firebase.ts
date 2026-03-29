@@ -19,7 +19,7 @@ const isClient = typeof window !== "undefined";
 const hasConfig = !!firebaseConfig.apiKey;
 
 // Initialize Firebase
-const app = (isClient || !hasConfig) 
+const app: FirebaseApp = (isClient || !hasConfig) 
     ? (getApps().length ? getApp() : initializeApp(hasConfig ? firebaseConfig : { apiKey: "mock", projectId: "mock" }))
     : ({} as FirebaseApp);
 

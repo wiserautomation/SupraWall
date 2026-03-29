@@ -6,34 +6,25 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+import { pool } from "@/lib/db_sql";
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
+    const limit = parseInt(searchParams.get('limit') || '50', 10);
+    const offset = parseInt(searchParams.get('offset') || '0', 10);
 
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    // Proxy to the SupraWall Backend (PostgreSQL source of truth)
-    const serverUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
-    const url = new URL(`${serverUrl}/v1/threat/events`);
-    url.searchParams.set("tenantId", tenantId);
+    const result = await pool.query(
+        "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY createdat DESC LIMIT $2 OFFSET $3",
+        [tenantId, limit, offset]
+    );
 
-    const response = await fetch(url.toString(), {
-        headers: {
-            "x-api-key": process.env.SUPRAWALL_MASTER_KEY || ""
-        }
-    });
-
-    if (!response.ok) {
-        const error = await response.text();
-        console.error("[Dashboard Threat Events Proxy] Backend Error:", error);
-        return NextResponse.json({ error: "Backend failure", details: error }, { status: response.status });
-    }
-
-    const events = await response.json();
-    return NextResponse.json(events);
+    return NextResponse.json(result.rows);
 
   } catch (err: any) {
     console.error("[API Threat Events GET] Error:", err);
