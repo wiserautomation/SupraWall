@@ -500,6 +500,51 @@ AGENT_ID=${agent.id}`;
         }
     };
 
+    const handleBulkDownloadEnv = async (agentList: Agent[]) => {
+        if (!user || agentList.length === 0) return;
+        setIsDownloadingEnv(true);
+        try {
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/tenants/${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
+            let adminKey = "";
+            if (res.ok) {
+                const data = await res.json();
+                adminKey = data.master_api_key || "";
+            }
+
+            const sections = agentList.map((agent) => [
+                `# ============================================================`,
+                `# Agent: ${agent.name}`,
+                `# Status: ${agent.status}`,
+                `# ============================================================`,
+                `BASE_URL=https://www.supra-wall.com`,
+                `ADMIN_KEY=${adminKey}`,
+                `AGENT_KEY=${agent.apiKey}`,
+                `AGENT_ID=${agent.id}`,
+            ].join('\n'));
+
+            const fileContent = sections.join('\n\n');
+            const isAll = agentList.length === agents.length;
+            const filename = isAll ? `suprawall-all-agents.env` : `suprawall-selected-${agentList.length}-agents.env`;
+
+            const blob = new Blob([fileContent], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            console.error("Error bulk downloading env", e);
+        } finally {
+            setIsDownloadingEnv(false);
+        }
+    };
+
     // Minimum scanning animation time for UX feel
     const [isScanning, setIsScanning] = useState(true);
     
@@ -594,7 +639,7 @@ AGENT_ID=${agent.id}`;
                     </p>
                 </motion.div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <div className="relative w-full md:w-80">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
                         <input 
@@ -605,6 +650,14 @@ AGENT_ID=${agent.id}`;
                             className="w-full bg-neutral-900/50 border border-white/10 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all shadow-inner"
                         />
                     </div>
+                    <Button
+                        onClick={() => handleBulkDownloadEnv(agents)}
+                        disabled={agents.length === 0 || isDownloadingEnv}
+                        className="bg-white/5 hover:bg-white/10 border border-white/10 text-neutral-300 font-black uppercase tracking-wider text-[11px] h-[42px] px-5 rounded-xl transition-all flex items-center gap-2 disabled:opacity-40"
+                    >
+                        <Download className="w-3.5 h-3.5" />
+                        Export All
+                    </Button>
                     <Button 
                         onClick={() => {
                             setGeneratedKey(null);
@@ -862,6 +915,17 @@ AGENT_ID=${agent.id}`;
                         >
                             Clear
                         </button>
+                        <Button
+                            onClick={() => {
+                                const selectedAgents = agents.filter(a => selectedAgentIds.has(a.id));
+                                handleBulkDownloadEnv(selectedAgents);
+                            }}
+                            disabled={isDownloadingEnv}
+                            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2 disabled:opacity-40"
+                        >
+                            <Download className="w-3.5 h-3.5" />
+                            Download .env
+                        </Button>
                         <Button
                             onClick={() => setShowBulkConfirm(true)}
                             className="bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 font-black uppercase tracking-wider text-[11px] h-10 px-5 rounded-xl flex items-center gap-2"
