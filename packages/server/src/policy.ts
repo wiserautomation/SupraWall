@@ -270,17 +270,32 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             return false;
         };
 
-        const policies = result.rows.filter(p => toolMatches(p.toolname, toolName)).sort((a, b) => a.priority - b.priority);
+        const policies = result.rows.filter(p => 
+            toolMatches(p.toolname, toolName) &&
+            (!p.agentid || p.agentid === agentId)
+        ).sort((a, b) => a.priority - b.priority);
 
         let decision = "ALLOW";
         let matchedRule = "default";
 
         // Check DENY policies
-        const denyRules = policies.filter((p) => p.ruletype === "DENY");
+        const denyRules = policies.filter((p) => p.ruletype && p.ruletype.toUpperCase() === "DENY");
         for (const rule of denyRules) {
-            decision = "DENY";
-            matchedRule = rule.name;
-            break;
+            if (rule.condition) {
+                try {
+                    if (new RegExp(rule.condition).test(argsString)) {
+                        decision = "DENY";
+                        matchedRule = rule.name || "Unnamed Rule";
+                        break;
+                    }
+                } catch (e) {
+                    logger.error("[PolicyEngine] Invalid regex in policy:", { condition: rule.condition });
+                }
+            } else {
+                decision = "DENY";
+                matchedRule = rule.name || "Unnamed Rule";
+                break;
+            }
         }
 
         const response: any = {
@@ -290,13 +305,31 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
 
         // Check REQUIRE_APPROVAL policies
         if (decision !== "DENY") {
-            const approvalRules = policies.filter((p) => p.ruletype === "REQUIRE_APPROVAL");
+            const approvalRules = policies.filter((p) => p.ruletype && p.ruletype.toUpperCase() === "REQUIRE_APPROVAL");
             for (const rule of approvalRules) {
-                decision = "REQUIRE_APPROVAL";
-                matchedRule = rule.name;
-                response.decision = decision;
-                response.reason = `Matched rule ${matchedRule}`;
-                
+                let match = false;
+                if (rule.condition) {
+                    try {
+                        if (new RegExp(rule.condition).test(argsString)) {
+                            match = true;
+                        }
+                    } catch (e) {
+                        logger.error("[PolicyEngine] Invalid regex in policy:", { condition: rule.condition });
+                    }
+                } else {
+                    match = true;
+                }
+
+                if (match) {
+                    decision = "REQUIRE_APPROVAL";
+                    matchedRule = rule.name || "Unnamed Rule";
+                    response.decision = decision;
+                    response.reason = `Matched rule ${matchedRule}`;
+                    break;
+                }
+            }
+
+            if (decision === "REQUIRE_APPROVAL") {
                 // Create approval request in DB
                 try {
                     const approvalRes = await pool.query(
@@ -327,7 +360,6 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     response.decision = decision;
                     response.reason = matchedRule;
                 }
-                break;
             }
         }
 
