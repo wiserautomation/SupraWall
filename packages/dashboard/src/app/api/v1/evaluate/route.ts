@@ -158,31 +158,28 @@ export async function POST(req: NextRequest) {
                 finalArgs = guardrailResult.modifiedArgs;
             }
 
-            // Simple Policy Evaluation for regular agents (from audit logic)
+            // Fetch tenant policies
             const policiesSnapshot = await db.collection("policies")
-                .where("agentId", "==", agentId)
-                .where("toolName", "==", toolName)
+                .where("tenantId", "==", tenantId)
                 .get();
 
-            let finalDecision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL" = "ALLOW";
-            const finalArgsString = JSON.stringify(finalArgs);
-            for (const doc of policiesSnapshot.docs) {
-                const policy = doc.data();
-                const conditionStr = policy.condition || policy.description || "";
-                
-                // If condition is empty and it's a DENY rule, it's a hard block for this tool
-                if (!conditionStr && policy.ruleType === "DENY") {
-                    finalDecision = "DENY";
-                    break;
-                }
+            const docs = policiesSnapshot.docs.sort((a, b) => (b.data().priority || 0) - (a.data().priority || 0));
 
-                if (conditionStr && new RegExp(conditionStr).test(finalArgsString)) {
-                    finalDecision = policy.ruleType;
-                    if (finalDecision === "DENY") break;
-                }
+            for (const doc of docs) {
+                const policy = doc.data();
+                
+                // Only apply if it's for this agent or global for the tenant
+                if (policy.agentId && policy.agentId !== agentId) continue;
+                
+                effectiveRules.push({
+                    toolPattern: policy.toolName || "*",
+                    action: (policy.ruleType || "ALLOW").toUpperCase() as "ALLOW" | "DENY" | "REQUIRE_APPROVAL",
+                    conditions: {
+                        reason: policy.description,
+                        regex: policy.condition
+                    }
+                });
             }
-            // Add a synthetic rule for the unified evaluator below
-            effectiveRules = [{ toolPattern: toolName, action: finalDecision }];
         }
 
         const branding = showBranding ? {
@@ -517,9 +514,20 @@ function evaluateGuardrailsSync(
 }
 
 function evaluatePolicies(toolName: string, finalArgs: any, rules: PolicyRule[]): { decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string } {
+    const finalArgsString = JSON.stringify(finalArgs);
     for (const rule of rules) {
         if (matchesPattern(toolName, rule.toolPattern)) {
-            return { decision: rule.action, reason: rule.conditions?.reason };
+            if (rule.conditions?.regex) {
+                try {
+                    if (new RegExp(rule.conditions.regex).test(finalArgsString)) {
+                        return { decision: rule.action, reason: rule.conditions.reason || `Blocked by rule matching ${rule.toolPattern}` };
+                    }
+                } catch (e) {
+                    console.error("Invalid regex in policy rule:", rule.conditions.regex);
+                }
+            } else {
+                return { decision: rule.action, reason: rule.conditions?.reason || `Blocked by rule matching ${rule.toolPattern}` };
+            }
         }
     }
     return { decision: "ALLOW" };
