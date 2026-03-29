@@ -465,26 +465,30 @@ export default function AgentsPage() {
         }
     };
 
-    const handleDownloadEnv = async () => {
-        if (!selectedAgent || !user) return;
+    const handleDownloadEnv = async (agent: Agent) => {
+        if (!user) return;
         setIsDownloadingEnv(true);
         try {
-            const res = await fetch(`/api/v1/tenants/${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/tenants/${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             let adminKey = "";
             if (res.ok) {
                 const data = await res.json();
                 adminKey = data.master_api_key || "";
             }
+            const safeName = agent.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
             const envContent = `BASE_URL=https://www.supra-wall.com
 ADMIN_KEY=${adminKey}
-AGENT_KEY=${selectedAgent.apiKey}
-AGENT_ID=${selectedAgent.id}`;
+AGENT_KEY=${agent.apiKey}
+AGENT_ID=${agent.id}`;
 
             const blob = new Blob([envContent], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
             const a = document.createElement("a");
             a.href = url;
-            a.download = ".env";
+            a.download = `.env.${safeName}`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -801,6 +805,17 @@ AGENT_ID=${selectedAgent.id}`;
                                                     ) : (
                                                         <Shield className="w-4 h-4" />
                                                     )}
+                                                </button>
+                                                <button 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleDownloadEnv(agent);
+                                                    }}
+                                                    title="Download .env config"
+                                                    disabled={isDownloadingEnv}
+                                                    className="p-2 bg-emerald-500/5 border border-emerald-500/10 rounded-lg text-emerald-500/60 hover:text-emerald-400 hover:bg-emerald-500/20 transition-all disabled:opacity-40"
+                                                >
+                                                    <Download className="w-4 h-4" />
                                                 </button>
                                                 <button 
                                                     onClick={(e) => {
@@ -1537,7 +1552,7 @@ AGENT_ID=${selectedAgent.id}`;
                                         <Button 
                                             variant="outline"
                                             className="h-11 rounded-xl px-6 border-white/10 font-bold hover:bg-white/10 text-white transition-all"
-                                            onClick={handleDownloadEnv}
+                                            onClick={() => handleDownloadEnv(selectedAgent)}
                                             disabled={isDownloadingEnv}
                                         >
                                             <Download className="w-4 h-4 mr-2" />
