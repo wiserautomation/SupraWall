@@ -1,0 +1,26 @@
+{
+  "name": "io.github.wiserautomation/suprawall-mcp",
+  "displayName": "SupraWall - EU AI Act Compliance Middleware",
+  "version": "1.0.0",
+  "description": "EU AI Act compliance middleware for Claude agents with human oversight.",
+  "repository": {
+    "source": "github",
+    "url": "https://github.com/wiserautomation/suprawall-mcp"
+  },
+  "author": "Wiser Automation",
+  "license": "MIT",
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "packages": [
+    {
+      "registryType": "npx",
+      "identifier": "github:wiserautomation/suprawall-mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [],
+      "environmentVariables": []
+    }
+  ],
+  "tools": []
+}

@@ -38,6 +38,17 @@ export function scrubResponse(response: any, secretValues: string[]): any {
         }
     }
 
+    // HIPAA PHI Detection (Regex-based)
+    const PHI_PATTERNS = [
+        { pattern: /\b[A-Z][0-9]{2}\.[0-9]{1,4}\b/g, label: "ICD-10" }, // ICD-10 diagnosis codes
+        { pattern: /\bMRN\d{6,10}\b/gi, label: "MRN" }, // Medical Record Numbers
+        { pattern: /\b\d{3}-\d{2}-\d{4}\b/g, label: "SSN" }, // Social Security Numbers
+    ];
+
+    for (const { pattern, label } of PHI_PATTERNS) {
+        responseString = responseString.replace(pattern, `[REDACTED_PHI_${label}]`);
+    }
+
     if (typeof response === "string") return responseString;
     try { return JSON.parse(responseString); }
     catch { return responseString; }

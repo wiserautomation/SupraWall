@@ -22,6 +22,8 @@ import membersRouter from "./routes/members";
 import { resolveTier } from "./tier-guard";
 import { gatekeeperAuth } from "./auth";
 import { rateLimit } from "./rate-limit";
+import gdprRouter from "./routes/gdpr";
+
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
 // See: https://github.com/suprawall/suprawall-cloud
@@ -90,6 +92,9 @@ app.use("/v1/content", contentRouter);
 
 // Shield Status Route
 app.use("/v1/shield", shieldRouter);
+
+// GDPR Routes
+app.use("/v1/gdpr", gdprRouter);
 
 // Organization Members Route
 app.use("/v1/members", membersRouter);

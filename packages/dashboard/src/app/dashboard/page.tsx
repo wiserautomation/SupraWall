@@ -29,6 +29,7 @@ import { format } from "date-fns";
 
 import { PolicyValidator } from "@/components/PolicyValidator";
 import { OnboardingWizard } from "@/components/OnboardingWizard";
+import { ContinuousComplianceMonitor } from "@/components/ContinuousComplianceMonitor";
 
 const DollarConfetti = () => {
     const particles = [...Array(40)].map((_, i) => ({
@@ -485,48 +486,34 @@ secured.invoke({"messages": [...]})`;
                     initial={{ opacity: 0, scale: 0.98, y: 10 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.1, ease: "easeOut" }}
-                    className="lg:col-span-1 p-6 rounded-3xl border border-emerald-500/20 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col justify-between"
+                    className="lg:col-span-1 space-y-4"
                 >
-                    <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
-                    
-                    <div>
-                        <div className="flex justify-between items-start mb-4">
-                            <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                            </div>
-                            {agents.filter(a => a.status !== 'revoked').length > 0 ? (
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                                    <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">System Online</span>
-                                </div>
-                            ) : (
-                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                    <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">Awaiting Agents</span>
-                                </div>
-                            )}
-                        </div>
+                    <div className="p-6 rounded-3xl border border-emerald-500/20 bg-black/60 backdrop-blur-xl relative overflow-hidden flex flex-col justify-between h-1/2">
+                        <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-50" />
                         
-                        <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">Shield Status</h3>
-                        <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-1">Control Plane Connection</p>
-                        
-                        <div className="mt-6 space-y-4">
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-neutral-500 font-medium whitespace-nowrap">Protected Agents</span>
-                                <span className="text-white font-bold">{agents.filter(a => a.status !== 'revoked').length}</span>
+                        <div>
+                            <div className="flex justify-between items-start mb-4">
+                                <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                                    <ShieldCheck className="w-5 h-5 text-emerald-400" />
+                                </div>
+                                {agents.filter(a => a.status !== 'revoked').length > 0 ? (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest">System Online</span>
+                                    </div>
+                                ) : (
+                                    <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                        <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest">Awaiting Agents</span>
+                                    </div>
+                                )}
                             </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-neutral-500 font-medium whitespace-nowrap">Last Evaluation</span>
-                                <span className="text-white font-mono text-[11px] truncate ml-4">
-                                    {recentLogs.length > 0 ? format(new Date(recentLogs[0].createdAt), 'HH:mm:ss') : 'N/A'}
-                                </span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-neutral-500 font-medium whitespace-nowrap">API Latency</span>
-                                <span className="text-emerald-400 font-mono text-[11px]">~24ms</span>
-                            </div>
+                            
+                            <h3 className="text-xl font-black text-white italic tracking-tighter uppercase">Shield Status</h3>
+                            <p className="text-[10px] text-neutral-400 font-bold uppercase tracking-widest mt-1">Control Plane Connection</p>
                         </div>
                     </div>
+                    <ContinuousComplianceMonitor />
                 </motion.div>
             </div>
 

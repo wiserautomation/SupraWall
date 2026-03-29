@@ -14,6 +14,7 @@ import type { Tier } from "./tier-config";
 import { checkEvaluationLimit, recordEvaluation } from "./tier-guard";
 import { analyzeCall, type SemanticAnalysisResult } from "./semantic";
 import { updateBaseline } from "./behavioral";
+import { getDataEncryptionKey, encryptPayload } from "./gdpr";
 
 export interface EvaluationRequest {
     agentId: string;
@@ -35,9 +36,25 @@ async function insertAuditLog(
 ) {
     if (!tenantid) return;
     try {
+        const subjectId = metadata?.subjectId || "entire_tenant";
+        const dataKey = await getDataEncryptionKey(tenantid, subjectId);
+        
+        const encryptedArguments = encryptPayload(args || {}, dataKey);
+        
         await pool.query(
-            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)",
-            [tenantid, agentid || null, toolname, JSON.stringify(args || {}), decision, riskscore, cost_usd, JSON.stringify(metadata || {})]
+            "INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, encrypted_arguments, subject_id, decision, riskscore, cost_usd, metadata) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)",
+            [
+                tenantid, 
+                agentid || null, 
+                toolname, 
+                JSON.stringify(args || {}), // Keep legacy until fully migrated
+                encryptedArguments, 
+                subjectId,
+                decision, 
+                riskscore, 
+                cost_usd, 
+                JSON.stringify(metadata || {})
+            ]
         );
     } catch (e) {
         logger.error("Failed to insert audit log", { error: e });
@@ -435,6 +452,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             riskscore: decision === "DENY" ? 90 : (decision === "REQUIRE_APPROVAL" ? 60 : 10),
             cost_usd: decision === "ALLOW" ? estimatedCost : 0,
             metadata: {
+                subjectId: req.body.subjectId || "entire_tenant",
                 matchedRule,
                 agentName: agent?.name,
                 vaultInjected: hasVaultTokens,

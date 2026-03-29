@@ -64,9 +64,13 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     tenantid TEXT NOT NULL,
     agentid TEXT NOT NULL,
     toolname TEXT NOT NULL,
-    arguments TEXT,
+    arguments TEXT,              -- Legacy/Plaintext fields
+    parameters JSONB,            -- Legacy/Plaintext fields
+    encrypted_arguments TEXT,    -- Shredded fields
+    encrypted_context TEXT,      -- Shredded fields
+    encrypted_response TEXT,     -- Shredded fields
+    subject_id TEXT DEFAULT 'entire_tenant', -- Used to lookup data key
     riskscore INTEGER,
-    parameters JSONB,
     metadata JSONB,
     decision TEXT NOT NULL,
     reason TEXT,
@@ -75,6 +79,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     cost_usd DECIMAL(10,6),
     timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
 
 -- Threat Events
 CREATE TABLE IF NOT EXISTS threat_events (
@@ -148,4 +153,26 @@ CREATE TABLE IF NOT EXISTS custom_model_endpoints (
     max_latency_ms INTEGER DEFAULT 500,
     enabled BOOLEAN DEFAULT true,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- GDPR Erasure Logs — records cryptographic shredding events
+CREATE TABLE IF NOT EXISTS gdpr_erasure_log (
+    erasure_id UUID PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    subject_id TEXT NOT NULL,       -- specific user or 'entire_tenant'
+    requested_by TEXT NOT NULL,       -- who made the request
+    executed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    method TEXT NOT NULL DEFAULT 'cryptographic_shredding',
+    receipt_json JSONB NOT NULL,      -- signed receipt for the enterprise's records
+    receipt_hash TEXT NOT NULL        -- SHA-256 of receipt for tamper detection
+);
+
+-- Tenant Data Keys — stores the shreddable encryption keys per tenant/subject
+CREATE TABLE IF NOT EXISTS tenant_data_keys (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tenant_id TEXT NOT NULL,
+    subject_id TEXT NOT NULL,
+    encrypted_key BYTEA NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(tenant_id, subject_id)
 );

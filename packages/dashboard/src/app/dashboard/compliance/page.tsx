@@ -14,6 +14,7 @@ import {
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { RiskRegister } from "@/components/RiskRegister";
 
 const API_URL = process.env.NEXT_PUBLIC_SUPRAWALL_API_URL || "http://localhost:3000";
 
@@ -391,8 +392,16 @@ export default function CompliancePage() {
                 </div>
             )}
 
+            {/* Risk Register */}
+            {status && (
+                <div>
+                   <RiskRegister />
+                </div>
+            )}
+
             {/* Compliance Certificate */}
             <div>
+
                 <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-4">
                     Compliance Certificate
                 </h2>
