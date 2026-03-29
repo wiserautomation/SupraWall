@@ -18,10 +18,12 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "userId (tenantId) is required" }, { status: 400 });
         }
 
-        const serverBaseUrl = process.env.SUPRAWALL_API_URL || "http://localhost:3000";
+        const serverBaseUrl = process.env.SUPRAWALL_API_URL || "https://suprawall.vercel.app";
         const url = new URL(`${serverBaseUrl}/v1/audit-logs`);
         url.searchParams.set("tenantId", userId);
         url.searchParams.set("limit", limitParam);
+
+        console.log(`[AuditProxy] Fetching logs for UID: ${userId} from ${url.toString()}`);
 
         const response = await fetch(url.toString());
         if (!response.ok) {
@@ -40,9 +42,11 @@ export async function GET(req: NextRequest) {
             
             return {
                 id: row.id,
-                agentId: row.agentid,
+                agentid: row.agentid, // For Monitoring UI
+                agentId: row.agentid, // For Audit UI
                 agentName: metadata.agentName || "Agent " + row.agentid,
                 toolName: row.toolname,
+                toolname: row.toolname, // Consistency
                 arguments: row.parameters ? (typeof row.parameters === 'string' ? row.parameters : JSON.stringify(row.parameters)) : "{}",
                 decision: row.decision,
                 reason: row.reason || metadata.reason || null,
