@@ -22,6 +22,7 @@ export async function GET(request: NextRequest) {
                 mappedTenantId = userDoc.data().tenantId;
             }
         } catch (e) {
+            console.warn("[IdentityMapping] Firebase lookup failed, using direct UID:", e);
             // Fallback to the provided tenantId (UID)
         }
 

@@ -20,33 +20,35 @@ export async function GET(request: NextRequest) {
     try {
         const { getAdminDb } = require('@/lib/firebase-admin');
         const db = getAdminDb();
-        const userDoc = await db.collection("users").doc(tenantId).get();
-        if (userDoc.exists && userDoc.data()?.tenantId) {
+        const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
+        if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
             effectiveTenantId = userDoc.data().tenantId;
         }
     } catch (e) {
+        console.warn("[IdentityMapping] Firebase lookup failed, using direct UID:", e);
         // Fallback to the provided tenantId (UID)
     }
 
-    // Ensure table exists (Self-healing schema)
+    // Ensure table exists (Self-healing schema) - aligning with SDK types
     await pool.query(`
         CREATE TABLE IF NOT EXISTS approval_requests (
-            id VARCHAR(255) PRIMARY KEY,
+            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
             tenantid VARCHAR(255) NOT NULL,
             agentid VARCHAR(255),
-            agentname VARCHAR(255),
             toolname VARCHAR(255),
-            arguments TEXT,
-            status VARCHAR(50) DEFAULT 'pending',
-            estimated_cost_usd FLOAT DEFAULT 0,
+            parameters TEXT,
+            status VARCHAR(50) DEFAULT 'PENDING',
+            decision_by VARCHAR(255),
+            decision_at TIMESTAMP,
+            decision_comment TEXT,
             metadata JSONB,
-            timestamp TIMESTAMP DEFAULT NOW()
+            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
         );
     `);
 
-    // Only fetch PENDING requests for the Approvals dashboard
+    // Only fetch PENDING requests for the Approvals dashboard (SDK uses 'PENDING')
     const result = await pool.query(
-        "SELECT * FROM approval_requests WHERE (tenantid = $1 OR tenantid = $2) AND status = 'pending' ORDER BY timestamp DESC",
+        "SELECT * FROM approval_requests WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING' ORDER BY created_at DESC",
         [tenantId, effectiveTenantId]
     );
 
@@ -55,12 +57,11 @@ export async function GET(request: NextRequest) {
         return {
             id: row.id,
             agentId: row.agentid,
-            agentName: row.agentname || "Unknown Agent",
+            agentName: metadata.agentName || row.agentid || "Unknown Agent",
             toolName: row.toolname,
-            arguments: row.arguments,
+            arguments: row.parameters || "{}",
             status: row.status,
-            estimatedCostUsd: row.estimated_cost_usd || 0,
-            createdAt: row.timestamp,
+            createdAt: row.created_at,
             sessionId: metadata.sessionId,
             agentRole: metadata.agentRole,
             reason: metadata.reason

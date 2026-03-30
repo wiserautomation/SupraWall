@@ -16,9 +16,17 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
 
-        // 1. Fetch Effective Tenant IDs (Firebase UID + mapped Tenant ID)
-        const userDoc = await firestore.collection("users").doc(tenantId).get();
-        const mappedTenantId = userDoc.data()?.tenantId || tenantId;
+        let effectiveTenantId = tenantId;
+        try {
+            const { getAdminDb } = require('@/lib/firebase-admin');
+            const db = getAdminDb();
+            const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
+            if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
+                effectiveTenantId = userDoc.data().tenantId;
+            }
+        } catch (e) {
+            console.warn("[IdentityMapping] Firebase lookup failed for stats:", e);
+        }
 
         // Ensure tables exist
         await pool.query(`
@@ -52,6 +60,18 @@ export async function GET(request: NextRequest) {
         `);
 
         // 2. Fetch Aggregated Data from Postgres
+        const totalCallsRes = await pool.query(
+            "SELECT COUNT(*) FROM audit_logs WHERE tenantid = $1 OR tenantid = $2",
+            [tenantId, effectiveTenantId]
+        );
+        const blockedActionsRes = await pool.query(
+            "SELECT COUNT(*) FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2) AND decision = 'DENY'",
+            [tenantId, effectiveTenantId]
+        );
+        const costSavedRes = await pool.query(
+            "SELECT SUM(cost_usd) as total FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2) AND decision = 'DENY'",
+            [tenantId, effectiveTenantId]
+        );
         const statsResult = await pool.query(`
             SELECT 
                 COUNT(*) as total_calls,
@@ -59,7 +79,7 @@ export async function GET(request: NextRequest) {
                 COUNT(*) FILTER (WHERE decision = 'DENY') as blocked_actions
             FROM audit_logs
             WHERE tenantid = $1 OR tenantid = $2
-        `, [tenantId, mappedTenantId]);
+        `, [tenantId, effectiveTenantId]);
 
         const statsRow = statsResult.rows[0];
         const totalCalls = parseInt(statsRow.total_calls || "0", 10);
@@ -70,7 +90,7 @@ export async function GET(request: NextRequest) {
         const approvalsResult = await pool.query(`
             SELECT COUNT(*) FROM approval_requests 
             WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING'
-        `, [tenantId, mappedTenantId]);
+        `, [tenantId, effectiveTenantId]);
         const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 
         // 4. Generate chart data for the last 7 days
@@ -83,7 +103,7 @@ export async function GET(request: NextRequest) {
               AND timestamp > NOW() - INTERVAL '7 days'
             GROUP BY TO_CHAR(timestamp, 'Dy'), DATE_TRUNC('day', timestamp)
             ORDER BY DATE_TRUNC('day', timestamp)
-        `, [tenantId, mappedTenantId]);
+        `, [tenantId, effectiveTenantId]);
 
         const chartData = chartResult.rows.map(row => ({
             name: row.day_name,

@@ -44,12 +44,12 @@ export async function GET(req: NextRequest) {
         try {
             const { getAdminDb } = require("@/lib/firebase-admin");
             const dbRef = getAdminDb();
-            const userDoc = await dbRef.collection("users").doc(userId).get();
-            if (userDoc.exists && userDoc.data()?.tenantId) {
+            const userDoc = await dbRef.collection("users").doc(userId).get().catch(() => null);
+            if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
                 mappedTenantId = userDoc.data().tenantId;
             }
         } catch (e) {
-            // Fallback to the provided userId
+            console.warn("[IdentityMapping] Firebase lookup failed for audit:", e);
         }
 
         console.log(`[AuditDB] Fetching logs with identity mapping: ${userId} -> ${mappedTenantId}`);
@@ -64,8 +64,9 @@ export async function GET(req: NextRequest) {
         }
         
         if (decision && decision !== "ALL") {
-            params.push(decision);
-            query += ` AND decision = $${params.length}`;
+            query += " AND decision = $" + (params.length + 1);
+            // Ensure uppercase for canonical SDK decisions
+            params.push(decision.toUpperCase());
         }
         
         query += ` ORDER BY timestamp DESC LIMIT $${params.length + 1}`;

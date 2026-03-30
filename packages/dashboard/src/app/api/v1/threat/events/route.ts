@@ -23,12 +23,12 @@ export async function GET(request: NextRequest) {
     try {
         const { getAdminDb } = require('@/lib/firebase-admin');
         const db = getAdminDb();
-        const userDoc = await db.collection("users").doc(tenantId).get();
-        if (userDoc.exists && userDoc.data()?.tenantId) {
+        const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
+        if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
             effectiveTenantId = userDoc.data().tenantId;
         }
     } catch (e) {
-        // Fallback to the provided tenantId (UID)
+        console.warn("[IdentityMapping] Firebase lookup failed for threat events:", e);
     }
 
     await pool.query(`
