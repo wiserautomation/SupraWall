@@ -45,8 +45,9 @@ export async function GET(req: NextRequest) {
             const { getAdminDb } = require("@/lib/firebase-admin");
             const dbRef = getAdminDb();
             const userDoc = await dbRef.collection("users").doc(userId).get().catch(() => null);
-            if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
-                mappedTenantId = userDoc.data().tenantId;
+            const data = userDoc?.data();
+            if (userDoc && userDoc.exists && data && data.tenantId) {
+                mappedTenantId = data.tenantId;
             }
         } catch (e) {
             console.warn("[IdentityMapping] Firebase lookup failed for audit:", e);

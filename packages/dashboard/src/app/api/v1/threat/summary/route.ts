@@ -36,8 +36,9 @@ export async function GET(request: NextRequest) {
         const { getAdminDb } = require('@/lib/firebase-admin');
         const db = getAdminDb();
         const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
-        if (userDoc && userDoc.exists && userDoc.data()?.tenantId) {
-            effectiveTenantId = userDoc.data().tenantId;
+        const data = userDoc?.data();
+        if (userDoc && userDoc.exists && data && data.tenantId) {
+            effectiveTenantId = data.tenantId;
         }
     } catch (e) {
         console.warn("[IdentityMapping] Firebase lookup failed for threat summary:", e);

@@ -25,12 +25,13 @@ export async function GET(request: NextRequest) {
         try {
             const { getAdminDb } = require('@/lib/firebase-admin');
             const db = getAdminDb();
-            const userDoc = await db.collection("users").doc(tenantId).get();
-            if (userDoc.exists && userDoc.data()?.tenantId) {
-                effectiveTenantId = userDoc.data().tenantId;
+            const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
+            const data = userDoc?.data();
+            if (userDoc && userDoc.exists && data && data.tenantId) {
+                effectiveTenantId = data.tenantId;
             }
         } catch (e) {
-            // Fallback
+            console.warn("[IdentityMapping] Firebase lookup failed for baselines:", e);
         }
 
         const result = await pool.query(

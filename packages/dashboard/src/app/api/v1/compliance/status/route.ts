@@ -18,8 +18,9 @@ export async function GET(request: NextRequest) {
         let mappedTenantId = tenantId;
         try {
             const userDoc = await db.collection("users").doc(tenantId).get();
-            if (userDoc.exists && userDoc.data()?.tenantId) {
-                mappedTenantId = userDoc.data().tenantId;
+            const data = userDoc.data();
+            if (userDoc.exists && data && data.tenantId) {
+                mappedTenantId = data.tenantId;
             }
         } catch (e) {
             console.warn("[IdentityMapping] Firebase lookup failed, using direct UID:", e);
