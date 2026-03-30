@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase-admin";
+import { pool } from "@/lib/db_sql";
 
 export const dynamic = "force-dynamic";
 
@@ -18,13 +19,14 @@ export async function GET(request: NextRequest) {
         let mappedTenantId = tenantId;
         try {
             const userDoc = await db.collection("users").doc(tenantId).get();
-            const data = userDoc.data();
-            if (userDoc.exists && data && data.tenantId) {
-                mappedTenantId = data.tenantId;
+            if (userDoc.exists) {
+                const data = userDoc.data();
+                if (data && data.tenantId) {
+                    mappedTenantId = data.tenantId;
+                }
             }
         } catch (e) {
             console.warn("[IdentityMapping] Firebase lookup failed, using direct UID:", e);
-            // Fallback to the provided tenantId (UID)
         }
 
         // 2. Fetch Policies from Firestore (Policies are still in Firestore)
@@ -34,25 +36,33 @@ export async function GET(request: NextRequest) {
         const denyPoliciesCount = policies.filter((p) => p.ruleType === "DENY").length;
 
         // 3. Fetch Audit Logs & Approvals from Postgres
-        const { pool } = require("@/lib/db_sql");
-        const [auditRes, approvalsRes] = await Promise.all([
-            pool.query(
-                `SELECT COUNT(*) as count, MIN(timestamp) as oldest 
-                 FROM audit_logs 
-                 WHERE tenantid = $1 OR tenantid = $2`,
-                [tenantId, mappedTenantId]
-            ),
-            pool.query(
-                `SELECT COUNT(*) as count 
-                 FROM approval_requests 
-                 WHERE (tenantid = $1 OR tenantid = $2) AND status != 'PENDING'`,
-                [tenantId, mappedTenantId]
-            )
-        ]);
+        let auditCount = 0;
+        let oldestDate: Date | null = null;
+        let approvalDecisionsCount = 0;
 
-        const auditCount = parseInt(auditRes.rows[0].count || "0", 10);
-        const oldestDate = auditRes.rows[0].oldest ? new Date(auditRes.rows[0].oldest) : null;
-        const approvalDecisionsCount = parseInt(approvalsRes.rows[0].count || "0", 10);
+        try {
+            const [auditRes, approvalsRes] = await Promise.all([
+                pool.query(
+                    `SELECT COUNT(*) as count, MIN(timestamp) as oldest 
+                     FROM audit_logs 
+                     WHERE tenantid = $1 OR tenantid = $2`,
+                    [tenantId, mappedTenantId]
+                ),
+                pool.query(
+                    `SELECT COUNT(*) as count 
+                     FROM approval_requests 
+                     WHERE (tenantid = $1 OR tenantid = $2) AND status != 'PENDING'`,
+                    [tenantId, mappedTenantId]
+                )
+            ]);
+
+            auditCount = parseInt(auditRes.rows[0].count || "0", 10);
+            oldestDate = auditRes.rows[0].oldest ? new Date(auditRes.rows[0].oldest) : null;
+            approvalDecisionsCount = parseInt(approvalsRes.rows[0].count || "0", 10);
+        } catch (dbErr) {
+            console.error("[API Compliance Status] Database query failed:", dbErr);
+            // We continue with 0 counts rather than 500ing, allowing the UI to show partial state
+        }
 
         // Record keeping check (Article 11)
         let recordStatus: "pass" | "partial" | "fail" = "fail";
