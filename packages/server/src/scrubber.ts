@@ -38,11 +38,20 @@ export function scrubResponse(response: any, secretValues: string[]): any {
         }
     }
 
-    // HIPAA PHI Detection (Regex-based)
+    // --- HIPAA PHI Detection (Regex-based) ---
+    // See: https://www.hhs.gov/hipaa/for-professionals/privacy/special-topics/de-identification/index.html
     const PHI_PATTERNS = [
-        { pattern: /\b[A-Z][0-9]{2}\.[0-9]{1,4}\b/g, label: "ICD-10" }, // ICD-10 diagnosis codes
+        { pattern: /\b[A-Z][0-9]{2}\.[0-9]{1,4}\b/g, label: "ICD-10" }, // ICD-10 diagnosis
         { pattern: /\bMRN\d{6,10}\b/gi, label: "MRN" }, // Medical Record Numbers
         { pattern: /\b\d{3}-\d{2}-\d{4}\b/g, label: "SSN" }, // Social Security Numbers
+        { pattern: /\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b/g, label: "PHONE" }, // Phone Numbers
+        { pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[0-Z|a-z]{2,}\b/g, label: "EMAIL" }, // Email
+        { pattern: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, label: "IP_V4" }, // IPv4 Addresses
+        { pattern: /\b(?:[A-F0-9]{1,4}:){7}[A-F0-9]{1,4}\b/gi, label: "IP_V6" }, // IPv6 Addresses
+        { pattern: /\b(?:https?|ftp):\/\/[^\s/$.?#].[^\s]*\b/gi, label: "URL" }, // URLs
+        { pattern: /\b\d{2}[/-]\d{2}[/-]\d{4}\b/g, label: "DATE" }, // Standard Dates (DOB etc)
+        { pattern: /\b\d{4}[/-]\d{2}[/-]\d{2}\b/g, label: "DATE_ISO" }, // ISO Dates
+        { pattern: /\b\d{4,19}\b/g, label: "ID_ACCOUNT" }, // Generic Account/License Numbers (4-19 digits)
     ];
 
     for (const { pattern, label } of PHI_PATTERNS) {
