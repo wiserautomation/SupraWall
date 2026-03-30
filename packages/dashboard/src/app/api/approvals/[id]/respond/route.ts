@@ -36,13 +36,30 @@ export async function POST(
             return NextResponse.json({ error: `Request has already been ${data?.status}.` }, { status: 400 });
         }
 
-        // Update the approval request
+        // Update the approval request in Firestore
         await approvalRef.update({
             status: decision,
             reviewedBy: reviewedBy || 'Admin',
             reviewNote: reviewNote || '',
             respondedAt: admin.firestore.FieldValue.serverTimestamp(),
         });
+
+        // Update in Postgres for dashboard synchronization
+        try {
+            const { pool } = require('@/lib/db_sql');
+            await pool.query(
+                `UPDATE approval_requests 
+                 SET status = $1, 
+                     decision_by = $2, 
+                     decision_comment = $3, 
+                     decision_at = CURRENT_TIMESTAMP 
+                 WHERE id = $4 OR metadata->>'id' = $4`,
+                [decision.toUpperCase(), reviewedBy || 'Admin', reviewNote || '', id]
+            );
+        } catch (e) {
+            console.error('[SupraWall] Failed to sync approval to Postgres:', e);
+            // Non-blocking error
+        }
 
         // Optional: If approved, we could trigger a webhook here if the SDKs were listening to webooks
         // For now, the SDKs will poll or wait for a status change in Firestore

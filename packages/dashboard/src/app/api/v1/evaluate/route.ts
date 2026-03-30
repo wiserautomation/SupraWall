@@ -132,7 +132,8 @@ export async function POST(req: NextRequest) {
             const threatResult = detectThreats(toolName, finalArgs);
             if (threatResult.blocked) {
                 await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
-                // Fire-and-forget threat event log
+                
+                // Fire-and-forget threat event log (Postgres + Firestore)
                 db.collection("threat_events").add({
                     agentId, tenantId, toolName,
                     event_type: threatResult.threatType,
@@ -140,6 +141,10 @@ export async function POST(req: NextRequest) {
                     details: threatResult.detail,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
                 }).catch(() => {});
+
+                // Log threat to Postgres for dashboard visibility
+                logThreat(tenantId, agentId, toolName, threatResult.threatType!, threatResult.severity!, threatResult.detail || threatResult.reason!);
+
                 return NextResponse.json({
                     decision: "DENY",
                     reason: threatResult.reason,
@@ -561,13 +566,68 @@ function estimateActionCost(finalArgs: any, toolName: string, model: string, inT
     return 0.0001; // minimal fallback
 }
 
+async function logThreat(tenantId: string, agentId: string, toolName: string, eventType: string, severity: string, details: string) {
+    (async () => {
+        try {
+            await pgPool.query(`
+                CREATE TABLE IF NOT EXISTS threat_events (
+                    id SERIAL PRIMARY KEY,
+                    tenantid VARCHAR(255) NOT NULL,
+                    agentid VARCHAR(255),
+                    event_type VARCHAR(100) NOT NULL,
+                    severity VARCHAR(50) DEFAULT 'medium',
+                    details JSONB,
+                    timestamp TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            await pgPool.query(
+                `INSERT INTO threat_events (tenantid, agentid, event_type, severity, details)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [tenantId, agentId, eventType, severity, JSON.stringify({ toolName, details })]
+            );
+        } catch (err) {
+            console.error("[logThreat] PostgreSQL write failed (non-fatal):", err);
+        }
+    })();
+}
+
 async function createApprovalRequest(userId: string, agentId: string, agentName: string, toolName: string, finalArgs: string, sessionId: any, agentRole: any, cost: number) {
+    // Firestore write
     const res = await db.collection("approvalRequests").add({
         userId, agentId, agentName, toolName, arguments: finalArgs, sessionId, agentRole,
         status: "pending", createdAt: admin.firestore.FieldValue.serverTimestamp(),
         expiresAt: new Date(Date.now() + 86400000), estimatedCostUsd: cost
     });
-    return res.id;
+    
+    // Postgres write for dashboard visibility
+    const requestId = res.id;
+    (async () => {
+        try {
+            await pgPool.query(`
+                CREATE TABLE IF NOT EXISTS approval_requests (
+                    id VARCHAR(255) PRIMARY KEY,
+                    tenantid VARCHAR(255) NOT NULL,
+                    agentid VARCHAR(255),
+                    agentname VARCHAR(255),
+                    toolname VARCHAR(255),
+                    arguments TEXT,
+                    status VARCHAR(50) DEFAULT 'pending',
+                    estimated_cost_usd FLOAT DEFAULT 0,
+                    metadata JSONB,
+                    timestamp TIMESTAMP DEFAULT NOW()
+                );
+            `);
+            await pgPool.query(
+                `INSERT INTO approval_requests (id, tenantid, agentid, agentname, toolname, arguments, status, estimated_cost_usd, metadata)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+                [requestId, userId, agentId, agentName, toolName, finalArgs, "pending", cost, JSON.stringify({ sessionId, agentRole })]
+            );
+        } catch (err) {
+            console.error("[createApprovalRequest] PostgreSQL write failed (non-fatal):", err);
+        }
+    })();
+
+    return requestId;
 }
 
 async function logAudit(tenantId: string, agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
@@ -579,7 +639,7 @@ async function logAudit(tenantId: string, agentId: string, toolName: string, fin
     });
 
     // Secondary: PostgreSQL (forensic audit trail — non-blocking, never fails the request)
-    const riskScore = decision === "DENY" ? 90 : decision === "REQUIRE_APPROVAL" ? 60 : 10;
+    const riskScore = (decision === "DENY" || decision === "REQUIRE_APPROVAL") ? 90 : 10;
     
     // Non-blocking schema sync + write
     (async () => {

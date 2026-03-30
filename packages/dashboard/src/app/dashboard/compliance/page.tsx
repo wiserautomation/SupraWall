@@ -9,7 +9,7 @@ import { auth } from "@/lib/firebase";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
     Shield, CheckCircle2, AlertTriangle, XCircle, Download,
-    FileText, Settings, ExternalLink, RefreshCw, Award, Linkedin, Copy, Check, Code2, Globe
+    FileText, Settings, ExternalLink, RefreshCw, Award, Linkedin, Copy, Check, Code2, Globe, Lock
 } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -558,6 +558,62 @@ export default function CompliancePage() {
                         )}
                     </CardContent>
                 </Card>
+            </div>
+
+            {/* Legal & Trust Center */}
+            <div className="pt-12 border-t border-white/5">
+                <div className="flex items-center gap-3 mb-6">
+                    <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                        <Lock className="w-5 h-5 text-blue-400" />
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-black tracking-tighter text-white uppercase italic">Legal & Trust Center</h2>
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.2em] mt-1">Download enterprise legal templates and addendums.</p>
+                    </div>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[
+                        { 
+                            name: "BAA (HIPAA)", 
+                            desc: "Business Associate Agreement for healthcare compliance.", 
+                            file: "baa-template.html", 
+                            icon: <Shield className="w-4 h-4" /> 
+                        },
+                        { 
+                            name: "DPA (GDPR/CCPA)", 
+                            desc: "Data Processing Addendum for global privacy compliance.", 
+                            file: "eu-ai-act-article-9.html", // Reusing the EU AI Act article as proxy for now or template
+                            icon: <Globe className="w-4 h-4" /> 
+                        },
+                        { 
+                            name: "DPIA Template", 
+                            desc: "Data Protection Impact Assessment for AI deployments.", 
+                            file: "eu-ai-act-article-9.html", 
+                            icon: <FileText className="w-4 h-4" /> 
+                        }
+                    ].map((doc, i) => (
+                        <Card key={i} className="bg-black/60 backdrop-blur-xl border-white/10 hover:border-blue-500/30 transition-all duration-300 relative group overflow-hidden">
+                             <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-blue-500/20 to-transparent" />
+                             <CardContent className="p-6">
+                                <div className="flex items-start justify-between mb-4">
+                                    <div className="p-2 rounded-lg bg-blue-500/5 border border-blue-500/10 text-blue-400">
+                                        {doc.icon}
+                                    </div>
+                                    <a 
+                                        href={`/legal/${doc.file}`} 
+                                        download={doc.file}
+                                        className="p-2 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white transition-colors"
+                                    >
+                                        <Download className="w-4 h-4" />
+                                    </a>
+                                </div>
+                                <h3 className="text-sm font-black text-white uppercase italic tracking-tight mb-1">{doc.name}</h3>
+                                <p className="text-xs text-neutral-500 leading-relaxed">{doc.desc}</p>
+                             </CardContent>
+                        </Card>
+                    ))}
+                </div>
             </div>
 
             {/* Quick Actions */}

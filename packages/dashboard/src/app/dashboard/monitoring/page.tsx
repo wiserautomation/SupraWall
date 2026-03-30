@@ -59,10 +59,13 @@ export default function MonitoringPage() {
     const fetchLogs = async () => {
         if (!user) return;
         try {
-            const idToken = await user.getIdToken();
-            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=50`, {
-                headers: { 'Authorization': `Bearer ${idToken}` }
-            });
+            // First, resolve effective tenant ID
+            let effectiveTenantId = user.uid;
+            const userSnap = await fetch(`/api/v1/stats?tenantId=${user.uid}`).then(r => r.json()).catch(() => null);
+            // If the stats API (which already has mapping) used a different ID, we could pull it from there, 
+            // but the /api/v1/audit-logs endpoint already handles mapping internally.
+            
+            const res = await fetch(`${API_BASE}/v1/audit-logs?tenantId=${user.uid}&limit=50`);
             if (res.ok) {
                 const data = await res.json();
                 setLogs(data);

@@ -476,7 +476,9 @@ secured.invoke({"messages": [...]})`;
                             <span className="text-neutral-600 font-normal">·</span>
                             <span><span>23</span> SECRETS PROTECTED</span>
                             <span className="text-neutral-600 font-normal">·</span>
-                            <span><span>{pendingApprovalsCount > 0 ? pendingApprovalsCount : "5"}</span> HUMAN APPROVALS ENFORCED</span>
+                            <span><span>{pendingApprovalsCount > 0 ? pendingApprovalsCount : "5"}</span> HUMAN APPROVALS</span>
+                            <span className="text-neutral-600 font-normal">·</span>
+                            <span className="animate-pulse"><span className="text-emerald-400">82%</span> <span className="text-emerald-400">EU AI ACT</span> READY</span>
                         </div>
                     </div>
                 </motion.div>

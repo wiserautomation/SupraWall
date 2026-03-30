@@ -39,9 +39,24 @@ export async function GET(req: NextRequest) {
             );
         `);
         
+        // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+        let mappedTenantId = userId;
+        try {
+            const { getAdminDb } = require("@/lib/firebase-admin");
+            const dbRef = getAdminDb();
+            const userDoc = await dbRef.collection("users").doc(userId).get();
+            if (userDoc.exists && userDoc.data()?.tenantId) {
+                mappedTenantId = userDoc.data().tenantId;
+            }
+        } catch (e) {
+            // Fallback to the provided userId
+        }
+
+        console.log(`[AuditDB] Fetching logs with identity mapping: ${userId} -> ${mappedTenantId}`);
+        
         // Build base query
-        let query = "SELECT * FROM audit_logs WHERE tenantid = $1";
-        const params: any[] = [userId];
+        let query = "SELECT * FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2)";
+        const params: any[] = [userId, mappedTenantId];
 
         if (agentId && agentId !== "ALL") {
             params.push(agentId);

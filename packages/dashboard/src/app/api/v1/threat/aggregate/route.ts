@@ -40,14 +40,27 @@ export async function POST(request: NextRequest) {
     // Aggregation logic (Severity weights)
     const weights: Record<string, number> = { low: 1, medium: 5, high: 20, critical: 100 };
 
-    console.log(`[ThreatAggregate] Processing for tenant: ${tenantId}`);
+    // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+    let effectiveTenantId = tenantId;
+    try {
+        const { getAdminDb } = require('@/lib/firebase-admin');
+        const db = getAdminDb();
+        const userDoc = await db.collection("users").doc(tenantId).get();
+        if (userDoc.exists && userDoc.data()?.tenantId) {
+            effectiveTenantId = userDoc.data().tenantId;
+        }
+    } catch (e) {
+        // Fallback to the provided tenantId (UID)
+    }
+
+    console.log(`[ThreatAggregate] Processing for tenant: ${tenantId} / ${effectiveTenantId}`);
 
     const eventsResult = await pool.query(
         `SELECT agentid, severity, COUNT(*) as count 
          FROM threat_events 
-         WHERE tenantid = $1 AND timestamp >= NOW() - INTERVAL '24 hours' 
+         WHERE (tenantid = $1 OR tenantid = $2) AND timestamp >= NOW() - INTERVAL '24 hours' 
          GROUP BY agentid, severity`,
-        [tenantId]
+        [tenantId, effectiveTenantId]
     );
 
     let processed = 0;
@@ -63,7 +76,7 @@ export async function POST(request: NextRequest) {
                 threat_score = EXCLUDED.threat_score, -- Reset to current window score
                 total_events = threat_summaries.total_events + EXCLUDED.total_events,
                 last_updated = NOW()`,
-            [tenantId, row.agentid, score, parseInt(row.count)]
+            [effectiveTenantId, row.agentid, score, parseInt(row.count)]
         );
         processed++;
     }

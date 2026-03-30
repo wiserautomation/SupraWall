@@ -203,7 +203,7 @@ export default function ForensicAuditPage() {
         switch (decision) {
             case "ALLOW": return "text-green-400 bg-green-500/10 border-green-500/20";
             case "DENY": return "text-red-400 bg-red-500/10 border-red-500/20";
-            case "REQUIRE_APPROVAL": return "text-yellow-400 bg-yellow-500/10 border-yellow-500/20";
+            case "REQUIRE_APPROVAL": return "text-amber-300 bg-amber-500/20 border-amber-500/40 shadow-amber-900/20";
             default: return "";
         }
     };
@@ -415,7 +415,7 @@ export default function ForensicAuditPage() {
                                         : "text-neutral-400 bg-white/[0.05] border border-transparent hover:bg-white/[0.04] hover:text-white"
                                         }`}
                                 >
-                                    {d === "REQUIRE_APPROVAL" ? "APPROVAL" : d}
+                                    {d === "REQUIRE_APPROVAL" ? "PAUSED" : d}
                                 </button>
                             ))}
                         </div>
@@ -564,13 +564,21 @@ export default function ForensicAuditPage() {
                                                     )}
                                                 </TableCell>
                                                 <TableCell className="text-right px-5">
-                                                    <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${getDecisionStyle(log.decision)}`}>
+                                                    <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm ${getDecisionStyle(log.decision)}`}>
                                                         {getDecisionIcon(log.decision)}
-                                                        {log.decision === "REQUIRE_APPROVAL" ? "APPROVAL" : log.decision}
+                                                        {log.decision === "REQUIRE_APPROVAL" ? "PAUSED" : log.decision}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
-                                                    <Eye className="w-4 h-4 text-neutral-600 group-hover/row:text-neutral-300 transition-colors" />
+                                                    <button 
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setSelectedLog(selectedLog?.id === log.id ? null : log);
+                                                        }}
+                                                        className="p-1 hover:bg-white/10 rounded-md transition-all group/eye"
+                                                    >
+                                                        <Eye className={`w-4 h-4 transition-colors ${selectedLog?.id === log.id ? "text-emerald-400" : "text-neutral-500 group-hover/eye:text-neutral-200"}`} />
+                                                    </button>
                                                 </TableCell>
                                             </motion.tr>
                                         ))}

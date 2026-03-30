@@ -30,9 +30,22 @@ export async function GET(request: NextRequest) {
         );
     `);
 
+    // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+    let effectiveTenantId = tenantId;
+    try {
+        const { getAdminDb } = require('@/lib/firebase-admin');
+        const db = getAdminDb();
+        const userDoc = await db.collection("users").doc(tenantId).get();
+        if (userDoc.exists && userDoc.data()?.tenantId) {
+            effectiveTenantId = userDoc.data().tenantId;
+        }
+    } catch (e) {
+        // Fallback to the provided tenantId (UID)
+    }
+
     const result = await pool.query(
-        "SELECT * FROM threat_summaries WHERE tenantid = $1 ORDER BY threat_score DESC",
-        [tenantId]
+        "SELECT * FROM threat_summaries WHERE tenantid = $1 OR tenantid = $2 ORDER BY threat_score DESC",
+        [tenantId, effectiveTenantId]
     );
 
     return NextResponse.json(result.rows);

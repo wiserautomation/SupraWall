@@ -3,7 +3,7 @@
 
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { auth, db } from "@/lib/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -52,44 +52,31 @@ export default function ApprovalsPage() {
     const router = useRouter();
     const autoProcessed = useRef<string[]>([]);
 
+    const fetchRequests = useCallback(async () => {
+        if (!user) return;
+        try {
+            const res = await fetch(`/api/v1/approvals?tenantId=${user.uid}`);
+            if (res.ok) {
+                const data = await res.json();
+                const processed = data.map((d: any) => ({
+                    ...d,
+                    createdAt: new Date(d.createdAt)
+                }));
+                setRequests(processed);
+            }
+        } catch (error) {
+            console.error("Failed to sync approvals:", error);
+        } finally {
+            setLoading(false);
+        }
+    }, [user]);
+
     useEffect(() => {
         if (!user) return;
-        setLoading(true);
-
-        const q = query(
-            collection(db, "approvalRequests"),
-            where("userId", "==", user.uid),
-            where("status", "==", "pending")
-        );
-
-        const unsubscribe = onSnapshot(q, (snapshot) => {
-            const list = snapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    ...data,
-                    // Ensure naming consistency from backend
-                    agentId: data.agentId,
-                    agentName: data.agentName || "Unknown Agent",
-                    toolName: data.toolName,
-                    arguments: data.arguments,
-                    createdAt: data.createdAt?.toDate?.() || new Date(),
-                    estimatedCostUsd: data.estimatedCostUsd || 0
-                } as ApprovalRequest;
-            });
-            
-            // Sort by newest first
-            list.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-            
-            setRequests(list);
-            setLoading(false);
-        }, (error) => {
-            console.error("Approval sync failed:", error);
-            setLoading(false);
-        });
-
-        return () => unsubscribe();
-    }, [user]);
+        fetchRequests();
+        const interval = setInterval(fetchRequests, 5000); // 5s polling
+        return () => clearInterval(interval);
+    }, [user, fetchRequests]);
 
     // Handle auto-approval from notification
     useEffect(() => {
