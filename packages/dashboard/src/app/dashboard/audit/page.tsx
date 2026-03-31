@@ -17,7 +17,7 @@ import {
 import { Agent, AuditLog } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";
 
-type DecisionFilter = "ALL" | "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
+type DecisionFilter = "ALL" | "ALLOW" | "DENY" | "PAUSED" | "REQUIRE_APPROVAL";
 type SortField = "timestamp" | "riskScore" | "cost_usd";
 type SortDir = "asc" | "desc";
 
@@ -152,7 +152,7 @@ export default function ForensicAuditPage() {
         const total = filteredLogs.length;
         const allowed = filteredLogs.filter(l => l.decision === "ALLOW").length;
         const denied = filteredLogs.filter(l => l.decision === "DENY").length;
-        const approvals = filteredLogs.filter(l => l.decision === "REQUIRE_APPROVAL").length;
+        const approvals = filteredLogs.filter(l => l.decision === "PAUSED" || l.decision === "REQUIRE_APPROVAL").length;
         const avgRisk = total > 0 ? Math.round(filteredLogs.reduce((s, l) => s + (l.riskScore ?? 0), 0) / total) : 0;
         const highRisk = filteredLogs.filter(l => (l.riskScore ?? 0) >= 70).length;
         const totalCost = filteredLogs.reduce((s, l) => s + (l.cost_usd || 0), 0);
@@ -204,7 +204,8 @@ export default function ForensicAuditPage() {
         switch (decision) {
             case "ALLOW": return "text-green-400 bg-green-500/10 border-green-500/20";
             case "DENY": return "text-red-400 bg-red-500/10 border-red-500/20";
-            case "REQUIRE_APPROVAL": return "text-red-400 bg-red-500/20 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
+            case "REQUIRE_APPROVAL":
+            case "PAUSED": return "text-red-400 bg-red-500/20 border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]";
             default: return "";
         }
     };
@@ -213,7 +214,8 @@ export default function ForensicAuditPage() {
         switch (decision) {
             case "ALLOW": return <CheckCircle2 className="w-3.5 h-3.5 mr-1.5" />;
             case "DENY": return <ShieldAlert className="w-3.5 h-3.5 mr-1.5" />;
-            case "REQUIRE_APPROVAL": return <Clock className="w-3.5 h-3.5 mr-1.5" />;
+            case "REQUIRE_APPROVAL":
+            case "PAUSED": return <Clock className="w-3.5 h-3.5 mr-1.5" />
             default: return null;
         }
     };
@@ -404,19 +406,19 @@ export default function ForensicAuditPage() {
                         {/* Decision filter */}
                         <div className="flex items-center gap-1.5">
                             <Filter className="w-3.5 h-3.5 text-neutral-400" />
-                            {(["ALL", "ALLOW", "DENY", "REQUIRE_APPROVAL"] as DecisionFilter[]).map(d => (
+                            {(["ALL", "ALLOW", "DENY", "PAUSED"] as DecisionFilter[]).map(d => (
                                 <button
                                     key={d}
                                     onClick={() => setDecisionFilter(d)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${decisionFilter === d
                                         ? d === "ALLOW" ? "bg-green-500/15 text-green-400 border border-green-500/30"
                                             : d === "DENY" ? "bg-red-500/15 text-red-400 border border-red-500/30"
-                                                : d === "REQUIRE_APPROVAL" ? "bg-red-500/20 text-red-400 border border-red-500/40"
+                                                : d === "PAUSED" ? "bg-red-500/20 text-red-400 border border-red-500/40"
                                                     : "bg-white/[0.08] text-white border border-white/[0.1]"
                                         : "text-neutral-400 bg-white/[0.05] border border-transparent hover:bg-white/[0.04] hover:text-white"
                                         }`}
                                 >
-                                    {d === "REQUIRE_APPROVAL" ? "PAUSED" : d}
+                                    {d}
                                 </button>
                             ))}
                         </div>
@@ -567,7 +569,7 @@ export default function ForensicAuditPage() {
                                                 <TableCell className="text-right px-5">
                                                     <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-bold border shadow-sm ${getDecisionStyle(log.decision)}`}>
                                                         {getDecisionIcon(log.decision)}
-                                                        {log.decision === "REQUIRE_APPROVAL" ? "PAUSED" : log.decision}
+                                                        {log.decision === "REQUIRE_APPROVAL" || log.decision === "PAUSED" ? "PAUSED" : log.decision}
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>

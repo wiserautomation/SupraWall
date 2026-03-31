@@ -3,6 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { admin, db } from '@/lib/firebase-admin';
+import { pool } from '@/lib/db_sql';
 
 export const dynamic = "force-dynamic";
 
@@ -42,7 +43,6 @@ export async function POST(
         }
 
         // Update Postgres
-        const { pool } = require('@/lib/db_sql');
         const pgRes = await pool.query(
             `UPDATE approval_requests 
              SET status = $1, 
