@@ -33,6 +33,11 @@ const DEFAULT_POLICY_JSON = JSON.stringify(
         $schema: 'https://www.supra-wall.com/schemas/config.json',
         mode: 'self-hosted',
         defaultPolicy: 'DENY',
+        guardrails: {
+            maxIterations: 50,
+            loopDetection: true,
+            loopThreshold: 3,
+        },
         auditLog: {
             enabled: true,
             output: './suprawall-audit.log',
