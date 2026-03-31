@@ -597,10 +597,11 @@ export default function ForensicAuditPage() {
             <AnimatePresence>
                 {selectedLog && (
                     <motion.div
-                        initial={{ opacity: 0, y: 20, height: 0 }}
+                        initial={{ opacity: 0, y: 50, height: 0 }}
                         animate={{ opacity: 1, y: 0, height: "auto" }}
-                        exit={{ opacity: 0, y: 20, height: 0 }}
-                        transition={{ duration: 0.3 }}
+                        exit={{ opacity: 0, y: 50, height: 0 }}
+                        transition={{ duration: 0.3, type: "spring", bounce: 0 }}
+                        className="fixed bottom-0 left-[256px] right-0 z-[100] shadow-[0_-20px_50px_rgba(0,0,0,0.8)] backdrop-blur-md"
                     >
                         <Card className="bg-black/60 backdrop-blur-2xl border-emerald-500/10 shadow-2xl shadow-emerald-500/5 overflow-hidden">
                             <CardHeader className="border-b border-white/10 pb-3">
