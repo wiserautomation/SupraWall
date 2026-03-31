@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
             createdAt: row.created_at,
             sessionId: metadata.sessionId,
             agentRole: metadata.agentRole,
-            reason: metadata.reason,
-            estimatedCostUsd: row.estimated_cost_usd || 0
+            reason: row.reason,
+            estimatedCostUsd: Number(row.estimated_cost_usd) || 0
         };
     });
 
