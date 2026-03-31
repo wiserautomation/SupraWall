@@ -160,7 +160,7 @@ export default function ApprovalsPage() {
                     <div className="h-12 w-px bg-white/10 hidden md:block" />
                     <div className="text-right hidden sm:block">
                         <p className="text-4xl font-black text-emerald-500 italic tabular-nums leading-none">
-                            ${requests.reduce((acc, r) => acc + r.estimatedCostUsd, 0).toFixed(4)}
+                            ${(requests?.length > 0 ? requests.reduce((acc, r) => acc + (r.estimatedCostUsd || 0), 0) : 0).toFixed(4)}
                         </p>
                         <p className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mt-1">Risk Exposure</p>
                     </div>
