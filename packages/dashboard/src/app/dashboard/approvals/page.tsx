@@ -160,7 +160,7 @@ export default function ApprovalsPage() {
                     <div className="h-12 w-px bg-white/10 hidden md:block" />
                     <div className="text-right hidden sm:block">
                         <p className="text-4xl font-black text-emerald-500 italic tabular-nums leading-none">
-                            ${(requests?.length > 0 ? requests.reduce((acc, r) => acc + (r.estimatedCostUsd || 0), 0) : 0).toFixed(4)}
+                            ${(requests?.length > 0 ? requests.reduce((acc, r) => acc + (Number(r.estimatedCostUsd) || 0), 0) : 0).toFixed(4)}
                         </p>
                         <p className="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] mt-1">Risk Exposure</p>
                     </div>
@@ -226,7 +226,7 @@ export default function ApprovalsPage() {
                                                                 <span className="w-1 h-1 rounded-full bg-zinc-800" />
                                                                 <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest flex items-center gap-1.5">
                                                                     <DollarSign className="w-3.5 h-3.5 text-emerald-500/60" />
-                                                                    ~${req.estimatedCostUsd.toFixed(4)}
+                                                                    ~${(Number(req.estimatedCostUsd) || 0).toFixed(4)}
                                                                 </p>
                                                             </div>
                                                         </div>
