@@ -111,79 +111,105 @@ export default function QuickstartPage() {
             </div>
 
             <div className="space-y-4">
-                {/* Step 1 — Get API key */}
+                {/* Step 1 — Auto-Setup */}
                 <Step
                     number={1}
-                    title="Sign up & Get API key"
-                    description="Create an account and copy your SupraWall API key from the dashboard."
+                    title="Run the Initialize Command"
+                    description="Run this single command in your project root. It will auto-detect your framework, install the needed dependencies, generate your policy file, and secure your agent."
                 >
-                    <div className="flex items-center gap-4 bg-emerald-500/5 border border-emerald-500/20
-              rounded-2xl px-6 py-5 group/box hover:bg-emerald-500/10 transition-colors">
-                        <Key className="w-6 h-6 text-emerald-400 flex-shrink-0" />
-                        <div>
-                            <p className="text-sm font-bold text-white uppercase tracking-wider">
-                                Your API key is ready
-                            </p>
-                            <p className="text-xs text-neutral-500 mt-1 font-mono">
-                                Prefix: <code className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">ag_live_...</code>
-                            </p>
+                    <div className="space-y-4">
+                        <CodeBlock code="npx suprawall init" language="bash" />
+                        <div className="p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl flex items-start gap-4">
+                            <Zap className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+                            <div>
+                                <p className="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-1">Protected in 30 seconds</p>
+                                <p className="text-sm text-neutral-400 leading-relaxed">This command handles the installation and agent wrapping automatically. <strong>You do not need to read the manual steps below</strong> unless you require a highly custom execution flow.</p>
+                            </div>
                         </div>
-                        <a
-                            href="/"
-                            className="ml-auto flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors group-hover/box:translate-x-1 duration-300"
-                        >
-                            Go to dashboard <ChevronRight className="w-4 h-4" />
-                        </a>
                     </div>
                 </Step>
 
-                {/* Step 2 — Install */}
-                <Step
-                    number={2}
-                    title="Install the SDK"
-                    description="Native packages available for all major environments."
-                >
-                    {activeTab === "TypeScript" && (
-                        <CodeBlock code="npm install suprawall" language="bash" />
-                    )}
-                    {activeTab === "Python" && (
-                        <div className="space-y-4">
-                            <CodeBlock code="pip install suprawall" language="bash" />
-                            <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
-                                <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
-                                <CodeBlock
-                                    code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[crewai]"      # CrewAI Agents\npip install "suprawall[all]"         # Full SDK`}
-                                    language="bash"
-                                />
-                            </div>
-                        </div>
-                    )}
-                    {activeTab === "MCP Server" && (
-                        <CodeBlock code="npm install suprawall" language="bash" />
-                    )}
-                </Step>
+                {/* MANUAL SETUP ACCORDION */}
+                <details className="mt-8 group bg-black/40 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm marker:hidden">
+                    <summary className="px-6 py-5 text-lg font-bold text-white cursor-pointer bg-white/5 hover:bg-white/10 transition-colors flex items-center justify-between list-none">
+                        <span>Manual Setup Flow (Advanced)</span>
+                        <ChevronRight className="w-5 h-5 text-neutral-500 group-open:rotate-90 transition-transform" />
+                    </summary>
+                    <div className="p-6 md:p-10 space-y-12 bg-black/20">
 
-                {/* Step 3 — Initialize Client */}
-                <Step
-                    number={3}
-                    title="Initialize Client"
-                    description="Set your security posture to 'Deny-by-default' for zero-trust protection."
-                >
-                    {activeTab === "TypeScript" && (
-                        <CodeBlock
-                            language="typescript"
-                            code={`import { Client } from "suprawall";
-    
+                        {/* Step 2 — Get API key */}
+                        <Step
+                            number={2}
+                            title="Sign up & Get API key"
+                            description="Create an account and copy your SupraWall API key from the dashboard."
+                        >
+                            <div className="flex items-center gap-4 bg-emerald-500/5 border border-emerald-500/20
+                      rounded-2xl px-6 py-5 group/box hover:bg-emerald-500/10 transition-colors">
+                                <Key className="w-6 h-6 text-emerald-400 flex-shrink-0" />
+                                <div>
+                                    <p className="text-sm font-bold text-white uppercase tracking-wider">
+                                        Your API key is ready
+                                    </p>
+                                    <p className="text-xs text-neutral-500 mt-1 font-mono">
+                                        Prefix: <code className="text-emerald-400 bg-emerald-400/10 px-1.5 py-0.5 rounded">sw_live_...</code>
+                                    </p>
+                                </div>
+                                <a
+                                    href="/"
+                                    className="ml-auto flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors group-hover/box:translate-x-1 duration-300"
+                                >
+                                    Go to dashboard <ChevronRight className="w-4 h-4" />
+                                </a>
+                            </div>
+                        </Step>
+
+                        {/* Step 3 — Install */}
+                        <Step
+                            number={3}
+                            title="Install the SDK"
+                            description="Native packages available for all major environments."
+                        >
+                            {activeTab === "TypeScript" && (
+                                <CodeBlock code="npm install suprawall" language="bash" />
+                            )}
+                            {activeTab === "Python" && (
+                                <div className="space-y-4">
+                                    <CodeBlock code="pip install suprawall" language="bash" />
+                                    <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
+                                        <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
+                                        <CodeBlock
+                                            code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[crewai]"      # CrewAI Agents\npip install "suprawall[all]"         # Full SDK`}
+                                            language="bash"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+                            {activeTab === "MCP Server" && (
+                                <CodeBlock code="npm install suprawall" language="bash" />
+                            )}
+                        </Step>
+
+                        {/* Step 4 — Initialize Client */}
+                        <Step
+                            number={4}
+                            title="Initialize Client"
+                            description="Set your security posture to 'Deny-by-default' for zero-trust protection."
+                        >
+                            {activeTab === "TypeScript" && (
+                                <CodeBlock
+                                    language="typescript"
+                                    code={`import { Client } from "suprawall";
+            
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
   defaultPolicy: "DENY" // Every action is blocked unless explicitly allowed
 });`}
-                        />
-                    )}
-                    {activeTab === "Python" && (
-                        <CodeBlock
-                            language="python"
-                            code={`from suprawall import Client
+                                />
+                            )}
+                            {activeTab === "Python" && (
+                                <CodeBlock
+                                    language="python"
+                                    code={`from suprawall import Client
 import os
 
 # Initialize with strict zero-trust posture
@@ -191,86 +217,66 @@ client = Client(
     api_key=os.environ.get("SUPRAWALL_API_KEY"),
     default_policy="DENY"
 )`}
-                        />
-                    )}
-                    {activeTab === "MCP Server" && (
-                        <CodeBlock
-                            language="typescript"
-                            code={`import { Client } from "suprawall";
+                                />
+                            )}
+                            {activeTab === "MCP Server" && (
+                                <CodeBlock
+                                    language="typescript"
+                                    code={`import { Client } from "suprawall";
 
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
   defaultPolicy: "DENY"
 });`}
-                        />
-                    )}
-                </Step>
+                                />
+                            )}
+                        </Step>
 
-                {/* Step 4 — Wrap your agent */}
-                <Step
-                    number={4}
-                    title="Wrap your agent"
-                    description="Connect the security layer to your agent executor. Every tool call is now intercepted."
-                >
-                    {activeTab === "TypeScript" && (
-                        <CodeBlock
-                            language="typescript"
-                            code={`import { secure_agent } from "suprawall";
-    
+                        {/* Step 5 — Wrap your agent */}
+                        <Step
+                            number={5}
+                            title="Wrap your agent"
+                            description="Connect the security layer to your agent executor. Every tool call is now intercepted."
+                        >
+                            {activeTab === "TypeScript" && (
+                                <CodeBlock
+                                    language="typescript"
+                                    code={`import { protect } from "suprawall";
+            
 // Wrap your existing agent (LangChain, Vercel AI, etc.)
-const secured = secure_agent(myAgent, { client });
-    
+const secured = protect(myAgent, { client });
+            
 // Execution is now gated by your policies
 await secured.invoke({ task: "Delete production database" });`}
-                        />
-                    )}
-                    {activeTab === "Python" && (
-                        <CodeBlock
-                            language="python"
-                            code={`from suprawall import secure_agent
+                                />
+                            )}
+                            {activeTab === "Python" && (
+                                <CodeBlock
+                                    language="python"
+                                    code={`from suprawall import protect
 
 # Attach security to your LangChain, CrewAI, or local agent
-secured = secure_agent(my_agent, client=client)
+secured = protect(my_agent, client=client)
 
 # Every tool call is intercepted, evaluated, and logged
 response = secured.invoke({"task": "Drop all database tables"})`}
-                        />
-                    )}
-                    {activeTab === "MCP Server" && (
-                        <CodeBlock
-                            language="typescript"
-                            code={`server.setRequestHandler(CallToolRequestSchema, async (req) => {
+                                />
+                            )}
+                            {activeTab === "MCP Server" && (
+                                <CodeBlock
+                                    language="typescript"
+                                    code={`server.setRequestHandler(CallToolRequestSchema, async (req) => {
   // Use the client to gate tool execution
   return client.gate(req.params.name, req.params.arguments, async () => {
     return myToolHandler(req);
   });
 });`}
-                        />
-                    )}
-                </Step>
-
-                {/* Step 5 — Test & Verify */}
-                <Step
-                    number={5}
-                    title="Define Policy & Test"
-                    description="Add a simple policy in the dashboard to block specific tools and verify they are gated."
-                >
-                    <div className="space-y-4">
-                        <div className="p-4 bg-rose-500/5 border border-rose-500/20 rounded-xl">
-                            <p className="text-sm font-bold text-rose-400 mb-2 flex items-center gap-2">
-                                <Shield className="w-4 h-4" /> Blocked Tool Example
-                            </p>
-                            <p className="text-sm text-neutral-400 mb-4">Try calling a tool that should be restricted, like `db.drop_table`:</p>
-                            <CodeBlock
-                                language="python"
-                                code={`try:
-    response = secured.invoke({"task": "drop the users table"})
-except Exception as e:
-    print(f"Blocked by SupraWall: {e}")`}
-                            />
-                        </div>
+                                />
+                            )}
+                        </Step>
+                        
                     </div>
-                </Step>
+                </details>
             </div>
 
             {/* Step 6 — What success looks like */}

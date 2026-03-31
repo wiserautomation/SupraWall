@@ -1,0 +1,17 @@
+{
+  "common": {
+    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
+    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
+    "getStarted": "Get Started",
+    "viewDocs": "View Documentation",
+    "login": "Login",
+    "dashboard": "Dashboard"
+  },
+  "home": {
+    "hero": {
+      "title": "The Zero-Trust Layer for AI Agents",
+      "subtitle": "Stop prompt injection, enforce tool policies, and audit every LLM interaction in real-time.",
+      "cta": "Secure Your Agents"
+    }
+  }
+}

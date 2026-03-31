@@ -4,18 +4,14 @@
 import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
+import { i18n } from '../i18n/config';
 
-/**
- * BASE URL for the sitemap.
- * Priority: Used in layout metadata and new SEO pages as www.supra-wall.com
- */
 const BASE_URL = 'https://www.supra-wall.com';
 
 /**
- * Automatically discovery routes in the src/app directory.
- * This runs during 'next build' to generate the dynamic sitemap.
+ * Automatically discover routes in the src/app directory.
  */
-function getRoutes(dir: string, baseRoute = ''): string[] {
+function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] {
     const routes: string[] = [];
     const absolutePath = path.resolve(dir);
 
@@ -28,21 +24,29 @@ function getRoutes(dir: string, baseRoute = ''): string[] {
         const stats = fs.statSync(itemPath);
 
         if (stats.isDirectory()) {
+            // Special handling for [lang] root
+            if (item === '[lang]' && !isLocaleRoot) {
+                // If we encounter [lang], we recurse into it but mark it as locale root
+                // to avoid skipping its children
+                routes.push(...getRoutes(itemPath, baseRoute, true));
+                continue;
+            }
+
             // Skip private folders, api, and protected routes
-            // Exclude dashboard and admin as per robots.txt
             if (
                 item.startsWith('_') ||
                 item.startsWith('(') ||
-                item.startsWith('[') ||
-                ['api', 'admin', 'dashboard', 'connect'].includes(item)
+                (item.startsWith('[') && item !== '[lang]') ||
+                ['api', 'admin', 'dashboard', 'connect', 'stripe', 'share'].includes(item)
             ) {
                 continue;
             }
 
             const currentRoute = `${baseRoute}/${item}`;
 
-            // Check if this directory has a page file (tsx or js)
-            const hasPage = fs.readdirSync(itemPath).some(file =>
+            // Check if this directory has a page file
+            const files = fs.readdirSync(itemPath);
+            const hasPage = files.some(file =>
                 file.startsWith('page.tsx') || file.startsWith('page.js')
             );
 
@@ -51,7 +55,7 @@ function getRoutes(dir: string, baseRoute = ''): string[] {
             }
 
             // Recurse into subdirectories
-            routes.push(...getRoutes(itemPath, currentRoute));
+            routes.push(...getRoutes(itemPath, currentRoute, isLocaleRoot));
         }
     }
 
@@ -59,23 +63,51 @@ function getRoutes(dir: string, baseRoute = ''): string[] {
 }
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    // Discovery routes relative to the app root
-    // We assume the standard src/app structure
     const appDir = path.join(process.cwd(), 'src', 'app');
-    const discoveredRoutes = ['/', ...getRoutes(appDir)];
+    
+    // Get base routes from app root (excluding [lang] for now)
+    const baseRoutes = getRoutes(appDir);
+    
+    // We want to generate a flat list of all localized versions
+    const allLocalizedRoutes: string[] = [];
+    
+    // For each discovered route, generate it for each locale
+    // Note: This assumes that slugs are the same across languages in the file system,
+    // which they are if we use [lang]/[...slug]. 
+    // If we have distinct folders like /de/vorordnung, we'd need more complex mapping.
+    // For Phase 1, we assume structure migration.
+    
+    const sitemapEntries: MetadataRoute.Sitemap = [];
 
-    // De-duplicate
-    const uniqueRoutes = Array.from(new Set(discoveredRoutes));
+    // Combine manual and discovered routes
+    const uniqueRoutes = Array.from(new Set(['/', ...baseRoutes]));
 
-    return uniqueRoutes.map((route) => {
-        // Clean up double slashes and trailing slashes
+    uniqueRoutes.forEach((route) => {
         const cleanRoute = route.replace(/\/+/g, '/').replace(/\/$/, '') || '';
+        
+        i18n.locales.forEach((locale) => {
+            const localizedPath = `/${locale}${cleanRoute}`;
+            const fullUrl = `${BASE_URL}${localizedPath}`;
+            
+            // Build alternates
+            const alternates: Record<string, string> = {};
+            i18n.locales.forEach((l) => {
+                alternates[l] = `${BASE_URL}/${l}${cleanRoute}`;
+            });
+            // Add x-default
+            alternates['x-default'] = `${BASE_URL}/en${cleanRoute}`;
 
-        return {
-            url: `${BASE_URL}${cleanRoute}`,
-            lastModified: new Date(),
-            changeFrequency: 'daily' as const,
-            priority: cleanRoute === '' ? 1.0 : cleanRoute.split('/').length > 2 ? 0.6 : 0.8,
-        };
+            sitemapEntries.push({
+                url: fullUrl,
+                lastModified: new Date(),
+                changeFrequency: 'daily' as const,
+                priority: cleanRoute === '' ? 1.0 : cleanRoute.split('/').length > 2 ? 0.6 : 0.8,
+                alternates: {
+                    languages: alternates,
+                },
+            });
+        });
     });
+
+    return sitemapEntries;
 }

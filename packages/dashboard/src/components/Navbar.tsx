@@ -12,57 +12,60 @@ import {
     Users, Globe, ShieldAlert, Zap, Layers, Code2, Lock, Github
 } from "lucide-react";
 import Link from "next/link";
+import { Locale } from "../i18n/config";
 
-export function Navbar() {
+export function Navbar({ lang = 'en' }: { lang?: Locale }) {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
 
+    const prefix = (href: string) => href.startsWith('http') ? href : `/${lang}${href === '/' ? '' : href}`;
+
     const features = [
-        { href: "/features/vault", icon: <KeyRound className="w-4 h-4 text-emerald-400" />, label: "Credential Vault", desc: "Zero-knowledge secrets" },
-        { href: "/features/budget-limits", icon: <DollarSign className="w-4 h-4 text-amber-400" />, label: "Budget Limits", desc: "Hard caps on API spend" },
-        { href: "/features/policy-engine", icon: <ShieldCheck className="w-4 h-4 text-blue-400" />, label: "Policy Engine", desc: "Deterministic ALLOW/BLOCK" },
-        { href: "/features/pii-shield", icon: <EyeOff className="w-4 h-4 text-purple-400" />, label: "PII Shield", desc: "Outbound data scrubbing" },
-        { href: "/features/audit-trail", icon: <FileText className="w-4 h-4 text-cyan-400" />, label: "Audit Trail", desc: "Regulator evidence reports" },
-        { href: "/features/prompt-shield", icon: <Bug className="w-4 h-4 text-rose-400" />, label: "Injection Shield", desc: "SDK binary protection" },
+        { href: prefix("/features/vault"), icon: <KeyRound className="w-4 h-4 text-emerald-400" />, label: "Credential Vault", desc: "Zero-knowledge secrets" },
+        { href: prefix("/features/budget-limits"), icon: <DollarSign className="w-4 h-4 text-amber-400" />, label: "Budget Limits", desc: "Hard caps on API spend" },
+        { href: prefix("/features/policy-engine"), icon: <ShieldCheck className="w-4 h-4 text-blue-400" />, label: "Policy Engine", desc: "Deterministic ALLOW/BLOCK" },
+        { href: prefix("/features/pii-shield"), icon: <EyeOff className="w-4 h-4 text-purple-400" />, label: "PII Shield", desc: "Outbound data scrubbing" },
+        { href: prefix("/features/audit-trail"), icon: <FileText className="w-4 h-4 text-cyan-400" />, label: "Audit Trail", desc: "Regulator evidence reports" },
+        { href: prefix("/features/prompt-shield"), icon: <Bug className="w-4 h-4 text-rose-400" />, label: "Injection Shield", desc: "SDK binary protection" },
     ];
 
     const resources = [
-        { href: "/quickstart", icon: <Zap className="w-4 h-4 text-yellow-400" />, label: "Quickstart", desc: "5-minute zero-trust setup" },
-        { href: "/docs", icon: <Book className="w-4 h-4 text-emerald-400" />, label: "Documentation", desc: "SDK guides & API reference" },
-        { href: "/integrations", icon: <Workflow className="w-4 h-4 text-purple-400" />, label: "Frameworks", desc: "LangChain, CrewAI, AutoGen" },
-        { href: "/blog", icon: <FileText className="w-4 h-4 text-rose-400" />, label: "Engineering Blog", desc: "Latest research & insights" },
+        { href: prefix("/quickstart"), icon: <Zap className="w-4 h-4 text-yellow-400" />, label: "Quickstart", desc: "5-minute zero-trust setup" },
+        { href: prefix("/docs"), icon: <Book className="w-4 h-4 text-emerald-400" />, label: "Documentation", desc: "SDK guides & API reference" },
+        { href: prefix("/integrations"), icon: <Workflow className="w-4 h-4 text-purple-400" />, label: "Frameworks", desc: "LangChain, CrewAI, AutoGen" },
+        { href: prefix("/blog"), icon: <FileText className="w-4 h-4 text-rose-400" />, label: "Engineering Blog", desc: "Latest research & insights" },
     ];
 
     const company = [
-        { href: "/about", icon: <Users className="w-4 h-4 text-neutral-400" />, label: "About Us", desc: "Our mission & philosophy" },
-        { href: "/security", icon: <ShieldAlert className="w-4 h-4 text-emerald-400" />, label: "Trust Center", desc: "Security & Compliance" },
-        { href: "/changelog", icon: <Zap className="w-4 h-4 text-rose-500" />, label: "Changelog", desc: "Product updates" },
+        { href: prefix("/about"), icon: <Users className="w-4 h-4 text-neutral-400" />, label: "About Us", desc: "Our mission & philosophy" },
+        { href: prefix("/security"), icon: <ShieldAlert className="w-4 h-4 text-emerald-400" />, label: "Trust Center", desc: "Security & Compliance" },
+        { href: prefix("/changelog"), icon: <Zap className="w-4 h-4 text-rose-500" />, label: "Changelog", desc: "Product updates" },
     ];
 
     const solutions = [
-        { href: "/for-developers", icon: <Code2 className="w-4 h-4 text-emerald-400" />, label: "For Developers", desc: "SDK-first security" },
-        { href: "/for-compliance-officers", icon: <ShieldCheck className="w-4 h-4 text-blue-400" />, label: "For Compliance", desc: "Regulator evidence" },
-        { href: "/for-enterprise", icon: <Globe className="w-4 h-4 text-purple-400" />, label: "For Enterprise", desc: "Fleet-wide control" },
-        { href: "/gdpr", icon: <Lock className="w-4 h-4 text-rose-400" />, label: "GDPR & Privacy", desc: "PII protection" },
+        { href: prefix("/for-developers"), icon: <Code2 className="w-4 h-4 text-emerald-400" />, label: "For Developers", desc: "SDK-first security" },
+        { href: prefix("/for-compliance-officers"), icon: <ShieldCheck className="w-4 h-4 text-blue-400" />, label: "For Compliance", desc: "Regulator evidence" },
+        { href: prefix("/for-enterprise"), icon: <Globe className="w-4 h-4 text-purple-400" />, label: "For Enterprise", desc: "Fleet-wide control" },
+        { href: prefix("/gdpr"), icon: <Lock className="w-4 h-4 text-rose-400" />, label: "GDPR & Privacy", desc: "PII protection" },
     ];
 
     const integrations = [
         { type: "label", label: "Frameworks" },
-        { href: "/integrations/langchain", icon: <Workflow className="w-4 h-4 text-emerald-400" />, label: "LangChain", desc: "Secure agent executors" },
-        { href: "/integrations/crewai", icon: <Users className="w-4 h-4 text-amber-400" />, label: "CrewAI", desc: "Task-level governance" },
-        { href: "/integrations/autogen", icon: <Globe className="w-4 h-4 text-blue-400" />, label: "AutoGen", desc: "Multi-agent security" },
-        { href: "/integrations/llamaindex", icon: <Layers className="w-4 h-4 text-cyan-400" />, label: "LlamaIndex", desc: "Data-aware protection" },
+        { href: prefix("/integrations/langchain"), icon: <Workflow className="w-4 h-4 text-emerald-400" />, label: "LangChain", desc: "Secure agent executors" },
+        { href: prefix("/integrations/crewai"), icon: <Users className="w-4 h-4 text-amber-400" />, label: "CrewAI", desc: "Task-level governance" },
+        { href: prefix("/integrations/autogen"), icon: <Globe className="w-4 h-4 text-blue-400" />, label: "AutoGen", desc: "Multi-agent security" },
+        { href: prefix("/integrations/llamaindex"), icon: <Layers className="w-4 h-4 text-cyan-400" />, label: "LlamaIndex", desc: "Data-aware protection" },
         
         { type: "label", label: "Platforms & Models" },
-        { href: "/integrations/stripe", icon: <DollarSign className="w-4 h-4 text-emerald-500" />, label: "Stripe", desc: "Financial guardrails" },
-        { href: "/integrations/claude", icon: <Zap className="w-4 h-4 text-orange-500" />, label: "Claude / Anthropic", desc: "Computer use security" },
-        { href: "/integrations/openclaw", icon: <Globe className="w-4 h-4 text-purple-400" />, label: "OpenClaw", desc: "Browser-level firewall" },
+        { href: prefix("/integrations/stripe"), icon: <DollarSign className="w-4 h-4 text-emerald-500" />, label: "Stripe", desc: "Financial guardrails" },
+        { href: prefix("/integrations/claude"), icon: <Zap className="w-4 h-4 text-orange-500" />, label: "Claude / Anthropic", desc: "Computer use security" },
+        { href: prefix("/integrations/openclaw"), icon: <Globe className="w-4 h-4 text-purple-400" />, label: "OpenClaw", desc: "Browser-level firewall" },
     ];
 
     return (
         <nav className="fixed top-0 w-full z-50 border-b border-white/10 bg-black/60 backdrop-blur-3xl">
             <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
                 <Link 
-                    href="/" 
+                    href={prefix("/")} 
                     onClick={() => sendGAEvent('event', 'nav_logo_click')}
                     className="flex items-center gap-3 group"
                 >
@@ -73,7 +76,6 @@ export function Navbar() {
                 </Link>
 
                 <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-widest text-glow">
-                    {/* Features Dropdown */}
                     <Dropdown 
                         label="Platform" 
                         isOpen={openMenu === "platform"} 
@@ -82,7 +84,6 @@ export function Navbar() {
                         items={features}
                     />
 
-                    {/* Integrations Dropdown */}
                     <Dropdown 
                         label="Integrations" 
                         isOpen={openMenu === "integrations"} 
@@ -91,7 +92,6 @@ export function Navbar() {
                         items={integrations}
                     />
 
-                    {/* Solutions Dropdown */}
                     <Dropdown 
                         label="Solutions" 
                         isOpen={openMenu === "solutions"} 
@@ -100,7 +100,6 @@ export function Navbar() {
                         items={solutions}
                     />
 
-                    {/* Resources Dropdown */}
                     <Dropdown 
                         label="Resources" 
                         isOpen={openMenu === "resources"} 
@@ -109,7 +108,6 @@ export function Navbar() {
                         items={resources}
                     />
 
-                    {/* Company Dropdown */}
                     <Dropdown 
                         label="Company" 
                         isOpen={openMenu === "company"} 
@@ -119,7 +117,7 @@ export function Navbar() {
                     />
 
                     <Link 
-                        href="/pricing" 
+                        href={prefix("/pricing")} 
                         onClick={() => sendGAEvent('event', 'nav_link_click', { path: '/pricing' })}
                         className="text-neutral-500 hover:text-white transition-colors"
                     >
@@ -128,7 +126,7 @@ export function Navbar() {
 
                     <div className="flex items-center gap-3">
                         <Link 
-                            href="/beta" 
+                            href={prefix("/beta")} 
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'deploy_cloud' })}
                             className="px-5 py-2.5 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 flex items-center gap-2"
                         >
@@ -171,7 +169,7 @@ function Dropdown({ label, isOpen, onOpen, onClose, items }: any) {
                                 </div>
                             ) : (
                                 <Link
-                                    key={f.href}
+                                    key={i}
                                     href={f.href}
                                     onClick={() => sendGAEvent('event', 'nav_dropdown_click', { path: f.href, category: label })}
                                     className={`flex items-start gap-4 px-5 py-3 hover:bg-emerald-500/[0.06] transition-all group rounded-2xl`}

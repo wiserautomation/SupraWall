@@ -1,8 +1,16 @@
 User-agent: *
 Allow: /
+Allow: /de/
+Allow: /fr/
+Allow: /es/
+Allow: /it/
+Allow: /pl/
+Allow: /nl/
 Disallow: /admin
 Disallow: /api
 Disallow: /dashboard
+Disallow: /stripe
+Disallow: /_next/
 
 Sitemap: https://www.supra-wall.com/sitemap.xml
 LLMs: https://www.supra-wall.com/llms.txt

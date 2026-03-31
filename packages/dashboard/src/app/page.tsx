@@ -105,15 +105,14 @@ export default function LandingPage() {
                         </div>
 
                         <div className="space-y-8">
-                            <h1 className="text-6xl md:text-[110px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                Your AI Agent <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Will Go Rogue.</span> <br />
-                                SupraWall <br />
-                                <span className="underline decoration-emerald-800">Makes Sure It Can&apos;t.</span>
+                            <h1 className="text-6xl md:text-[90px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                                Protected in 30 seconds. <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Enterprise-ready</span> <br />
+                                <span className="underline decoration-emerald-800">when you are.</span>
                             </h1>
 
                             {/* NEW SUBHEADLINE — Lists all 6 capabilities */}
-                            <p className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium">
+                            <p className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium mt-6">
                                 <span className="text-white font-bold">Vault</span> credentials.{' '}
                                 <span className="text-white font-bold">Cap</span> budgets.{' '}
                                 <span className="text-white font-bold">Block</span> unauthorized actions.{' '}
@@ -124,25 +123,45 @@ export default function LandingPage() {
                                 <br className="hidden md:block" />
                                 <span className="text-emerald-400 italic">Open source. One line of code. Seven threats neutralized.</span>
                             </p>
-                                     <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                            <Link
-                                id="cta-deploy-cloud"
-                                href="/beta"
-                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
-                                className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.15)] group flex items-center gap-3"
-                            >
-                                Get Beta Access <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
-                            </Link>
-                            <Link
-                                id="cta-star-github"
-                                href="https://github.com/suprawall/suprawall"
-                                target="_blank"
-                                onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
-                                className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"
-                            >
-                                <Github className="w-6 h-6" /> Star on GitHub
-                            </Link>
-                        </div>
+
+                            {/* THE COMMAND - The new primary CTA */}
+                            <div className="flex flex-col items-center gap-4 pt-10 pb-4 w-full">
+                                <div 
+                                    className="group relative flex items-center justify-between w-full max-w-2xl px-8 py-6 bg-[#0a0a0a] border-2 border-white/20 rounded-3xl shadow-[0_20px_100px_rgba(16,185,129,0.3)] hover:border-emerald-500 transition-all font-mono text-emerald-400 text-2xl md:text-3xl cursor-copy transform hover:scale-[1.02]" 
+                                    onClick={() => navigator.clipboard.writeText('npx suprawall init')}
+                                    title="Click to copy"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-neutral-500 select-none">❯</span>
+                                        <span className="text-white font-bold tracking-tight">npx suprawall init</span>
+                                    </div>
+                                    <span className="text-xs text-neutral-400 uppercase tracking-[0.3em] font-sans font-bold opacity-0 group-hover:opacity-100 transition-opacity bg-white/5 px-3 py-1.5 rounded-lg border border-white/10">Copy</span>
+                                </div>
+                                <p className="text-xs md:text-sm text-neutral-400 uppercase tracking-[0.2em] font-bold mt-2">
+                                    No account required · Works with LangChain, CrewAI, AutoGen, MCP
+                                </p>
+                            </div>
+
+                            {/* SECONDARY CTA */}
+                            <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
+                                <Link
+                                    id="cta-deploy-cloud"
+                                    href="/beta"
+                                    onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
+                                    className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] flex items-center gap-3"
+                                >
+                                    Get Beta Access <ArrowRight className="w-5 h-5" />
+                                </Link>
+                                <Link
+                                    id="cta-star-github"
+                                    href="https://github.com/suprawall/suprawall"
+                                    target="_blank"
+                                    onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
+                                    className="px-10 py-5 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"
+                                >
+                                    <Github className="w-5 h-5" /> Star on GitHub
+                                </Link>
+                            </div>
               </div>
 
                         <div className="pt-12 flex flex-col items-center gap-6">

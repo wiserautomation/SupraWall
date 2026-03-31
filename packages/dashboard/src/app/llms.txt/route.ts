@@ -4,6 +4,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import { i18n } from '../../i18n/config';
 
 /**
  * BASE URL for the links
@@ -11,28 +12,36 @@ import path from 'path';
 const BASE_URL = 'https://www.supra-wall.com';
 
 /**
- * Discovery logic similar to sitemap.ts
+ * Discovery logic refined to handle [lang]
  */
-function getRoutes(dir: string, baseRoute = ''): string[] {
+function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] {
     const routes: string[] = [];
     if (!fs.existsSync(dir)) return [];
     const items = fs.readdirSync(dir);
 
     for (const item of items) {
-        if (
-            item.startsWith('_') ||
-            item.startsWith('(') ||
-            item.startsWith('[') ||
-            ['api', 'admin', 'dashboard', 'connect'].includes(item)
-        ) continue;
-
         const itemPath = path.join(dir, item);
-        if (fs.statSync(itemPath).isDirectory()) {
+        const stats = fs.statSync(itemPath);
+
+        if (stats.isDirectory()) {
+            // Special handling for [lang] root
+            if (item === '[lang]' && !isLocaleRoot) {
+                routes.push(...getRoutes(itemPath, baseRoute, true));
+                continue;
+            }
+
+            if (
+                item.startsWith('_') ||
+                item.startsWith('(') ||
+                (item.startsWith('[') && item !== '[lang]') ||
+                ['api', 'admin', 'dashboard', 'connect', 'stripe', 'share'].includes(item)
+            ) continue;
+
             const currentRoute = `${baseRoute}/${item}`;
             if (fs.readdirSync(itemPath).some(f => f.startsWith('page.'))) {
                 routes.push(currentRoute);
             }
-            routes.push(...getRoutes(itemPath, currentRoute));
+            routes.push(...getRoutes(itemPath, currentRoute, isLocaleRoot));
         }
     }
     return routes;
@@ -40,41 +49,47 @@ function getRoutes(dir: string, baseRoute = ''): string[] {
 
 export async function GET() {
     const appDir = path.join(process.cwd(), 'src', 'app');
-    const routes = ['/', ...getRoutes(appDir)];
-    const uniqueRoutes = Array.from(new Set(routes)).map(r => r.replace(/\/+/g, '/').replace(/\/$/, '') || '');
+    const baseRoutes = getRoutes(appDir);
+    const uniqueBaseRoutes = Array.from(new Set(['/', ...baseRoutes])).map(r => r.replace(/\/+/g, '/').replace(/\/$/, '') || '');
 
-    const content = `# SupraWall — The Compliance OS for Autonomous AI Agents
+    let content = `# SupraWall — The Compliance OS for Autonomous AI Agents
 
 > SupraWall is the unified security and compliance layer for AI agent swarms. One-line SDK middleware that wraps LangChain, CrewAI, AutoGen, Vercel AI SDK, and MCP agents with enterprise governance.
 
-## What is SupraWall
-SupraWall provides zero-trust runtime security for autonomous AI agents through deterministic SDK-level interception. It is the Compliance OS that prevents rogue agent actions, enforces human oversight, scrubs PII, manages credentials securely, controls costs, and generates EU AI Act compliance reports — all from a single middleware integration.
+## English (en) - Default
+SupraWall provides zero-trust runtime security for autonomous AI agents through deterministic SDK-level interception.
 
-## Core Capabilities
-1. **Universal One-Line Middleware** — Wrap any agent framework (LangChain, CrewAI, AutoGen, Vercel AI SDK) with enterprise security in one line of code
-2. **Human-in-the-Loop (HITL) Governance** — Slack and Microsoft Teams-based approval workflows for high-risk agent actions. Distributed team oversight at scale
-3. **EU AI Act Article 12 Audit Logging** — Tamper-evident action logs with time-travel audit view and one-click PDF compliance export
-4. **PII Guardrails & Data Scrubbing** — GDPR Article 25 compliant automatic sensitive data redaction at the SDK level
-5. **Just-in-Time Secret Vault** — Credentials injected at the last millisecond, never exposed in agent memory or prompts. Architectural solution to prompt injection credential theft
-6. **Operational Governance** — Hard budget caps, automatic loop kill switches, real-time cost alerts via Telegram and Slack. Prevents AI agent bill shock
+### Key Sections (en)
+${uniqueBaseRoutes.map(r => `- ${BASE_URL}/en${r}`).join('\n')}
 
-## Who Uses SupraWall
-- **Developers** building AI agent applications who need security middleware
-- **Compliance Officers** ensuring EU AI Act and GDPR compliance for AI systems
-- **System Approvers** managing team oversight of autonomous agent actions
+`;
 
-## Key Content Sections
-- /learn — Educational guides on AI agent security, EU AI Act compliance, and governance patterns
-- /blog — Engineering deep-dives, incident analysis, and industry trends
-- /features — Detailed product capability pages (HITL, audit trail, PII shield, vault, budget limits, policy engine, prompt shield)
-- /integrations — Framework-specific setup guides (LangChain, CrewAI, AutoGen, and more)
-- /vs — Competitive comparisons (vs Galileo, Straiker, Portkey, NeMo Guardrails, and others)
-- /eu-ai-act — EU AI Act article-specific compliance guidance
-- /use-cases — Industry and scenario-specific solutions
-- /compliance — Compliance center and certification
+    // Add multilingual sections
+    if (i18n.locales.includes('de')) {
+        content += `## German (de) - Deutsch
+SupraWall bietet Zero-Trust-Laufzeitsicherheit für autonome KI-Agenten zum Schutz vor Prompt-Injection und zur Einhaltung der EU-KI-Verordnung.
 
-## All Pages (Automatically Updated)
-${uniqueRoutes.map(r => `- ${BASE_URL}${r}`).join('\n')}
+### Wichtige Abschnitte (de)
+- ${BASE_URL}/de/eu-ai-act: Umfassende Dokumentation zur EU-KI-Verordnung
+- ${BASE_URL}/de/compliance: Audit-Trail und Risikomanagement
+${uniqueBaseRoutes.filter(r => !['/eu-ai-act', '/compliance'].includes(r)).map(r => `- ${BASE_URL}/de${r}`).join('\n')}
+
+`;
+    }
+
+    if (i18n.locales.includes('fr')) {
+        content += `## French (fr) - Français
+SupraWall est la couche de sécurité et de conformité unifiée pour les essaims d'agents IA, assurant la conformité avec la loi européenne sur l'IA.
+
+### Sections clés (fr)
+- ${BASE_URL}/fr/eu-ai-act: Documentation complète sur la loi européenne sur l'IA
+${uniqueBaseRoutes.filter(r => r !== '/eu-ai-act').map(r => `- ${BASE_URL}/fr${r}`).join('\n')}
+
+`;
+    }
+
+    content += `## All Supported Locales
+${i18n.locales.map(l => `- ${l}`).join('\n')}
 
 ## More Resources
 - Github: https://github.com/suprawall/suprawall
