@@ -81,7 +81,8 @@ export default function ForensicAuditPage() {
                 const data = await response.json();
                 const processedLogs = data.logs.map((l: any) => ({
                     ...l,
-                    timestamp: { toDate: () => new Date(l.timestamp) }
+                    timestamp: { toDate: () => new Date(l.timestamp) },
+                    estimatedCostUsd: l.estimatedCostUsd || l.cost_usd || 0
                 }));
                 setLogs(processedLogs);
             }
@@ -203,7 +204,7 @@ export default function ForensicAuditPage() {
         switch (decision) {
             case "ALLOW": return "text-green-400 bg-green-500/10 border-green-500/20";
             case "DENY": return "text-red-400 bg-red-500/10 border-red-500/20";
-            case "REQUIRE_APPROVAL": return "text-amber-300 bg-amber-500/20 border-amber-500/40 shadow-amber-900/20";
+            case "REQUIRE_APPROVAL": return "text-rose-500 bg-rose-500/10 border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.1)]";
             default: return "";
         }
     };
