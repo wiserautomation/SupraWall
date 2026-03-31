@@ -121,7 +121,7 @@ export default function LandingPage() {
                                 <span className="text-white font-bold">Stop</span> prompt injections.{' '}
                                 <span className="text-white font-bold">Analyze</span> context with AI.{' '}
                                 <br className="hidden md:block" />
-                                <span className="text-emerald-400 italic">Open source. One line of code. Seven threats neutralized.</span>
+                                <span className="text-emerald-400 italic">Open source. One command. Seven threats neutralized.</span>
                             </p>
 
                             {/* THE COMMAND - The new primary CTA */}
@@ -434,7 +434,7 @@ export default function LandingPage() {
                 {/* 🔧 TECH ECOSYSTEM */}
                 <section className="py-20 border-y border-white/5 bg-[#020202]">
                     <div className="max-w-7xl mx-auto px-6 space-y-12">
-                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">One Line of code to secure any stack</p>
+                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">One command to secure any stack</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-10 items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
                             {['Python', 'TypeScript', 'LangChain', 'CrewAI', 'AutoGen', 'Vercel AI', 'PostgreSQL', 'Docker'].map((tech) => (
                                 <div key={tech} className="text-sm font-black text-white italic text-center uppercase tracking-widest">{tech}</div>
@@ -523,7 +523,7 @@ export default function LandingPage() {
                             <span className="text-emerald-500 underline decoration-white/20 font-bold italic">SAFE?</span>
                         </h2>
                         <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                            Vault your credentials. Cap your budgets. Block unauthorized actions. Generate audit trails. All in one line of code. Forever free for indie developers.
+                            Vault your credentials. Cap your budgets. Block unauthorized actions. Generate audit trails. All in one command. Forever free for indie developers.
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                             <Link 

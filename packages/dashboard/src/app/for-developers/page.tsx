@@ -7,7 +7,7 @@ import ForDevelopersClient from "./ForDevelopersClient";
 
 export const metadata: Metadata = {
     title: "AI Agent Security for Developers | SupraWall SDK",
-    description: "Built by developers, for developers. Stop prompt injection, prevent secret leaks, and enforce tool call safety with one line of code. Integration-first agent governance.",
+    description: "Built by developers, for developers. Stop prompt injection, prevent secret leaks, and enforce tool call safety with one command. Integration-first agent governance.",
     keywords: [
         "AI agent security for developers",
         "secure agentic SDK python",

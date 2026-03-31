@@ -700,7 +700,7 @@ const incident_runbook = {
                                 <pre className="font-mono text-sm leading-relaxed text-emerald-100/90 whitespace-pre-wrap">
 {`from suprawall.langchain import protect
 
-# One line of code.
+# One command.
 # All 15 controls enabled.
 secured_agent = protect(
   my_agent,
@@ -775,7 +775,7 @@ secured_agent = protect(
                     {/* CTA */}
                     <div className="bg-emerald-600 rounded-[3rem] p-12 relative overflow-hidden text-center">
                         <h3 className="text-4xl font-black uppercase italic tracking-tighter text-white mb-4">Implement All 15 Controls<br />in One Integration</h3>
-                        <p className="text-emerald-100 mb-8 max-w-md mx-auto">Deploy the 2026 AI Agent Security Checklist with SupraWall. One line of code. All critical controls. Production-ready in minutes.</p>
+                        <p className="text-emerald-100 mb-8 max-w-md mx-auto">Deploy the 2026 AI Agent Security Checklist with SupraWall. One command. All critical controls. Production-ready in minutes.</p>
                         <Link href="/beta" className="inline-flex items-center gap-3 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                             Try SupraWall Free <ArrowRight className="w-5 h-5" />
                         </Link>

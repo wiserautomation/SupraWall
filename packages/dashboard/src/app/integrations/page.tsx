@@ -7,7 +7,7 @@ import IntegrationsHubClient from "./IntegrationsHubClient";
 
 export const metadata: Metadata = {
     title: "AI Agent Security Integrations | SupraWall",
-    description: "One line of code adds enterprise security to LangChain, Vercel AI SDK, CrewAI, AutoGen, PydanticAI, and MCP. No rewrites. Works with your existing stack.",
+    description: "One command adds enterprise security to LangChain, Vercel AI SDK, CrewAI, AutoGen, PydanticAI, and MCP. No rewrites. Works with your existing stack.",
     keywords: [
         "ai agent security integrations",
         "LangChain security middleware",

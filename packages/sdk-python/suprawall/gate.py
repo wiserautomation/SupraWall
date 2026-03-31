@@ -49,7 +49,7 @@ class BudgetExceededError(Exception):
 
 class SupraWallConnectionError(Exception):
     def __init__(self, message: str):
-        super().__init__(f"\n[SupraWallConnectionError] {message}\n  → Docs: https://docs.suprawall.dev/troubleshooting/connection\n")
+        super().__init__(f"\n[SupraWallConnectionError] {message}\n  → Docs: https://docs.supra-wall.com/troubleshooting/connection\n")
 
 _has_verified_connection = False
 
@@ -155,7 +155,7 @@ class SupraWallOptions:
     loop_detection: bool = False               # Detect repeated identical calls
     loop_threshold: int = 3                    # Block if same tool called N times consec.
     # --- Human-in-the-Loop (Phase 3) ---
-    dashboard_api_url: str = "https://suprawall.ai"
+    dashboard_api_url: str = "https://supra-wall.com"
     approval_timeout: int = 300                 # Max seconds to wait for human
     approval_poll_interval: int = 2            # Seconds between polls
     # --- Vault (JIT Secret Injection) ---
@@ -393,7 +393,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
-            "https://suprawall.ai/"
+            "https://supra-wall.com/"
         )
     if resp.status_code == 429:
         return {"decision": "DENY", "reason": "Rate limit exceeded."}
@@ -460,7 +460,7 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) 
     if resp.status_code == 401:
         raise ValueError(
             "[SupraWall] Unauthorized. Check your API key at "
-            "https://suprawall.ai/"
+            "https://supra-wall.com/"
         )
     if resp.status_code == 429:
         return {"decision": "DENY", "reason": "Rate limit exceeded."}
@@ -501,7 +501,7 @@ def _handle_decision(decision: str, reason: Optional[str], tool_name: str,
         log.warning(f"[SupraWall] PAUSED '{tool_name}'. Human approval required.")
         return (
             "ACTION PAUSED: This action requires human approval. "
-            "Check your SupraWall dashboard at https://suprawall.ai/"
+            "Check your SupraWall dashboard at https://supra-wall.com/"
         )
     log.error(f"[SupraWall] Unknown decision '{decision}' received.")
     return "ERROR: Unknown SupraWall decision."
@@ -536,7 +536,7 @@ def with_suprawall(agent: Any, options: SupraWallOptions) -> Any:
     if not options.api_key.startswith(("sw_", "swc_")):
         raise ValueError(
             f"[SupraWall] Invalid API key: '{options.api_key}'.\n"
-            "  Get your free key at https://suprawall.ai/\n"
+            "  Get your free key at https://supra-wall.com/\n"
             "  Expected format: sw_xxxxxxxxxxxxxxxx"
         )
 

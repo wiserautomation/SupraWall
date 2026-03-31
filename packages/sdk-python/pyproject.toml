@@ -21,7 +21,7 @@ openai    = ["openai-agents>=0.0.3"]
 all       = ["openai-agents>=0.0.3"]
 
 [project.urls]
-Homepage      = "https://suprawall.dev"
+Homepage      = "https://supra-wall.com"
 Repository    = "https://github.com/suprawall/suprawall"
 "Bug Tracker" = "https://github.com/suprawall/suprawall/issues"
 

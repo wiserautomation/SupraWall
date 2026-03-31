@@ -164,7 +164,7 @@ export default function VsHubClient() {
                     <div className="space-y-4">
                         {[
                             { q: "Is SupraWall just another LLM Guardrail?", a: "No. Guardrails rely on asking the LLM to behave. SupraWall is an SDK-level interceptor that enforces hard rules regardless of what the LLM wants." },
-                            { q: "Can I use SupraWall with LangChain?", a: "Yes. SupraWall integrates with one line of code into LangChain, CrewAI, and every major framework." },
+                            { q: "Can I use SupraWall with LangChain?", a: "Yes. SupraWall integrates with one command into LangChain, CrewAI, and every major framework." },
                             { q: "Does it add latency to tool calls?", a: "Minimal. Policy checks are performed locally on your node, typically adding <10ms to the total tool execution time." },
                             { q: "Is there a free tier for developers?", a: "Yes. Our Community SDK is free for single-agent deployments and research use." }
                         ].map((item, i) => (

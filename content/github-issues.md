@@ -68,7 +68,7 @@ for regulatory submissions.
 
 ## Reference
 
-- Full tutorial: [EU AI Act Compliance for LangChain Agents](https://suprawall.ai/blog/eu-ai-act-langchain)
+- Full tutorial: [EU AI Act Compliance for LangChain Agents](https://supra-wall.com/blog/eu-ai-act-langchain)
 - `langchain-suprawall` on PyPI: [pypi.org/project/langchain-suprawall](https://pypi.org/project/langchain-suprawall)
 - EU AI Act text: [eur-lex.europa.eu](https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689)
 
@@ -132,7 +132,7 @@ production-readiness and compliance documentation.
 
 ## Reference
 
-- Full comparison: [Built-in HITL vs. Enterprise Compliance Middleware](https://suprawall.ai/blog/hitl-comparison)
+- Full comparison: [Built-in HITL vs. Enterprise Compliance Middleware](https://supra-wall.com/blog/hitl-comparison)
 - `langchain-suprawall`: [pypi.org/project/langchain-suprawall](https://pypi.org/project/langchain-suprawall)
 ```
 

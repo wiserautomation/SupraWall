@@ -13,6 +13,7 @@
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/wiserautomation/Supra-Wall-Private?style=social)](https://github.com/wiserautomation/Supra-Wall-Private)
 [![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da)](https://discord.gg/suprawall)
+[![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](#-quick-start)
 
 [Quick Start](#-quick-start) · [Why SupraWall](#-why-suprawall) · [EU AI Act](#-eu-ai-act-compliance) · [Self-Host vs Cloud](#-run-anywhere) · [Docs](https://www.supra-wall.com/docs) · [Contributing](CONTRIBUTING.md)
 
@@ -64,7 +65,40 @@ Tool Call → [Layer 1: Regex <2ms] → DENY known threats
 
 ## Quick Start
 
-### Install
+### 1-Command Setup
+
+The fastest way to secure your agent is using our interactive initialization command. It will auto-detect your framework (LangChain, CrewAI, AutoGen, Vercel AI, etc.) and securely wrap your agent in under 30 seconds. No account required for OSS mode.
+
+```bash
+npx suprawall init
+```
+
+```text
+  ███████╗██╗   ██╗██████╗ ██████╗  █████╗ ██╗    ██╗ █████╗ ██╗     ██╗
+  ██╔════╝██║   ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔══██╗██║     ██║
+  ███████╗██║   ██║██████╔╝██████╔╝███████║██║ █╗ ██║███████║██║     ██║
+  ╚════██║██║   ██║██╔═══╝ ██╔══██╗██╔══██║██║███╗██║██╔══██║██║     ██║
+  ███████║╚██████╔╝██║     ██║  ██║██║  ██║╚███╔███╔╝██║  ██║███████╗███████╗
+  ╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+  The Compliance OS for AI Agents
+
+? Detected: my-agent.ts — secure it? (Y/n) y
+? How do you want to run SupraWall?
+  ❯ Cloud (free account — EU AI Act audit reports)
+    Self-hosted (no account needed)
+    
+  ✔ .env updated with SUPRAWALL_API_KEY
+  ✔ my-agent.ts wrapped with protect()
+  ✔ Default policy: DENY unknown tools
+  ✔ Audit logging: active
+  
+  🛡️  Your agent is protected. EU AI Act Article 12 audit trail: ON
+```
+
+<details>
+<summary><b>Prefer Manual Setup? (Click to expand)</b></summary>
+
+### Install Manually
 
 ```bash
 # Python
@@ -82,20 +116,20 @@ go get github.com/suprawall/suprawall-go
 **Python + LangChain:**
 ```python
 from langchain.agents import create_react_agent
-from suprawall import secure_agent
+from suprawall import protect
 
 agent = create_react_agent(llm, tools, prompt)
-secured_agent = secure_agent(agent, api_key="ag_your_key")
+secured_agent = protect(agent, api_key="sw_live_your_key")
 
 # That's it. Every tool call is now policy-checked, vault-protected, and audit-logged.
 ```
 
 **TypeScript + Vercel AI:**
 ```typescript
-import { withSupraWall } from "@suprawall/sdk-ts";
+import { protect } from "@suprawall/sdk-ts";
 
 const agent = createMyAgent();
-const securedAgent = withSupraWall(agent, { apiKey: "ag_your_key" });
+const securedAgent = protect(agent, { apiKey: "sw_live_your_key" });
 
 // All tool calls intercepted. <10ms overhead.
 ```
@@ -104,10 +138,12 @@ const securedAgent = withSupraWall(agent, { apiKey: "ag_your_key" });
 ```go
 import suprawall "github.com/suprawall/suprawall-go"
 
-client := suprawall.NewClient("ag_your_key")
+client := suprawall.NewClient("sw_live_your_key")
 result, _ := client.Evaluate("bash", map[string]interface{}{"command": "ls -la"})
 // result.Decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"
 ```
+
+</details>
 
 ---
 

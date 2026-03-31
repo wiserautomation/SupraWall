@@ -61,7 +61,7 @@ It composes with the built-in middleware too, so you can stack PIIMiddleware +
 SuprawallMiddleware in the same list.
 
 Full tutorial with working code here if helpful:
-[EU AI Act Compliance for LangChain Agents](https://suprawall.ai/blog/eu-ai-act-langchain)
+[EU AI Act Compliance for LangChain Agents](https://supra-wall.com/blog/eu-ai-act-langchain)
 ```
 
 ---
@@ -111,7 +111,7 @@ executor = AgentExecutor(
 The key difference: every approval (or denial) is logged with approver identity and
 timestamp, which you'll need if you're ever audited under EU AI Act requirements.
 
-More detail here: [suprawall.ai/docs/langchain](https://suprawall.ai/docs/langchain)
+More detail here: [supra-wall.com/docs/langchain](https://supra-wall.com/docs/langchain)
 ```
 
 ---
@@ -158,7 +158,7 @@ executor = AgentExecutor(
 ```
 
 Full breakdown of which articles map to which parts of the code here:
-[EU AI Act Compliance for LangChain Agents](https://suprawall.ai/blog/eu-ai-act-langchain)
+[EU AI Act Compliance for LangChain Agents](https://supra-wall.com/blog/eu-ai-act-langchain)
 ```
 
 ---
@@ -210,7 +210,7 @@ const model = wrapLanguageModel({
 This routes tool approval requests to Slack/dashboard and logs every decision — which
 the built-in AI SDK tool approval doesn't do yet.
 
-More here: [suprawall.ai/docs/vercel](https://suprawall.ai/docs/vercel)
+More here: [supra-wall.com/docs/vercel](https://supra-wall.com/docs/vercel)
 ```
 
 ---
@@ -250,7 +250,7 @@ is logged with their identity and timestamp, and the full execution is stored in
 tamper-evident audit trail.
 
 Longer write-up here if useful:
-[Your Vercel AI Agent Is Probably Violating the EU AI Act](https://suprawall.ai/blog/vercel-eu-ai-act)
+[Your Vercel AI Agent Is Probably Violating the EU AI Act](https://supra-wall.com/blog/vercel-eu-ai-act)
 ```
 
 ---
@@ -273,7 +273,7 @@ So you get a working agent out of the box with the compliance layer already wire
 You just add your API keys and customize the tools.
 
 Search "EU AI Act" in the Vercel template gallery, or go directly to:
-[suprawall.ai/vercel-template](https://suprawall.ai/vercel-template)
+[supra-wall.com/vercel-template](https://supra-wall.com/vercel-template)
 
 If you're not dealing with EU compliance specifically, the template also shows the
 general pattern for adding any middleware to the AI SDK — the compliance piece is

@@ -23,7 +23,7 @@ By participating in this project, you agree to abide by our [Code of Conduct](CO
 
 ### Security Vulnerabilities
 
-**Do NOT open a public issue for security vulnerabilities.** Email **security@suprawall.dev** directly. See [SECURITY.md](SECURITY.md) for our full security policy.
+**Do NOT open a public issue for security vulnerabilities.** Email **security@supra-wall.com** directly. See [SECURITY.md](SECURITY.md) for our full security policy.
 
 ### Pull Requests
 

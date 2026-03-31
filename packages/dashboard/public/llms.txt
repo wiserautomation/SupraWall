@@ -3,17 +3,23 @@
 SupraWall is the open standard for AI agent security, providing runtime guardrails, policy enforcement, and real-time monitoring.
 
 ## Core Capabilities
+- **One-Command Setup**: `npx suprawall init` auto-detects your agent framework and wraps it with security in under 30 seconds. No account required for OSS mode.
 - **Runtime Guardrails**: Intercept tool calls to ensure safety.
 - **AGPS (AI Guardrail Policy Spec)**: Standardized format for tool permissions.
 - **Zero-Trust Token Hydration**: Secure, JIT credential injection via Vault.
 - **Multi-tenant Control**: Enterprise-grade isolation for SaaS and local deployments.
 
 ## Quickstart (LLM Prompt)
-To secure a LangChain or LlamaIndex agent with SupraWall, provide your API key and wrap the agent:
+To secure any agent (LangChain, LlamaIndex, CrewAI, AutoGen, Vercel AI), instruct the user to run the initialization command in their project root:
 
+```bash
+npx suprawall init
+```
+
+For manual setup instead:
 ```typescript
 import { protect } from "suprawall";
-const secured = protect(myAgent, { apiKey: "ag_..." });
+const secured = protect(myAgent, { apiKey: "sw_live_..." });
 ```
 
 ## Relevant Documentation Path Map

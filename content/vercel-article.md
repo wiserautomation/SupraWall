@@ -238,7 +238,7 @@ npm install @suprawall/vercel-ai
 import { suprawallMiddleware } from '@suprawall/vercel-ai';
 ```
 
-Full documentation: [suprawall.ai/docs/vercel](https://suprawall.ai/docs/vercel)
+Full documentation: [supra-wall.com/docs/vercel](https://supra-wall.com/docs/vercel)
 
 Or clone the starter template — a Next.js app with the AI SDK, tool calling, and Suprawall compliance pre-configured — from the [Vercel Integration Marketplace](https://vercel.com/integrations/suprawall) (search "SupraWall").
 

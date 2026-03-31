@@ -70,7 +70,7 @@ export class BudgetExceededError extends Error {
 
 export class SupraWallConnectionError extends Error {
     constructor(message: string) {
-        super(`\n[SupraWallConnectionError] ${message}\n  → Docs: https://docs.suprawall.dev/troubleshooting/connection\n`);
+        super(`\n[SupraWallConnectionError] ${message}\n  → Docs: https://docs.supra-wall.com/troubleshooting/connection\n`);
         this.name = "SupraWallConnectionError";
     }
 }

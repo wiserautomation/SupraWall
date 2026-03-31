@@ -136,7 +136,7 @@ This routes high-risk tool calls for human approval (to Slack or a dashboard —
 
 ## Reference
 
-- Full tutorial: [EU AI Act Compliance for LangChain Agents](https://suprawall.ai/blog/eu-ai-act-langchain)
+- Full tutorial: [EU AI Act Compliance for LangChain Agents](https://supra-wall.com/blog/eu-ai-act-langchain)
 - `langchain-suprawall` on PyPI: [pypi.org/project/langchain-suprawall](https://pypi.org/project/langchain-suprawall)
 
 Happy to contribute a PR adding a compliance section to the README if that would be useful.
@@ -179,7 +179,7 @@ hitl = SuprawallMiddleware(
 ```
 
 ## Reference
-- [Built-in HITL vs. Enterprise Compliance Middleware](https://suprawall.ai/blog/hitl-comparison)
+- [Built-in HITL vs. Enterprise Compliance Middleware](https://supra-wall.com/blog/hitl-comparison)
 - `langchain-suprawall`: [pypi.org/project/langchain-suprawall](https://pypi.org/project/langchain-suprawall)
 - A TypeScript / LangGraph.js SDK is on the SupraWall roadmap — happy to discuss early access.
 ```

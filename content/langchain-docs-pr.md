@@ -74,7 +74,7 @@ executor = AgentExecutor(
 - `after_agent()`: Writes tamper-evident execution logs with configurable retention (Article 12)
 - Audit report generation in PDF format for regulatory submissions
 
-See the [langchain-suprawall documentation](https://suprawall.ai/docs/langchain) for full implementation details and a working middleware example.
+See the [langchain-suprawall documentation](https://supra-wall.com/docs/langchain) for full implementation details and a working middleware example.
 
 > **Note:** Middleware handles runtime compliance controls. The EU AI Act also requires organizational measures — technical documentation (Article 11), conformity assessments, and transparency obligations (Article 13) — that are outside the scope of this page.
 ```
@@ -92,6 +92,6 @@ See the [langchain-suprawall documentation](https://suprawall.ai/docs/langchain)
 ## Checklist Before Submitting
 
 - [ ] `langchain-suprawall` is published and installable from PyPI
-- [ ] The documentation at `suprawall.ai/docs/langchain` is live
+- [ ] The documentation at `supra-wall.com/docs/langchain` is live
 - [ ] You've run the code example and verified it works
 - [ ] You've linked your tutorial article in the PR description for context

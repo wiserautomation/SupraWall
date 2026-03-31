@@ -29,7 +29,7 @@ export default function ForEnterpriseClient() {
                              <span className="text-purple-500 font-bold italic underline decoration-white/10 uppercase italic">Control Your Risk.</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             Centralized security, private cloud deployments, and SLA-backed infrastructure for the autonomous enterprise.
+                             Your developers can protect your AI agents in 30 seconds. Centralized security, private cloud deployments, and SLA-backed infrastructure for the autonomous enterprise.
                         </p>
                     </div>
                 </div>

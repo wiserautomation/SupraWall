@@ -11,7 +11,7 @@ Only the latest version of SupraWall is currently supported with security update
 
 ## Reporting a Vulnerability
 
-We take security seriously. If you discover a security vulnerability within SupraWall, please send an e-mail to security@suprawall.dev. All security vulnerabilities will be promptly addressed.
+We take security seriously. If you discover a security vulnerability within SupraWall, please send an e-mail to security@supra-wall.com. All security vulnerabilities will be promptly addressed.
 
 Please include the following in your report:
 - Type of issue (e.g. CSRF, XSS, etc.)

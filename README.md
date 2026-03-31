@@ -8,6 +8,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
+[![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](https://www.supra-wall.com/docs)
 
 </div>
 
@@ -29,11 +30,27 @@ AI agents execute tool calls autonomously. They can delete databases, leak crede
 
 SupraWall intercepts every tool call **before it executes**. Not probabilistically. Not after the fact. Deterministically, at the boundary, in under 2ms.
 
-One line of code:
+One command setup:
 
-```python
-secured_agent = secure_agent(agent, api_key="ag_your_key")
-# Every tool call is now policy-checked, vault-protected, and audit-logged.
+```bash
+npx suprawall init
+```
+
+```text
+  ███████╗██╗   ██╗██████╗ ██████╗  █████╗ ██╗    ██╗ █████╗ ██╗     ██╗
+  ██╔════╝██║   ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔══██╗██║     ██║
+  ███████╗██║   ██║██████╔╝██████╔╝███████║██║ █╗ ██║███████║██║     ██║
+  ╚════██║██║   ██║██╔═══╝ ██╔══██╗██╔══██║██║███╗██║██╔══██║██║     ██║
+  ███████║╚██████╔╝██║     ██║  ██║██║  ██║╚███╔███╔╝██║  ██║███████╗███████╗
+  ╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝
+  The Compliance OS for AI Agents
+
+? Detected: my-agent.ts — secure it? (Y/n) y
+? How do you want to run SupraWall?
+  ❯ Cloud (free account — EU AI Act audit reports)
+    Self-hosted (no account needed)
+    
+  🛡️  Your agent is protected. EU AI Act Article 12 audit trail: ON
 ```
 
 ### Two layers. Seven threats. One SDK.

@@ -40,7 +40,7 @@ export default function ForDevelopersClient() {
                     <div className="text-center space-y-6">
                         <TagBadge>Developer Experience</TagBadge>
                         <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-none text-glow">
-                             One Line. <br />
+                             One Command. <br />
                              <span className="text-emerald-500 font-bold italic underline decoration-white/10 italic font-bold">Total Security.</span>
                         </h2>
                     </div>
@@ -48,9 +48,9 @@ export default function ForDevelopersClient() {
                      <div className="p-12 md:p-20 bg-neutral-900/40 rounded-[4rem] border border-white/5 space-y-12">
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
                              <div className="space-y-8">
-                                 <h3 className="text-3xl font-black italic uppercase italic tracking-tighter text-white">Universal SDK</h3>
+                                 <h3 className="text-3xl font-black italic uppercase italic tracking-tighter text-white">Universal CLI Tool</h3>
                                  <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-snug">
-                                    Whether you use LangChain, CrewAI, AutoGen, or Vercel AI, SupraWall works the same. Wrap your agent in one line of code and instantly get vault, budget, and policy enforcement.
+                                    Whether you use LangChain, CrewAI, AutoGen, or Vercel AI, SupraWall works the same. Wrap your agent in one command and instantly get vault, budget, and policy enforcement.
                                  </p>
                                  <div className="flex flex-wrap gap-4 items-center opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all">
                                      <span className="font-black italic uppercase text-xs tracking-widest text-emerald-500">Works with:</span>
@@ -59,10 +59,19 @@ export default function ForDevelopersClient() {
                                      ))}
                                  </div>
                              </div>
-                             <div className="p-8 bg-[#0a0a0a] rounded-[2rem] border border-emerald-500/20 font-mono text-sm relative overflow-hidden group shadow-2xl">
-                                <div className="absolute top-4 right-6 text-emerald-500/30 text-[10px] font-black uppercase tracking-widest italic">secure_agent.py</div>
+                             <div className="p-8 bg-[#0a0a0a] rounded-[2rem] border border-emerald-500/20 font-mono text-[13px] relative overflow-hidden group shadow-2xl hover:border-emerald-500/50 transition-all cursor-copy" onClick={() => navigator.clipboard.writeText('npx suprawall init')} title="Copy command">
+                                <div className="absolute top-4 right-6 text-emerald-500/30 text-[10px] font-black uppercase tracking-widest italic group-hover:text-emerald-500 transition-colors">
+                                    CLICK TO COPY
+                                </div>
                                 <pre className="text-emerald-100/80 leading-loose">
-                                    {`from suprawall import secure_agent\n\n# Secure in one line\nagent = secure_agent(my_agent, {\n  "api_key": "ag_...",\n  "limits": { "money": "10 USD" },\n  "vault": { "enabled": True }\n})\n\n# Your agent is now armored.`}
+$ npx suprawall init
+
+? Detected: my-agent.ts — secure it? (Y/n) y
+
+[✓] .env updated with SUPRAWALL_API_KEY
+[✓] my-agent.ts wrapped with protect()
+
+🛡️  Your agent is now armored.
                                 </pre>
                              </div>
                          </div>
@@ -131,7 +140,7 @@ export default function ForDevelopersClient() {
                     <TagBadge>For Developers</TagBadge>
                     <h2 className="text-7xl md:text-[8rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">
                         Arm Your Agents. <br />
-                        <span className="text-emerald-500 underline decoration-white/20 font-bold italic underline decoration-white/10 uppercase italic">In One Line.</span>
+                        <span className="text-emerald-500 underline decoration-white/20 font-bold italic uppercase">In One Command.</span>
                     </h2>
                     <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
                         Don&apos;t build your security from scratch. Standardize your agentic architecture with the industry-standard SDK today.

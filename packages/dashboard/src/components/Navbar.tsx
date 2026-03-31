@@ -29,7 +29,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
     ];
 
     const resources = [
-        { href: prefix("/quickstart"), icon: <Zap className="w-4 h-4 text-yellow-400" />, label: "Quickstart", desc: "5-minute zero-trust setup" },
+        { href: prefix("/quickstart"), icon: <Zap className="w-4 h-4 text-yellow-400" />, label: "Quickstart", desc: "30-second security setup" },
         { href: prefix("/docs"), icon: <Book className="w-4 h-4 text-emerald-400" />, label: "Documentation", desc: "SDK guides & API reference" },
         { href: prefix("/integrations"), icon: <Workflow className="w-4 h-4 text-purple-400" />, label: "Frameworks", desc: "LangChain, CrewAI, AutoGen" },
         { href: prefix("/blog"), icon: <FileText className="w-4 h-4 text-rose-400" />, label: "Engineering Blog", desc: "Latest research & insights" },

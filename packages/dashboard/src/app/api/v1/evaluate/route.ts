@@ -190,7 +190,7 @@ export async function POST(req: NextRequest) {
         const branding = showBranding ? {
             enabled: true,
             text: "🛡️ Secured by SupraWall — AI agent security & EU AI Act compliance",
-            url: "https://SupraWall.ai?ref=agent-output",
+            url: "https://supra-wall.com?ref=agent-output",
             format: "text"
         } : { enabled: false };
 

@@ -106,7 +106,7 @@ export default function IntegrationsHubClient() {
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[90px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
                              Every Framework. <br />
-                             <span className="text-purple-500 font-bold italic underline decoration-white/10 italic">One Line of Code.</span>
+                             <span className="text-purple-500 font-bold italic underline decoration-white/10 italic">One Command.</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
                              SupraWall is the universal safety layer for the AI ecosystem. Plug into your current stack and stabilize your agents today.
