@@ -49,8 +49,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Query Postgres directly
-    let query = "SELECT * FROM audit_logs WHERE tenantid = $1";
-    const params: any[] = [effectiveTenantId];
+    let query = "SELECT * FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2)";
+    const params: any[] = [tenantId, effectiveTenantId];
 
     if (agentId && agentId !== "ALL") {
         params.push(agentId);

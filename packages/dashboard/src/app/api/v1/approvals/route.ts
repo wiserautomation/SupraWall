@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
             agentId: row.agentid,
             agentName: metadata.agentName || row.agentid || "Unknown Agent",
             toolName: row.toolname,
-            arguments: row.parameters || "{}",
+            arguments: typeof row.parameters === 'object' && row.parameters !== null ? JSON.stringify(row.parameters) : (row.parameters || "{}"),
             status: row.status,
             createdAt: row.created_at,
             sessionId: metadata.sessionId,

@@ -204,7 +204,7 @@ export default function ForensicAuditPage() {
         switch (decision) {
             case "ALLOW": return "text-green-400 bg-green-500/10 border-green-500/20";
             case "DENY": return "text-red-400 bg-red-500/10 border-red-500/20";
-            case "REQUIRE_APPROVAL": return "text-rose-500 bg-rose-500/10 border-rose-500/40 shadow-[0_0_15px_rgba(244,63,94,0.1)]";
+            case "REQUIRE_APPROVAL": return "text-rose-400 bg-rose-500/20 border-rose-500/50 shadow-[0_0_15px_rgba(244,63,94,0.15)]";
             default: return "";
         }
     };
@@ -411,7 +411,7 @@ export default function ForensicAuditPage() {
                                     className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 ${decisionFilter === d
                                         ? d === "ALLOW" ? "bg-green-500/15 text-green-400 border border-green-500/30"
                                             : d === "DENY" ? "bg-red-500/15 text-red-400 border border-red-500/30"
-                                                : d === "REQUIRE_APPROVAL" ? "bg-yellow-500/15 text-yellow-400 border border-yellow-500/30"
+                                                : d === "REQUIRE_APPROVAL" ? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
                                                     : "bg-white/[0.08] text-white border border-white/[0.1]"
                                         : "text-neutral-400 bg-white/[0.05] border border-transparent hover:bg-white/[0.04] hover:text-white"
                                         }`}

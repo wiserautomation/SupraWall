@@ -34,6 +34,20 @@ export async function GET(request: NextRequest) {
             console.warn("[IdentityMapping] Firebase lookup failed for baselines:", e);
         }
 
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
+                id SERIAL PRIMARY KEY,
+                tenant_id VARCHAR(255) NOT NULL,
+                agent_id VARCHAR(255) NOT NULL,
+                tool_name VARCHAR(255) NOT NULL,
+                avg_args_length INTEGER DEFAULT 0,
+                avg_calls_per_hour INTEGER DEFAULT 0,
+                common_arg_patterns JSONB DEFAULT '[]',
+                total_samples INTEGER DEFAULT 0,
+                last_updated TIMESTAMP DEFAULT NOW()
+            );
+        `);
+
         const result = await pool.query(
             `SELECT agent_id, tool_name, avg_args_length, avg_calls_per_hour,
                     common_arg_patterns, total_samples, last_updated
