@@ -16,12 +16,12 @@ import { Database } from 'sqlite3';
 dotenv.config();
 
 const program = new Command();
-const API_URL = process.env.suprawall_API_URL || 'https://api.suprawall.io/v1';
+const API_URL = process.env.SUPRAWALL_API_URL || 'https://www.supra-wall.com/api/v1';
 
 function getApiKey() {
-    const key = process.env.suprawall_API_KEY;
+    const key = process.env.SUPRAWALL_API_KEY;
     if (!key) {
-        console.error(chalk.red("Error: suprawall_API_KEY environment variable is required."));
+        console.error(chalk.red("Error: SUPRAWALL_API_KEY environment variable is required."));
         process.exit(1);
     }
     return key;
@@ -37,8 +37,8 @@ program
     .command('login')
     .description('Authenticate the CLI')
     .action(() => {
-        console.log(chalk.blue('To authenticate, set the suprawall_API_KEY environment variable.'));
-        console.log(chalk.gray('Example: export suprawall_API_KEY="ag_test_your_key_here"'));
+        console.log(chalk.blue('To authenticate, set the SUPRAWALL_API_KEY environment variable.'));
+        console.log(chalk.gray('Example: export SUPRAWALL_API_KEY="sw_xxxx"'));
     });
 
 // Agents Subcommands
@@ -102,11 +102,15 @@ program
                     headers: { Authorization: `Bearer ${api}` }
                 });
                 
-                res.data.logs.forEach((log: any) => {
-                     const color = log.decision === 'ALLOW' ? chalk.green : log.decision === 'DENY' ? chalk.red : chalk.yellow;
-                     console.log(chalk.gray(new Date(log.timestamp).toISOString()), color(`[${log.decision}]`), chalk.white(log.toolName));
-                });
-            } catch (e) {}
+                if (res.data && Array.isArray(res.data.logs)) {
+                    res.data.logs.forEach((log: any) => {
+                         const color = log.decision === 'ALLOW' ? chalk.green : log.decision === 'DENY' ? chalk.red : chalk.yellow;
+                         console.log(chalk.gray(new Date(log.timestamp).toISOString()), color(`[${log.decision}]`), chalk.white(log.toolName));
+                    });
+                }
+            } catch (e: any) {
+                console.error(chalk.red('[Logs Error]'), e.response?.data?.error || e.message);
+            }
         }
 
         await fetchLogs();
@@ -135,10 +139,12 @@ program
             let decision = "ALLOW";
             for (const p of policies) {
                 if (new RegExp(p.condition).test(options.tool)) {
-                    if (p.ruleType === "DENY") {
+                    // Fix BUG #4: Correctly check for "decision" field not "ruleType"
+                    const policyDecision = p.decision || p.ruleType; 
+                    if (policyDecision === "DENY") {
                         decision = "DENY";
                         break;
-                    } else if (p.ruleType === "REQUIRE_APPROVAL") {
+                    } else if (policyDecision === "REQUIRE_APPROVAL") {
                         decision = "REQUIRE_APPROVAL";
                         break;
                     }
@@ -175,33 +181,42 @@ program
         
         db.serialize(() => {
             db.run("CREATE TABLE policies (id TEXT, toolName TEXT, decision TEXT)");
-            db.run("CREATE TABLE logs (id TEXT, decision TEXT, toolName TEXT, timestamp INTEGER)");
+            db.run("CREATE TABLE logs (id TEXT, decision TEXT, toolName TEXT, timestamp INTEGER, agentid TEXT)");
         });
 
         // Mock test suite evaluate endpoint
         app.post('/v1/evaluate', (req, res) => {
-            const { toolName, apiKey } = req.body;
+            const { toolName } = req.body;
             
-            // Allow bypassing for ag_test keys automatically
-            if (req.headers.authorization?.includes('ag_test_')) {
-                db.run("INSERT INTO logs VALUES (?, ?, ?, ?)", [Date.now().toString(), "ALLOW", toolName, Date.now()]);
+            // Allow bypassing for sw_test keys automatically
+            if (req.headers.authorization?.includes('sw_test_')) {
+                db.run("INSERT INTO logs VALUES (?, ?, ?, ?, ?)", [Date.now().toString(), "ALLOW", toolName, Date.now(), "dev-agent"]);
                 return res.json({ decision: "ALLOW", reason: "Test Mode By-Pass" });
             }
 
             db.get("SELECT decision FROM policies WHERE toolName = ?", [toolName], (err, row: any) => {
-                if (row && row.decision === "DENY") {
-                    db.run("INSERT INTO logs VALUES (?, ?, ?, ?)", [Date.now().toString(), "DENY", toolName, Date.now()]);
-                    res.json({ decision: "DENY", reason: "Blocked by Local Dev Policy" });
+                if (row) {
+                    db.run("INSERT INTO logs VALUES (?, ?, ?, ?, ?)", [Date.now().toString(), row.decision, toolName, Date.now(), "dev-agent"]);
+                    // FIX BUG #5: Handle REQUIRE_APPROVAL correctly in dev server
+                    res.json({ decision: row.decision, reason: `Action ${row.decision} by Local Dev Policy` });
                 } else {
                     res.json({ decision: "ALLOW", reason: "Default Allow" });
                 }
             });
         });
 
+        // FIX BUG #3: Add log endpoint to dev server
+        app.get('/v1/agents/:id/logs', (req, res) => {
+            const { id } = req.params;
+            db.all("SELECT decision, toolName, timestamp FROM logs WHERE agentid = ? OR agentid = 'dev-agent' ORDER BY timestamp DESC LIMIT 10", [id], (err, rows) => {
+                res.json({ logs: rows || [] });
+            });
+        });
+
         app.listen(options.port, () => {
             console.log(chalk.green(`✔ Local server listening on http://localhost:${options.port}`));
-            console.log(chalk.gray(`Point suprawall_API_URL=http://localhost:${options.port}/v1 in your code to test offline.`));
-            console.log(chalk.magenta(`Note: Keys starting with ag_test_* automatically bypass evaluation logic.`));
+            console.log(chalk.gray(`Point SUPRAWALL_API_URL=http://localhost:${options.port}/v1 in your code to test offline.`));
+            console.log(chalk.magenta(`Note: Keys starting with sw_test_* automatically bypass evaluation logic.`));
         });
     });
 

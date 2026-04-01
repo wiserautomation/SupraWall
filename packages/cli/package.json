@@ -11,8 +11,6 @@
     "start": "node dist/bin.js"
   },
   "dependencies": {
-    "@langchain/core": "1.1.36",
-    "ai": "6.0.138",
     "axios": "^1.6.0",
     "chalk": "^4.1.2",
     "commander": "^11.1.0",
@@ -20,7 +18,6 @@
     "dotenv": "^16.3.1",
     "express": "^5.2.1",
     "json-colorizer": "^2.2.2",
-    "next": "16.2.1",
     "sqlite3": "^6.0.1"
   },
   "devDependencies": {
