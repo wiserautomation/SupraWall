@@ -1,10 +1,51 @@
 {
   "common": {
-    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
-    "getStarted": "Zacznij teraz",
-    "viewDocs": "Zobacz dokumentację",
+    "title": "SupraWall | Bezpieczeństwo Agentów AI i Runtime Guardrails",
+    "description": "Zabezpiecz swoje autonomiczne agenty AI za pomocą pierwszego firewalla Zero-Trust. Blokuj prompt injection, zapobiegaj nieautoryzowanemu wykonywaniu narzędzi i kontrolluj koszty LLM.",
+    "getStarted": "Rozpocznij",
+    "viewDocs": "Dokumentacja",
     "login": "Zaloguj się",
-    "dashboard": "Panel sterowania"
+    "dashboard": "Panel",
+    "starOnGithub": "Śledź na GitHub",
+    "protectedIn": "Ochrona w 30 sekund",
+    "deployOnCloud": "Wdróż w chmurze",
+    "selfHost": "Self-Host"
+  },
+  "navbar": {
+    "platform": "Platforma",
+    "solutions": "Rozwiązania",
+    "integrations": "Integracje",
+    "resources": "Zasoby",
+    "company": "Firma",
+    "pricing": "Cennik",
+    "frameworki": "Frameworki",
+    "platforms": "Platformy & Modele"
+  },
+  "home": {
+    "hero": {
+      "badge": "Platforma bezpieczeństwa open-source dla agentów",
+      "headlinePrefix": "Twój agent AI",
+      "headlineEmphasis": "wymknie się spod kontroli.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "zadba o to, by tak się nie stało.",
+      "subheadline": "Open Source. Jedna linia kodu. Siedem zagrożeń zneutralizowanych.",
+      "cta": "Zabezpiecz agenty"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "danych uwierzytelniających.",
+      "cap": "Cap",
+      "capDesc": "budżetów.",
+      "block": "Blokuj",
+      "blockDesc": "nieautoryzowane działania.",
+      "scrub": "Czyść",
+      "scrubDesc": "dane PII.",
+      "generate": "Generuj",
+      "generateDesc": "ścieżki audytu.",
+      "stop": "Zatrzymaj",
+      "stopDesc": "prompt injections.",
+      "analyze": "Analizuj",
+      "analyzeDesc": "kontekst dzięki AI."
+    }
   }
 }

@@ -36,7 +36,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <Navbar lang={lang} />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="overflow-hidden">
                 <section className="relative pt-48 pb-32 px-6">
@@ -47,28 +47,28 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                     <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
                         <div className="animate-fade-in inline-flex items-center px-4 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[10px] font-black tracking-[0.2em] text-emerald-400 uppercase">
                             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-500 mr-3 animate-pulse"></span>
-                            Open-Source Agent Security Platform
+                            {dictionary.home.hero.badge}
                         </div>
 
                         <div className="space-y-8">
                             <h1 className="text-6xl md:text-[110px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                                Your AI Agent <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">Will Go Rogue.</span> <br />
-                                SupraWall <br />
-                                <span className="underline decoration-emerald-800">Makes Sure It Can&apos;t.</span>
+                                {dictionary.home.hero.headlinePrefix} <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-emerald-600">{dictionary.home.hero.headlineEmphasis}</span> <br />
+                                {dictionary.home.hero.headlineSuffix} <br />
+                                <span className="underline decoration-emerald-800">{dictionary.home.hero.headlineAction}</span>
                             </h1>
 
-                            <p className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium">
-                                <span className="text-white font-bold">Vault</span> credentials.{' '}
-                                <span className="text-white font-bold">Cap</span> budgets.{' '}
-                                <span className="text-white font-bold">Block</span> unauthorized actions.{' '}
-                                <span className="text-white font-bold">Scrub</span> PII.{' '}
-                                <span className="text-white font-bold">Generate</span> audit trails.{' '}
-                                <span className="text-white font-bold">Stop</span> prompt injections.{' '}
-                                <span className="text-white font-bold">Analyze</span> context with AI.{' '}
+                            <div className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium">
+                                <span className="text-white font-bold">{dictionary.home.features.vault}</span> {dictionary.home.features.vaultDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.cap}</span> {dictionary.home.features.capDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.block}</span> {dictionary.home.features.blockDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.scrub}</span> {dictionary.home.features.scrubDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.generate}</span> {dictionary.home.features.generateDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.stop}</span> {dictionary.home.features.stopDesc}{' '}
+                                <span className="text-white font-bold">{dictionary.home.features.analyze}</span> {dictionary.home.features.analyzeDesc}{' '}
                                 <br className="hidden md:block" />
-                                <span className="text-emerald-400 italic">Open source. One line of code. Seven threats neutralized.</span>
-                            </p>
+                                <span className="text-emerald-400 italic">{dictionary.home.hero.subheadline}</span>
+                            </div>
                             
                             <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                                 <Link
@@ -77,7 +77,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
                                     className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.15)] group flex items-center gap-3"
                                 >
-                                    {dictionary.common.getStarted} <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+                                    {dictionary.home.hero.cta} <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                                 </Link>
                                 <Link
                                     id="cta-star-github"
@@ -86,7 +86,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
                                     className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"
                                 >
-                                    <Github className="w-6 h-6" /> Star on GitHub
+                                    <Github className="w-6 h-6" /> {dictionary.common.starOnGithub}
                                 </Link>
                             </div>
                         </div>

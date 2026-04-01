@@ -50,12 +50,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     };
 }
 
+import { getDictionary } from "../../../i18n/getDictionary";
+
 export default async function EuAiActHubPage({
     params,
 }: {
     params: Promise<{ lang: string }>;
 }) {
     const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -73,7 +76,7 @@ export default async function EuAiActHubPage({
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar lang={lang} />
+            <Navbar lang={lang} dictionary={dictionary} />
             <EuAiActClient />
         </div>
     );

@@ -14,8 +14,13 @@ import {
 import Link from "next/link";
 import { Locale } from "../i18n/config";
 
-export function Navbar({ lang = 'en' }: { lang?: Locale }) {
+export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?: any }) {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
+
+    // Fallback dictionary for safety
+    const d = dictionary || {};
+    const common = d.common || { starOnGithub: "Star on GitHub", deployOnCloud: "Deploy on Cloud" };
+    const navbar = d.navbar || { platform: "Platform", solutions: "Solutions", integrations: "Integrations", resources: "Resources", company: "Company", pricing: "Pricing" };
 
     const prefix = (href: string) => href.startsWith('http') ? href : `/${lang}${href === '/' ? '' : href}`;
 
@@ -49,13 +54,13 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
     ];
 
     const integrations = [
-        { type: "label", label: "Frameworks" },
+        { type: "label", label: navbar.frameworks },
         { href: prefix("/integrations/langchain"), icon: <Workflow className="w-4 h-4 text-emerald-400" />, label: "LangChain", desc: "Secure agent executors" },
         { href: prefix("/integrations/crewai"), icon: <Users className="w-4 h-4 text-amber-400" />, label: "CrewAI", desc: "Task-level governance" },
         { href: prefix("/integrations/autogen"), icon: <Globe className="w-4 h-4 text-blue-400" />, label: "AutoGen", desc: "Multi-agent security" },
         { href: prefix("/integrations/llamaindex"), icon: <Layers className="w-4 h-4 text-cyan-400" />, label: "LlamaIndex", desc: "Data-aware protection" },
         
-        { type: "label", label: "Platforms & Models" },
+        { type: "label", label: navbar.platforms },
         { href: prefix("/integrations/stripe"), icon: <DollarSign className="w-4 h-4 text-emerald-500" />, label: "Stripe", desc: "Financial guardrails" },
         { href: prefix("/integrations/claude"), icon: <Zap className="w-4 h-4 text-orange-500" />, label: "Claude / Anthropic", desc: "Computer use security" },
         { href: prefix("/integrations/openclaw"), icon: <Globe className="w-4 h-4 text-purple-400" />, label: "OpenClaw", desc: "Browser-level firewall" },
@@ -77,7 +82,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
 
                 <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-widest text-glow">
                     <Dropdown 
-                        label="Platform" 
+                        label={navbar.platform} 
                         isOpen={openMenu === "platform"} 
                         onOpen={() => setOpenMenu("platform")} 
                         onClose={() => setOpenMenu(null)}
@@ -85,7 +90,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                     />
 
                     <Dropdown 
-                        label="Integrations" 
+                        label={navbar.integrations} 
                         isOpen={openMenu === "integrations"} 
                         onOpen={() => setOpenMenu("integrations")} 
                         onClose={() => setOpenMenu(null)}
@@ -93,7 +98,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                     />
 
                     <Dropdown 
-                        label="Solutions" 
+                        label={navbar.solutions} 
                         isOpen={openMenu === "solutions"} 
                         onOpen={() => setOpenMenu("solutions")} 
                         onClose={() => setOpenMenu(null)}
@@ -101,7 +106,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                     />
 
                     <Dropdown 
-                        label="Resources" 
+                        label={navbar.resources} 
                         isOpen={openMenu === "resources"} 
                         onOpen={() => setOpenMenu("resources")} 
                         onClose={() => setOpenMenu(null)}
@@ -109,7 +114,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                     />
 
                     <Dropdown 
-                        label="Company" 
+                        label={navbar.company} 
                         isOpen={openMenu === "company"} 
                         onOpen={() => setOpenMenu("company")} 
                         onClose={() => setOpenMenu(null)}
@@ -121,7 +126,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                         onClick={() => sendGAEvent('event', 'nav_link_click', { path: '/pricing' })}
                         className="text-neutral-500 hover:text-white transition-colors"
                     >
-                        Pricing
+                        {navbar.pricing}
                     </Link>
 
                     <div className="flex items-center gap-3">
@@ -130,7 +135,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'deploy_cloud' })}
                             className="px-5 py-2.5 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 flex items-center gap-2"
                         >
-                            Deploy on Cloud <ArrowRight className="w-3 h-3" />
+                            {common.deployOnCloud} <ArrowRight className="w-3 h-3" />
                         </Link>
                         <Link 
                             href="https://github.com/suprawall/suprawall" 
@@ -138,7 +143,7 @@ export function Navbar({ lang = 'en' }: { lang?: Locale }) {
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'self_host' })}
                             className="hidden sm:flex px-5 py-2.5 border border-white/10 text-white font-black rounded-xl hover:bg-white/5 transition-all items-center gap-2"
                         >
-                            <Github className="w-4 h-4" /> Self-Host
+                            <Github className="w-4 h-4" /> {common.selfHost}
                         </Link>
                     </div>
                 </div>

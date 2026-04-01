@@ -5,13 +5,47 @@
     "getStarted": "Get Started",
     "viewDocs": "View Documentation",
     "login": "Login",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "starOnGithub": "Star on GitHub",
+    "protectedIn": "Protected in 30 seconds",
+    "deployOnCloud": "Deploy on Cloud",
+    "selfHost": "Self-Host"
+  },
+  "navbar": {
+    "platform": "Platform",
+    "solutions": "Solutions",
+    "integrations": "Integrations",
+    "resources": "Resources",
+    "company": "Company",
+    "pricing": "Pricing",
+    "frameworks": "Frameworks",
+    "platforms": "Platforms & Models"
   },
   "home": {
     "hero": {
-      "title": "The Zero-Trust Layer for AI Agents",
-      "subtitle": "Stop prompt injection, enforce tool policies, and audit every LLM interaction in real-time.",
+      "badge": "Open-Source Agent Security Platform",
+      "headlinePrefix": "Your AI Agent",
+      "headlineEmphasis": "Will Go Rogue.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "Makes Sure It Can't.",
+      "subheadline": "Open source. One line of code. Seven threats neutralized.",
       "cta": "Secure Your Agents"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "credentials.",
+      "cap": "Cap",
+      "capDesc": "budgets.",
+      "block": "Block",
+      "blockDesc": "unauthorized actions.",
+      "scrub": "Scrub",
+      "scrubDesc": "PII.",
+      "generate": "Generate",
+      "generateDesc": "audit trails.",
+      "stop": "Stop",
+      "stopDesc": "prompt injections.",
+      "analyze": "Analyze",
+      "analyzeDesc": "context with AI."
     }
   }
 }

@@ -1,10 +1,51 @@
 {
   "common": {
-    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
-    "getStarted": "Commencer",
+    "title": "SupraWall | Sécurité pour Agents IA et Pare-feu d'exécution",
+    "description": "Protégez vos agents IA autonomes avec le premier pare-feu d'exécution Zero-Trust. Bloquez les prompt injections, empêchez l'exécution non autorisée et contrôlez les coûts LLM.",
+    "getStarted": "Démarrer",
     "viewDocs": "Voir la documentation",
-    "login": "Connexion",
-    "dashboard": "Tableau de bord"
+    "login": "Se connecter",
+    "dashboard": "Tableau de bord",
+    "starOnGithub": "Star sur GitHub",
+    "protectedIn": "Protégé en 30 secondes",
+    "deployOnCloud": "Déployer sur le Cloud",
+    "selfHost": "Auto-hébergé"
+  },
+  "navbar": {
+    "platform": "Plateforme",
+    "solutions": "Solutions",
+    "integrations": "Intégrations",
+    "resources": "Ressources",
+    "company": "Entreprise",
+    "pricing": "Tarifs",
+    "frameworks": "Frameworks",
+    "platforms": "Plateformes & Modèles"
+  },
+  "home": {
+    "hero": {
+      "badge": "Plateforme de sécurité open-source pour agents",
+      "headlinePrefix": "Votre agent IA",
+      "headlineEmphasis": "deviendra hors de contrôle.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "s'assure qu'il ne le puisse pas.",
+      "subheadline": "Open Source. Une ligne de code. Sept menaces neutralisées.",
+      "cta": "Sécuriser vos agents"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "identifiants.",
+      "cap": "Cap",
+      "capDesc": "budgets.",
+      "block": "Bloquez",
+      "blockDesc": "les actions non autorisées.",
+      "scrub": "Effacez",
+      "scrubDesc": "les PII.",
+      "generate": "Générez",
+      "generateDesc": "des journaux d'audit.",
+      "stop": "Stoppez",
+      "stopDesc": "les prompt injections.",
+      "analyze": "Analysez",
+      "analyzeDesc": "le contexte avec l'IA."
+    }
   }
 }

@@ -1,10 +1,51 @@
 {
   "common": {
-    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
-    "getStarted": "Nu starten",
+    "title": "SupraWall | Beveiliging en Runtime Guardrails voor AI-agenten",
+    "description": "Beveilig uw autonome AI-agenten met de eerste Zero-Trust runtime firewall. Blokkeer prompt-injection, voorkom ongeautoriseerde tooluitvoering en beheers LLM-kosten.",
+    "getStarted": "Aan de slag",
     "viewDocs": "Bekijk documentatie",
     "login": "Inloggen",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "starOnGithub": "Volg op GitHub",
+    "protectedIn": "Beveiligd in 30 seconden",
+    "deployOnCloud": "Cloud-implementatie",
+    "selfHost": "Zelf-hosten"
+  },
+  "navbar": {
+    "platform": "Platform",
+    "solutions": "Oplossingen",
+    "integrations": "Integraties",
+    "resources": "Bronnen",
+    "company": "Bedrijf",
+    "pricing": "Prijzen",
+    "frameworks": "Frameworks",
+    "platforms": "Platformen & Modellen"
+  },
+  "home": {
+    "hero": {
+      "badge": "Open-source beveiligingsplatform voor agenten",
+      "headlinePrefix": "Uw AI-agent",
+      "headlineEmphasis": "zal ontsporen.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "zorgt ervoor dat het niet gebeurt.",
+      "subheadline": "Open Source. Eén regel code. Zeven bedreigingen geneutraliseerd.",
+      "cta": "Beveilig uw agenten"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "identiteitsgegevens.",
+      "cap": "Cap",
+      "capDesc": "budgetten.",
+      "block": "Blokkeer",
+      "blockDesc": "ongeoorloofde acties.",
+      "scrub": "Wis",
+      "scrubDesc": "PII-gegevens.",
+      "generate": "Genereer",
+      "generateDesc": "audit-trails.",
+      "stop": "Stop",
+      "stopDesc": "prompt-injections.",
+      "analyze": "Analyseer",
+      "analyzeDesc": "context met AI."
+    }
   }
 }

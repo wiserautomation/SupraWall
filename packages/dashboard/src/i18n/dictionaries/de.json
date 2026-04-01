@@ -1,10 +1,51 @@
 {
   "common": {
-    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
+    "title": "SupraWall | Sicherheits- & Laufzeit-Guardrails für Enterprise KI-Agenten",
+    "description": "Sichern Sie Ihre autonomen KI-Agenten mit der ersten Zero-Trust-Laufzeit-Firewall. Blockieren Sie Prompt-Injection, verhindern Sie unbefugte Tool-Ausführung und kontrollieren Sie LLM-Kosten.",
     "getStarted": "Jetzt starten",
     "viewDocs": "Dokumentation ansehen",
     "login": "Anmelden",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "starOnGithub": "Auf GitHub folgen",
+    "protectedIn": "Geschützt in 30 Sekunden",
+    "deployOnCloud": "Auf Cloud bereitstellen",
+    "selfHost": "Selbst hosten"
+  },
+  "navbar": {
+    "platform": "Plattform",
+    "solutions": "Lösungen",
+    "integrations": "Integrationen",
+    "resources": "Ressourcen",
+    "company": "Unternehmen",
+    "pricing": "Preise",
+    "frameworks": "Frameworks",
+    "platforms": "Plattformen & Modelle"
+  },
+  "home": {
+    "hero": {
+      "badge": "Open-Source-Sicherheitsplattform für Agenten",
+      "headlinePrefix": "Ihr KI-Agent",
+      "headlineEmphasis": "wird außer Kontrolle geraten.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "stellt sicher, dass er es nicht kann.",
+      "subheadline": "Open Source. Eine Zeile Code. Sieben Bedrohungen neutralisiert.",
+      "cta": "Agenten sichern"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "für Zugangsdaten.",
+      "cap": "Cap",
+      "capDesc": "für Budgets.",
+      "block": "Blockieren",
+      "blockDesc": "unbefugter Aktionen.",
+      "scrub": "Scrub",
+      "scrubDesc": "von PII-Daten.",
+      "generate": "Erstellen",
+      "generateDesc": "von Audit-Trails.",
+      "stop": "Stoppen",
+      "stopDesc": "von Prompt-Injections.",
+      "analyze": "Analysieren",
+      "analyzeDesc": "von Kontext mit KI."
+    }
   }
 }

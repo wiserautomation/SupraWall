@@ -1,10 +1,51 @@
 {
   "common": {
-    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
-    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
-    "getStarted": "Inizia ora",
+    "title": "SupraWall | Sicurezza e Guardrail per Agenti IA Enterprise",
+    "description": "Proteggi i tuoi agenti IA autonomi con il primo firewall d'esecuzione Zero-Trust. Blocca i prompt injection, previene l'esecuzione non autorizzata e controlla i costi dei LLM.",
+    "getStarted": "Inizia",
     "viewDocs": "Vai alla documentazione",
     "login": "Accedi",
-    "dashboard": "Dashboard"
+    "dashboard": "Dashboard",
+    "starOnGithub": "Seguici su GitHub",
+    "protectedIn": "Protetto in 30 secondi",
+    "deployOnCloud": "Schiera in Cloud",
+    "selfHost": "Auto-ospitato"
+  },
+  "navbar": {
+    "platform": "Piattaforma",
+    "solutions": "Soluzioni",
+    "integrations": "Integrazioni",
+    "resources": "Risorse",
+    "company": "Azienda",
+    "pricing": "Prezzi",
+    "frameworks": "Frameworks",
+    "platforms": "Piattaforme & Modelli"
+  },
+  "home": {
+    "hero": {
+      "badge": "Piattaforma di sicurezza open-source per agenti",
+      "headlinePrefix": "Il tuo agente IA",
+      "headlineEmphasis": "andrà fuori controllo.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "garantisce che non possa farlo.",
+      "subheadline": "Open Source. Una riga di codice. Sette minacce neutralizzate.",
+      "cta": "Proteggi i tuoi agenti"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "credenziali.",
+      "cap": "Cap",
+      "capDesc": "budget.",
+      "block": "Blocca",
+      "blockDesc": "azioni non autorizzate.",
+      "scrub": "Pulisci",
+      "scrubDesc": "dati PII.",
+      "generate": "Genera",
+      "generateDesc": "registri di audit.",
+      "stop": "Ferma",
+      "stopDesc": "i prompt injection.",
+      "analyze": "Analizza",
+      "analyzeDesc": "il contesto con l'IA."
+    }
   }
 }
