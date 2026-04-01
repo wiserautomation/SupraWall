@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection } from "@/app/HomeClient";
-import { Locale } from "../../i18n/config";
+import { Locale } from "@/i18n/config";
 
 export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lang: Locale }) {
     // Note: In Phase 2, we will replace these hardcoded strings with dictionary.home.*

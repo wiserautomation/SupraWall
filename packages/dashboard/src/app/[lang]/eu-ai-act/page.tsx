@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
-import { i18n, Locale } from "../../../i18n/config";
+import { i18n, Locale } from "@/i18n/config";
 import { SLUG_MAP } from "../../../i18n/slug-map";
 import EuAiActClient from "./EuAiActClient";
 

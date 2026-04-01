@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { getDictionary } from "../../i18n/getDictionary";
-import { Locale } from "../../i18n/config";
+import { Locale } from "@/i18n/config";
 import HomeWrapper from "./HomeWrapper";
 
 export default async function Page({

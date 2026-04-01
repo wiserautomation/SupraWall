@@ -62,7 +62,7 @@ const FEATURE_CARDS = [
     }
 ];
 
-export default function FeaturesClient() {
+export default function FeaturesClient({ lang }: { lang: string }) {
     return (
         <main className="overflow-hidden">
             <section className="relative pt-48 pb-32 px-6">

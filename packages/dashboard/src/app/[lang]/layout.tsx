@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "../globals.css";
-import { i18n, Locale } from "../../i18n/config";
+import { i18n, Locale } from "@/i18n/config";
 import { Outfit } from "next/font/google";
 
 const geistSans = Geist({
@@ -23,7 +23,7 @@ const outfit = Outfit({
   subsets: ["latin"],
 });
 
-export async function generateMetadata({ params }: { params: Promise<{ lang: Locale }> }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params;
   const baseUrl = 'https://www.supra-wall.com';
   
@@ -78,7 +78,7 @@ export default async function LocaleLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: Promise<{ lang: Locale }>;
+  params: Promise<{ lang: string }>;
 }) {
   const { lang } = await params;
 
