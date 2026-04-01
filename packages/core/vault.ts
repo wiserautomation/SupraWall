@@ -101,18 +101,25 @@ export async function resolveVaultTokens(
 
     const results = await Promise.all(secretPromises);
 
+    // FIX: Optimized one-pass replacement to prevent cascading token leaks (Section 2.2)
+    const replacementMap = new Map<string, string>();
     for (const res of results) {
         if (res.error) {
             errors.push(res.error as VaultError);
             await logVaultAccess(pool, tenantId, agentId, (res.error as VaultError).secretName, toolName, (res.error as VaultError).reason);
         } else if (res.token) {
-            resolvedArgsString = resolvedArgsString.split(res.token).join(res.value as string);
+            replacementMap.set(res.token, res.value as string);
             injectedSecrets.push(res.secretName as string);
             secretValues.push(res.value as string);
             await logVaultAccess(pool, tenantId, agentId, res.secretName as string, toolName, "INJECTED");
             await incrementRateLimit(pool, tenantId, agentId, res.secretName as string);
         }
     }
+
+    // Perform the actual replacement in one pass using the VAULT_TOKEN_PATTERN
+    resolvedArgsString = argsString.replace(VAULT_TOKEN_PATTERN, (match) => {
+        return replacementMap.has(match) ? replacementMap.get(match)! : match;
+    });
 
     if (errors.length > 0) {
         return { success: false, resolvedArgs: args, injectedSecrets: [], secretValues: [], errors };

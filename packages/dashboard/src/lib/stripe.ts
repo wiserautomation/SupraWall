@@ -3,6 +3,11 @@
 
 import Stripe from 'stripe';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
+const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_KEY) {
+  throw new Error("STRIPE_SECRET_KEY is missing. Dashboard cannot initialize payment processing.");
+}
+
+export const stripe = new Stripe(STRIPE_KEY, {
   apiVersion: '2026-02-25.clover',
 });
