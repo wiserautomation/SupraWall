@@ -11,7 +11,7 @@ import httpx
 
 from .cost import estimate_cost, format_cost
 
-DEFAULT_URL = "https://us-central1-suprawall-prod.cloudfunctions.net/evaluateAction"
+DEFAULT_URL = "https://www.supra-wall.com/api/v1/evaluate"
 SDK_VERSION = "1.0.0"
 log = logging.getLogger("suprawall")
 
@@ -293,7 +293,7 @@ def _poll_approval(request_id: str, options: SupraWallOptions) -> dict:
     """Blocks and polls the dashboard until a human approves or denies."""
     import time
     start_time = time.time()
-    poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
+    poll_url = f"{options.dashboard_api_url}/api/v1/approvals/{request_id}"
     log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
     log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
 
@@ -321,7 +321,7 @@ async def _poll_approval_async(request_id: str, options: SupraWallOptions) -> di
     """Non-blocking poll of the dashboard until a human approves or denies."""
     import asyncio, time
     start_time = time.time()
-    poll_url = f"{options.dashboard_api_url}/api/approvals/{request_id}"
+    poll_url = f"{options.dashboard_api_url}/api/v1/approvals/{request_id}"
     log.warning(f"[SupraWall] ⏳ Action requires human intervention. Waiting for approval...")
     log.warning(f"[SupraWall] 👉 Approve at: {options.dashboard_api_url}/approvals")
 

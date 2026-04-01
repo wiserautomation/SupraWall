@@ -43,7 +43,14 @@ export function decryptString(encryptedData: string, keyBuffer: Buffer): string 
 // The key itself is returned as a Buffer. The DB stores an encrypted version of it 
 // using the master VAULT_ENCRYPTION_KEY (using Postgres PGP).
 export async function getDataEncryptionKey(tenantId: string, subjectId: string): Promise<Buffer> {
-    const masterKey = process.env.VAULT_ENCRYPTION_KEY || "fallback_master_key_suprawall_123";
+    const masterKey = process.env.VAULT_ENCRYPTION_KEY;
+    if (!masterKey) {
+        throw new Error(
+            "[GDPR] VAULT_ENCRYPTION_KEY environment variable is not set. " +
+            "This is required for GDPR compliance. " +
+            "Set it in your environment before starting the server."
+        );
+    }
     
     // Check if key already exists
     const res = await pool.query(

@@ -3,60 +3,80 @@
 
 import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
+import { i18n, Locale } from "../../i18n/config";
 import FeaturesClient from "./FeaturesClient";
 
-export const metadata: Metadata = {
-    title: "Features | SupraWall AI Agent Compliance OS",
-    description: "Six enterprise features that make SupraWall the Compliance OS for AI agents: HITL approvals, EU AI Act logging, PII shield, secret vault, and more.",
-    keywords: [
-        "ai agent security features",
-        "ai compliance platform features",
-        "ai agent governance features",
-        "enterprise ai compliance features",
-        "ai security platform capabilities",
-        "compliance OS for ai agents",
-        "ai agent policy enforcement"
-    ],
-    alternates: {
-        canonical: "https://www.supra-wall.com/features",
-    },
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    const { lang } = await params;
+    const baseUrl = "https://www.supra-wall.com";
+    const isDefault = lang === i18n.defaultLocale;
 
-export default function FeaturesHubPage() {
+    // Build alternates for hreflang
+    const languages: Record<string, string> = {};
+    i18n.locales.forEach((l) => {
+        languages[l] = `${baseUrl}/${l}/features`;
+    });
+    languages["x-default"] = `${baseUrl}/en/features`;
+
+    return {
+        title: "Enterprise AI Security Features | SupraWall Firewall",
+        description: "Explore the security stack for autonomous agents. Prompt injection shields, deterministic PII redaction, and runtime tool enforcement.",
+        alternates: {
+            canonical: `${baseUrl}/${lang}/features`,
+            languages,
+        },
+        robots: {
+            index: isDefault,
+            follow: true,
+        },
+        openGraph: {
+            title: "Enterprise AI Security Features | SupraWall Firewall",
+            description: "Explore the security stack for autonomous agents. Prompt injection shields, deterministic PII redaction, and runtime tool enforcement.",
+            url: `${baseUrl}/${lang}/features`,
+            siteName: "SupraWall",
+            type: "website",
+        },
+    };
+}
+
+export default async function Page({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
     const jsonLd = {
         "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "SupraWall Compliance OS Features",
-        "applicationCategory": "SecurityApplication",
-        "operatingSystem": "Universal",
-        "description": "Six enterprise-grade capabilities that together make SupraWall the Compliance OS for autonomous AI agents.",
-        "url": "https://www.supra-wall.com/features",
-        "mainEntity": {
-            "@type": "ItemList",
-            "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Human-in-the-Loop", "url": "https://www.supra-wall.com/features/human-in-the-loop" },
-                { "@type": "ListItem", "position": 2, "name": "Audit Logging", "url": "https://www.supra-wall.com/features/audit-trail" },
-                { "@type": "ListItem", "position": 3, "name": "PII Shield", "url": "https://www.supra-wall.com/features/pii-shield" },
-                { "@type": "ListItem", "position": 4, "name": "Policy Engine", "url": "https://www.supra-wall.com/features/policy-engine" },
-                { "@type": "ListItem", "position": 5, "name": "Secret Vault", "url": "https://www.supra-wall.com/features/vault" },
-                { "@type": "ListItem", "position": 6, "name": "Budget Controls", "url": "https://www.supra-wall.com/features/budget-limits" }
-            ]
-        },
-        "breadcrumb": {
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.supra-wall.com" },
-                { "@type": "ListItem", "position": 2, "name": "Features", "item": "https://www.supra-wall.com/features" }
-            ]
-        }
+        "@graph": [
+            {
+                "@type": "ItemList",
+                "name": "SupraWall AI Agent Security Features",
+                "description": "Full-stack security features for autonomous agentic swarms.",
+                "inLanguage": lang,
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "PII Shield", "url": `https://www.supra-wall.com/${lang}/features/pii-shield` },
+                    { "@type": "ListItem", "position": 2, "name": "Guardrails", "url": `https://www.supra-wall.com/${lang}/features/guardrails` },
+                    { "@type": "ListItem", "position": 3, "name": "Policy Engine", "url": `https://www.supra-wall.com/${lang}/features/policy-engine` },
+                    { "@type": "ListItem", "position": 4, "name": "Human Oversight", "url": `https://www.supra-wall.com/${lang}/features/human-in-the-loop` },
+                    { "@type": "ListItem", "position": 5, "name": "Secret Vault", "url": `https://www.supra-wall.com/${lang}/features/vault` },
+                    { "@type": "ListItem", "position": 6, "name": "Budget Controls", "url": `https://www.supra-wall.com/${lang}/features/budget-limits` }
+                ]
+            },
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [
+                    { "@type": "ListItem", "position": 1, "name": "Home", "item": `https://www.supra-wall.com/${lang}` },
+                    { "@type": "ListItem", "position": 2, "name": "Features", "item": `https://www.supra-wall.com/${lang}/features` }
+                ]
+            }
+        ]
     };
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
-            <FeaturesClient />
+            <Navbar lang={lang} />
+            <FeaturesClient lang={lang} />
         </div>
     );
 }

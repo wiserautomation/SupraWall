@@ -37,7 +37,7 @@ const port = process.env.PORT || 3000;
 const allowedOrigins = [
     'https://www.supra-wall.com',
     'https://supra-wall.com',
-    'http://localhost:3000'
+    ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : [])
 ];
 app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());

@@ -46,6 +46,14 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
       canonical: `${baseUrl}/${lang}`,
       languages,
     },
+    robots: {
+      index: lang === i18n.defaultLocale,
+      follow: true,
+      googleBot: {
+        index: lang === i18n.defaultLocale,
+        follow: true,
+      },
+    },
     openGraph: {
       type: "website",
       locale: lang === 'en' ? 'en_US' : lang,
@@ -58,10 +66,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: Loc
       title: "SupraWall | Enterprise AI Agent Security",
       description: "The zero-trust shim for your autonomous AI swarm.",
     },
-    robots: {
-      index: true,
-      follow: true,
-    }
   };
 }
 

@@ -95,3 +95,14 @@ suprawall-cloud/
 cloudflare-edge/
 claude-plugins-official/
 .env*.local
+
+# SupraWall: Never commit token files (audit finding 1.1)
+*.token
+.mcpregistry_*
+
+# SupraWall: Diagnostic and debug scripts must not ship
+**/debug_db.*
+**/diagnose_*.js
+**/check_stuff.js
+**/find_key_owner.js
+cleanup_domains.js

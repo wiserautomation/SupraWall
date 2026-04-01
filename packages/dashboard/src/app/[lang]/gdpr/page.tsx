@@ -3,35 +3,75 @@
 
 import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
+import { i18n, Locale } from "../../../i18n/config";
+import { SLUG_MAP } from "../../../i18n/slug-map";
 import GdprClient from "./GdprClient";
 
-export const metadata: Metadata = {
-    title: "GDPR Compliance for AI Agents | PII Scrubbing | SupraWall",
-    description: "Satisfy GDPR requirements for autonomous AI agents. SupraWall PII Shield automatically redacts customer names, emails, and SSNs from tool call payloads before they leave your infrastructure.",
-    keywords: [
-        "GDPR compliance AI agents",
-        "PII scrubbing for AI tools",
-        "redact customer data LLM",
-        "GDPR Article 25 AI governance",
-        "automated data masking for agents",
-        "suprawall pii shield gdpr",
-    ],
-    alternates: {
-        canonical: "https://www.supra-wall.com/gdpr",
-    },
-    openGraph: {
-        title: "GDPR for AI Agents. Secured at the SDK.",
-        description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
-        url: "https://www.supra-wall.com/gdpr",
-        siteName: "SupraWall",
-        type: "website",
-    },
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    const { lang } = await params;
+    const baseUrl = "https://www.supra-wall.com";
+    const isDefault = lang === i18n.defaultLocale;
+    const internalSlug = 'gdpr';
 
-export default function GdprPage() {
+    // Build alternates for hreflang pointing to public aliases
+    const languages: Record<string, string> = {};
+    i18n.locales.forEach((l) => {
+        const publicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
+        languages[l] = `${baseUrl}/${l}/${publicSlug}`;
+    });
+    const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
+    languages["x-default"] = `${baseUrl}/en/${defaultPublicSlug}`;
+
+    const currentPublicSlug = SLUG_MAP[internalSlug]?.[lang] || internalSlug;
+
+    return {
+        title: "GDPR for AI Agents. Secured at the SDK. | SupraWall",
+        description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
+        keywords: [
+            "GDPR compliance AI agents",
+            "PII scrubbing for AI tools",
+            "redact customer data LLM",
+            "GDPR Article 25 AI governance",
+            "automated data masking for agents",
+            "suprawall pii shield gdpr",
+        ],
+        alternates: {
+            canonical: `${baseUrl}/${lang}/gdpr`,
+            languages,
+        },
+        robots: {
+            index: isDefault,
+            follow: true,
+        },
+        openGraph: {
+            title: "GDPR for AI Agents. Secured at the SDK.",
+            description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
+            url: `${baseUrl}/${lang}/gdpr`,
+            siteName: "SupraWall",
+            type: "website",
+        },
+    };
+}
+
+export default async function Page({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "SupraWall GDPR Compliance Shield",
+        "description": "Zero-PII leakage for autonomous agentic systems.",
+        "url": `https://www.supra-wall.com/${lang}/gdpr`,
+        "inLanguage": lang,
+    };
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
-            <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <Navbar lang={lang} />
             <GdprClient />
         </div>
     );

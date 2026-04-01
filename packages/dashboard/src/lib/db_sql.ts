@@ -8,7 +8,7 @@ const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 export const pool = new Pool({
     connectionString,
     // Note: Vercel Postgres requires rejectUnauthorized: false by default unless custom CA is provided
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: true } : false,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000, 

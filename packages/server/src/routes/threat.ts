@@ -5,13 +5,15 @@ import { Router, Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
-import { adminAuth, AuthenticatedRequest } from "../auth";
+import { adminAuth, gatekeeperAuth, AuthenticatedRequest } from "../auth";
+import { rateLimit } from "../rate-limit";
 
 const router = Router();
+const threatLogRateLimit = rateLimit({ max: 60, windowMs: 60_000, message: "Threat log rate limit exceeded." });
 
 // ─── POST /v1/threat/log ───────────────────────────────────────────────────
-// Internal/SDK-driven logging of suspicious activity
-router.post("/log", async (req: Request, res: Response) => {
+// Internal/SDK-driven logging of suspicious activity — requires valid agent key
+router.post("/log", threatLogRateLimit, gatekeeperAuth, async (req: Request, res: Response) => {
     try {
         const { tenantId, agentId, eventType, severity, details } = req.body;
 

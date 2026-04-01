@@ -7,6 +7,22 @@ import { getAuth } from "./firebase";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
 import { logger } from "./logger";
+import crypto from "crypto";
+
+/**
+ * Constant-time string comparison to prevent timing attacks on API key validation.
+ * Both arguments are converted to equal-length Buffers before comparison.
+ */
+function timingSafeStringEqual(a: string, b: string): boolean {
+    const bufA = Buffer.from(a);
+    const bufB = Buffer.from(b);
+    if (bufA.length !== bufB.length) {
+        // Perform a dummy comparison to keep timing constant, then return false
+        crypto.timingSafeEqual(bufA, bufA);
+        return false;
+    }
+    return crypto.timingSafeEqual(bufA, bufB);
+}
 
 // Re-export types for backward compatibility
 export type { AgentInfo } from "./auth/types";

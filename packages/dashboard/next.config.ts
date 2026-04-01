@@ -4,7 +4,21 @@
 import type { NextConfig } from "next";
 import path from "path";
 
+import { SLUG_MAP } from "./src/i18n/slug-map";
+
 const nextConfig: NextConfig = {
+  async rewrites() {
+    const routes: any[] = [];
+    for (const [internalSlug, mapping] of Object.entries(SLUG_MAP)) {
+      for (const [locale, publicSlug] of Object.entries(mapping)) {
+        routes.push({
+          source: `/${locale}/${publicSlug}`,
+          destination: `/${locale}/${internalSlug}`
+        });
+      }
+    }
+    return routes;
+  },
   async headers() {
     return [
       {

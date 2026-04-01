@@ -3,17 +3,37 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from "@/lib/db_sql";
+import { admin } from "@/lib/firebase-admin";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
+    // Authentication: verify Firebase ID token
+    const authHeader = request.headers.get('authorization');
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    let verifiedUid: string;
+    try {
+      const decoded = await admin.auth().verifyIdToken(token);
+      verifiedUid = decoded.uid;
+    } catch {
+      return NextResponse.json({ error: "Invalid or expired session token" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
-    const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 100);
 
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+    }
+
+    // Ensure the authenticated user is only querying their own tenant
+    if (verifiedUid !== tenantId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     // Resolve Effective Tenant ID

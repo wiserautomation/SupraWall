@@ -5,17 +5,18 @@ import { Router } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
 
-import { adminAuth, AuthenticatedRequest } from "../auth";
+import { adminAuth, gatekeeperAuth, AuthenticatedRequest } from "../auth";
 
 const router = Router();
 
-// GET /v1/approvals/status/:id - Poll for decision (SDK use case)
-router.get("/status/:id", async (req, res) => {
+// GET /v1/approvals/status/:id - Poll for decision (SDK use case) — requires valid agent key
+router.get("/status/:id", gatekeeperAuth, async (req, res) => {
     try {
         const { id } = req.params;
+        const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
         const result = await pool.query(
-            "SELECT status, decision_at, decision_comment FROM approval_requests WHERE id = $1",
-            [id]
+            "SELECT status, decision_at, decision_comment FROM approval_requests WHERE id = $1 AND tenantid = $2",
+            [id, authenticatedTenantId]
         );
         if (result.rows.length === 0) {
             return res.status(404).json({ error: "Approval request not found" });

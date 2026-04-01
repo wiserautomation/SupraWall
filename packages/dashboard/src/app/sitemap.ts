@@ -5,6 +5,7 @@ import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
 import { i18n } from '../i18n/config';
+import { SLUG_MAP } from '../i18n/slug-map';
 
 const BASE_URL = 'https://www.supra-wall.com';
 
@@ -84,18 +85,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
     uniqueRoutes.forEach((route) => {
         const cleanRoute = route.replace(/\/+/g, '/').replace(/\/$/, '') || '';
-        
+        // Extract internal slug to check against SLUG_MAP
+        const internalSlug = cleanRoute.startsWith('/') ? cleanRoute.substring(1) : cleanRoute;
+
         i18n.locales.forEach((locale) => {
-            const localizedPath = `/${locale}${cleanRoute}`;
+            const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
+            const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/');
             const fullUrl = `${BASE_URL}${localizedPath}`;
             
-            // Build alternates
+            // Build alternates pointing to public aliases
             const alternates: Record<string, string> = {};
             i18n.locales.forEach((l) => {
-                alternates[l] = `${BASE_URL}/${l}${cleanRoute}`;
+                const altPublicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
+                alternates[l] = `${BASE_URL}/${l}/${altPublicSlug}`.replace(/\/+/g, '/');
             });
-            // Add x-default
-            alternates['x-default'] = `${BASE_URL}/en${cleanRoute}`;
+            // Add x-default (usually English)
+            const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
+            alternates['x-default'] = `${BASE_URL}/en/${defaultPublicSlug}`.replace(/\/+/g, '/');
 
             sitemapEntries.push({
                 url: fullUrl,

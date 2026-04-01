@@ -41,7 +41,7 @@ export function middleware(request: NextRequest) {
   const url = new URL(request.url);
   url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`;
   
-  return NextResponse.redirect(url);
+  return NextResponse.redirect(url, 301);
 }
 
 export const config = {

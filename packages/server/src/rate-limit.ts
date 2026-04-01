@@ -50,13 +50,14 @@ export function rateLimit(opts: RateLimitOptions) {
             // Delete expired first to handle cleanup
             await pool.query(`DELETE FROM api_rate_limits WHERE reset_at < $1`, [now]);
 
-            // Upsert the limit key
+            // Upsert the limit key — on conflict, ONLY increment count.
+            // The reset_at is NEVER updated so the window is fixed and cannot
+            // be extended indefinitely by timing requests before expiry.
             const upsertResult = await pool.query(`
                 INSERT INTO api_rate_limits (key, count, reset_at)
                 VALUES ($1, 1, $2)
                 ON CONFLICT (key) DO UPDATE SET
-                    count = api_rate_limits.count + 1,
-                    reset_at = GREATEST(api_rate_limits.reset_at, $2)
+                    count = api_rate_limits.count + 1
                 RETURNING count, reset_at;
             `, [key, resetAt]);
 
