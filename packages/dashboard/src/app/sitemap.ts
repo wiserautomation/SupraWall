@@ -97,11 +97,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
             const alternates: Record<string, string> = {};
             i18n.locales.forEach((l) => {
                 const altPublicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
-                alternates[l] = `${BASE_URL}/${l}/${altPublicSlug}`.replace(/\/+/g, '/');
+                const altPath = `/${l}/${altPublicSlug}`.replace(/\/+/g, '/');
+                alternates[l] = `${BASE_URL}${altPath}`;
             });
             // Add x-default (usually English)
             const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-            alternates['x-default'] = `${BASE_URL}/en/${defaultPublicSlug}`.replace(/\/+/g, '/');
+            const xDefaultPath = `/en/${defaultPublicSlug}`.replace(/\/+/g, '/');
+            alternates['x-default'] = `${BASE_URL}${xDefaultPath}`;
 
             sitemapEntries.push({
                 url: fullUrl,
