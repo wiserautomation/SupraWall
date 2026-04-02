@@ -9,12 +9,20 @@
     "dev": "tsc -w"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "firebase": "^12.9.0"
+    "@types/mongodb": "^4.0.6",
+    "@types/pg": "^8.20.0",
+    "firebase": "^12.9.0",
+    "typescript": "^5.0.0"
   },
   "peerDependencies": {
     "firebase": "^12.9.0"
   },
   "author": "SupraWall",
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.101.1",
+    "mongodb": "^7.1.1",
+    "mysql2": "^3.20.0",
+    "pg": "^8.20.0"
+  }
 }
