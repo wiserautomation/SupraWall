@@ -1,0 +1,31 @@
+
+> @suprawall/dashboard@0.1.0 build
+> next build
+
+▲ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 7.9s
+  Running TypeScript ...
+Failed to type check.
+
+./src/lib/semantic-server.ts:18:36
+Type error: Type 'ProcessEnv' has no properties in common with type 'EnvInfo'.
+
+  [90m16 |[0m
+  [90m17 |[0m [36mexport[0m [36masync[0m [36mfunction[0m analyzeCall(req: [33mSemanticAnalysisRequest[0m): [33mPromise[0m<[33mSemanticAnalysisR...[0m
+[31m[1m>[0m [90m18 |[0m     [36mreturn[0m sharedAnalyzeCall(pool, process.env, dummyLogger, req);
+  [90m   |[0m                                    [31m[1m^[0m
+  [90m19 |[0m }
+  [90m20 |[0m
+  [90m21 |[0m [36mexport[0m [36masync[0m [36mfunction[0m updateBaseline(tenantId: string, agentId: string, toolName: string, ...
+Next.js build worker exited with code: 1 and signal: null
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard
+npm error workspace @suprawall/dashboard@0.1.0
+npm error location /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard
+npm error command failed
+npm error command sh -c next build

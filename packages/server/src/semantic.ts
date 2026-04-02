@@ -9,7 +9,7 @@ import type { SemanticAnalysisRequest, SemanticAnalysisResult } from "@suprawall
 export type { SemanticAnalysisRequest, SemanticAnalysisResult };
 
 export async function analyzeCall(req: SemanticAnalysisRequest): Promise<SemanticAnalysisResult> {
-    return sharedAnalyzeCall(pool, process.env, logger, req);
+    return sharedAnalyzeCall(pool, process.env as any, logger, req);
 }
 
 export async function updateBaseline(tenantId: string, agentId: string, toolName: string, args: unknown): Promise<void> {

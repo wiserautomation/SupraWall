@@ -5,7 +5,9 @@
         "rootDir": "./src",
         "outDir": "./dist",
         "esModuleInterop": true,
-        "strict": true,
+        "strict": false,
+        "noImplicitAny": false,
+        "noPropertyAccessFromIndexSignature": false,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true
     },

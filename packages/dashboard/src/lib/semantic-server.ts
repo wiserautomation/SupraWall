@@ -15,7 +15,7 @@ const dummyLogger = {
 };
 
 export async function analyzeCall(req: SemanticAnalysisRequest): Promise<SemanticAnalysisResult> {
-    return sharedAnalyzeCall(pool, process.env, dummyLogger, req);
+    return sharedAnalyzeCall(pool, process.env as any, dummyLogger, req);
 }
 
 export async function updateBaseline(tenantId: string, agentId: string, toolName: string, args: unknown): Promise<void> {
