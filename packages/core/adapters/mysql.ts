@@ -27,7 +27,7 @@ export class MySQLAdapter implements Adapter {
             "INSERT INTO agents (name, description) VALUES (?, ?)",
             [agent.name, agent.description ?? null]
         );
-        const insertResult = result as { insertId: number };
+        const insertResult = result as any as { insertId: number };
         return { id: String(insertResult.insertId), ...agent };
     }
 
@@ -47,7 +47,7 @@ export class MySQLAdapter implements Adapter {
 
     async deleteAgent(id: string): Promise<boolean> {
         const [result] = await this.db.execute("DELETE FROM agents WHERE id = ?", [id]);
-        const res = result as { affectedRows: number };
+        const res = result as any as { affectedRows: number };
         return res.affectedRows > 0;
     }
 

@@ -108,13 +108,13 @@ async function computeAnomalyScore(pool: IDatabasePool, req: SemanticAnalysisReq
              WHERE tenant_id = $1 AND agent_id = $2 AND tool_name = $3`,
             [req.tenantId, req.agentId, req.toolName]
         );
-        if (result.rows.length === 0 || result.rows[0].total_samples < 10) return 0;
+        if (result.rows.length === 0 || (result.rows[0] as any).total_samples < 10) return 0;
 
-        const b = result.rows[0];
+        const b = result.rows[0] as any;
         let anomaly = 0;
 
         const argsLen = req.argsString.length;
-        const avgLen = b.avg_args_length || 1;
+        const avgLen = Number(b.avg_args_length) || 1;
         const dev = Math.abs(argsLen - avgLen) / avgLen;
         if (dev > 3) anomaly += 0.4;
         else if (dev > 2) anomaly += 0.2;
@@ -224,9 +224,10 @@ async function callCustomEndpoint(pool: IDatabasePool, envInfo: EnvInfo, logger:
             [tenantId]
         );
         if (ep.rows.length > 0) {
-            authHeader = ep.rows[0].auth_header;
-            maxLatencyMs = ep.rows[0].max_latency_ms || 500;
-            modelName = ep.rows[0].model_name || 'custom';
+            const row = ep.rows[0] as any;
+            authHeader = row.auth_header;
+            maxLatencyMs = row.max_latency_ms || 500;
+            modelName = row.model_name || 'custom';
         }
     } catch { /* fall through */ }
 

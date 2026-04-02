@@ -12,8 +12,9 @@ export class PostgresAdapter implements Adapter {
     async connect(connectionString: string): Promise<void> {
         // Requires optional peer dependency: npm install pg @types/pg
         const { Client } = await import("pg");
-        this.client = new Client({ connectionString });
-        await this.client.connect();
+        const client = new Client({ connectionString });
+        await client.connect();
+        this.client = client as any;
     }
 
     private get db() {
