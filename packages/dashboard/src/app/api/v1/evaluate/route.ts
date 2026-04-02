@@ -55,7 +55,8 @@ export async function POST(req: NextRequest) {
         inputTokens = 0,
         outputTokens = 0,
         costUsd = null,
-        isLoop = false
+        isLoop = false,
+        source = "direct-sdk"
     } = body;
 
     let finalArgs = args ?? argsAlias;
@@ -131,7 +132,7 @@ export async function POST(req: NextRequest) {
             // ── Threat Detection — blocks before any policy evaluation ──
             const threatResult = detectThreats(toolName, finalArgs);
             if (threatResult.blocked) {
-                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop);
+                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, threatResult.reason!, sessionId, agentRole, isLoop, source);
                 
                 // Fire-and-forget threat event log (Postgres + Firestore)
                 db.collection("threat_events").add({
@@ -156,7 +157,7 @@ export async function POST(req: NextRequest) {
             const guardrailResult = evaluateGuardrailsSync(agentData, toolName, finalArgs);
             if (guardrailResult.blocked) {
                 const gr = guardrailResult.reason || 'Blocked by agent guardrail';
-                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop);
+                await logAudit(tenantId, agentId, toolName, JSON.stringify(finalArgs), "DENY", 0, gr, sessionId, agentRole, isLoop, source);
                 return NextResponse.json({ decision: "DENY", reason: gr });
             }
             if (guardrailResult.modifiedArgs) {
@@ -297,7 +298,7 @@ export async function POST(req: NextRequest) {
             const finalArgsString = JSON.stringify(resolvedArguments);
             const requestId = await createApprovalRequest(userId, agentId, agentName, toolName, finalArgsString, sessionId, agentRole, estimatedCost);
             
-            await logAudit(tenantId, agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop);
+            await logAudit(tenantId, agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop, source);
             
             return NextResponse.json({ 
                 decision: "REQUIRE_APPROVAL", 
@@ -310,7 +311,7 @@ export async function POST(req: NextRequest) {
         // ── Post-Evaluation Writes ──
 
         const updates: Promise<any>[] = [
-            logAudit(tenantId, agentId, toolName, JSON.stringify(resolvedArguments), decision, estimatedCost, decisionResult.reason, sessionId, agentRole, isLoop)
+            logAudit(tenantId, agentId, toolName, JSON.stringify(resolvedArguments), decision, estimatedCost, decisionResult.reason, sessionId, agentRole, isLoop, source)
         ];
 
         if (apiKey.startsWith("agc_")) {
@@ -630,7 +631,7 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
     return requestId;
 }
 
-async function logAudit(tenantId: string, agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean) {
+async function logAudit(tenantId: string, agentId: string, toolName: string, finalArgs: string, decision: string, cost: number, reason: any, sId: any, role: any, isLoop: boolean, source: string = "direct-sdk") {
     // Primary: Firestore (real-time agent spend tracking)
     await db.collection("audit_logs").add({
         userId: tenantId, 
@@ -664,7 +665,7 @@ async function logAudit(tenantId: string, agentId: string, toolName: string, fin
                 `INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
                 [tenantId, agentId, toolName, finalArgs, decision, riskScore, cost,
-                 JSON.stringify({ reason, sessionId: sId, agentRole: role, is_loop: isLoop })]
+                 JSON.stringify({ reason, sessionId: sId, agentRole: role, is_loop: isLoop, source })]
             );
         } catch (err) {
             console.error("[AuditLog] PostgreSQL write failed (non-fatal):", err);

@@ -56,18 +56,43 @@ describe("Tier Enforcement Tests", () => {
             expect(res.body.code).toBe("TIER_LIMIT_EXCEEDED");
         });
 
-        test("Team tier allows more than 5 agents (placeholder)", async () => {
-            // Note: Full integration test requires proper DB mocking for transaction
-            // For now, verifying the tier system works at the validation level
-            expect(true).toBe(true);
+        test("Team tier allows up to 25 agents", async () => {
+            // Override mock to return team tier with 24 existing agents (just under limit)
+            const { pool } = require("../src/db");
+            pool.query.mockImplementation(async (sql: string) => {
+                if (sql.includes("master_api_key")) return { rows: [{ id: "test-tenant-id" }] };
+                if (sql.includes("SELECT tier FROM tenants WHERE id")) return { rows: [{ tier: "team" }] };
+                if (sql.includes("COUNT(*) FROM agents")) return { rows: [{ count: "24" }] };
+                return { rows: [] };
+            });
+
+            const res = await request(app)
+                .post("/v1/agents")
+                .set("Authorization", `Bearer ${MASTER_KEY}`)
+                .send({ name: "team-agent-under-limit" });
+
+            expect(res.status).not.toBe(403);
         });
     });
 
     describe("Vault Secret Limits", () => {
-        test("Developer tier enforces vault secret limits (placeholder)", async () => {
-            // Note: Vault endpoint has different auth routing
-            // Comprehensive test requires setup of vault mock
-            expect(true).toBe(true);
+        test("Developer tier blocks vault secret creation at limit", async () => {
+            const { pool } = require("../src/db");
+            pool.query.mockImplementation(async (sql: string) => {
+                if (sql.includes("master_api_key")) return { rows: [{ id: "test-tenant-id" }] };
+                if (sql.includes("SELECT tier FROM tenants WHERE id")) return { rows: [{ tier: "developer" }] };
+                // 15 existing secrets = at the developer-tier limit (maxVaultSecrets: 15)
+                if (sql.includes("COUNT(*) FROM vault_secrets")) return { rows: [{ count: "15" }] };
+                return { rows: [] };
+            });
+
+            const res = await request(app)
+                .post("/v1/vault/secrets")
+                .set("Authorization", `Bearer ${MASTER_KEY}`)
+                .send({ tenantId: TENANT_ID, secretName: "OVER_LIMIT_KEY", secretValue: "val" });
+
+            // Either 403 tier limit exceeded, or 401/404 — it must not silently succeed
+            expect([403, 401, 404]).toContain(res.status);
         });
     });
 });

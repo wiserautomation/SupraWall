@@ -15,10 +15,13 @@ const threatLogRateLimit = rateLimit({ max: 60, windowMs: 60_000, message: "Thre
 // Internal/SDK-driven logging of suspicious activity — requires valid agent key
 router.post("/log", threatLogRateLimit, gatekeeperAuth, async (req: Request, res: Response) => {
     try {
-        const { tenantId, agentId, eventType, severity, details } = req.body;
+        // Always derive tenantId from the authenticated agent, never from the request body
+        const tenantId = (req as AuthenticatedRequest).tenantId;
+        const agentId = (req as AuthenticatedRequest).agent?.id;
+        const { eventType, severity, details } = req.body;
 
         if (!tenantId || !eventType) {
-            return res.status(400).json({ error: "Missing tenantId or eventType" });
+            return res.status(400).json({ error: "Missing eventType" });
         }
 
         // Fire and forget (don't wait for write completion to return 200)

@@ -6,15 +6,30 @@ import { pool } from "../db";
 import { adminAuth, AuthenticatedRequest } from "../auth";
 import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
 import { logger } from "../logger";
+import { validate, CreateVaultSecretSchema } from "../validation";
 
 const router = Router();
 
 const SECRET_NAME_PATTERN = /^[A-Z][A-Z0-9_]{2,63}$/;
 
+const REDOS_PATTERN = /(\+\+|\*\*|\+\*|\*\+|\{\d+,\d*\}\{|\(\?(?![:=!<]))/;
+const MAX_PATTERN_LENGTH = 200;
+
+function safePatternTest(pattern: string, subject: string): boolean {
+    if (pattern.length > MAX_PATTERN_LENGTH || REDOS_PATTERN.test(pattern)) {
+        return pattern === subject;
+    }
+    try {
+        return new RegExp(pattern).test(subject);
+    } catch {
+        return pattern === subject;
+    }
+}
+
 /**
  * Audit log helper for Vault Access
  */
-async function logVaultAccess(tenantId: string, agentId: string, secretName: string, toolName: string, action: string, metadata: any = {}) {
+async function logVaultAccess(tenantId: string, agentId: string, secretName: string, toolName: string, action: string, metadata: Record<string, unknown> = {}) {
     try {
         await pool.query(
             `INSERT INTO vault_access_log (tenant_id, agent_id, secret_name, tool_name, action, request_metadata)
@@ -92,13 +107,7 @@ async function handleResolve(req: Request, res: Response) {
         // 5. Tool-specific check (if provided)
         if (toolName) {
             const allowedTools: string[] = rule.allowed_tools || [];
-            const isAllowed = allowedTools.length === 0 || allowedTools.some(p => {
-                try { return new RegExp(p).test(toolName); }
-                catch (regexErr) {
-                    logger.warn(`[Vault] Invalid regex pattern in access rule: '${p}'. Falling back to string equality.`, { tenantId, agentId, error: regexErr });
-                    return p === toolName;
-                }
-            });
+            const isAllowed = allowedTools.length === 0 || allowedTools.some(p => safePatternTest(p, toolName));
 
             if (!isAllowed) {
                 await logVaultAccess(tenantId, agentId, secretName, toolName, "DENIED", { reason: "Tool mismatch" });
@@ -120,7 +129,7 @@ async function handleResolve(req: Request, res: Response) {
 }
 
 // POST /v1/vault/secrets — Create a secret (Auth required)
-router.post("/secrets", adminAuth, resolveTier, async (req: Request, res: Response) => {
+router.post("/secrets", adminAuth, resolveTier, validate(CreateVaultSecretSchema), async (req: Request, res: Response) => {
     try {
         const tenantId = (req as AuthenticatedRequest).tenantId!;
         const { secretName, secretValue, description, expiresAt, assignedAgents } = req.body;

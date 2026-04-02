@@ -7,22 +7,6 @@ import { getAuth } from "./firebase";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
 import { logger } from "./logger";
-import crypto from "crypto";
-
-/**
- * Constant-time string comparison to prevent timing attacks on API key validation.
- * Both arguments are converted to equal-length Buffers before comparison.
- */
-function timingSafeStringEqual(a: string, b: string): boolean {
-    const bufA = Buffer.from(a);
-    const bufB = Buffer.from(b);
-    if (bufA.length !== bufB.length) {
-        // Perform a dummy comparison to keep timing constant, then return false
-        crypto.timingSafeEqual(bufA, bufA);
-        return false;
-    }
-    return crypto.timingSafeEqual(bufA, bufB);
-}
 
 // Re-export types for backward compatibility
 export type { AgentInfo } from "./auth/types";
@@ -31,6 +15,7 @@ export type { AuthProvider } from "./auth/types";
 export interface AuthenticatedRequest extends Request {
     agent?: AgentInfo;
     tenantId?: string;
+    userEmail?: string; // Set when authenticated via Firebase ID token (not master key)
 }
 
 /**
@@ -100,6 +85,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
             try {
                 const decodedToken = await firebaseAdmin.auth().verifyIdToken(masterKey);
                 (req as AuthenticatedRequest).tenantId = decodedToken.uid;
+                (req as AuthenticatedRequest).userEmail = decodedToken.email;
                 return next();
             } catch (fbErr) {
                 // Not a valid Firebase token either
@@ -180,6 +166,46 @@ export async function gatekeeperAuth(req: Request, res: Response, next: NextFunc
         res.status(500).json({ decision: "DENY", reason: "Internal authentication error" });
     }
 };
+
+/**
+ * Role-enforcement middleware for organization member management.
+ * If the caller authenticated via Firebase token (userEmail is set), verify they hold
+ * the required role in organization_members. Master API key holders are implicitly owners.
+ */
+export function requireMemberRole(requiredRole: "admin" | "owner") {
+    return async (req: Request, res: Response, next: NextFunction) => {
+        const authReq = req as AuthenticatedRequest;
+
+        // Master API key holders are implicitly owners — no additional check needed
+        if (!authReq.userEmail) return next();
+
+        try {
+            const result = await pool.query(
+                `SELECT role FROM organization_members
+                 WHERE tenant_id = $1 AND user_email = $2 AND status = 'active'`,
+                [authReq.tenantId, authReq.userEmail]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(403).json({ error: "Forbidden: Not a member of this organization" });
+            }
+
+            const role: string = result.rows[0].role;
+            const roleHierarchy = ["viewer", "member", "admin", "owner"];
+            const callerLevel = roleHierarchy.indexOf(role);
+            const requiredLevel = roleHierarchy.indexOf(requiredRole);
+
+            if (callerLevel < requiredLevel) {
+                return res.status(403).json({ error: `Forbidden: Requires '${requiredRole}' role or higher` });
+            }
+
+            next();
+        } catch (error) {
+            logger.error("[RoleCheck] Error:", { error });
+            res.status(500).json({ error: "Internal authentication error" });
+        }
+    };
+}
 
 /**
  * Look up an agent by its ID using the configured AuthProvider.

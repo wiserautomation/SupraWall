@@ -6,6 +6,7 @@ import { pool } from "../db";
 import { logger } from "../logger";
 
 import { adminAuth, AuthenticatedRequest } from "../auth";
+import { validate, CreatePolicySchema } from "../validation";
 
 const router = express.Router();
 
@@ -35,7 +36,7 @@ router.get("/", adminAuth, async (req: Request, res: Response) => {
 });
 
 // ─── POST /v1/policies ─────────────────────────────────────────────────
-router.post("/", adminAuth, async (req: Request, res: Response) => {
+router.post("/", adminAuth, validate(CreatePolicySchema), async (req: Request, res: Response) => {
     try {
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
         const { tenantId: bodyTenantId, name, toolName, ruleType, description } = req.body;

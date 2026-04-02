@@ -14,7 +14,11 @@ const router = express.Router();
 router.get("/", adminAuth, resolveTier, async (req: Request, res: Response) => {
     try {
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
-        const { tenantId: queryTenantId, limit = 50, offset = 0 } = req.query;
+        const { tenantId: queryTenantId } = req.query;
+        const rawLimit = parseInt(String(req.query.limit ?? "50"), 10);
+        const rawOffset = parseInt(String(req.query.offset ?? "0"), 10);
+        const limit = Number.isFinite(rawLimit) && rawLimit > 0 ? Math.min(rawLimit, 1000) : 50;
+        const offset = Number.isFinite(rawOffset) && rawOffset >= 0 ? rawOffset : 0;
         
         // Security: Ensure query tenantId matches authenticated tenantId
         const tenantId = queryTenantId || authenticatedTenantId;

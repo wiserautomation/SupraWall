@@ -1,12 +1,53 @@
+interface QueryResult<T = Record<string, unknown>> {
+    rows: T[];
+}
+
 interface IDatabasePool {
-    query(text: string, params?: any[]): Promise<any>;
+    query<T = Record<string, unknown>>(text: string, params?: unknown[]): Promise<QueryResult<T>>;
+}
+
+// Typed row shapes for each DB query in this module
+interface VaultSecretRow {
+    id: string;
+    secret_name: string;
+    expires_at: string | null;
+    decrypted_value: string;
+}
+
+interface VaultAccessRuleRow {
+    allowed_tools: string[] | null;
+    max_uses_per_hour: number;
+}
+
+interface VaultRateLimitRow {
+    use_count: number;
 }
 
 const VAULT_TOKEN_PATTERN = /\$SUPRAWALL_VAULT_([A-Z][A-Z0-9_]{2,63})/g;
 
+// Patterns that indicate potentially catastrophic backtracking
+const REDOS_PATTERN = /(\+\+|\*\*|\+\*|\*\+|\{\d+,\d*\}\{|\(\?(?![:=!<]))/;
+const MAX_PATTERN_LENGTH = 200;
+
+/**
+ * Safely tests a tool name against a user-supplied pattern.
+ * Rejects patterns that are too long or contain known ReDoS constructs.
+ */
+function safePatternTest(pattern: string, toolName: string): boolean {
+    if (pattern.length > MAX_PATTERN_LENGTH || REDOS_PATTERN.test(pattern)) {
+        // Fall back to exact string match for unsafe patterns
+        return pattern === toolName;
+    }
+    try {
+        return new RegExp(pattern).test(toolName);
+    } catch {
+        return pattern === toolName;
+    }
+}
+
 export interface VaultResolutionResult {
     success: boolean;
-    resolvedArgs: any;
+    resolvedArgs: unknown;
     injectedSecrets: string[];
     secretValues: string[];
     errors: VaultError[];
@@ -24,7 +65,7 @@ export async function resolveVaultTokens(
     tenantId: string,
     agentId: string,
     toolName: string,
-    args: any
+    args: unknown
 ): Promise<VaultResolutionResult> {
     const argsString = JSON.stringify(args);
     const tokenMatches = [...argsString.matchAll(VAULT_TOKEN_PATTERN)];
@@ -43,7 +84,7 @@ export async function resolveVaultTokens(
     const secretPromises = secretNames.map(async (secretName) => {
         const token = `$SUPRAWALL_VAULT_${secretName}`;
 
-        const secretResult = await pool.query(
+        const secretResult = await pool.query<VaultSecretRow>(
             `SELECT id, secret_name, expires_at,
                     pgp_sym_decrypt(encrypted_value, $1) as decrypted_value
              FROM vault_secrets
@@ -61,8 +102,8 @@ export async function resolveVaultTokens(
             return { error: { secretName, reason: "EXPIRED", message: `Secret '${secretName}' has expired` }, token: null, value: null };
         }
 
-        const ruleResult = await pool.query(
-            `SELECT * FROM vault_access_rules
+        const ruleResult = await pool.query<VaultAccessRuleRow>(
+            `SELECT allowed_tools, max_uses_per_hour FROM vault_access_rules
              WHERE tenant_id = $1 AND agent_id = $2 AND secret_id = $3`,
             [tenantId, agentId, secret.id]
         );
@@ -73,11 +114,8 @@ export async function resolveVaultTokens(
 
         const rule = ruleResult.rows[0];
 
-        const allowedTools: string[] = rule.allowed_tools || [];
-        const toolAllowed = allowedTools.length === 0 || allowedTools.some(pattern => {
-            try { return new RegExp(pattern).test(toolName); }
-            catch { return pattern === toolName; }
-        });
+        const allowedTools: string[] = rule.allowed_tools ?? [];
+        const toolAllowed = allowedTools.length === 0 || allowedTools.some(p => safePatternTest(p, toolName));
 
         if (!toolAllowed) {
             return { error: {
@@ -159,7 +197,7 @@ async function checkRateLimit(
     maxPerHour: number
 ): Promise<boolean> {
     const windowStart = getHourWindow();
-        const result = await pool.query(
+    const result = await pool.query<VaultRateLimitRow>(
         `SELECT use_count FROM vault_rate_limits
          WHERE tenant_id = $1 AND agent_id = $2 AND secret_name = $3 AND window_start = $4`,
         [tenantId, agentId, secretName, windowStart]
@@ -196,7 +234,7 @@ async function logVaultAccess(
     secretName: string,
     toolName: string,
     action: string,
-    metadata?: any
+    metadata?: Record<string, unknown>
 ): Promise<void> {
     await pool.query(
         `INSERT INTO vault_access_log (tenant_id, agent_id, secret_name, tool_name, action, request_metadata)

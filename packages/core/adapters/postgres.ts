@@ -4,50 +4,61 @@
 import { Adapter, Agent } from "../types";
 
 export class PostgresAdapter implements Adapter {
-    private client: any;
+    private client: {
+        query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>;
+        end: () => Promise<void>;
+    } | null = null;
 
     async connect(connectionString: string): Promise<void> {
-        // In a real implementation we would use 'pg' package:
-        // const { Client } = require('pg');
-        // this.client = new Client({ connectionString });
-        // await this.client.connect();
-        console.log(`Connected to Postgres database successfully.`);
+        // Requires optional peer dependency: npm install pg @types/pg
+        const { Client } = await import("pg");
+        this.client = new Client({ connectionString });
+        await this.client.connect();
+    }
+
+    private get db() {
+        if (!this.client) throw new Error("PostgresAdapter: call connect() before using the adapter");
+        return this.client;
     }
 
     async createAgent(agent: Agent): Promise<Agent> {
-        // const res = await this.client.query(
-        //   'INSERT INTO agents (name, description) VALUES ($1, $2) RETURNING *',
-        //   [agent.name, agent.description]
-        // );
-        // return res.rows[0];
-        const created = { id: `pg-${Date.now()}`, ...agent };
-        console.log("Postgres: createAgent", created);
-        return created;
+        const res = await this.db.query(
+            "INSERT INTO agents (name, description) VALUES ($1, $2) RETURNING *",
+            [agent.name, agent.description ?? null]
+        );
+        return res.rows[0] as Agent;
     }
 
     async getAgent(id: string): Promise<Agent | null> {
-        // const res = await this.client.query('SELECT * FROM agents WHERE id = $1', [id]);
-        // return res.rows[0] || null;
-        return null;
+        const res = await this.db.query("SELECT * FROM agents WHERE id = $1", [id]);
+        return (res.rows[0] as Agent) ?? null;
     }
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
-        // const res = await this.client.query(
-        //   'UPDATE agents SET name=$1 WHERE id=$2 RETURNING *',
-        //   [updates.name, id]
-        // );
-        // return res.rows[0];
-        return { id, name: "Updated Agent", ...updates };
+        const res = await this.db.query(
+            "UPDATE agents SET name = $1, description = $2 WHERE id = $3 RETURNING *",
+            [updates.name, updates.description ?? null, id]
+        );
+        return res.rows[0] as Agent;
     }
 
     async deleteAgent(id: string): Promise<boolean> {
-        // await this.client.query('DELETE FROM agents WHERE id = $1', [id]);
-        return true;
+        const res = await this.db.query(
+            "DELETE FROM agents WHERE id = $1 RETURNING id",
+            [id]
+        );
+        return res.rows.length > 0;
     }
 
     async listAgents(filter?: { userId?: string }): Promise<Agent[]> {
-        // const res = await this.client.query('SELECT * FROM agents');
-        // return res.rows;
-        return [];
+        if (filter?.userId) {
+            const res = await this.db.query(
+                "SELECT * FROM agents WHERE user_id = $1",
+                [filter.userId]
+            );
+            return res.rows as Agent[];
+        }
+        const res = await this.db.query("SELECT * FROM agents");
+        return res.rows as Agent[];
     }
 }

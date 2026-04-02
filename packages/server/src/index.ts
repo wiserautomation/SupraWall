@@ -3,6 +3,7 @@
 
 import express from "express";
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 import { initDb, pool, purgeOldLogs } from "./db";
 import { evaluatePolicy, scrubToolResponse } from "./policy";
@@ -13,6 +14,7 @@ import policiesRouter from "./routes/policies";
 import approvalsRouter from "./routes/approvals";
 import agentsRouter from "./routes/agents";
 import { logger } from "./logger";
+import scanRouter from "./routes/scan";
 import auditLogsRouter from "./routes/audit_logs";
 import tenantsRouter from "./routes/tenants";
 import statsRouter from "./routes/stats";
@@ -33,14 +35,31 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Security headers (HSTS, XSS protection, no-sniff, etc.)
+app.use(helmet());
+
 // Global Middleware
 const allowedOrigins = [
     'https://www.supra-wall.com',
     'https://supra-wall.com',
     ...(process.env.NODE_ENV !== 'production' ? ['http://localhost:3000'] : [])
 ];
-app.use(cors({ origin: allowedOrigins }));
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
+
+// CSRF defence: reject POST/PUT/DELETE requests that lack a JSON Content-Type.
+// This blocks cross-origin HTML form submissions (the primary CSRF vector for API servers
+// that rely on Bearer token auth instead of cookies).
+app.use((req, res, next) => {
+    const method = req.method.toUpperCase();
+    if (["POST", "PUT", "PATCH", "DELETE"].includes(method)) {
+        const ct = req.headers["content-type"] ?? "";
+        if (!ct.includes("application/json") && !ct.includes("multipart/form-data")) {
+            return res.status(415).json({ error: "Unsupported Media Type: application/json required" });
+        }
+    }
+    next();
+});
 
 // Healthcheck with DB status
 app.get("/health", async (req, res) => {
@@ -62,6 +81,9 @@ app.post("/v1/scrub", gatekeeperAuth, scrubToolResponse);
 
 // Compliance Routes
 app.use("/v1/compliance", complianceRouter);
+
+// Scan Routes (CI/CD)
+app.use("/v1/scan", scanRouter);
 
 // Vault Routes (rate limited: 60 req/min per IP)
 app.use("/v1/vault", rateLimit({ max: 60, windowMs: 60_000, message: "Vault rate limit exceeded." }), vaultRouter);

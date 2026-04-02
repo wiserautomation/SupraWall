@@ -1,0 +1,6 @@
+gradio
+smolagents
+httpx
+pydantic
+openai
+requests

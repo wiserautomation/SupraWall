@@ -146,7 +146,7 @@ export function injectIntoTypeScriptFile(
     if (!injected) {
         // Graceful fallback: append a commented block the user can fill in
         injectedLines.push('');
-        injectedLines.push('// TODO: Wrap your agent with SupraWall:');
+        injectedLines.push('// Wrap your agent with SupraWall:');
         injectedLines.push(`// const securedAgent = protect(yourAgent, { apiKey: ${apiKeySource} });`);
         injectedLines.push('// export default securedAgent;');
     }

@@ -1,0 +1,34 @@
+name: 'Suprawall Scan'
+description: 'Policy enforcement for AI agent code — runs Suprawall security checks before deployment'
+author: 'Suprawall'
+
+branding:
+  icon: 'shield'
+  color: 'green'
+
+inputs:
+  api-key:
+    description: 'Suprawall API key (store in GitHub Secrets)'
+    required: true
+  policy-file:
+    description: 'Path to your suprawall.config.json policy config'
+    required: false
+    default: 'suprawall.config.json'
+  fail-on:
+    description: 'Severity level to fail the build: critical | high | medium'
+    required: false
+    default: 'high'
+  agent-path:
+    description: 'Path to agent code directory to scan'
+    required: false
+    default: '.'
+
+outputs:
+  violations:
+    description: 'Number of policy violations found'
+  report-url:
+    description: 'Link to the full Suprawall scan report'
+
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

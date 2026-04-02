@@ -9,15 +9,24 @@ import { subDays, startOfDay } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
 
-const ADMIN_EMAILS = ["peghin@gmail.com"];
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim()).filter(Boolean);
 
 export async function GET(req: NextRequest) {
     try {
-        // --- 1. Basic Admin Auth Check ---
+        // --- 1. Admin Auth Check ---
         const authHeader = req.headers.get('authorization');
         if (!authHeader?.startsWith('Bearer ')) {
-            // In a real staging environment, we'd verify the token.
-            // For now, let's proceed but ideally we'd use verifyIdToken.
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const token = authHeader.slice(7);
+        let decodedToken: { email?: string };
+        try {
+            decodedToken = await getAdminAuth().verifyIdToken(token);
+        } catch {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
 
         // --- 2. Aggregate Data from Firebase ---
@@ -80,8 +89,8 @@ export async function GET(req: NextRequest) {
             });
             const totalActiveCount = subscriptions.data.length || 1;
             churnRate = (canceledSubs.data.length / totalActiveCount) * 100;
-        } catch (stripeErr) {
-            console.error('[Admin Overview] Stripe error:', stripeErr);
+        } catch {
+            // Stripe metrics unavailable — continue with zero values
         }
 
         // --- 5. Signup Trends (Last 7 days) ---
@@ -113,8 +122,7 @@ export async function GET(req: NextRequest) {
             signupTrends
         });
 
-    } catch (error: any) {
-        console.error('[Admin Overview API] Error:', error);
+    } catch {
         return NextResponse.json({ error: 'Failed to aggregate admin data' }, { status: 500 });
     }
 }

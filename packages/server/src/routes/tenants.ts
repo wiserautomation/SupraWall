@@ -6,6 +6,7 @@ import { pool } from "../db";
 import { logger } from "../logger";
 
 import { adminAuth, AuthenticatedRequest } from "../auth";
+import { validate, UpdateTenantSchema } from "../validation";
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ router.get("/:id", adminAuth, async (req: Request, res: Response) => {
 });
 
 // UPDATE tenant settings (Admin Protected)
-router.post("/:id", adminAuth, async (req: Request, res: Response) => {
+router.post("/:id", adminAuth, validate(UpdateTenantSchema), async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;

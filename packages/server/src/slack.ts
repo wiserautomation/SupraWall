@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { fetch } from "undici";
+import { logger } from "./logger";
 
 export const sendSlackNotification = async (
     webhookUrl: string, 
@@ -77,6 +78,6 @@ export const sendSlackNotification = async (
             body: JSON.stringify({ blocks })
         });
     } catch (e) {
-        console.error("Failed to send Slack notification", e);
+        logger.error("Failed to send Slack notification", { error: e });
     }
 };

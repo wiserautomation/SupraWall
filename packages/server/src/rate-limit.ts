@@ -3,6 +3,26 @@
 
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./db";
+import { logger } from "./logger";
+
+// ---------------------------------------------------------------------------
+// In-memory fallback used when the DB is unavailable.
+// Keyed by: `${windowMs}:${max}:${key}` → { count, resetAt }
+// ---------------------------------------------------------------------------
+const memoryFallback = new Map<string, { count: number; resetAt: number }>();
+
+function memoryRateLimit(key: string, max: number, windowMs: number): { allowed: boolean; count: number; resetAt: number } {
+    const now = Date.now();
+    const cacheKey = `${windowMs}:${max}:${key}`;
+    let entry = memoryFallback.get(cacheKey);
+    if (!entry || entry.resetAt < now) {
+        entry = { count: 1, resetAt: now + windowMs };
+    } else {
+        entry.count += 1;
+    }
+    memoryFallback.set(cacheKey, entry);
+    return { allowed: entry.count <= max, count: entry.count, resetAt: entry.resetAt };
+}
 
 // ---------------------------------------------------------------------------
 // DB-Backed Distributed Rate Limiter
@@ -81,8 +101,17 @@ export function rateLimit(opts: RateLimitOptions) {
 
             next();
         } catch (error) {
-            console.error("[Rate Limit] DB Error:", error);
-            // Fail open on DB error so we don't break the API completely if the DB is momentarily slow for rate limiting
+            logger.error("[Rate Limit] DB unavailable, using in-memory fallback", { error });
+            const fallback = memoryRateLimit(key, max, windowMs);
+            if (!fallback.allowed) {
+                const retryAfter = Math.ceil((fallback.resetAt - Date.now()) / 1000);
+                res.setHeader("Retry-After", retryAfter);
+                return res.status(429).json({
+                    error: message,
+                    code: "RATE_LIMIT_EXCEEDED",
+                    retryAfter,
+                });
+            }
             next();
         }
     };

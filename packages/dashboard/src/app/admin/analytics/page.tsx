@@ -7,30 +7,35 @@ import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { 
     Activity, Globe, Server, Clock, Zap, AlertCircle, 
-    ArrowUpRight, ArrowDownRight, Database, Users, Eye, MousePointer
+    ArrowUpRight, ArrowDownRight, Database, Users, Eye, MousePointer,
+    Heart, Download, Terminal, Share2, Package
 } from "lucide-react";
 import {
     AreaChart, Area, BarChart, Bar, Cell, XAxis, YAxis, 
     CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from "recharts";
+import Link from "next/link";
 
 export default function AdminAnalyticsPage() {
     const [loading, setLoading] = useState(true);
     const [traffic, setTraffic] = useState<any>(null);
     const [stats, setStats] = useState<any>(null);
     const [gaData, setGaData] = useState<any>(null);
+    const [ecosystem, setEcosystem] = useState<any>(null);
 
     useEffect(() => {
         async function fetchAnalytics() {
             try {
-                const [trafficRes, statsRes, gaRes] = await Promise.all([
+                const [trafficRes, statsRes, gaRes, ecosystemRes] = await Promise.all([
                     fetch('/api/admin/traffic'),
                     fetch('/api/admin/users/stats'),
-                    fetch('/api/admin/ga-data')
+                    fetch('/api/admin/ga-data'),
+                    fetch('/api/admin/ecosystem')
                 ]);
                 if (trafficRes.ok) setTraffic(await trafficRes.json());
                 if (statsRes.ok) setStats(await statsRes.json());
                 if (gaRes.ok) setGaData(await gaRes.json());
+                if (ecosystemRes.ok) setEcosystem(await ecosystemRes.json());
             } catch (err) {
                 console.error("Failed to fetch analytics", err);
             }
@@ -128,7 +133,85 @@ export default function AdminAnalyticsPage() {
                 </Card>
             </div>
 
-            {/* 🛠 SYSTEM THROUGHPUT (Original Section) */}
+            {/* 🌐 COMMUNITY & ECOSYSTEM REACH */}
+            <div className="space-y-6 pt-12 border-t border-white/5">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Share2 className="w-4 h-4 text-pink-500" />
+                        <h2 className="text-xs font-black text-neutral-400 uppercase tracking-[0.3em]">Community & Plugin Adoption</h2>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {/* Hugging Face Card */}
+                    <Card className="bg-[#080808] border-pink-500/10 relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform duration-700">
+                             <Heart className="w-24 h-24 text-pink-500" />
+                        </div>
+                        <CardContent className="p-6">
+                            <div className="flex items-center gap-2 mb-3">
+                                <div className="p-2 bg-pink-500/10 rounded-lg">
+                                    <Heart className="w-4 h-4 text-pink-500" />
+                                </div>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">Hugging Face Space</span>
+                            </div>
+                            <h3 className="text-3xl font-black text-white tracking-tighter italic">{ecosystem?.huggingface?.likes || 0}</h3>
+                            <p className="text-[9px] font-medium text-neutral-500 mt-1 uppercase tracking-wider">Community Likes • {ecosystem?.huggingface?.status?.toUpperCase() || 'RUNNING'}</p>
+                            <div className="mt-4 flex gap-2">
+                                <Link 
+                                    href="https://huggingface.co/spaces/SupraWall/smolagents-demo" 
+                                    target="_blank"
+                                    className="text-[9px] font-black text-pink-500 uppercase hover:underline"
+                                >
+                                    View Live Space →
+                                </Link>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Plugin Adoption Stats */}
+                    <Card className="bg-[#080808] border-white/5 md:col-span-2">
+                        <CardHeader className="py-4">
+                            <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Live Plugin & SDK Volume (7D)</CardTitle>
+                        </CardHeader>
+                        <CardContent className="h-[150px]">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={ecosystem?.pluginUsage} layout="vertical">
+                                    <XAxis type="number" hide />
+                                    <YAxis dataKey="source" type="category" stroke="#888" fontSize={9} width={80} tickLine={false} axisLine={false} />
+                                    <Tooltip cursor={{ fill: '#ffffff05' }} contentStyle={{ backgroundColor: '#000', border: 'none' }} />
+                                    <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                                        {ecosystem?.pluginUsage?.map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={entry.source === 'mcp-claude' ? '#2563eb' : entry.source === 'smolagents' ? '#db2777' : '#10b981'} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </CardContent>
+                    </Card>
+                </div>
+
+                {/* Adoption Trend Chart */}
+                <Card className="bg-black border-white/5 overflow-hidden">
+                    <CardHeader>
+                        <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">Cross-Plugin Growth Trend (30D)</CardTitle>
+                    </CardHeader>
+                    <CardContent className="h-[300px] pt-4">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={ecosystem?.adoptionTrend}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#ffffff0a" vertical={false} />
+                                <XAxis dataKey="date" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                                <YAxis stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                                <Tooltip contentStyle={{ backgroundColor: '#000', border: '1px solid #222', borderRadius: '12px' }} />
+                                <Area type="monotone" dataKey="direct-sdk" stackId="1" stroke="#10b981" fill="#10b981" fillOpacity={0.2} name="Generic SDK" />
+                                <Area type="monotone" dataKey="smolagents" stackId="1" stroke="#db2777" fill="#db2777" fillOpacity={0.2} name="smolagents" />
+                                <Area type="monotone" dataKey="mcp-claude" stackId="1" stroke="#2563eb" fill="#2563eb" fillOpacity={0.2} name="Claude MCP" />
+                                <Legend />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </CardContent>
+                </Card>
+            </div>
             <div className="space-y-4 pt-8 border-t border-white/5">
                 <div className="flex items-center gap-2">
                     <Server className="w-4 h-4 text-emerald-500" />

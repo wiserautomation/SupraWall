@@ -139,7 +139,7 @@ export interface SupraWallResponse {
     estimated_cost_usd?: number;
     is_loop?: boolean;
     vaultInjected?: boolean;
-    resolvedArguments?: any;
+    resolvedArguments?: Record<string, unknown>;
     injectedSecrets?: string[];
     branding?: {
         enabled: boolean;
@@ -237,8 +237,8 @@ export interface SupraWallOptions {
 }
 
 export interface AgentInstance {
-    executeTool: (toolName: string, args: any) => Promise<any> | any;
-    [key: string]: any;
+    executeTool: (toolName: string, args: Record<string, unknown>) => Promise<unknown> | unknown;
+    [key: string]: unknown;
 }
 
 /**
@@ -275,10 +275,10 @@ function appendBranding(content: string, branding: SupraWallResponse["branding"]
 let _hasVerifiedConnection = false;
 async function internalEvaluate(
     toolName: string,
-    args: any,
+    args: Record<string, unknown>,
     options: SupraWallOptions,
     metadata: { model?: string; inputTokens?: number; outputTokens?: number } = {}
-): Promise<{ decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string; error?: string; resolvedArguments?: any; injectedSecrets?: string[]; vaultInjected?: boolean; branding?: SupraWallResponse["branding"] }> {
+): Promise<{ decision: "ALLOW" | "DENY" | "REQUIRE_APPROVAL"; reason?: string; error?: string; resolvedArguments?: Record<string, unknown>; injectedSecrets?: string[]; vaultInjected?: boolean; branding?: SupraWallResponse["branding"] }> {
     const {
         apiKey,
         cloudFunctionUrl = DEFAULT_CLOUD_FUNCTION_URL,

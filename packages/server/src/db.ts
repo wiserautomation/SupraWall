@@ -19,10 +19,10 @@ if (maskedUrl) {
 
 let dbUrl = rawUrl.trim();
 
-// Note: Vercel Postgres / Neon use Let's Encrypt certificates which may not be in the default Node CA list.
-// If using a custom CA or strict validation is required, use { rejectUnauthorized: true, ca: process.env.DATABASE_CA_CERT }
-const sslConfig = process.env.NODE_ENV === 'production' 
-    ? { rejectUnauthorized: false } 
+// Neon / Vercel Postgres use Let's Encrypt certificates, which are in Node's default CA bundle.
+// If your provider uses a custom CA, set DATABASE_CA_CERT to the PEM-encoded certificate.
+const sslConfig = process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: true, ...(process.env.DATABASE_CA_CERT ? { ca: process.env.DATABASE_CA_CERT } : {}) }
     : false;
 
 export const pool = new Pool({

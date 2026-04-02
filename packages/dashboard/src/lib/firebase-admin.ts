@@ -13,11 +13,9 @@ function getFirebaseAdmin(): admin.app.App {
         privateKey = privateKey.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
     }
 
-    // ⚠️ Read from env var with fallback — MUST match the client-side Firebase project
-    const projectId = process.env.FIREBASE_PROJECT_ID?.trim() || 'agentguard-1b9e9';
+    const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
 
-    console.log(`[Firebase Admin] Initializing with projectId: ${projectId}, clientEmail: ${clientEmail?.substring(0, 20)}...`);
 
 
     if (projectId && clientEmail && privateKey) {
@@ -29,7 +27,6 @@ function getFirebaseAdmin(): admin.app.App {
             }),
         });
     } else {
-        console.warn("[Firebase Admin] Environment variables are missing. Using default credentials with project ID:", projectId);
         return admin.initializeApp({ projectId });
     }
 }

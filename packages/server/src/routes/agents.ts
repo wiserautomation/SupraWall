@@ -8,6 +8,7 @@ import { getFirestore, logToFirestore } from "../firebase";
 import crypto from "crypto";
 import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
 import { logger } from "../logger";
+import { validate, CreateAgentSchema } from "../validation";
 
 const router = express.Router();
 
@@ -34,7 +35,7 @@ router.get("/", adminAuth, async (req: Request, res: Response) => {
 });
 
 // POST create agent (Admin Protected + Tier Enforced)
-router.post("/", adminAuth, resolveTier, async (req: Request, res: Response) => {
+router.post("/", adminAuth, resolveTier, validate(CreateAgentSchema), async (req: Request, res: Response) => {
     const client = await pool.connect();
     try {
         const tenantId = (req as AuthenticatedRequest).tenantId;
@@ -223,6 +224,49 @@ router.patch("/:id/guardrails", adminAuth, async (req: Request, res: Response) =
     } catch (e) {
         logger.error("[Agents] Guardrails update error:", { error: e });
         res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+// POST /v1/agents/:id/rotate-key — Regenerate API key (Admin Protected)
+router.post("/:id/rotate-key", adminAuth, async (req: Request, res: Response) => {
+    const client = await pool.connect();
+    try {
+        const id = req.params.id as string;
+        const tenantId = (req as AuthenticatedRequest).tenantId as string;
+
+        const newApiKey = generateApiKey();
+
+        await client.query("BEGIN");
+
+        const result = await client.query(
+            "UPDATE agents SET apikeyhash = $1 WHERE id = $2 AND tenantid = $3 RETURNING id, name",
+            [newApiKey, id, tenantId]
+        );
+
+        if (result.rows.length === 0) {
+            await client.query("ROLLBACK");
+            return res.status(404).json({ error: "Agent not found" });
+        }
+
+        // Sync new key to Firestore so gatekeeper runtime uses the new key immediately
+        const db = getFirestore();
+        if (db) {
+            await db.collection("agents").doc(id).update({ apiKey: newApiKey });
+        }
+
+        await client.query("COMMIT");
+
+        res.json({
+            id,
+            apiKey: newApiKey,
+            rotatedAt: new Date().toISOString()
+        });
+    } catch (e) {
+        await client.query("ROLLBACK");
+        logger.error("[Agents] Key rotation error:", { error: e });
+        res.status(500).json({ error: "Internal Server Error" });
+    } finally {
+        client.release();
     }
 });
 

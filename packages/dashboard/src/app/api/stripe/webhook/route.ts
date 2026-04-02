@@ -20,16 +20,13 @@ export async function POST(req: Request) {
         const isV2 = payload.includes('"object":"v2.core.event"');
         
         if (isV2) {
-            // For now, we acknowledge V2 events to prevent Stripe from retrying, 
-            // but our current logic focuses on V1 snapshots for sub management.
-            console.log("🛡️ SupraWall: Received Stripe V2 (Thin) Event. Acknowledged.");
+            // Acknowledge V2 (thin) events — our logic targets V1 snapshot events
             return NextResponse.json({ received: true, style: 'v2' });
         }
 
         event = stripe.webhooks.constructEvent(payload, sig, endpointSecret);
-    } catch (err: any) {
-        console.error(`[Webhook Signature Check Failed]: ${err.message}`);
-        return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+    } catch {
+        return NextResponse.json({ error: 'Webhook signature verification failed' }, { status: 400 });
     }
 
     // Handle the event (Snapshot style)

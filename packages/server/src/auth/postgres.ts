@@ -3,6 +3,7 @@
 
 import { pool } from "../db";
 import { AuthProvider, AgentInfo } from "./types";
+import { logger } from "../logger";
 
 /**
  * PostgreSQL Auth Provider
@@ -38,7 +39,7 @@ export class PostgresAuthProvider implements AuthProvider {
                 status: agent.status,
             };
         } catch (error) {
-            console.error("[PostgresAuth] Error validating API key:", error);
+            logger.error("[PostgresAuth] Error validating API key:", error);
             return null;
         }
     }
@@ -69,7 +70,7 @@ export class PostgresAuthProvider implements AuthProvider {
                 status: agent.status,
             };
         } catch (error) {
-            console.error("[PostgresAuth] Error getting agent:", error);
+            logger.error("[PostgresAuth] Error getting agent:", error);
             return null;
         }
     }

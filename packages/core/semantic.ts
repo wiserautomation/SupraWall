@@ -21,14 +21,32 @@ export interface SemanticAnalysisResult {
     modelUsed: string;
 }
 
+interface QueryResult<T = Record<string, unknown>> {
+    rows: T[];
+}
+
 interface IDatabasePool {
-    query(text: string, params?: any[]): Promise<any>;
+    query<T = Record<string, unknown>>(text: string, params?: unknown[]): Promise<QueryResult<T>>;
+}
+
+interface EnvInfo {
+    SUPRAWALL_DENY_THRESHOLD?: string;
+    SUPRAWALL_APPROVAL_THRESHOLD?: string;
+    SUPRAWALL_FLAG_THRESHOLD?: string;
+    SUPRAWALL_SEMANTIC_LLM_KEY?: string;
+    SUPRAWALL_SEMANTIC_MODEL?: string;
+    SUPRAWALL_SEMANTIC_TIMEOUT_MS?: string;
+}
+
+interface Logger {
+    warn(message: string, meta?: Record<string, unknown>): void;
+    error(message: string, meta?: Record<string, unknown>): void;
 }
 
 export async function analyzeCall(
     pool: IDatabasePool,
-    envInfo: any,
-    logger: any,
+    envInfo: EnvInfo,
+    logger: Logger,
     req: SemanticAnalysisRequest
 ): Promise<SemanticAnalysisResult> {
     const start = Date.now();
@@ -77,7 +95,7 @@ export async function analyzeCall(
         [req.tenantId, req.agentId, req.toolName, combinedScore, anomalyScore,
          confidence, decision, llmResult.reasoning, llmResult.model, latencyMs,
          JSON.stringify(req.args)]
-    ).catch((err: any) => logger.error('[Semantic] Failed to log analysis', { error: err }));
+    ).catch((err: unknown) => logger.error('[Semantic] Failed to log analysis', { error: err }));
 
     return { semanticScore: combinedScore, anomalyScore, confidence, decision, reasoning: llmResult.reasoning, latencyMs, modelUsed: llmResult.model };
 }
@@ -160,7 +178,7 @@ Delegation Chain: ${JSON.stringify(req.delegationChain || [])}
 Respond ONLY with JSON: { "score": <float 0-1>, "reasoning": "<one sentence>" }`;
 }
 
-async function callStandardLLM(envInfo: any, logger: any, prompt: string): Promise<{ score: number; reasoning: string; model: string }> {
+async function callStandardLLM(envInfo: EnvInfo, logger: Logger, prompt: string): Promise<{ score: number; reasoning: string; model: string }> {
     const apiKey = envInfo.SUPRAWALL_SEMANTIC_LLM_KEY;
     const model = envInfo.SUPRAWALL_SEMANTIC_MODEL || 'gpt-4o-mini';
     const timeoutMs = parseInt(envInfo.SUPRAWALL_SEMANTIC_TIMEOUT_MS || '300', 10);
@@ -180,13 +198,13 @@ async function callStandardLLM(envInfo: any, logger: any, prompt: string): Promi
                 temperature: 0, max_tokens: 100,
                 response_format: { type: 'json_object' },
             }),
-            signal: controller.signal as any,
+            signal: controller.signal,
         });
         clearTimeout(timeout);
         if (!res.ok) return { score: 0, reasoning: 'LLM error — defaulting safe', model };
 
-        const data = await res.json() as any;
-        const content = JSON.parse(data.choices[0].message.content);
+        const data = await res.json() as { choices: Array<{ message: { content: string } }> };
+        const content = JSON.parse(data.choices[0].message.content) as { score?: number; reasoning?: string };
         return { score: clamp(content.score ?? 0), reasoning: content.reasoning || '', model };
     } catch (err) {
         clearTimeout(timeout);
@@ -195,7 +213,7 @@ async function callStandardLLM(envInfo: any, logger: any, prompt: string): Promi
     }
 }
 
-async function callCustomEndpoint(pool: IDatabasePool, envInfo: any, logger: any, tenantId: string, endpoint: string, prompt: string): Promise<{ score: number; reasoning: string; model: string }> {
+async function callCustomEndpoint(pool: IDatabasePool, envInfo: EnvInfo, logger: Logger, tenantId: string, endpoint: string, prompt: string): Promise<{ score: number; reasoning: string; model: string }> {
     let authHeader: string | null = null;
     let maxLatencyMs = 500;
     let modelName = 'custom';
@@ -222,13 +240,13 @@ async function callCustomEndpoint(pool: IDatabasePool, envInfo: any, logger: any
         const res = await fetch(endpoint, {
             method: 'POST', headers,
             body: JSON.stringify({ prompt, model: modelName }),
-            signal: controller.signal as any,
+            signal: controller.signal,
         });
         clearTimeout(timeout);
         if (!res.ok) return { score: 0, reasoning: 'Custom endpoint error — defaulting safe', model: modelName };
 
-        const data = await res.json() as any;
-        return { score: clamp(data.score ?? 0), reasoning: data.reasoning || '', model: modelName };
+        const data = await res.json() as { score?: number; reasoning?: string };
+        return { score: clamp(data.score ?? 0), reasoning: data.reasoning ?? '', model: modelName };
     } catch (err) {
         clearTimeout(timeout);
         logger.warn('[Semantic] Custom endpoint failed/timed out', { error: err, endpoint });

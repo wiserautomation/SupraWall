@@ -65,6 +65,17 @@ secured = wrap_openai_agent(agent, SupraWallOptions(
 result = await Runner.run(secured, "Send email to all users")
 ```
 
+### smolagents
+```python
+from suprawall import wrap_smolagents, SupraWallOptions
+from smolagents import CodeAgent
+
+secured = wrap_smolagents(agent, SupraWallOptions(
+    api_key="ag_your_key_here"
+))
+result = secured.run("Search for sensitive files")
+```
+
 ### MCP middleware
 ```python
 from suprawall import SupraWallMiddleware, SupraWallOptions

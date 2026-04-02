@@ -6,6 +6,7 @@
 
 import { AuthProvider, AgentInfo } from "./types";
 import type { firestore } from "firebase-admin";
+import { logger } from "../logger";
 
 /**
  * Firebase Auth Provider (Optional)
@@ -36,10 +37,10 @@ export class FirebaseAuthProvider implements AuthProvider {
             this.db = admin.apps.length > 0 ? admin.firestore() : null;
 
             if (!this.db) {
-                console.warn("[FirebaseAuth] No Firebase service account provided. Provider inactive.");
+                logger.warn("[FirebaseAuth] No Firebase service account provided. Provider inactive.");
             }
         } catch (error) {
-            console.warn("[FirebaseAuth] firebase-admin not installed. Use PostgresAuthProvider instead.");
+            logger.warn("[FirebaseAuth] firebase-admin not installed. Use PostgresAuthProvider instead.");
             this.db = null;
         }
     }
@@ -68,7 +69,7 @@ export class FirebaseAuthProvider implements AuthProvider {
                 status: agentData.status,
             };
         } catch (error) {
-            console.error("[FirebaseAuth] Error validating API key:", error);
+            logger.error("[FirebaseAuth] Error validating API key:", error);
             return null;
         }
     }
@@ -90,7 +91,7 @@ export class FirebaseAuthProvider implements AuthProvider {
                 status: data.status,
             };
         } catch (error) {
-            console.error("[FirebaseAuth] Error getting agent:", error);
+            logger.error("[FirebaseAuth] Error getting agent:", error);
             return null;
         }
     }

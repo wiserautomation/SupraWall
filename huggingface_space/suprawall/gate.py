@@ -345,7 +345,7 @@ async def _poll_approval_async(request_id: str, options: SupraWallOptions) -> di
     return {"decision": "DENY", "reason": f"Approval timed out after {options.approval_timeout}s."}
 
 
-def _evaluate(tool_name: str, args: Any, options: SupraWallOptions, source: str = "direct-sdk") -> dict:
+def _evaluate(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     """Makes a synchronous policy check call to SupraWall."""
     # ── Safety Checks: Client-side fast-reject ──
     budget_block = _check_budget(options)
@@ -379,7 +379,6 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions, source: str 
                     "tenantId": options.tenant_id,
                     "sessionId": session_id,
                     "agentRole": options.agent_role,
-                    "source": source,
                 },
                 headers=headers,
             )
@@ -413,7 +412,7 @@ def _evaluate(tool_name: str, args: Any, options: SupraWallOptions, source: str 
     return data
 
 
-async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions, source: str = "direct-sdk") -> dict:
+async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions) -> dict:
     """Makes an async policy check call to SupraWall."""
     # ── Safety Checks: Client-side fast-reject ──
     budget_block = _check_budget(options)
@@ -447,7 +446,6 @@ async def _evaluate_async(tool_name: str, args: Any, options: SupraWallOptions, 
                     "tenantId": options.tenant_id,
                     "sessionId": session_id,
                     "agentRole": options.agent_role,
-                    "source": source,
                 },
                 headers=headers,
             )

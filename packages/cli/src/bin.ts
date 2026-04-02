@@ -139,8 +139,7 @@ program
             let decision = "ALLOW";
             for (const p of policies) {
                 if (new RegExp(p.condition).test(options.tool)) {
-                    // Fix BUG #4: Correctly check for "decision" field not "ruleType"
-                    const policyDecision = p.decision || p.ruleType; 
+                    const policyDecision = p.decision || p.ruleType;
                     if (policyDecision === "DENY") {
                         decision = "DENY";
                         break;
@@ -197,7 +196,6 @@ program
             db.get("SELECT decision FROM policies WHERE toolName = ?", [toolName], (err, row: any) => {
                 if (row) {
                     db.run("INSERT INTO logs VALUES (?, ?, ?, ?, ?)", [Date.now().toString(), row.decision, toolName, Date.now(), "dev-agent"]);
-                    // FIX BUG #5: Handle REQUIRE_APPROVAL correctly in dev server
                     res.json({ decision: row.decision, reason: `Action ${row.decision} by Local Dev Policy` });
                 } else {
                     res.json({ decision: "ALLOW", reason: "Default Allow" });
@@ -205,7 +203,6 @@ program
             });
         });
 
-        // FIX BUG #3: Add log endpoint to dev server
         app.get('/v1/agents/:id/logs', (req, res) => {
             const { id } = req.params;
             db.all("SELECT decision, toolName, timestamp FROM logs WHERE agentid = ? OR agentid = 'dev-agent' ORDER BY timestamp DESC LIMIT 10", [id], (err, rows) => {

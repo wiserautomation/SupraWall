@@ -31,13 +31,15 @@
     "firebase-admin": "^13.7.0",
     "font-awesome": "^4.7.0",
     "handlebars": "^4.7.9",
+    "helmet": "^8.1.0",
     "next": "16.2.1",
     "pdfkit": "^0.17.2",
     "pg": "^8.18.0",
     "puppeteer": "^24.40.0",
     "sqlite3": "6.0.1",
     "stripe": "^21.0.1",
-    "undici": "^7.24.4"
+    "undici": "^7.24.4",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",

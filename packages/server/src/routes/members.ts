@@ -6,7 +6,7 @@ import { pool } from "../db";
 import { enforceSeatLimit, inviteMember } from "../seats";
 import { logger } from "../logger";
 
-import { adminAuth, AuthenticatedRequest } from "../auth";
+import { adminAuth, requireMemberRole, AuthenticatedRequest } from "../auth";
 
 const router = Router();
 
@@ -35,8 +35,8 @@ router.get("/", adminAuth, async (req: Request, res: Response) => {
     }
 });
 
-// POST /v1/members/invite — Invite a new member (Admin Protected)
-router.post("/invite", adminAuth, enforceSeatLimit, async (req: Request, res: Response) => {
+// POST /v1/members/invite — Invite a new member (Admin Protected, requires 'admin' role)
+router.post("/invite", adminAuth, requireMemberRole("admin"), enforceSeatLimit, async (req: Request, res: Response) => {
     try {
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
         const { tenantId: bodyTenantId, email, role } = req.body;
@@ -59,8 +59,8 @@ router.post("/invite", adminAuth, enforceSeatLimit, async (req: Request, res: Re
     }
 });
 
-// DELETE /v1/members/:id — Remove a member (Admin Protected)
-router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
+// DELETE /v1/members/:id — Remove a member (Admin Protected, requires 'admin' role)
+router.delete("/:id", adminAuth, requireMemberRole("admin"), async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;
@@ -86,8 +86,8 @@ router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
     }
 });
 
-// PATCH /v1/members/:id/role — Update member role (Admin Protected)
-router.patch("/:id/role", adminAuth, async (req: Request, res: Response) => {
+// PATCH /v1/members/:id/role — Update member role (Admin Protected, requires 'admin' role)
+router.patch("/:id/role", adminAuth, requireMemberRole("admin"), async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
         const authenticatedTenantId = (req as AuthenticatedRequest).tenantId;

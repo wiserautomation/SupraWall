@@ -40,7 +40,7 @@ class SupraWall {
             // Real apps might want an explicit init/connect method if strict connection guarantee is needed 
             // before operations.
             this.adapter.connect(config.connectionString).catch(err => {
-                console.error(`Failed to connect ${config.adapter} adapter:`, err);
+                process.stderr.write(`[SupraWall] Failed to connect ${config.adapter} adapter: ${err}\n`);
             });
         }
     }
