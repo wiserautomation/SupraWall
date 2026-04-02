@@ -47,5 +47,66 @@
       "analyze": "Analyze",
       "analyzeDesc": "context with AI."
     }
+  },
+  "euAiAct": {
+    "hero": {
+      "badge": "EU AI Act Compliance Hub",
+      "headlinePrefix": "Every Article.",
+      "headlineEmphasis": "Every Agent.",
+      "subheadline": "Regulation doesn't have to be a \"black box.\" SupraWall helps AI developers comply with Europe's most stringent rules in one SDK integration."
+    },
+    "moat": {
+      "title": "The Compliance",
+      "moatWord": "Moat",
+      "subtitle": "Direct mapping of SupraWall capabilities to EU AI Act requirements."
+    },
+    "table": {
+      "article": "Article",
+      "requires": "What It Requires",
+      "does": "What SupraWall Does",
+      "location": "Product Location"
+    },
+    "mapping": {
+      "art9": {
+        "req": "Prove your AI had a documented risk management system before it acted",
+        "sol": "Policy Engine: pre-execution allow/deny rules. Compliance Templates: one-click Article 9 policy activation for Banking, Healthcare, HR."
+      },
+      "art12": {
+        "req": "Log every AI action in an auditable, tamper-proof record",
+        "sol": "RSA-signed audit trail at the tool-call boundary. Every execution logged with cryptographic signature."
+      },
+      "art14": {
+        "req": "A human must be able to monitor and intervene in AI actions",
+        "sol": "Human approval workflows for flagged tool calls. Policy engine is human-defined; AI operates within human-set boundaries."
+      }
+    },
+    "articles": {
+      "art9": {
+        "title": "Article 09: Risk Management",
+        "desc": "Evidence-based risk assessments for autonomous agent workflows."
+      },
+      "art12": {
+        "title": "Article 12: Auditable Logging",
+        "desc": "Tamper-proof, cryptographically signed record of every agentic intervention."
+      },
+      "art14": {
+        "title": "Article 14: Human Oversight",
+        "desc": "Enforcing manual approval gates for sensitive agentic outcomes."
+      },
+      "cta": "SEE COMPLIANCE PATH"
+    },
+    "conformity": {
+      "badge": "Regulator Ready",
+      "titlePrefix": "Designed for",
+      "titleEmphasis": "Conformity.",
+      "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
+    },
+    "final": {
+      "badge": "Ready for Audit",
+      "titlePrefix": "Compliance Won.",
+      "titleEmphasis": "Evidence Shipped.",
+      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "cta": "Implement AI Act Shield"
+    }
   }
 }

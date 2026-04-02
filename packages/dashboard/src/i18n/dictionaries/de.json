@@ -47,5 +47,66 @@
       "analyze": "Analysieren",
       "analyzeDesc": "von Kontext mit KI."
     }
+  },
+  "euAiAct": {
+    "hero": {
+      "badge": "EU-KI-Verordnung Compliance-Hub",
+      "headlinePrefix": "Jeder Artikel.",
+      "headlineEmphasis": "Jeder Agent.",
+      "subheadline": "Regulierung muss keine \"Blackbox\" sein. SupraWall hilft KI-Entwicklern, die strengsten Regeln Europas mit einer einzigen SDK-Integration einzuhalten."
+    },
+    "moat": {
+      "title": "Der Compliance-",
+      "moatWord": "Vorsprung",
+      "subtitle": "Direkte Zuordnung der SupraWall-Funktionen zu den Anforderungen der EU-KI-Verordnung."
+    },
+    "table": {
+      "article": "Artikel",
+      "requires": "Was erforderlich ist",
+      "does": "Was SupraWall tut",
+      "location": "Produktbereich"
+    },
+    "mapping": {
+      "art9": {
+        "req": "Nachweis, dass Ihre KI über ein dokumentiertes Risikomanagementsystem verfügte, bevor sie handelte",
+        "sol": "Policy Engine: Pre-Execution Allow/Deny-Regeln. Compliance-Templates: Ein-Klick-Aktivierung der Artikel-9-Richtlinie für Banking, Gesundheitswesen, HR."
+      },
+      "art12": {
+        "req": "Protokollierung jeder KI-Aktion in einem prüfbaren, fälschungssicheren Datensatz",
+        "sol": "RSA-signierter Audit-Trail an der Tool-Call-Grenze. Jede Ausführung wird mit einer kryptografischen Signatur protokolliert."
+      },
+      "art14": {
+        "req": "Ein Mensch muss in der Lage sein, KI-Aktionen zu überwachen und einzugreifen",
+        "sol": "Human-Approval-Workflows für markierte Tool-Calls. Die Policy Engine ist menschlich definiert; die KI agiert innerhalb von Menschen gesetzten Grenzen."
+      }
+    },
+    "articles": {
+      "art9": {
+        "title": "Artikel 09: Risikomanagement",
+        "desc": "Evidenzbasierte Risikobewertungen für autonome Agenten-Workflows."
+      },
+      "art12": {
+        "title": "Artikel 12: Auditierbare Protokollierung",
+        "desc": "Fälschungssicherer, kryptografisch signierter Datensatz jeder agentischen Intervention."
+      },
+      "art14": {
+        "title": "Artikel 14: Menschliche Aufsicht",
+        "desc": "Erzwingung manueller Genehmigungsgates für sensible agentische Ergebnisse."
+      },
+      "cta": "COMPLIANCE-PFAD ANSEHEN"
+    },
+    "conformity": {
+      "badge": "Bereit für Regulierungsbehörden",
+      "titlePrefix": "Entwickelt für",
+      "titleEmphasis": "Konformität.",
+      "description": "SupraWall verwandelt reguläre agentische Workflows ohne Reibungsverluste in \"High-Risk Compliant\"-Architekturen. Von Artikel 9 bis 14 haben wir das Engineering übernommen, damit Sie sich um das Produkt kümmern können."
+    },
+    "final": {
+      "badge": "Bereit für das Audit",
+      "titlePrefix": "Compliance gelöst.",
+      "titleEmphasis": "Nachweise geliefert.",
+      "description": "Bauen Sie kein Compliance-Team auf. Aktivieren Sie den SupraWall Audit Trail und konzentrieren Sie sich wieder auf Ihr Produkt.",
+      "cta": "KI-Act-Schutz implementieren"
+    }
   }
 }

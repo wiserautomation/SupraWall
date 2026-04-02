@@ -77,7 +77,7 @@ export default async function EuAiActHubPage({
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
-            <EuAiActClient />
+            <EuAiActClient dictionary={dictionary} />
         </div>
     );
 }
