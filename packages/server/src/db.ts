@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Pool } from "pg";
+import sqlite3 from "sqlite3";
+import { promisify } from "util";
 import dotenv from "dotenv";
 import { logger } from "./logger";
 import { TIER_LIMITS, Tier } from "./tier-config";
@@ -19,25 +21,276 @@ if (maskedUrl) {
 
 let dbUrl = rawUrl.trim();
 
+// Add SQLite fallback for local development without Docker
+const isLocalNoDocker = !process.env.DATABASE_URL && !process.env.VERCEL;
+let sqliteDb: sqlite3.Database | null = null;
+
+if (isLocalNoDocker) {
+    logger.warn("[DB] No DATABASE_URL found and not on Vercel. Falling back to SQLite for local development.");
+    sqliteDb = new sqlite3.Database("suprawall.db");
+}
+
 // Neon / Vercel Postgres use Let's Encrypt certificates, which are in Node's default CA bundle.
 // If your provider uses a custom CA, set DATABASE_CA_CERT to the PEM-encoded certificate.
 const sslConfig = process.env.NODE_ENV === 'production'
     ? { rejectUnauthorized: true, ...(process.env.DATABASE_CA_CERT ? { ca: process.env.DATABASE_CA_CERT } : {}) }
     : false;
 
-export const pool = new Pool({
-    connectionString: dbUrl,
+const pgPool = new Pool({
+    connectionString: dbUrl || "postgresql://postgres:postgres@localhost:5432/suprawall",
     ssl: sslConfig,
     max: 10,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000, 
 });
 
-pool.on("error", (err) => {
-    logger.error(`[DB] Pool Error: ${err.message}`, { error: err });
-});
+interface QueryResult {
+    rows: any[];
+    rowCount: number | null;
+}
+
+export const pool = {
+    query: async (text: string, params?: any[]): Promise<QueryResult> => {
+        if (sqliteDb) {
+            const sql = text.replace(/\$(\d+)/g, "?");
+            if (sql.trim().toUpperCase().startsWith("SELECT")) {
+                const all = promisify(sqliteDb.all.bind(sqliteDb));
+                const rows = await all(sql, params || []) as any[];
+                return { rows, rowCount: rows.length };
+            } else {
+                const run = promisify(sqliteDb.run.bind(sqliteDb));
+                const result: any = await run(sql, params || []);
+                return { rows: [], rowCount: result ? result.changes : 0 };
+            }
+        }
+        return pgPool.query(text, params);
+    },
+    connect: async () => {
+        if (sqliteDb) {
+            // Mock client for SQLite
+            return {
+                query: pool.query,
+                release: () => {},
+            };
+        }
+        return pgPool.connect();
+    },
+    on: (event: any, listener: (...args: any[]) => void) => {
+        if (!sqliteDb) pgPool.on(event, listener);
+    }
+};
 
 export const initDb = async () => {
+    if (sqliteDb) {
+        logger.info("[DB] Initializing SQLite schema...");
+        const queries = [
+            `CREATE TABLE IF NOT EXISTS policies (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenantid TEXT NOT NULL,
+                name TEXT,
+                agentid TEXT,
+                toolname TEXT NOT NULL,
+                condition TEXT,
+                ruletype TEXT NOT NULL,
+                priority INTEGER DEFAULT 100,
+                isdryrun INTEGER DEFAULT 0,
+                description TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS audit_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenantid TEXT NOT NULL,
+                agentid TEXT,
+                toolname TEXT,
+                decision TEXT,
+                riskscore INTEGER,
+                cost_usd FLOAT DEFAULT 0,
+                reason TEXT,
+                arguments TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                parameters TEXT,
+                metadata TEXT
+            )`,
+            `CREATE TABLE IF NOT EXISTS agents (
+                id TEXT PRIMARY KEY,
+                tenantid TEXT NOT NULL,
+                name TEXT NOT NULL,
+                apikeyhash TEXT,
+                scopes TEXT DEFAULT '[]',
+                status TEXT DEFAULT 'active',
+                slack_webhook TEXT,
+                max_cost_usd FLOAT DEFAULT 10,
+                budget_alert_usd FLOAT DEFAULT 8,
+                max_iterations INTEGER DEFAULT 50,
+                loop_detection INTEGER DEFAULT 0,
+                createdat DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS tenants (
+                id TEXT PRIMARY KEY,
+                name TEXT,
+                master_api_key TEXT,
+                slack_webhook_url TEXT,
+                tier TEXT DEFAULT 'open_source',
+                stripe_customer_id TEXT,
+                stripe_subscription_id TEXT,
+                billing_cycle_start DATETIME DEFAULT CURRENT_TIMESTAMP,
+                tier_expires_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS tenant_usage (
+                tenant_id TEXT NOT NULL,
+                month TEXT NOT NULL,
+                evaluation_count INTEGER DEFAULT 0,
+                overage_units INTEGER DEFAULT 0,
+                overage_billed_usd DECIMAL(10,4) DEFAULT 0,
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+                PRIMARY KEY (tenant_id, month)
+            )`,
+            `CREATE TABLE IF NOT EXISTS organization_members (
+                id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL REFERENCES tenants(id),
+                user_email TEXT NOT NULL,
+                user_id TEXT,
+                role TEXT NOT NULL DEFAULT 'member',
+                status TEXT DEFAULT 'pending',
+                invited_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                accepted_at DATETIME,
+                UNIQUE(tenant_id, user_email)
+            )`,
+            `CREATE TABLE IF NOT EXISTS sso_configs (
+                id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL UNIQUE REFERENCES tenants(id),
+                provider TEXT NOT NULL,
+                client_id TEXT,
+                client_secret_encrypted BLOB,
+                domain TEXT,
+                enabled INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS vault_secrets (
+                id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL,
+                secret_name TEXT NOT NULL,
+                encrypted_value BLOB NOT NULL,
+                description TEXT,
+                expires_at DATETIME,
+                assigned_agents TEXT DEFAULT '[]',
+                last_rotated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(tenant_id, secret_name)
+            )`,
+            `CREATE TABLE IF NOT EXISTS vault_access_rules (
+                id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL,
+                agent_id TEXT NOT NULL,
+                secret_id TEXT REFERENCES vault_secrets(id) ON DELETE CASCADE,
+                allowed_tools TEXT NOT NULL DEFAULT '[]',
+                max_uses_per_hour INT DEFAULT 100,
+                requires_approval INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(tenant_id, agent_id, secret_id)
+            )`,
+            `CREATE TABLE IF NOT EXISTS threat_events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenantid TEXT NOT NULL,
+                agentid TEXT,
+                event_type TEXT NOT NULL,
+                severity TEXT DEFAULT 'medium',
+                details TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS threat_summaries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenantid TEXT NOT NULL,
+                entity_id TEXT NOT NULL, 
+                entity_type TEXT NOT NULL,
+                threat_score FLOAT DEFAULT 0,
+                total_events INTEGER DEFAULT 0,
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(tenantid, entity_id, entity_type)
+            )`,
+            `CREATE TABLE IF NOT EXISTS approval_requests (
+                id TEXT PRIMARY KEY,
+                tenantid TEXT NOT NULL,
+                agentid TEXT NOT NULL,
+                toolname TEXT NOT NULL,
+                parameters TEXT,
+                status TEXT DEFAULT 'PENDING',
+                decision_by TEXT,
+                decision_at DATETIME,
+                decision_comment TEXT,
+                metadata TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS content_tasks (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenantid TEXT NOT NULL,
+                url TEXT NOT NULL,
+                type TEXT,
+                primary_keyword TEXT,
+                status TEXT DEFAULT 'draft',
+                published_at DATETIME,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenant_id TEXT NOT NULL,
+                agent_id TEXT NOT NULL,
+                tool_name TEXT NOT NULL,
+                avg_args_length FLOAT DEFAULT 0,
+                avg_calls_per_hour FLOAT DEFAULT 0,
+                common_arg_patterns TEXT DEFAULT '[]',
+                total_samples INTEGER DEFAULT 0,
+                last_updated DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(tenant_id, agent_id, tool_name)
+            )`,
+            `CREATE TABLE IF NOT EXISTS semantic_analysis_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenant_id TEXT NOT NULL,
+                agent_id TEXT NOT NULL,
+                tool_name TEXT NOT NULL,
+                semantic_score FLOAT NOT NULL,
+                anomaly_score FLOAT,
+                confidence TEXT NOT NULL,
+                decision_override TEXT,
+                reasoning TEXT,
+                model_used TEXT,
+                latency_ms INTEGER,
+                parameters TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS custom_model_endpoints (
+                id TEXT PRIMARY KEY,
+                tenant_id TEXT NOT NULL UNIQUE,
+                endpoint_url TEXT NOT NULL,
+                auth_header TEXT,
+                model_name TEXT,
+                max_latency_ms INTEGER DEFAULT 500,
+                enabled INTEGER DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            `CREATE TABLE IF NOT EXISTS beta_testers (
+                id TEXT PRIMARY KEY,
+                email TEXT UNIQUE NOT NULL,
+                framework TEXT,
+                agent_count TEXT,
+                main_risk TEXT,
+                is_qualified INTEGER DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`,
+            // Insert seed data so the dashboard is not empty
+            `INSERT OR IGNORE INTO tenants (id, name, tier) VALUES ('default', 'SupraWall Org', 'business')`,
+            `INSERT OR IGNORE INTO agents (id, tenantid, name, status) VALUES ('agent_1', 'default', 'LinkedIn Manager', 'active')`,
+            `INSERT OR IGNORE INTO agents (id, tenantid, name, status) VALUES ('agent_2', 'default', 'X.com Scout', 'active')`
+        ];
+
+        const run = promisify(sqliteDb.run.bind(sqliteDb));
+        for (const q of queries) {
+            await run(q);
+        }
+        return;
+    }
+
     const query = `
         CREATE TABLE IF NOT EXISTS policies (
             id SERIAL PRIMARY KEY,

@@ -1,8 +1,6 @@
-from dify_plugin import ToolPlugin
+from dify_plugin import Plugin
+from tools.scan import SupraWallScanTool
+from tools.enforce import SupraWallEnforceTool
 
-class SupraWallSecurityPlugin(ToolPlugin):
+class SupraWallSecurityPlugin(Plugin):
     pass
-
-if __name__ == "__main__":
-    from dify_plugin import run
-    run(SupraWallSecurityPlugin())

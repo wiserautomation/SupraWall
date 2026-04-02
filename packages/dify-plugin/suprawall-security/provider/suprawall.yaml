@@ -2,10 +2,13 @@ identity:
   author: suprawall
   name: suprawall
   label:
-    en_US: SupraWall
+    en_US: SupraWall Security
   description:
-    en_US: SupraWall AI Agent Security Platform
+    en_US: Deterministic policy enforcement for AI agents. Detects prompt injection, enforces output policies, and blocks non-compliant agent actions.
   icon: icon.svg
+tools:
+  - tools/scan.yaml
+  - tools/enforce.yaml
 credentials_for_provider:
   api_key:
     type: secret-input
