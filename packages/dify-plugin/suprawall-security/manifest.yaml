@@ -1,0 +1,26 @@
+version: 0.1.0
+type: plugin
+author: suprawall
+name: suprawall-security
+label:
+  en_US: SupraWall Security
+description:
+  en_US: >
+    Deterministic policy enforcement for AI agents. Detects prompt injection,
+    enforces output policies, and blocks non-compliant agent actions before
+    they reach production. Integrates directly into your Dify Workflow or Agent.
+icon: icon.svg
+category: tool
+tags:
+  - security
+  - productivity
+  - utilities
+resource:
+  memory: 256mb
+  permission:
+    endpoints:
+      enabled: true
+    tools:
+      enabled: true
+    models:
+      enabled: false

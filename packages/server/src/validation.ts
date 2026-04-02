@@ -28,7 +28,7 @@ export const CreatePolicySchema = z.object({
 export const CreateAgentSchema = z.object({
     name:      nonEmptyStr(100),
     scopes:    z.array(z.string().max(100)).max(50).optional(),
-    guardrails: z.record(z.unknown()).optional(),
+    guardrails: z.record(z.string(), z.unknown()).optional(),
 });
 
 export const UpdateTenantSchema = z.object({
@@ -56,7 +56,7 @@ export function validate<T>(schema: z.ZodType<T>) {
         if (!result.success) {
             return res.status(400).json({
                 error: "Validation failed",
-                details: result.error.errors.map(e => ({
+                details: result.error.issues.map(e => ({
                     field: e.path.join("."),
                     message: e.message,
                 })),

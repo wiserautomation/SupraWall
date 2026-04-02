@@ -1,0 +1,19 @@
+identity:
+  author: suprawall
+  name: suprawall
+  label:
+    en_US: SupraWall
+  description:
+    en_US: SupraWall AI Agent Security Platform
+  icon: icon.svg
+credentials_for_provider:
+  api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: SupraWall API Key
+    placeholder:
+      en_US: Enter your SupraWall API key (sw_...)
+    help:
+      en_US: Get your API key from https://supra-wall.com/dashboard
+    url: https://supra-wall.com/dashboard
