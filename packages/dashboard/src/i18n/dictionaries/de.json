@@ -29,7 +29,8 @@
       "headlineSuffix": "SupraWall",
       "headlineAction": "stellt sicher, dass er es nicht kann.",
       "subheadline": "Open Source. Eine Zeile Code. Sieben Bedrohungen neutralisiert.",
-      "cta": "Agenten sichern"
+      "cta": "Node Key anfordern",
+      "guide": "LESEN SIE DEN EU AI ACT COMPLIANCE GUIDE"
     },
     "features": {
       "vault": "Vault",
@@ -106,7 +107,814 @@
       "titlePrefix": "Compliance gelöst.",
       "titleEmphasis": "Nachweise geliefert.",
       "description": "Bauen Sie kein Compliance-Team auf. Aktivieren Sie den SupraWall Audit Trail und konzentrieren Sie sich wieder auf Ihr Produkt.",
-      "cta": "KI-Act-Schutz implementieren"
+      "cta": "SDK jetzt implementieren"
+    }
+  },
+  "about": {
+    "hero": {
+      "badge": "Unsere Mission",
+      "title": "Standardisierung der",
+      "emphasis": "autonomen Zukunft.",
+      "description": "SupraWall wurde 2024 mit einer einzigen Überzeugung gegründet: Prompts sind keine Sicherheit. Da sich die Welt von <span class=\"text-white italic\">Chatbots</span> hin zu <span class=\"text-white italic text-glow uppercase italic font-bold\">autonomen Agenten</span> bewegt, benötigte die Industrie eine deterministische Sicherheitsschicht auf Binärebene."
+    },
+    "philosophy": {
+      "badge": "Die deterministische Säule",
+      "title": "Sicherheit,",
+      "emphasis": "keine Ratschläge.",
+      "description": "Der aktuelle Standard für „KI-Sicherheit“ besteht darin, das LLM zu bitten, sicher zu sein. Wir glauben, dass dies grundlegend falsch ist. In einer Produktionsumgebung muss Sicherheit außerhalb des Kontextfensters des Modells erzwungen werden — dort, wo sie nicht durch indirekte Prompt-Injektionen oder Model-Drift manipuliert werden kann.",
+      "culture": "Engineering-First Kultur",
+      "vision": {
+        "title": "Gründungsvision",
+        "description": "Agentische Sicherheit in die binäre Runtime verlagern. Der Welt einen 1-Zeilen-Fix für autonomes Chaos bieten. Sicherstellen, dass die Agenten, die wir heute bauen, diejenigen sind, die wir morgen kontrollieren."
+      }
+    },
+    "values": {
+      "badge": "Institutionelle Standards",
+      "title": "Jeder Sektor.",
+      "emphasis": "Jeder Agent.",
+      "items": [
+        {
+          "title": "Transparenz",
+          "desc": "Keine Magie. Wir veröffentlichen unsere Interzeptionsmethoden und fördern Sicherheitsaudits durch Dritte."
+        },
+        {
+          "title": "Souveränität",
+          "desc": "Ihre Agenten, Ihre Regeln. Wir liefern das Substrat, aber Sie besitzen die Richtlinien zur Durchsetzung."
+        },
+        {
+          "title": "Resilienz",
+          "desc": "Unser SDK ist für geschäftskritische Aufgaben in Finanzen, Recht und Gesundheitswesen konzipiert."
+        }
+      ]
+    },
+    "footer": {
+      "badge": "Schließen Sie sich der Bewegung an",
+      "title": "Sichern Sie das",
+      "emphasis": "Unkontrollierte.",
+      "description": "Wir bauen die Vertrauensschicht für das agentische Internet. Bauen Sie mit uns.",
+      "cta": "Jetzt starten"
+    }
+  },
+  "forComplianceOfficers": {
+    "hero": {
+      "badge": "Compliance-Landingpage",
+      "title": "Beweise geliefert.",
+      "emphasis": "Audit bestanden.",
+      "description": "Autonome Agenten müssen keine „Blackbox“ sein. SupraWall erstellt einen unveränderlichen Datensatz für jeden Tool-Aufruf und jede blockierte Aktion."
+    },
+    "observability": {
+      "badge": "EU AI Act Artikel 9, 11, 12, 14",
+      "title": "Automatisierte",
+      "emphasis": "Observability.",
+      "description": "Der EU AI Act verlangt von Entwicklern „hochriskanter“ agentischer Architekturen, eine kontinuierliche Protokollierung und menschliche Aufsicht aufrechtzuerhalten. SupraWall automatisiert dies mit signierten, behördentauglichen PDF-Berichten, die direkt aus dem SDK erstellt werden.",
+      "items": [
+        {
+          "title": "Artikel 12: Protokollierung"
+        },
+        {
+          "title": "Artikel 14: Menschliche Aufsicht"
+        },
+        {
+          "title": "Artikel 25: Datenschutz"
+        }
+      ],
+      "report": {
+        "badge": "Signiertes PDF",
+        "title": "Konformitätsbewertungsbericht",
+        "signature": "RSA-4096 Signiert",
+        "description": "Dieser Bericht bestätigt, dass von 41.200 Agenten-Tool-Aufrufen 29 Blockierungen aufgrund von Richtlinie DP-14 aufgetreten sind. Die menschliche Freigabe wurde von 3 autorisierten Ingenieuren für alle sensiblen Aktionen erteilt.",
+        "cta": "Audit-Bericht herunterladen"
+      }
+    },
+    "pillars": {
+      "badge": "Totale Resilienz",
+      "title": "Zero-Trust",
+      "emphasis": "Governance-Standard.",
+      "items": [
+        {
+          "title": "Unveränderlicher Pfad",
+          "desc": "Jede Aktion wird an der Quelle gehasht und signiert. Einmal aufgezeichnet, können die Beweise nicht mehr geändert werden."
+        },
+        {
+          "title": "Einheitliche Risikorichtlinie",
+          "desc": "Zentralisieren Sie Ihre Sicherheitsrichtlinien für alle internen und ausgehenden Agenten in einem Dashboard."
+        },
+        {
+          "title": "Automatisierte DSGVO",
+          "desc": "Erfüllen Sie sofort die Anforderungen an die Datenbereinigung mit dem PII-Schutz, der bei jeder Integration ausgeführt wird."
+        }
+      ]
+    },
+    "footer": {
+      "badge": "Für Regulatoren",
+      "title": "Audit bestanden.",
+      "emphasis": "Risiko kontrolliert.",
+      "description": "Warten Sie nicht auf eine Compliance-Untersuchung. Statten Sie Ihr Team noch heute mit den benötigten Beweisen aus.",
+      "cta": "Compliance starten"
+    },
+    "tryIn30Seconds": {
+      "title": "Testen Sie es in",
+      "emphasis": "30 Sekunden.",
+      "description": "Kein Konto erforderlich. Automatische Erkennung Ihres Frameworks und Absicherung Ihres Agenten mit einem Befehl.",
+      "copy": "KLICKEN ZUM KOPIEREN",
+      "armored": "Ihr Agent ist jetzt abgesichert."
+    }
+  },
+  "vs": {
+    "hero": {
+      "badge": "Der deterministische Vorteil",
+      "title": "Hören Sie auf zu raten.",
+      "emphasis": "Fangen Sie an abzufangen.",
+      "description": "Es gibt zwei Wege, einen KI-Agenten zu sichern: Ihn zu bitten, sicher zu sein (Wahrscheinlichkeitsbasiert) oder ihn dazu zu zwingen (Deterministisch). SupraWall ist letzteres."
+    },
+    "cards": {
+      "winner": "Gewinner: SupraWall",
+      "loser": "Probabilistische Gefühle",
+      "details": "DETAILLIERTER VERGLEICH",
+      "vs": "SupraWall vs.",
+      "items": [
+        {
+          "title": "Lakera",
+          "desc": "Probabilistische Prompt-Guardrails vs. deterministische SDK-Interzeption.",
+          "pill": "LLM-Sicherheit",
+          "pros": [
+            "SDK Erzwungen",
+            "Vault-Integration",
+            "Budget-Schutzschalter"
+          ]
+        },
+        {
+          "title": "Galileo",
+          "desc": "Monitoring & Observability vs. Echtzeit-SDK-Richtliniengrenzen.",
+          "pill": "Observability",
+          "pros": [
+            "Signierter Audit-Trail",
+            "Interzeptions-API",
+            "Menschliche Aufsicht"
+          ]
+        },
+        {
+          "title": "NeMo Guardrails",
+          "desc": "Colang-Logik im Kontextfenster vs. externe binäre Durchsetzung.",
+          "pill": "Framework",
+          "pros": [
+            "Kein Kontext-Leak",
+            "Null Passivität",
+            "Unveränderliche Richtlinie"
+          ]
+        },
+        {
+          "title": "Guardrails AI",
+          "desc": "Strukturierte Output-Validierung vs. totale agentische Runtime-Sicherheit.",
+          "pill": "Validierung",
+          "pros": [
+            "Action-Shield",
+            "Kostenkontrolle",
+            "Art. 12 Logs"
+          ]
+        },
+        {
+          "title": "Portkey",
+          "desc": "Auf Traffic fokussierte KI-Gateways vs. auf Agentenaktionen fokussierte Sicherheit.",
+          "pill": "Gateway",
+          "pros": [
+            "Sub-ms Latenz",
+            "PII-Scrubbing",
+            "Lokale Ausführung"
+          ]
+        },
+        {
+          "title": "Straiker",
+          "desc": "Automatisiertes Agenten-Testing vs. agentische Tool-Interzeption in Echtzeit.",
+          "pill": "Testing",
+          "pros": [
+            "Produktionsbereit",
+            "SDK-Injektion",
+            "EU AI Act Ready"
+          ]
+        }
+      ]
+    },
+    "table": {
+      "badge": "Direkter Vergleich",
+      "title": "Probabilistisch vs.",
+      "emphasis": "Deterministisch",
+      "headers": {
+        "metric": "Sicherheitsmetrik",
+        "alt": "Alternative Plattformen",
+        "supra": "SupraWall SDK"
+      },
+      "rows": [
+        {
+          "metric": "Primäre Verteidigung",
+          "alt": "LLM-Guardrails (Probabilistisch)",
+          "supra": "SDK-Interzeption (Deterministisch)"
+        },
+        {
+          "metric": "Sicherheits-Perimeter",
+          "alt": "Prompt-Kontextfenster",
+          "supra": "Binäre Runtime-Schicht"
+        },
+        {
+          "metric": "Geheimnisschutz",
+          "alt": "Null (Agenten greifen auf Keys zu)",
+          "supra": "Vault-Injektion (schlüssellose Agenten)"
+        },
+        {
+          "metric": "Compliance-Nachweis",
+          "alt": "Standard-Logs",
+          "supra": "RSA-signierte Beweisberichte"
+        },
+        {
+          "metric": "Risiko der Umgehung",
+          "alt": "Hoch (Jailbreaking)",
+          "supra": "Null (Logik-Bypass unmöglich)"
+        }
+      ]
+    },
+    "faq": {
+      "badge": "Fragen & Antworten",
+      "title": "Noch unsicher?",
+      "items": [
+        {
+          "q": "Ist SupraWall nur ein weiterer LLM-Guardrail?",
+          "a": "Nein. Guardrails verlassen sich darauf, dass das LLM brav ist. SupraWall ist ein Interzeptor auf SDK-Ebene, der harte Regeln erzwingt, unabhängig davon, was das LLM will."
+        },
+        {
+          "q": "Kann ich SupraWall mit LangChain verwenden?",
+          "a": "Ja. SupraWall integriert sich mit einem Befehl in LangChain, CrewAI und jedes größere Framework."
+        },
+        {
+          "q": "Fügt es Tool-Aufrufen Latenz hinzu?",
+          "a": "Minimal. Richtlinienprüfungen werden lokal auf Ihrem Node durchgeführt und fügen der Werkzeugausführungszeit in der Regel <10ms hinzu."
+        },
+        {
+          "q": "Gibt es einen kostenlosen Tarif für Entwickler?",
+          "a": "Ja. Unser Community SDK ist für Single-Agent-Deployments und Forschungszwecke kostenlos."
+        }
+      ]
+    }
+  },
+  "gdpr": {
+    "hero": {
+      "badge": "DSGVO-Compliance",
+      "title": "Keine PII-Lecks.",
+      "emphasis": "Automatisiert.",
+      "description": "Verhindern Sie, dass sensible Daten Ihr Netzwerk verlassen. SupraWall schwärzt PII, bevor der Tool-Aufruf jemals die externe API erreicht."
+    },
+    "comparison": {
+      "title": "Netzwerk-Interzeption",
+      "insecureLabel": "Ungeschützter Kontext",
+      "secureLabel": "PII-Schutz Aktiv",
+      "terminal": {
+        "header": "AGENTEN-AUSFÜHRUNGSPROTOKOLL",
+        "insecure": {
+          "status": "Payload enthält PII",
+          "violation": "DSGVO-Verstoß Erkannt"
+        },
+        "secure": {
+          "status": "Payload Geschwärzt",
+          "protection": "Zero-Trust-Regime Durchgesetzt"
+        }
+      },
+      "explain": {
+        "title": "Deterministische Verschleierung",
+        "p": "Verlassen Sie sich nicht darauf, dass das LLM mit sensiblen Daten „vorsichtig“ umgeht. SupraWall sitzt zwischen Ihrem Agenten und dem Internet und stellt sicher, dass PII deterministisch auf Binärebene entfernt wird.",
+        "features": {
+          "scrubbing": {
+            "title": "Ausgehendes Scrubbing",
+            "desc": "Sozialversicherungsnummern, E-Mails und Kreditkarten werden ersetzt."
+          },
+          "logs": {
+            "title": "Saubere Audit-Protokolle",
+            "desc": "Compliance-Aufzeichnungen werden ohne unmaskierte PII gespeichert."
+          }
+        }
+      }
+    },
+    "final": {
+      "badge": "Starten Sie den Schutz",
+      "title": "Sichern Sie das",
+      "emphasis": "Kontextfenster.",
+      "description": "Leaken Sie keine Benutzerdaten an externe API-Anbieter. Aktivieren Sie den PII-Schutz und betreiben Sie Ihre Agenten mit Zuversicht.",
+      "cta": "SDK jetzt implementieren",
+      "guide": "Lesen Sie den DSGVO Entwickler-Leitfaden"
+    }
+  },
+  "compliance": {
+    "hero": {
+      "badge": "Enterprise Ready",
+      "titlePrefix": "EU AI Act",
+      "titleEmphasis": "Compliance.",
+      "titleSuffix": "Gelöst.",
+      "description": "SupraWall ordnet jeden Tool-Call eines autonomen Agenten spezifischen regulatorischen Anforderungen zu. Automatisieren Sie Ihre Compliance-Berichterstattung und minimieren Sie die Risiken Ihrer KI-Transformation."
+    },
+    "articles": {
+      "art12": {
+        "name": "Protokollierung",
+        "desc": "Automatische Aufzeichnung von Ereignissen während des Betriebs von Hochrisiko-KI-Systemen.",
+        "feature": "Deterministische Audit-Logs"
+      },
+      "art14": {
+        "name": "Menschliche Aufsicht",
+        "desc": "Entwicklung von Systemen, die von natürlichen Personen effektiv beaufsichtigt werden können.",
+        "feature": "Human-in-the-loop-Protokoll"
+      },
+      "art10": {
+        "name": "Daten-Governance",
+        "desc": "Sicherstellung, dass Trainings- und Testdatensätze einer angemessenen Governance unterliegen.",
+        "feature": "Tool-Zugriffskontrolle"
+      },
+      "art15": {
+        "name": "Robustheit & Sicherheit",
+        "desc": "Angemessenes Niveau an Robustheit, Genauigkeit und Cybersicherheit.",
+        "feature": "Deterministischer Shim-Layer"
+      }
+    },
+    "roadmap": {
+      "title": "Compliance-Roadmap",
+      "subtitle": "Wie SupraWall sicherstellt, dass Ihre KI-Agenten innerhalb der gesetzlichen Grenzen bleiben.",
+      "table": {
+        "head": {
+          "req": "Rahmenanforderung",
+          "control": "SupraWall-Kontrolle",
+          "status": "Status"
+        },
+        "rows": {
+          "transparency": {
+            "req": "Transparenz (Art 4b)",
+            "control": "System Prompt Injection Schutz"
+          },
+          "techDoc": {
+            "req": "Technische Dokumentation (Art 11)",
+            "control": "Automatisch generiertes Compliance-PDF"
+          },
+          "riskMgmt": {
+            "req": "Risikomanagement (Art 9)",
+            "control": "Deterministische Grenzüberschreitungserkennung"
+          },
+          "conformity": {
+            "req": "Konformitätsbewertung (Art 43)",
+            "control": "Validierungs-Audit-Trails"
+          }
+        }
+      }
+    },
+    "cta": {
+      "titlePrefix": "Machen Sie Ihre Agenten",
+      "titleEmphasis": "Gesetzeskonform",
+      "titleSuffix": "in einer Zeile.",
+      "description": "Integrieren Sie SupraWall in jedes LLM-Framework und automatisieren Sie noch heute Ihre Anforderungen nach Artikel 12 & 14.",
+      "bookAudit": "Compliance-Audit buchen",
+      "viewDocs": "Dokumentation ansehen"
+    }
+  },
+  "features": {
+    "hero": {
+      "badge": "6 Kernsäulen",
+      "title": "Jede Bedrohung.",
+      "emphasis": "Ein SDK-Schutz.",
+      "description": "Deterministische Sicherheit für die agentische Zukunft. Entdecken Sie die sechs Kernfähigkeiten, die SupraWall zum Produktionsstandard für autonome KI-Agenten machen."
+    },
+    "pillars": {
+      "vault": {
+        "title": "Credential Vault",
+        "desc": "Zero-Knowledge-Geheimnisinjektion für KI-Tools. Agenten sehen nie rohe API-Keys oder Passwörter – sie verwenden nur autorisierte Token."
+      },
+      "budget": {
+        "title": "Budget-Limits",
+        "desc": "Harte Obergrenzen für die API-Ausgaben von Agenten. Verhindern Sie Endlosschleifen und ausufernde Kosten mit agentenspezifischen Schutzschaltern."
+      },
+      "policy": {
+        "title": "Policy Engine",
+        "desc": "Deterministische ALLOW/BLOCK-Regeln für Tool-Calls. Erzwungen außerhalb des LLM-Kontexts, um Halluzinationen und unkontrollierte Aktionen zu verhindern."
+      },
+      "pii": {
+        "title": "PII-Shield",
+        "desc": "Automatische Bereinigung ausgehender Daten. Schwärzen Sie Namen, E-Mails, SSNs und benutzerdefinierte Muster automatisch in Tool-Payloads."
+      },
+      "audit": {
+        "title": "Audit-Trail",
+        "desc": "Unveränderliche, signierte Protokolle jeder Aktion. Ein-Klick-PDF-Nachweisberichte speziell für die EU AI Act Compliance."
+      },
+      "prompt": {
+        "title": "Prompt-Shield",
+        "desc": "Injektionsschutz auf SDK-Ebene. Erzwingen Sie kritische Sicherheitsregeln in Binärcode, wo kein indirekter Prompt-Injection hinkommt."
+      },
+      "cta": "Explorations-Leitfaden"
+    },
+    "convergence": {
+      "badge": "Konvergenz",
+      "title": "Die eine",
+      "emphasis": "deterministische Ebene.",
+      "dashboard": {
+        "title": "Konsolidiertes Dashboard",
+        "desc": "Verwalten Sie alle sechs Säulen von einer zentralen Kommandozentrale aus. Sehen Sie blockierten Exfiltrationsversuche, geschwärzte Token und gespartes Budget für Ihre gesamte Flotte.",
+        "cta": "Zum Dashboard"
+      },
+      "universal": {
+        "title": "Universelle Integration",
+        "desc": "Egal ob Sie in LangChain, CrewAI, AutoGen oder Vercel AI entwickeln, SupraWall funktioniert immer gleich. Ein SDK zur Standardisierung der Sicherheit Ihres gesamten Tech-Stacks.",
+        "cta": "Frameworks ansehen"
+      }
+    },
+    "howItWorks": {
+      "badge": "So funktioniert es",
+      "title": "Interzeptionspunkt",
+      "emphasis": "auf SDK-Ebene",
+      "p": "SupraWall sitzt zwischen der Anfrage des LLMs und der tatsächlichen Tool-Ausführung. Es befindet sich nicht im Prompt. Es ist Binärcode, der auf Ihrem Server läuft.",
+      "steps": {
+        "s1": {
+          "title": "Abfangen",
+          "desc": "Tool-Call wird vom SDK erfasst."
+        },
+        "s2": {
+          "title": "Validieren",
+          "desc": "Policy Engine läuft lokal."
+        },
+        "s3": {
+          "title": "Erzwingen",
+          "desc": "Aktion wird blockiert oder erlaubt."
+        }
+      }
+    },
+    "final": {
+      "badge": "Kontrolle übernehmen",
+      "title": "Warten Sie auf das Chaos",
+      "emphasis": "oder bauen Sie auf Stein.",
+      "description": "Flicken Sie Ihre Sicherheit nicht Tool für Tool. Standardisieren Sie Ihre agentische Architektur mit den sechs Säulen von SupraWall.",
+      "cta": "Kostenlos starten"
+    },
+    "try": {
+      "title": "Testen Sie es in",
+      "emphasis": "30 Sekunden.",
+      "description": "Kein Account erforderlich. Erkennt Ihr Framework automatisch und sichert Ihren Agenten mit einem Befehl ab.",
+      "copy": "ZUM KOPIEREN KLICKEN",
+      "terminal": {
+        "detected": "Erkannt",
+        "secure": "absichern?",
+        "env": ".env mit SUPRAWALL_API_KEY aktualisiert",
+        "wrapped": "mit protect() umschlossen",
+        "footer": "Ihr Agent ist jetzt gepanzert."
+      }
+    }
+  },
+  "pricing": {
+    "hero": {
+      "badge": "Gated Open Core — Kostenlos bis zur Produktion",
+      "title": "Kostenlos starten.",
+      "emphasis": "Sicher skalieren.",
+      "description": "Developer-Tier für Einzelentwickler. Business für die skalierende Produktion. Enterprise für Artikel-9-Compliance und Sicherheit auf Rechtsniveau.",
+      "stats": {
+        "interactions": "Interaktionen gesichert",
+        "infra": "Bereite Infrastruktur",
+        "scale": "Produktionsmaßstab"
+      }
+    },
+    "tiers": {
+      "dev": {
+        "title": "Developer",
+        "subtitle": "Selbst hosten auf eigener Infrastruktur. Keine Kreditkarte erforderlich.",
+        "price": "0",
+        "perks": "Kostenlos für Einzelpersonen",
+        "features": [
+          "3 Agenten",
+          "10 Vault-Geheimnisse",
+          "10K Operationen / Monat",
+          "7 Tage Audit-Logs",
+          "JSON Status API (kein PDF)",
+          "Plugins für LangChain + Vercel AI",
+          "PostgreSQL Adapter",
+          "Support über GitHub-Issues"
+        ],
+        "cta": "Auf GitHub ansehen"
+      },
+      "cloud": {
+        "title": "Cloud",
+        "subtitle": "Managed, bereit für Compliance. Unbegrenzte Agenten & Operationen.",
+        "badge": "Am beliebtesten",
+        "perks": {
+          "starter": "+ $0.002/Eval nach 50K",
+          "team": "+ $0.002/Eval nach 500K",
+          "business": "+ $0.001/Eval nach 5M"
+        },
+        "features": [
+          "Unbegrenzte Agenten",
+          "Unbegrenzte Vault-Geheimnisse (HSM)",
+          "90 Tage bis 3 Jahre Aufbewahrung",
+          "Layer 1 + Layer 2: KI-Semantikanalyse",
+          "Verhaltensbasierte Anomalieerkennung (Business+)",
+          "Genehmigungen via Slack + Dashboard",
+          "Branded PDF-Compliance-Berichte",
+          "Alle Framework-Plugins (CrewAI etc.)",
+          "Behördenreife Nachweise",
+          "99,9% SLA"
+        ],
+        "cta": "Jetzt bereitstellen"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "subtitle": "Dedizierte Cluster, Air-Gapped und zertifizierte Sicherheit.",
+        "price": "Individuell",
+        "perks": "Ab $25.000 / Jahr",
+        "features": [
+          "Alles in Cloud enthalten",
+          "Selbst gehostet / VPC / Air-Gapped",
+          "Layer 1 + Layer 2 + eigenes KI-Modell",
+          "EU AI Act Compliance Suite",
+          "SSO + SCIM",
+          "White-Label Dashboard",
+          "7+ Jahre Audit-Aufbewahrung",
+          "SOC 2 zertifiziert",
+          "Eigenes KMS + HSM",
+          "24/7 dedizierter Support + SLA",
+          "Jahresverträge + Bestellungen"
+        ],
+        "cta": "Vertrieb kontaktieren"
+      }
+    },
+    "defense": {
+      "title": "Zweistufige",
+      "emphasis": "Verteidigungsarchitektur",
+      "description": "Regex fängt ab, was Sie kennen. KI fängt ab, was Sie nicht kennen.",
+      "layer1": {
+        "title": "Layer 1 — Deterministisch",
+        "badge": "Alle Tiers",
+        "items": [
+          "Latenz unter 2ms, keine Netzwerkaufrufe",
+          "Keine False Negatives bei bekannten Mustern",
+          "26+ Regex-Regeln (SQLi, XSS, Prompt Injection)",
+          "Budget-Caps, Vault, Scope-Verifizierung",
+          "Deterministisch — gleicher Input, gleiche Entscheidung"
+        ]
+      },
+      "layer2": {
+        "title": "Layer 2 — KI-Semantisch",
+        "badge": "Team-Tier und höher",
+        "items": [
+          "Kontextsensitive Argumentanalyse (LLM-gestützt)",
+          "Erkennung von toolübergreifenden Angriffssequenzen",
+          "Verhaltensanomalie-Scoring (Business+)",
+          "Confidence-Routing: BLOCKIEREN / HITL / FLAG",
+          "Eigene feinabgestimmte Modelle (Enterprise)"
+        ]
+      }
+    },
+    "comparison": {
+      "title": "Vollständiger",
+      "emphasis": "Feature-Vergleich",
+      "labels": [
+        "Feature",
+        "Developer",
+        "Business",
+        "Enterprise"
+      ]
+    },
+    "roi": {
+      "title": "Messen Sie Ihren",
+      "emphasis": "Security-ROI.",
+      "description": "Cloud-Preise, die mit der Autonomie Ihrer Agenten skalieren.",
+      "volume": "Monatliches Volumen",
+      "tiers": {
+        "dev": {
+          "title": "Developer-Tier",
+          "perk": "Bis zu 10K Ops"
+        },
+        "selected": {
+          "perk": "/Monat"
+        },
+        "overage": {
+          "title": "Überlast",
+          "perk": "Nutzungsgebühren"
+        }
+      },
+      "table": [
+        {
+          "label": "0 – 10K",
+          "price": "Kostenlos"
+        },
+        {
+          "label": "10K – 500K",
+          "price": "$0.002"
+        },
+        {
+          "label": "500K – 2M",
+          "price": "$0.0015"
+        },
+        {
+          "label": "2M – 10M",
+          "price": "$0.001"
+        },
+        {
+          "label": "10M+",
+          "price": "$0.0005"
+        }
+      ],
+      "perEval": "/ Eval"
+    },
+    "walls": {
+      "title": "Die",
+      "emphasis": "Natürlichen",
+      "suffix": "Upgrade-Momente",
+      "items": [
+        {
+          "wall": "Moment 1",
+          "trigger": "4. Agent",
+          "msg": "\"Developer erlaubt nur 3 Agenten\" → Business schaltet unbegrenzt frei"
+        },
+        {
+          "wall": "Moment 2",
+          "trigger": "Regex-Müdigkeit",
+          "msg": "\"KI-gestützte Policies benötigt\" → Höhere Tiers"
+        },
+        {
+          "wall": "Moment 3",
+          "trigger": "11. Geheimnis",
+          "msg": "\"10 Geheimnisse reichen nicht für die Produktion\" → Business"
+        },
+        {
+          "wall": "Moment 4",
+          "trigger": "Compliance-Audit",
+          "msg": "\"PDF-Berichte benötigt, nicht JSON\" → Enterprise Compliance"
+        },
+        {
+          "wall": "Moment 5",
+          "trigger": "8-Tage-Log",
+          "msg": "\"7 Tage Aufbewahrung sind wertlos für ein Audit\" → Business"
+        },
+        {
+          "wall": "Moment 6",
+          "trigger": "Voller SDK-Support",
+          "msg": "\"Developer hat nur 2 Framework-Plugins\" → Business"
+        }
+      ],
+      "footer": "Jeder Moment fühlt sich an wie \"Ich brauche die nächste Stufe\" – nicht wie \"das ist kaputt\"."
+    },
+    "enterprise": {
+      "title": "Enterprise Compliance Suite",
+      "description": "Für Organisationen mit Beschaffungsanforderungen, Air-Gap-Mandaten und EU AI Act Zertifizierung. Gleiche Infrastruktur, gehobene Governance.",
+      "features": [
+        "Data Processing Agreement (DPA)",
+        "SOC 2 Type II Zertifizierung",
+        "99,99% SLA mit Vertragsstrafen",
+        "Artikel-9-Risiko-Templates",
+        "Dedizierter Implementation Engineer",
+        "Persönlicher Account Executive"
+      ],
+      "cta": "Enterprise kontaktieren"
+    }
+  },
+  "learn": {
+    "hero": {
+      "badge": "Learning Hub",
+      "subtitle": "Knowledge Hub",
+      "title": "AI Agent Security",
+      "description": "Master the standard rules for the autonomous agent era. Research, tutorials, and regulatory compliance — all in one SDK-first center.",
+      "featured": {
+        "badge": "Start Here: Featured Guide",
+        "title": "What is Agent Runtime Security (ARS)?",
+        "desc": "The definitive framework for securing autonomous systems in 2026.",
+        "cta": "Read Guide"
+      }
+    },
+    "categories": [
+      {
+        "title": "Security Fundamentals",
+        "articles": [
+          {
+            "title": "What is Agent Runtime Security?",
+            "desc": "The deterministic framework for AI safety."
+          },
+          {
+            "title": "Zero-Trust for AI Agents",
+            "desc": "Why agents should never trust their context."
+          },
+          {
+            "title": "Runtime AI Governance",
+            "desc": "Controlling decision-making in real-time."
+          },
+          {
+            "title": "AI Agent Security Bible",
+            "desc": "The core principles of agentic safety."
+          }
+        ]
+      },
+      {
+        "title": "EU AI Act & Compliance",
+        "articles": [
+          {
+            "title": "AI Act Compliance Guide",
+            "desc": "A practical developer's checklist."
+          },
+          {
+            "title": "Article 12: Audit Logging",
+            "desc": "Proof of monitoring requirements."
+          },
+          {
+            "title": "Article 14: Human Oversight",
+            "desc": "Enforcing the 'Kill Switch'."
+          },
+          {
+            "title": "August 2026 Deadline",
+            "desc": "Timeline for high-risk AI enforcement."
+          }
+        ]
+      },
+      {
+        "title": "Threats & Attacks",
+        "articles": [
+          {
+            "title": "Prompt Injection Control",
+            "desc": "How agents leak secrets to attackers."
+          },
+          {
+            "title": "Credential Theft Shield",
+            "desc": "Preventing tool call exfiltration."
+          },
+          {
+            "title": "Tool Call Hijacking",
+            "desc": "Hardening the identity handshake."
+          },
+          {
+            "title": "Infinite Loop Defense",
+            "desc": "Stopping runaway compute cycles."
+          }
+        ]
+      },
+      {
+        "title": "Cost & Operations",
+        "articles": [
+          {
+            "title": "Runaway Cost Prevention",
+            "desc": "Setting hard budgetary circuit breakers."
+          },
+          {
+            "title": "Setting Token Limits",
+            "desc": "Resource allocation for autonomous swarms."
+          },
+          {
+            "title": "Agentic Cost Management",
+            "desc": "Financial governance for agent fleets."
+          },
+          {
+            "title": "Usage Scaling Guide",
+            "desc": "Scaling safely without unbounded liability."
+          }
+        ]
+      },
+      {
+        "title": "Integration Guides",
+        "articles": [
+          {
+            "title": "MCP Server Security",
+            "desc": "Securing the Model Context Protocol."
+          },
+          {
+            "title": "LangChain Security Wrap",
+            "desc": "Middleware for Python and TS agents."
+          },
+          {
+            "title": "CrewAI Governance",
+            "desc": "Orchestrating manual task-level approvals."
+          },
+          {
+            "title": "What are Guardrails?",
+            "desc": "LLM safety vs. SDK-level enforcement."
+          }
+        ]
+      },
+      {
+        "title": "Glossary & Docs",
+        "articles": [
+          {
+            "title": "Security Glossary",
+            "desc": "Key terms for AI security engineers."
+          },
+          {
+            "title": "Risk Management",
+            "desc": "Quantifying agentic security threats."
+          },
+          {
+            "title": "Vault Architecture",
+            "desc": "Zero-trust credential injection."
+          },
+          {
+            "title": "Audit Trail API",
+            "desc": "Programmatic compliance retrieval."
+          }
+        ]
+      }
+    ],
+    "guidesSuffix": "Guides",
+    "readGuide": "Read Guide",
+    "browseByRegulation": "Browse by Regulation",
+    "browseByFramework": "Browse by Framework",
+    "footer": {
+      "badge": "Become a Certified Agent Sec Engineer",
+      "title": "From Learning",
+      "emphasis": "To Securing.",
+      "description": "Don't just read about the future — build it safely. Implement what you've learned with the SupraWall SDK today.",
+      "cta": "Implement SDK Now"
     }
   }
 }
