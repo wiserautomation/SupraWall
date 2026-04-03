@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@suprawall/core": ["../core/index.ts"]
     }
   },
   "include": [
