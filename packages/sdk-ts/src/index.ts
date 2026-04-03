@@ -714,7 +714,8 @@ function wrapLangChain(runnable: any, options: SupraWallOptions) {
         name: "SupraWallCallbackHandler",
         handleToolStart: async (tool: any, input: string) => {
             const toolName = tool.name || "unknown";
-            const result = await internalEvaluate(toolName, input, options);
+            const args = typeof input === 'string' ? { input } : input;
+            const result = await internalEvaluate(toolName, args, options);
 
             if (result.decision === "DENY") throw new Error(`[SupraWall] Denied: ${result.reason ?? ""}`);
             if (result.decision === "REQUIRE_APPROVAL") throw new Error(`[SupraWall] Approval Required.`);
