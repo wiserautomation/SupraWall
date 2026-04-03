@@ -25,6 +25,7 @@ import { resolveTier } from "./tier-guard";
 import { gatekeeperAuth } from "./auth";
 import { rateLimit } from "./rate-limit";
 import gdprRouter from "./routes/gdpr";
+import awsMarketplaceRouter from "./routes/aws-marketplace";
 
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
@@ -120,6 +121,9 @@ app.use("/v1/gdpr", gdprRouter);
 
 // Organization Members Route
 app.use("/v1/members", membersRouter);
+
+// AWS Marketplace Integration Routes (Registration URL + SNS webhook + Entitlement check)
+app.use("/v1/aws", awsMarketplaceRouter);
 
 // Export the app for Vercel
 export default app;
