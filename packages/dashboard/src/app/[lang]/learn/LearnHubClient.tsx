@@ -69,7 +69,8 @@ const LEARN_CATEGORIES = [
     }
 ];
 
-export default function LearnHubClient() {
+export default function LearnHubClient({ dictionary }: { dictionary: any }) {
+    const t = dictionary.learn;
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -79,14 +80,14 @@ export default function LearnHubClient() {
                 </div>
 
                 <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
-                    <TagBadge>Learning Hub</TagBadge>
+                    <TagBadge>{t.hero.badge}</TagBadge>
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
-                             AI Agent Security <br />
-                             <span className="text-emerald-500 font-bold italic underline decoration-white/10">Knowledge Hub.</span>
+                             {t.hero.title} <br />
+                             <span className="text-emerald-500 font-bold italic underline decoration-white/10">{t.hero.subtitle}.</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             Master the standard rules for the autonomous agent era. Research, tutorials, and regulatory compliance — all in one SDK-first center.
+                             {t.hero.description}
                         </p>
                     </div>
 
@@ -97,10 +98,10 @@ export default function LearnHubClient() {
                          </div>
                          <div className="flex-1 space-y-4 relative z-10">
                              <div className="flex items-center gap-2 text-emerald-500 font-black uppercase tracking-[0.3em] text-[10px] italic">
-                                 <Zap className="w-3 h-3" /> Start Here: Featured Guide
+                                 <Zap className="w-3 h-3" /> {t.hero.featured.badge}
                              </div>
-                             <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">What is Agent Runtime Security (ARS)?</h2>
-                             <p className="text-neutral-500 font-bold uppercase tracking-tight italic">The definitive framework for securing autonomous systems in 2026.</p>
+                             <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter text-white">{t.hero.featured.title}</h2>
+                             <p className="text-neutral-500 font-bold uppercase tracking-tight italic">{t.hero.featured.desc}</p>
                          </div>
                          <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all">
                              <ArrowRight className="w-8 h-8" />
@@ -112,19 +113,19 @@ export default function LearnHubClient() {
              {/* 🎯 CATEGORIES SECTION */}
              <section className="py-20 px-6">
                 <div className="max-w-7xl mx-auto space-y-32">
-                    {LEARN_CATEGORIES.map((cat, i) => (
+                    {t.categories.map((cat: any, i: number) => (
                         <div key={cat.title} className="space-y-12">
                             <div className="flex items-center gap-6">
                                 <h2 className="text-5xl font-black italic uppercase tracking-tighter text-white whitespace-nowrap">{cat.title}</h2>
                                 <div className="h-px w-full bg-white/5" />
-                                <span className="text-neutral-500 font-black italic uppercase text-[10px] tracking-widest whitespace-nowrap">{cat.articles.length} Guides</span>
+                                <span className="text-neutral-500 font-black italic uppercase text-[10px] tracking-widest whitespace-nowrap">{cat.articles.length} {t.guidesSuffix}</span>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                {cat.articles.map((art, j) => (
+                                {cat.articles.map((art: any, j: number) => (
                                     <Link 
-                                        key={art.href} 
-                                        href={art.href}
+                                        key={j} 
+                                        href={`/learn/${art.title.toLowerCase().replace(/ /g, '-')}`}
                                         className="p-8 rounded-[2.5rem] bg-neutral-900/40 border border-white/10 hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[280px]"
                                     >
                                         <div className="space-y-4 relative z-10">
@@ -136,7 +137,7 @@ export default function LearnHubClient() {
                                             <p className="text-neutral-500 text-xs font-bold uppercase tracking-tight leading-relaxed italic">{art.desc}</p>
                                         </div>
                                         <div className="flex items-center gap-2 text-white/20 font-black uppercase tracking-[0.2em] text-[10px] pt-6 group-hover:text-emerald-500 transition-all">
-                                            Read Guide <ArrowRight className="w-3 h-3 translate-x-[-5px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                                            {t.readGuide} <ArrowRight className="w-3 h-3 translate-x-[-5px] opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                                         </div>
                                     </Link>
                                 ))}
@@ -147,7 +148,7 @@ export default function LearnHubClient() {
                     {/* Browse by Regulation / Framework Rows */}
                     <div className="grid md:grid-cols-2 gap-8">
                         <div className="p-12 rounded-[3rem] bg-neutral-900/20 border border-white/5 space-y-8">
-                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Browse by Regulation</h3>
+                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">{t.browseByRegulation}</h3>
                             <div className="flex flex-wrap gap-3">
                                 {[
                                     { name: "EU AI Act", href: "/eu-ai-act" },
@@ -160,7 +161,7 @@ export default function LearnHubClient() {
                             </div>
                         </div>
                         <div className="p-12 rounded-[3rem] bg-neutral-900/20 border border-white/5 space-y-8">
-                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">Browse by Framework</h3>
+                            <h3 className="text-3xl font-black italic uppercase tracking-tighter">{t.browseByFramework}</h3>
                             <div className="flex flex-wrap gap-3">
                                 {[
                                     { name: "LangChain", href: "/integrations/langchain" },
@@ -180,17 +181,17 @@ export default function LearnHubClient() {
              <section className="py-48 px-6 relative text-center">
                 <div className="absolute inset-0 bg-emerald-500/5 blur-[150px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none" />
                 <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-                     <div className="p-8 rounded-full bg-white/5 border border-white/10 w-fit mx-auto animate-bounce italic font-black uppercase tracking-widest text-[10px] text-emerald-500">Become a Certifed Agent Sec Engineer</div>
+                     <div className="p-8 rounded-full bg-white/5 border border-white/10 w-fit mx-auto animate-bounce italic font-black uppercase tracking-widest text-[10px] text-emerald-500">{t.footer.badge}</div>
                     <h2 className="text-7xl md:text-[8rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">
-                        From Learning <br />
-                        <span className="text-emerald-500 underline decoration-white/20 font-bold italic">To Securing.</span>
+                        {t.footer.title} <br />
+                        <span className="text-emerald-500 underline decoration-white/20 font-bold italic">{t.footer.emphasis}</span>
                     </h2>
                     <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                        Don&apos;t just read about the future — build it safely. Implement what you&apos;ve learned with the SupraWall SDK today.
+                        {t.footer.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                         <Link href="/beta" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] tracking-tighter flex items-center gap-4 group">
-                             Implement SDK Now <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
+                             {t.footer.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>
                 </div>

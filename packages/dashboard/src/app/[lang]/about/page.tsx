@@ -27,11 +27,21 @@ export const metadata: Metadata = {
     },
 };
 
-export default function AboutPage() {
+import { getDictionary } from "../../../i18n/getDictionary";
+import { Locale } from "@/i18n/config";
+
+export default async function AboutPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-neutral-500/30">
-            <Navbar />
-            <AboutClient />
+            <Navbar lang={lang} dictionary={dictionary} />
+            <AboutClient dictionary={dictionary} />
         </div>
     );
 }

@@ -28,11 +28,21 @@ export const metadata: Metadata = {
     },
 };
 
-export default function ForCompliancePage() {
+import { getDictionary } from "../../../i18n/getDictionary";
+import { Locale } from "@/i18n/config";
+
+export default async function ForCompliancePage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
-            <Navbar />
-            <ForComplianceClient />
+            <Navbar lang={lang} dictionary={dictionary} />
+            <ForComplianceClient dictionary={dictionary} />
         </div>
     );
 }

@@ -56,7 +56,8 @@ const VS_CARDS = [
     }
 ];
 
-export default function VsHubClient() {
+export default function VsHubClient({ dictionary }: { dictionary: any }) {
+    const t = dictionary.vs;
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -66,14 +67,14 @@ export default function VsHubClient() {
                 </div>
 
                 <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
-                    <TagBadge>The Deterministic Edge</TagBadge>
+                    <TagBadge>{t.hero.badge}</TagBadge>
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[90px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
-                             Stop Guessing. <br />
-                             <span className="text-blue-500 font-bold italic underline decoration-white/10 italic font-bold">Start Intercepting.</span>
+                             {t.hero.title} <br />
+                             <span className="text-blue-500 font-bold italic underline decoration-white/10 italic font-bold">{t.hero.emphasis}</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             There are two ways to secure an AI agent: asking it to be safe (Probabilistic) or forcing it to be safe (Deterministic). SupraWall is the latter.
+                             {t.hero.description}
                         </p>
                     </div>
                 </div>
@@ -82,32 +83,32 @@ export default function VsHubClient() {
              {/* 🎯 COMPARISON GRID */}
             <section className="py-24 px-6">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10">
-                    {VS_CARDS.map((art, i) => (
+                    {t.cards.items.map((art: any, i: number) => (
                         <div 
-                             key={art.href} 
+                             key={i} 
                              className="p-1.5 bg-neutral-900/40 border border-white/5 rounded-[4rem] group hover:border-blue-500/30 transition-all shadow-2xl overflow-hidden shadow-glow-blue-slow"
                         >
                             <div className="bg-black/40 rounded-[3.5rem] p-12 space-y-8 flex flex-col md:flex-row gap-10">
                                 <div className="space-y-6 flex-1">
                                     <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 w-fit text-[10px] font-black uppercase tracking-widest">{art.pill}</div>
-                                    <h3 className="text-4xl font-black italic uppercase italic tracking-tighter leading-none group-hover:text-blue-400 transition-colors uppercase italic">SupraWall vs. <br />{art.title}</h3>
+                                    <h3 className="text-4xl font-black italic uppercase italic tracking-tighter leading-none group-hover:text-blue-400 transition-colors uppercase italic">{t.cards.vs} <br />{art.title}</h3>
                                     <p className="text-neutral-500 text-base font-bold italic tracking-tighter leading-relaxed uppercase opacity-80">{art.desc}</p>
-                                    <Link href={art.href} className="inline-flex items-center gap-2 text-white font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
-                                        DETAILED SHOWDOWN <ArrowRight className="w-4 h-4 text-blue-500" />
+                                    <Link href={`/vs/${art.title.toLowerCase().replace(/ /g, '-')}`} className="inline-flex items-center gap-2 text-white font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                                        {t.cards.details} <ArrowRight className="w-4 h-4 text-blue-500" />
                                     </Link>
                                 </div>
 
                                 <div className="space-y-4 md:w-1/3">
-                                     <div className="text-[10px] font-black uppercase italic tracking-widest bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-lg w-fit mb-4">Winner: SupraWall</div>
-                                     {art.pros.map(pro => (
-                                         <div key={pro} className="flex items-center gap-2 text-[10px] font-bold text-neutral-400 uppercase tracking-tight italic">
+                                     <div className="text-[10px] font-black uppercase italic tracking-widest bg-blue-500/10 text-blue-400 px-3 py-1.5 rounded-lg w-fit mb-4">{t.cards.winner}</div>
+                                     {art.pros.map((pro: any, index: number) => (
+                                         <div key={index} className="flex items-center gap-2 text-[10px] font-bold text-neutral-400 uppercase tracking-tight italic">
                                             <div className="p-1 rounded-full bg-emerald-500/10 text-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.2)]"><Check className="w-2 h-2" /></div>
                                             {pro}
                                          </div>
                                      ))}
                                       <div className="flex items-center gap-2 text-[10px] font-bold text-rose-500/30 uppercase tracking-tight italic line-through">
                                             <div className="p-1 rounded-full bg-rose-500/5 text-rose-500/20"><X className="w-2 h-2" /></div>
-                                            Probabilistic Vibes
+                                            {t.cards.loser}
                                       </div>
                                 </div>
                             </div>
@@ -120,27 +121,21 @@ export default function VsHubClient() {
              <section className="py-24 px-6 bg-[#030303]">
                 <div className="max-w-5xl mx-auto space-y-16">
                     <div className="text-center space-y-6">
-                        <TagBadge>Direct Comparison</TagBadge>
-                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Probabilistic vs. <span className="text-blue-500">Deterministic</span></h2>
+                        <TagBadge>{t.table.badge}</TagBadge>
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">{t.table.title} <span className="text-blue-500">{t.table.emphasis}</span></h2>
                     </div>
 
                     <div className="bg-neutral-900/40 border border-white/5 rounded-[3rem] overflow-hidden shadow-2xl shadow-glow-blue-slow">
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="border-b border-white/10">
-                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-500 italic">Security Metric</th>
-                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white italic">Alternative Platforms</th>
-                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-blue-500 italic bg-blue-500/5">SupraWall SDK</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-500 italic">{t.table.headers.metric}</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-white italic">{t.table.headers.alt}</th>
+                                    <th className="p-8 text-[10px] font-black uppercase tracking-widest text-blue-500 italic bg-blue-500/5">{t.table.headers.supra}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {[
-                                    { metric: "Primary Defense", alt: "LLM Guardrails (Probabilistic)", supra: "SDK Interception (Deterministic)" },
-                                    { metric: "Security Perimeter", alt: "Prompt Context Window", supra: "Binary Runtime Layer" },
-                                    { metric: "Secret Protection", alt: "Zero (Agents access keys)", supra: "Vault Injection (Key-less agents)" },
-                                    { metric: "Compliance Proof", alt: "Standard Logs", supra: "RSA-Signed Evidence Reports" },
-                                    { metric: "Risk Of Override", alt: "High (Jailbreaking)", supra: "Zero (Bypassing logic impossible)" }
-                                ].map((row, i) => (
+                                {t.table.rows.map((row: any, i: number) => (
                                     <tr key={i} className="hover:bg-white/[0.02] transition-colors group">
                                         <td className="p-8 text-sm font-black italic text-neutral-400 uppercase tracking-tighter">{row.metric}</td>
                                         <td className="p-8 text-sm font-bold italic text-neutral-500 uppercase tracking-tighter">{row.alt}</td>
@@ -157,17 +152,12 @@ export default function VsHubClient() {
              <section className="py-40 px-6 bg-black relative border-y border-white/5">
                 <div className="max-w-4xl mx-auto space-y-16 relative z-10">
                     <div className="text-center space-y-6">
-                        <TagBadge>Questions & Answers</TagBadge>
-                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">Still Unsure?</h2>
+                        <TagBadge>{t.faq.badge}</TagBadge>
+                        <h2 className="text-5xl font-black italic uppercase tracking-tighter">{t.faq.title}</h2>
                     </div>
 
                     <div className="space-y-4">
-                        {[
-                            { q: "Is SupraWall just another LLM Guardrail?", a: "No. Guardrails rely on asking the LLM to behave. SupraWall is an SDK-level interceptor that enforces hard rules regardless of what the LLM wants." },
-                            { q: "Can I use SupraWall with LangChain?", a: "Yes. SupraWall integrates with one command into LangChain, CrewAI, and every major framework." },
-                            { q: "Does it add latency to tool calls?", a: "Minimal. Policy checks are performed locally on your node, typically adding <10ms to the total tool execution time." },
-                            { q: "Is there a free tier for developers?", a: "Yes. Our Community SDK is free for single-agent deployments and research use." }
-                        ].map((item, i) => (
+                        {t.faq.items.map((item: any, i: number) => (
                             <details key={i} className="group p-8 rounded-[2rem] bg-neutral-900/40 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer">
                                 <summary className="list-none flex justify-between items-center text-xl font-black italic uppercase tracking-tighter text-white group-open:text-blue-500 transition-colors">
                                     {item.q}

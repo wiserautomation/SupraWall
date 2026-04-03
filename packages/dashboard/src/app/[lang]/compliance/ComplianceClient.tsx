@@ -10,58 +10,65 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function ComplianceClient() {
+export default function ComplianceClient({ dictionary }: { dictionary: any }) {
+    const t = dictionary.compliance;
+    const common = dictionary.common;
+
     const articles = [
         {
             article: "Article 12",
-            name: "Record-keeping",
-            desc: "Automatic logging of events during the operation of high-risk AI systems.",
-            feature: "Deterministic Audit Logs",
+            name: t.articles.art12.name,
+            desc: t.articles.art12.desc,
+            feature: t.articles.art12.feature,
             href: "/eu-ai-act/article-12"
         },
         {
             article: "Article 14",
-            name: "Human Oversight",
-            desc: "Designing systems that can be effectively overseen by natural persons.",
-            feature: "Human-in-the-loop Protocol",
+            name: t.articles.art14.name,
+            desc: t.articles.art14.desc,
+            feature: t.articles.art14.feature,
             href: "/eu-ai-act/article-14"
         },
         {
             article: "Article 10",
-            name: "Data Governance",
-            desc: "Ensuring training and testing datasets are subject to appropriate governance.",
-            feature: "Tool Access Control",
+            name: t.articles.art10.name,
+            desc: t.articles.art10.desc,
+            feature: t.articles.art10.feature,
             href: "#"
         },
         {
             article: "Article 15",
-            name: "Robustness & Security",
-            desc: "Appropriate level of robustness, accuracy and cybersecurity.",
-            feature: "Deterministic Shim Layer",
+            name: t.articles.art15.name,
+            desc: t.articles.art15.desc,
+            feature: t.articles.art15.feature,
             href: "#"
         }
     ];
 
+    const roadmapRows = [
+        { req: t.roadmap.table.rows.transparency.req, control: t.roadmap.table.rows.transparency.control, status: "Active" },
+        { req: t.roadmap.table.rows.techDoc.req, control: t.roadmap.table.rows.techDoc.control, status: "Active" },
+        { req: t.roadmap.table.rows.riskMgmt.req, control: t.roadmap.table.rows.riskMgmt.control, status: "Active" },
+        { req: t.roadmap.table.rows.conformity.req, control: t.roadmap.table.rows.conformity.control, status: "Active" }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
-            <Navbar />
-            
             <main className="pt-48 pb-32 px-6">
                 <div className="max-w-7xl mx-auto space-y-32">
                     
                     {/* Hero Section */}
                     <section className="text-center space-y-12 max-w-4xl mx-auto">
                         <div className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-sm font-black text-emerald-400 uppercase tracking-widest animate-fade-in">
-                            <Globe className="w-4 h-4 mr-2" /> Enterprise Ready
+                            <Globe className="w-4 h-4 mr-2" /> {t.hero.badge}
                         </div>
-                        <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.9]">
-                            EU AI Act <br />
-                            <span className="text-emerald-500 text-glow">Compliance.</span> <br />
-                            Solved.
-                        </h1>
+                        <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.9]">
+                            {t.hero.titlePrefix} <br />
+                            <span className="text-emerald-500 text-glow">{t.hero.titleEmphasis}</span> <br />
+                            {t.hero.titleSuffix}
+                        </h2>
                         <p className="text-xl md:text-2xl text-neutral-400 font-medium italic leading-relaxed">
-                            SupraWall maps every autonomous agent tool call to specific regulatory requirements. 
-                            Automate your compliance reporting and de-risk your AI transformation.
+                            {t.hero.description}
                         </p>
                     </section>
 
@@ -99,26 +106,21 @@ export default function ComplianceClient() {
                     {/* Enterprise Comparison/Feature Table */}
                     <section className="space-y-12">
                         <div className="text-center space-y-4">
-                            <h2 className="text-4xl font-black uppercase italic tracking-tight">Compliance Roadmap</h2>
-                            <p className="text-neutral-500">How SupraWall ensures your AI agents remain within legal guardrails.</p>
+                            <h2 className="text-4xl font-black uppercase italic tracking-tight">{t.roadmap.title}</h2>
+                            <p className="text-neutral-500">{t.roadmap.subtitle}</p>
                         </div>
 
                         <div className="overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/20 backdrop-blur-xl">
                             <table className="w-full text-left border-collapse">
                                 <thead className="bg-white/5 border-b border-white/10">
                                     <tr>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">Framework Requisition</th>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">SupraWall Control</th>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">Status</th>
+                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.req}</th>
+                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.control}</th>
+                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.status}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
-                                    {[
-                                        { req: "Transparency (Art 4b)", control: "System Prompt Injection Guards", status: "Active" },
-                                        { req: "Technical Documentation (Art 11)", control: "Auto-generated Compliance PDF", status: "Active" },
-                                        { req: "Risk Management (Art 9)", control: "Deterministic Out-of-bounds Detection", status: "Active" },
-                                        { req: "Conformity Assessment (Art 43)", control: "Validation Audit Trails", status: "Active" }
-                                    ].map((row, i) => (
+                                    {roadmapRows.map((row, i) => (
                                         <tr key={i} className="hover:bg-white/5 transition-colors">
                                             <td className="p-6 font-bold">{row.req}</td>
                                             <td className="p-6 text-neutral-400">{row.control}</td>
@@ -140,11 +142,11 @@ export default function ComplianceClient() {
                             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
                             
                             <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-none max-w-4xl relative z-10">
-                                Make Your Agents <br />
-                                <span className="text-emerald-500">Legal-Proof</span> in One Line.
+                                {t.cta.titlePrefix} <br />
+                                <span className="text-emerald-500">{t.cta.titleEmphasis}</span> {t.cta.titleSuffix}
                             </h2>
                             <p className="text-xl text-neutral-400 max-w-2xl relative z-10">
-                                Integrate SupraWall with any LLM framework and automate your Articles 12 & 14 requirements today.
+                                {t.cta.description}
                             </p>
                             
                             <div className="flex flex-col sm:flex-row gap-6 relative z-10">
@@ -152,13 +154,13 @@ export default function ComplianceClient() {
                                     href="/beta" 
                                     className="px-12 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105"
                                 >
-                                    Book Compliance Audit
+                                    {t.cta.bookAudit}
                                 </Link>
                                 <Link 
                                     href="/docs" 
                                     className="px-12 py-5 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all"
                                 >
-                                    View Documentation
+                                    {common.viewDocs}
                                 </Link>
                             </div>
                         </div>

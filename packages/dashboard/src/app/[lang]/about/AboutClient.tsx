@@ -11,7 +11,8 @@ import {
 import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
 
-export default function AboutClient() {
+export default function AboutClient({ dictionary }: { dictionary: any }) {
+    const t = dictionary.about;
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -21,15 +22,13 @@ export default function AboutClient() {
                 </div>
 
                 <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
-                    <TagBadge>Our Mission</TagBadge>
+                    <TagBadge>{t.hero.badge}</TagBadge>
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
-                             Standardize the <br />
-                             <span className="text-neutral-500 font-bold italic underline decoration-white/10 uppercase italic font-bold">Autonomous Future.</span>
+                             {t.hero.title} <br />
+                             <span className="text-neutral-500 font-bold italic underline decoration-white/10 uppercase italic font-bold">{t.hero.emphasis}</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             SupraWall was founded in 2024 with a single conviction: Prompts are not security. As the world moves from <span className="text-white italic">Chatbots</span> to <span className="text-white italic text-glow uppercase italic font-bold">Autonomous Agents</span>, the industry needed a deterministic, binary-level safety layer.
-                        </p>
+                        <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic" dangerouslySetInnerHTML={{ __html: t.hero.description }} />
                     </div>
                 </div>
             </section>
@@ -39,16 +38,16 @@ export default function AboutClient() {
                 <div className="max-w-6xl mx-auto space-y-16">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-20">
                          <div className="flex flex-col justify-center space-y-10 group">
-                             <TagBadge>The Deterministic Pillar</TagBadge>
+                             <TagBadge>{t.philosophy.badge}</TagBadge>
                              <h2 className="text-5xl md:text-7xl font-black italic uppercase tracking-tighter leading-none group-hover:text-glow transition-all">
-                                 Security, <br />
-                                 <span className="text-neutral-500 font-bold italic underline decoration-white/10 italic">Not Advice.</span>
+                                 {t.philosophy.title} <br />
+                                 <span className="text-neutral-500 font-bold italic underline decoration-white/10 italic">{t.philosophy.emphasis}</span>
                              </h2>
                              <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-relaxed">
-                                 The current standard for &ldquo;AI Safety&rdquo; is to ask the LLM to be safe. We believe this is fundametally flawed. In a production environment, security must be enforced outside the model&apos;s context window — where it can&apos;t be manipulated by indirect prompt injections or model drift. 
+                                 {t.philosophy.description}
                              </p>
                              <div className="flex items-center gap-4 text-white/40 font-black uppercase tracking-widest text-xs italic">
-                                 <Coffee className="w-5 h-5" /> Engineering-first Culture
+                                 <Coffee className="w-5 h-5" /> {t.philosophy.culture}
                              </div>
                          </div>
                          <div className="flex items-center justify-center relative">
@@ -57,8 +56,8 @@ export default function AboutClient() {
                                  <div className="space-y-10 relative z-10 text-center">
                                      <div className="p-5 bg-white/5 rounded-2xl w-fit mx-auto group-hover:scale-110 transition-transform"><Cpu className="w-10 h-10 text-neutral-400" /></div>
                                      <div className="space-y-4">
-                                         <h4 className="text-center text-4xl font-black italic uppercase tracking-tighter italic">Founding Vision</h4>
-                                         <p className="text-neutral-600 text-xs font-black italic uppercase tracking-widest leading-loose">To move agentic security into the binary runtime. To provide the world with the 1-line fixa for autonomous chaos. To ensure the agents we build today are the ones we control tomorrow.</p>
+                                         <h4 className="text-center text-4xl font-black italic uppercase tracking-tighter italic">{t.philosophy.vision.title}</h4>
+                                         <p className="text-neutral-600 text-xs font-black italic uppercase tracking-widest leading-loose">{t.philosophy.vision.description}</p>
                                      </div>
                                  </div>
                              </div>
@@ -71,21 +70,19 @@ export default function AboutClient() {
              <section className="py-40 px-6">
                 <div className="max-w-7xl mx-auto space-y-24 text-center">
                     <div className="space-y-6">
-                        <TagBadge>Institutional Standards</TagBadge>
+                        <TagBadge>{t.values.badge}</TagBadge>
                         <h2 className="text-5xl md:text-[6rem] font-black italic uppercase tracking-tighter leading-[0.8] text-glow">
-                             Every Sector. <br />
-                             <span className="text-neutral-500 font-bold italic underline decoration-white/10 italic">Every Agent.</span>
+                             {t.values.title} <br />
+                             <span className="text-neutral-500 font-bold italic underline decoration-white/10 italic">{t.values.emphasis}</span>
                         </h2>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[
-                            { title: "Transparency", desc: "No magic. We publish our interception methods and encourage third-party security audits.", icon: <Search className="w-8 h-8 text-neutral-400" /> },
-                            { title: "Sovereignty", desc: "Your agents, your rules. We provide the substrate, but you own the enforcement policy.", icon: <Lock className="w-8 h-8 text-neutral-400" /> },
-                            { title: "Resilience", desc: "Our SDK is designed for mission-critical tasks in finance, legal, and healthcare.", icon: <ShieldCheck className="w-8 h-8 text-neutral-400" /> }
-                        ].map((p, i) => (
-                            <div key={p.title} className="p-12 rounded-[3.5rem] bg-neutral-900/40 border border-white/5 space-y-8 hover:border-white/20 transition-all group overflow-hidden relative text-left">
-                                <div className="p-4 rounded-xl bg-white/5 border border-white/10 w-fit group-hover:scale-110 transition-transform">{p.icon}</div>
+                        {t.values.items.map((p: any, i: number) => (
+                            <div key={i} className="p-12 rounded-[3.5rem] bg-neutral-900/40 border border-white/5 space-y-8 hover:border-white/20 transition-all group overflow-hidden relative text-left">
+                                <div className="p-4 rounded-xl bg-white/5 border border-white/10 w-fit group-hover:scale-110 transition-transform">
+                                    {i === 0 ? <Search className="w-8 h-8 text-neutral-400" /> : i === 1 ? <Lock className="w-8 h-8 text-neutral-400" /> : <ShieldCheck className="w-8 h-8 text-neutral-400" />}
+                                </div>
                                 <div className="space-y-4">
                                      <h4 className="text-3xl font-black italic uppercase text-white tracking-tighter leading-none">{p.title}</h4>
                                      <p className="text-neutral-500 text-sm font-bold uppercase tracking-tight italic leading-relaxed">{p.desc}</p>
@@ -100,17 +97,17 @@ export default function AboutClient() {
              <section className="py-48 px-6 bg-black relative text-center">
                 <div className="absolute inset-0 bg-neutral-500/10 blur-[150px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none" />
                 <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-                    <TagBadge>Join the Movement</TagBadge>
+                    <TagBadge>{t.footer.badge}</TagBadge>
                     <h2 className="text-7xl md:text-[8rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">
-                        Secure the <br />
-                        <span className="text-neutral-500 underline decoration-white/20 font-bold italic">Uncontrolled.</span>
+                        {t.footer.title} <br />
+                        <span className="text-neutral-500 underline decoration-white/20 font-bold italic">{t.footer.emphasis}</span>
                     </h2>
                     <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                        We are building the trust layer for the agentic internet. Come build it with us.
+                        {t.footer.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                         <Link href="/beta" className="px-16 py-8 bg-neutral-800 text-white font-black text-3xl rounded-3xl hover:bg-neutral-700 transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] tracking-tighter flex items-center gap-4 group">
-                             Get Started Now <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
+                             {t.footer.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>
                 </div>

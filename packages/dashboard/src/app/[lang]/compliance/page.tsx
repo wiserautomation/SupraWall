@@ -38,12 +38,15 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     };
 }
 
+import { getDictionary } from "../../../i18n/getDictionary";
+
 export default async function Page({
     params,
 }: {
     params: Promise<{ lang: string }>;
 }) {
     const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -64,8 +67,8 @@ export default async function Page({
     return (
         <div className="min-h-screen bg-black">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar lang={lang} />
-            <ComplianceClient />
+            <Navbar lang={lang} dictionary={dictionary} />
+            <ComplianceClient dictionary={dictionary} />
         </div>
     );
 }
