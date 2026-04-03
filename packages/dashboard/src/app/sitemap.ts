@@ -88,32 +88,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
         // Extract internal slug to check against SLUG_MAP
         const internalSlug = cleanRoute.startsWith('/') ? cleanRoute.substring(1) : cleanRoute;
 
-        i18n.locales.forEach((locale) => {
-            const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
-            const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/');
-            const fullUrl = `${BASE_URL}${localizedPath}`;
-            
-            // Build alternates pointing to public aliases
-            const alternates: Record<string, string> = {};
-            i18n.locales.forEach((l) => {
-                const altPublicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
-                const altPath = `/${l}/${altPublicSlug}`.replace(/\/+/g, '/');
-                alternates[l] = `${BASE_URL}${altPath}`;
-            });
-            // Add x-default (usually English)
-            const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-            const xDefaultPath = `/en/${defaultPublicSlug}`.replace(/\/+/g, '/');
-            alternates['x-default'] = `${BASE_URL}${xDefaultPath}`;
+        // ONLY generate sitemap entries for English for now
+        // This avoids crawling non-existent localized pages until dictionaries are full
+        const locale = 'en';
+        const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
+        const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/');
+        const fullUrl = `${BASE_URL}${localizedPath}`;
 
-            sitemapEntries.push({
-                url: fullUrl,
-                lastModified: new Date(),
-                changeFrequency: 'daily' as const,
-                priority: cleanRoute === '' ? 1.0 : cleanRoute.split('/').length > 2 ? 0.6 : 0.8,
-                alternates: {
-                    languages: alternates,
-                },
-            });
+        sitemapEntries.push({
+            url: fullUrl,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: cleanRoute === '' ? 1.0 : cleanRoute.split('/').length > 2 ? 0.6 : 0.8,
         });
     });
 

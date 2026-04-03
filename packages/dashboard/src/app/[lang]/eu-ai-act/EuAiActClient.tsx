@@ -13,48 +13,49 @@ import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
 
 export default function EuAiActClient({ dictionary }: { dictionary: any }) {
-    const t = dictionary.euAiAct;
+    const t = dictionary.euAiAct || {};
     
+    // Add safety checks for each nested property to prevent build crashes
     const EU_ACT_MAPPING = [
         {
             article: "Art. 9",
-            requirement: t.mapping.art9.req,
-            solution: t.mapping.art9.sol,
+            requirement: t.mapping?.art9?.req || "Risk management system",
+            solution: t.mapping?.art9?.sol || "Deterministic policy engine and risk assessment templates.",
             product: "Policy Engine, Compliance Templates"
         },
         {
             article: "Art. 13",
-            requirement: t.mapping.art12.req,
-            solution: t.mapping.art12.sol,
+            requirement: t.mapping?.art12?.req || "Automatic logging",
+            solution: t.mapping?.art12?.sol || "Immutable audit trails for Every agent action.",
             product: "Audit Logs, Compliance Reports"
         },
         {
             article: "Art. 14",
-            requirement: t.mapping.art14.req,
-            solution: t.mapping.art14.sol,
+            requirement: t.mapping?.art14?.req || "Human oversight",
+            solution: t.mapping?.art14?.sol || "Human-in-the-loop approval workflows for high-risk actions.",
             product: "Policy Engine, Approval Workflows"
         }
     ];
 
     const EU_ACT_ARTICLES = [
         {
-            title: t.articles.art9.title,
+            title: t.articles?.art9?.title || "Risk Management",
             href: "/learn/eu-ai-act-high-risk-ai-assessment",
-            desc: t.articles.art9.desc,
+            desc: t.articles?.art9?.desc || "Article 9 requirements for high-risk AI agent systems.",
             icon: <ShieldCheck className="w-6 h-6 text-blue-400" />,
             pill: "Foundation"
         },
         {
-            title: t.articles.art12.title,
+            title: t.articles?.art12?.title || "Automatic Logging",
             href: "/eu-ai-act/article-12",
-            desc: t.articles.art12.desc,
+            desc: t.articles?.art12?.desc || "Article 12 compliance for autonomous agent monitoring.",
             icon: <History className="w-6 h-6 text-blue-400" />,
             pill: "Monitoring"
         },
         {
-            title: t.articles.art14.title,
+            title: t.articles?.art14?.title || "Human Oversight",
             href: "/eu-ai-act/article-14",
-            desc: t.articles.art14.desc,
+            desc: t.articles?.art14?.desc || "Article 14 controls for agent-human interaction.",
             icon: <ShieldAlert className="w-6 h-6 text-blue-400" />,
             pill: "Oversight"
         }
@@ -69,14 +70,14 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
                 </div>
 
                 <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
-                    <TagBadge>{t.hero.badge}</TagBadge>
+                    <TagBadge>{t.hero?.badge || "EU AI ACT"}</TagBadge>
                     <div className="space-y-6">
                         <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
-                             {t.hero.headlinePrefix} <br />
-                             <span className="text-blue-500 font-bold italic underline decoration-white/10 uppercase italic">{t.hero.headlineEmphasis}</span>
+                             {t.hero?.headlinePrefix || "COMPLIANT"} <br />
+                             <span className="text-blue-500 font-bold italic underline decoration-white/10 uppercase italic">{t.hero?.headlineEmphasis || "AGENTS"}</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             {t.hero.subheadline}
+                             {t.hero?.subheadline || "The definitive security layer for autonomous agent compliance."}
                         </p>
                     </div>
                 </div>
@@ -86,18 +87,18 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
             <section className="py-24 px-6 bg-black border-y border-white/5">
                 <div className="max-w-7xl mx-auto space-y-12">
                     <div className="text-center space-y-4">
-                        <h2 className="text-4xl font-black italic uppercase tracking-tighter">{t.moat.title} <span className="text-blue-500">{t.moat.moatWord}</span></h2>
-                        <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs">{t.moat.subtitle}</p>
+                        <h2 className="text-4xl font-black italic uppercase tracking-tighter">{t.moat?.title || "THE COMPLIANCE"} <span className="text-blue-500">{t.moat?.moatWord || "MOAT"}</span></h2>
+                        <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs">{t.moat?.subtitle || "DETERMINISTIC EVIDENCE"}</p>
                     </div>
                     
                     <div className="overflow-x-auto rounded-[3rem] border border-white/10 bg-neutral-900/20 shadow-2xl">
                         <table className="w-full text-left border-separate border-spacing-0">
                             <thead>
                                 <tr className="bg-neutral-900/80">
-                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table.article}</th>
-                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table.requires}</th>
-                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table.does}</th>
-                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table.location}</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table?.article || "ARTICLE"}</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table?.requires || "REQUIREMENT"}</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table?.does || "SUPRAWALL SOLUTION"}</th>
+                                    <th className="p-8 text-[11px] font-black uppercase tracking-[0.3em] text-neutral-500 italic">{t.table?.location || "PRODUCT"}</th>
                                 </tr>
                             </thead>
                             <tbody className="text-sm font-bold italic uppercase tracking-tighter text-white">
@@ -134,7 +135,7 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
                                     <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-snug">{art.desc}</p>
                                 </div>
                                 <div className="flex items-center gap-2 text-white/50 font-black uppercase tracking-widest text-xs group-hover:text-blue-500 transition-all uppercase italic">
-                                    {t.articles.cta} <ArrowRight className="w-4 h-4 ml-2" />
+                                    {t.articles?.cta || "View Compliance Details"} <ArrowRight className="w-4 h-4 ml-2" />
                                 </div>
                             </div>
                        </Link>
@@ -145,13 +146,13 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
              {/* 🎯 PLATFORM STATS SECTION */}
              <section className="py-40 px-6 bg-[#030303] relative border-y border-white/5 overflow-hidden text-center">
                  <div className="max-w-7xl mx-auto space-y-16">
-                    <TagBadge>{t.conformity.badge}</TagBadge>
+                    <TagBadge>{t.conformity?.badge || "READY"}</TagBadge>
                     <h2 className="text-5xl md:text-[7rem] font-black italic uppercase tracking-tighter leading-[0.8] text-glow">
-                         {t.conformity.titlePrefix} <br />
-                         <span className="text-blue-500 font-bold italic underline decoration-white/10 uppercase italic">{t.conformity.titleEmphasis}</span>
+                         {t.conformity?.titlePrefix || "TOTAL"} <br />
+                         <span className="text-blue-500 font-bold italic underline decoration-white/10 uppercase italic">{t.conformity?.titleEmphasis || "CONFORMITY"}</span>
                     </h2>
                      <p className="text-xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                        {t.conformity.description}
+                        {t.conformity?.description || "SupraWall satisfies the most critical requirements for autonomous agent safety."}
                      </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                          <Link href="/learn/eu-ai-act-compliance-ai-agents" className="px-12 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all underline decoration-white/10 underline-offset-8">
@@ -165,17 +166,17 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
              <section className="py-48 px-6 bg-black relative text-center">
                 <div className="absolute inset-0 bg-blue-500/10 blur-[150px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none" />
                 <div className="max-w-4xl mx-auto space-y-12 relative z-10">
-                    <TagBadge>{t.final.badge}</TagBadge>
+                    <TagBadge>{t.final?.badge || "GET STARTED"}</TagBadge>
                     <h2 className="text-7xl md:text-[8rem] font-black uppercase italic leading-[0.8] tracking-tighter text-glow">
-                        {t.final.titlePrefix} <br />
-                        <span className="text-blue-500 underline decoration-white/20 font-bold italic uppercase italic font-bold">{t.final.titleEmphasis}</span>
+                        {t.final?.titlePrefix || "SECURE YOUR"} <br />
+                        <span className="text-blue-500 underline decoration-white/20 font-bold italic uppercase italic font-bold">{t.final?.titleEmphasis || "FLEET"}</span>
                     </h2>
                     <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic max-w-2xl mx-auto">
-                        {t.final.description}
+                        {t.final?.description || "Deploy the industry's first deterministic guardrail system today."}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                         <Link href="/beta" className="px-16 py-8 bg-blue-600 text-white font-black text-3xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(59,130,246,0.3)] tracking-tighter flex items-center gap-4 group">
-                             {t.final.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
+                             {t.final?.cta || "Join Beta"} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>
                 </div>
