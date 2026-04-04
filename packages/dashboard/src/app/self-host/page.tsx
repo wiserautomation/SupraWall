@@ -63,7 +63,7 @@ export default function SelfHostPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <p className="text-neutral-600"># Clone the repo</p>
-                                    <p>git clone https://github.com/suprawall/suprawall</p>
+                                    <p>git clone https://github.com/wiserautomation/SupraWall</p>
                                     <p className="text-neutral-600"># Launch the stack</p>
                                     <p>cd suprawall && docker-compose up -d</p>
                                 </div>
@@ -169,7 +169,7 @@ export default function SelfHostPage() {
                         </h2>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                             <Link 
-                                href="https://github.com/suprawall/suprawall" 
+                                href="https://github.com/wiserautomation/SupraWall" 
                                 className="px-16 py-8 bg-emerald-600 text-white font-black text-2xl rounded-3xl hover:bg-emerald-500 transition-all shadow-[0_20px_50px_rgba(16,185,129,0.3)] flex items-center gap-4 group"
                             >
                                 <Github className="w-8 h-8" /> STAR THE REPO

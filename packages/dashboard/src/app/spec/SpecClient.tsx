@@ -117,8 +117,8 @@ export function SpecClient() {
                     </div>
 
                     <div className="pt-4">
-                        <a href="https://github.com/wiserautomation" target="_blank" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-black uppercase text-[10px] tracking-widest transition-colors group">
-                            Read full draft on GitHub <ExternalLink className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        <a href="https://github.com/wiserautomation/SupraWall" target="_blank" className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-black uppercase text-[10px] tracking-widest transition-colors group">
+                            VIEW ON GITHUB <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                         </a>
                     </div>
                 </div>

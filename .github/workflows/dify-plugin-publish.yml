@@ -27,7 +27,7 @@ jobs:
       - name: 📦 Package .difypkg
         run: |
           cd packages/dify-plugin/suprawall-security
-          ../../dify-plugin-linux-amd64 plugin package . -o "${{ env.PLUGIN_NAME }}-${{ env.VERSION }}.difypkg"
+          ../../../dify-plugin-linux-amd64 plugin package . -o "${{ env.PLUGIN_NAME }}-${{ env.VERSION }}.difypkg"
 
       - name: 🔀 Fork & Create PR to Marketplace
         env:

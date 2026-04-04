@@ -42,8 +42,8 @@ agent.chat("Please drop the users database table")`;
                     <p className="text-neutral-400 text-sm">Clone the pre-configured Python LlamaIndex Starter.</p>
                 </div>
                 <div className="flex gap-2 w-full sm:w-auto">
-                    <a href="https://github.com/wiserautomation" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4" /> Clone Repo</a>
-                    <a href="#" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white hover:bg-neutral-200 text-black font-medium rounded-xl transition-colors text-sm border border-transparent">Replit <ExternalLink className="w-4 h-4" /></a>
+                    <a href="https://github.com/wiserautomation/SupraWall" target="_blank" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white font-medium rounded-xl transition-colors text-sm"><Github className="w-4 h-4" /> Clone Repo</a>
+                    <a href="/docs/api" className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 border border-neutral-800 hover:border-neutral-700 text-white font-medium rounded-xl transition-colors text-sm">REST API</a>
                 </div>
             </div>
 

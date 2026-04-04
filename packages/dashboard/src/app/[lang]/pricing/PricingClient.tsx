@@ -55,6 +55,8 @@ const FEATURES: { category: string; rows: FeatureRow[] }[] = [
             { name: 'LangChain plugin', free: true, cloud: true, enterprise: true },
             { name: 'Vercel AI SDK', free: true, cloud: true, enterprise: true },
             { name: 'CrewAI / AutoGen / LlamaIndex', free: false, cloud: true, enterprise: true, highlight: true },
+            { name: 'AWS Marketplace (SaaS)', free: false, cloud: true, enterprise: true },
+            { name: 'AWS Marketplace (Container)', free: false, cloud: false, enterprise: true },
             { name: 'Custom framework support', free: false, cloud: false, enterprise: true },
         ],
     },
@@ -173,6 +175,8 @@ export default function PricingClient({ dictionary }: { dictionary: any }) {
                 { name: 'LangChain plugin', free: true, cloud: true, enterprise: true },
                 { name: 'Vercel AI SDK', free: true, cloud: true, enterprise: true },
                 { name: 'CrewAI / AutoGen / LlamaIndex', free: false, cloud: true, enterprise: true, highlight: true },
+                { name: 'AWS Marketplace (SaaS)', free: false, cloud: true, enterprise: true },
+                { name: 'AWS Marketplace (Container)', free: false, cloud: false, enterprise: true },
                 { name: 'Custom framework support', free: false, cloud: false, enterprise: true },
             ],
         },
@@ -331,7 +335,7 @@ export default function PricingClient({ dictionary }: { dictionary: any }) {
                             </ul>
                         </div>
                         <Link
-                            href="https://github.com/suprawall/suprawall"
+                            href="https://github.com/wiserautomation/SupraWall"
                             target="_blank"
                             className="mt-10 w-full py-4 rounded-xl border-2 border-white/10 text-white font-black uppercase tracking-tighter text-lg hover:bg-white/5 transition-all text-center flex items-center justify-center gap-2"
                         >

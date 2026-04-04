@@ -108,8 +108,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
     const resourcesNavItems = [
         { label: "Documentation", href: "/docs", icon: FileText },
-        { label: "Self-Host", href: "/docs/self-host", icon: Zap },
-        { label: "CLI Tool", href: "/docs/cli", icon: Zap },
+        { label: "Self-Host", href: "/self-host", icon: Zap },
+        { label: "CLI Tool", href: "/docs/typescript", icon: Zap },
         { label: "Spec", href: "/spec", icon: Shield },
     ];
 

@@ -38,11 +38,24 @@ export class MySQLAdapter implements Adapter {
     }
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
+        const { id: _ignoreId, ...fields } = updates;
+        const keys = Object.keys(fields);
+        if (keys.length === 0) {
+            const existing = await this.getAgent(id);
+            if (!existing) throw new Error(`Agent ${id} not found`);
+            return existing;
+        }
+        const setClauses = keys.map(key => `${key} = ?`);
+        const values = keys.map(k => (fields as Record<string, unknown>)[k] ?? null);
+        values.push(id);
         await this.db.execute(
-            "UPDATE agents SET name = ?, description = ? WHERE id = ?",
-            [updates.name, updates.description ?? null, id]
+            `UPDATE agents SET ${setClauses.join(", ")} WHERE id = ?`,
+            values
         );
-        return { id, ...updates } as Agent;
+        // Re-fetch to return accurate state
+        const updated = await this.getAgent(id);
+        if (!updated) throw new Error(`Agent ${id} not found after update`);
+        return updated;
     }
 
     async deleteAgent(id: string): Promise<boolean> {

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",
+    "migrate:aws": "psql $DATABASE_URL -f scripts/migrate_aws_marketplace.sql",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "test": "jest --testPathPattern=tests/",

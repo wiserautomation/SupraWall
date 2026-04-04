@@ -49,6 +49,6 @@ export const config = {
   matcher: [
     // Only match marketing pages, exclude app/auth/api/static routes
     // Matcher syntax: Negative lookahead for excluded segments
-    '/((?!dashboard|login|admin|api|stripe|share|audit|beta|_next|static|legal|docs|.*\\..*).*)',
+    '/((?!dashboard|login|admin|api|stripe|share|audit|beta|_next|static|legal|docs|connect|blog|integrations|quickstart|security|privacy|for-developers|for-enterprise|changelog|self-host|partner|news|tools|use-cases|spec|compare|certificate|mcp|.*\\..*).*)',
   ],
 };

@@ -97,7 +97,7 @@ jobs:
       - name: Run Python tests
         run: |
           cd packages/sdk-python
-          python -m pytest tests/ -v || true
+          python -m pytest tests/ -v
 
   go-sdk:
     name: Go SDK
@@ -120,4 +120,4 @@ jobs:
       - name: Test Go SDK
         run: |
           cd packages/sdk-go
-          go test ./... || true
+          go test ./...

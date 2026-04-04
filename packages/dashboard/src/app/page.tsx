@@ -74,6 +74,14 @@ export default function LandingPage() {
                     "@type": "Answer",
                     "text": "Yes, SupraWall specifically targets Articles 9, 11, 12, and 14 of the EU AI Act by providing deterministic risk management, automatic logging, technical documentation, and human-in-the-loop oversight controls."
                 }
+            },
+            {
+                "@type": "Question",
+                "name": "Is SupraWall available on AWS Marketplace?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes, SupraWall is an official AWS Marketplace Guardrail provider. You can subscribe via SaaS or deploy via Container (VPC/EKS) with integrated AWS billing and entitlements."
+                }
             }
         ]
     };
@@ -154,7 +162,7 @@ export default function LandingPage() {
                                 </Link>
                                 <Link
                                     id="cta-star-github"
-                                    href="https://github.com/suprawall/suprawall"
+                                    href="https://github.com/wiserautomation/SupraWall"
                                     target="_blank"
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
                                     className="px-10 py-5 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"
@@ -436,7 +444,7 @@ export default function LandingPage() {
                     <div className="max-w-7xl mx-auto px-6 space-y-12">
                         <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">One command to secure any stack</p>
                         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-10 items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
-                            {['Python', 'TypeScript', 'LangChain', 'CrewAI', 'AutoGen', 'Vercel AI', 'PostgreSQL', 'Docker'].map((tech) => (
+                            {['Python', 'TypeScript', 'LangChain', 'CrewAI', 'AutoGen', 'Vercel AI', 'AWS Marketplace', 'MCP'].map((tech) => (
                                 <div key={tech} className="text-sm font-black text-white italic text-center uppercase tracking-widest">{tech}</div>
                             ))}
                         </div>

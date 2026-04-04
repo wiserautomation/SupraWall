@@ -59,7 +59,7 @@ export default function MCPGuide() {
                 <p className="text-neutral-400 text-sm">
                     SupraWall acts as a proxy between Claude and your tools. It uses the standard MCP lifecycle to intercept tool requests, evaluate them against your cloud-hosted policies, and either allow, deny, or pause for approval.
                 </p>
-                <a href="https://github.com/wiserautomation/suprawall-mcp-plugin" target="_blank" className="inline-flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
+                <a href="https://github.com/wiserautomation/SupraWall" target="_blank" className="inline-flex items-center gap-2 text-sm text-emerald-400 hover:text-emerald-300 transition-colors">
                     View source on GitHub <ExternalLink className="w-4 h-4" />
                 </a>
             </div>

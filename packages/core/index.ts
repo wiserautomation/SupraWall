@@ -8,9 +8,10 @@ import { MongoAdapter } from "./adapters/mongodb";
 import { SupabaseAdapter } from "./adapters/supabase";
 import { FirebaseAdapter } from "./adapters/firebase";
 
-class SupraWall {
+export class SupraWall {
     private configOptions: SupraWallConfig | null = null;
     private adapter: Adapter | null = null;
+    private _connectionPromise: Promise<void> | null = null;
 
     config(config: SupraWallConfig) {
         this.configOptions = config;
@@ -36,12 +37,24 @@ class SupraWall {
         }
 
         if (config.connectionString) {
-            // Intentionally not awaiting since this config method is synchronous
-            // Real apps might want an explicit init/connect method if strict connection guarantee is needed 
-            // before operations.
-            this.adapter.connect(config.connectionString).catch(err => {
+            this._connectionPromise = this.adapter.connect(config.connectionString).catch(err => {
                 process.stderr.write(`[SupraWall] Failed to connect ${config.adapter} adapter: ${err}\n`);
+                throw err;
             });
+        }
+    }
+
+    /**
+     * Explicit async initializer. Call this after config() to guarantee the
+     * database connection is established before performing any operations.
+     *
+     * @example
+     *   suprawall.config({ adapter: "postgres", connectionString: "..." });
+     *   await suprawall.init(); // waits for the connection
+     */
+    async init(): Promise<void> {
+        if (this._connectionPromise) {
+            await this._connectionPromise;
         }
     }
 
@@ -56,12 +69,17 @@ class SupraWall {
         if (!this.adapter) {
             throw new Error("SupraWall is not configured. Call suprawall.config() first.");
         }
+        const adapter = this.adapter;
+        const ensureConnected = this._connectionPromise
+            ? () => this._connectionPromise!
+            : () => Promise.resolve();
+
         return {
-            create: async (agent: Agent) => this.adapter!.createAgent(agent),
-            get: async (id: string) => this.adapter!.getAgent(id),
-            update: async (id: string, updates: Partial<Agent>) => this.adapter!.updateAgent(id, updates),
-            delete: async (id: string) => this.adapter!.deleteAgent(id),
-            list: async (filter?: { userId?: string }) => this.adapter!.listAgents(filter),
+            create: async (agent: Agent) => { await ensureConnected(); return adapter.createAgent(agent); },
+            get: async (id: string) => { await ensureConnected(); return adapter.getAgent(id); },
+            update: async (id: string, updates: Partial<Agent>) => { await ensureConnected(); return adapter.updateAgent(id, updates); },
+            delete: async (id: string) => { await ensureConnected(); return adapter.deleteAgent(id); },
+            list: async (filter?: { userId?: string }) => { await ensureConnected(); return adapter.listAgents(filter); },
         };
     }
 }

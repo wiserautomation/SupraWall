@@ -30,7 +30,7 @@ export default function LangChainIntegrationPage() {
         },
         "description": "Enterprise security and runtime guardrails for LangChain agents and chains.",
         "sameAs": [
-            "https://github.com/suprawall",
+            "https://github.com/wiserautomation/SupraWall",
             "https://pypi.org/project/suprawall"
         ],
         "featureList": [

@@ -9,23 +9,16 @@ export class FirebaseAdapter implements Adapter {
     private db: any;
 
     async connect(connectionString: string): Promise<void> {
-        // Assuming connectionString is a serialized JSON object of Firebase config
-        // or we just use the global app if it exists.
+        let firebaseConfig;
         try {
-            let firebaseConfig;
-            try {
-                firebaseConfig = JSON.parse(connectionString);
-            } catch (e) {
-                throw new Error("connectionString for Firebase must be a JSON string of Firebase config.");
-            }
-
-            const apps = getApps();
-            const app = apps.length === 0 ? initializeApp(firebaseConfig) : apps[0];
-            this.db = getFirestore(app);
-            console.log(`Connected to Firebase successfully.`);
+            firebaseConfig = JSON.parse(connectionString);
         } catch (e) {
-            console.error("Failed to connect FirebaseAdapter:", e);
+            throw new Error("connectionString for Firebase must be a JSON string of Firebase config.");
         }
+
+        const apps = getApps();
+        const app = apps.length === 0 ? initializeApp(firebaseConfig) : apps[0];
+        this.db = getFirestore(app);
     }
 
     // Fallback setter for testing or if db was connected externally
@@ -51,7 +44,10 @@ export class FirebaseAdapter implements Adapter {
         if (!this.db) throw new Error("Firebase DB not initialized.");
         const docRef = doc(this.db, "agents", id);
         await updateDoc(docRef, updates);
-        return { id, name: "Updated Agent", ...updates }; // Best effort return, ideally hit DB again
+        // Re-read the document to return accurate, complete data
+        const updated = await getDoc(docRef);
+        if (!updated.exists()) throw new Error(`Agent ${id} not found after update`);
+        return { id: updated.id, ...updated.data() } as Agent;
     }
 
     async deleteAgent(id: string): Promise<boolean> {

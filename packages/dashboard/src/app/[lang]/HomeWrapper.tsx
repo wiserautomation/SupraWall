@@ -81,7 +81,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                                 </Link>
                                 <Link
                                     id="cta-star-github"
-                                    href="https://github.com/suprawall/suprawall"
+                                    href="https://github.com/wiserautomation/SupraWall"
                                     target="_blank"
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'star_github' })}
                                     className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all flex items-center gap-3"

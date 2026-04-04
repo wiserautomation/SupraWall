@@ -91,7 +91,7 @@ export default async function LocaleLayout({
     "logo": "https://www.supra-wall.com/icon.png",
     "sameAs": [
       "https://twitter.com/suprawall",
-      "https://github.com/suprawall"
+      "https://github.com/wiserautomation/SupraWall"
     ],
     "description": "Enterprise-grade security and compliance for autonomous AI agents.",
     "inLanguage": lang,

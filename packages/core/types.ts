@@ -18,7 +18,7 @@ export interface Adapter {
 }
 
 export interface SupraWallConfig {
-    adapter: "postgres" | "mysql" | "mongo" | "supabase" | "sqlite" | "firebase";
+    adapter: "postgres" | "mysql" | "mongo" | "supabase" | "firebase";
     connectionString?: string;
     projectId?: string; // For supabase/firebase
     apiKey?: string;    // For supabase/firebase

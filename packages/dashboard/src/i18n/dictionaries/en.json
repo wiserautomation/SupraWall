@@ -19,7 +19,8 @@
     "company": "Company",
     "pricing": "Pricing",
     "frameworks": "Frameworks",
-    "platforms": "Platforms & Models"
+    "platforms": "Platforms & Models",
+    "awsMarketplace": "AWS Marketplace"
   },
   "home": {
     "hero": {
@@ -307,6 +308,7 @@
           "Slack + Dashboard approvals",
           "PDF compliance reports",
           "All framework plugins (CrewAI, etc.)",
+          "AWS Marketplace fulfillment",
           "Regulator-ready evidence",
           "99.9% SLA"
         ],
@@ -326,6 +328,7 @@
           "White-label dashboard",
           "7+ year audit retention",
           "SOC 2 certified",
+          "AWS Marketplace Container (VPC/EKS)",
           "Custom KMS + HSM",
           "24/7 dedicated support + SLA",
           "Annual contracts + POs"

@@ -36,9 +36,19 @@ export class PostgresAdapter implements Adapter {
     }
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
+        const { id: _ignoreId, ...fields } = updates;
+        const keys = Object.keys(fields);
+        if (keys.length === 0) {
+            const existing = await this.getAgent(id);
+            if (!existing) throw new Error(`Agent ${id} not found`);
+            return existing;
+        }
+        const setClauses = keys.map((key, i) => `${key} = $${i + 1}`);
+        const values = keys.map(k => (fields as Record<string, unknown>)[k] ?? null);
+        values.push(id);
         const res = await this.db.query(
-            "UPDATE agents SET name = $1, description = $2 WHERE id = $3 RETURNING *",
-            [updates.name, updates.description ?? null, id]
+            `UPDATE agents SET ${setClauses.join(", ")} WHERE id = $${values.length} RETURNING *`,
+            values
         );
         return res.rows[0] as Agent;
     }

@@ -94,7 +94,29 @@ const { apiKey } = await response.json();
 // Use this apiKey in your LangGraph/CrewAI agent!
 ```
 
+## ☁️ AWS Marketplace Integration
+
+SupraWall supports native AWS Marketplace SaaS and Container fulfillment.
+
+### 1. Registration
+When a customer subscribes via AWS Marketplace, they are redirected to:
+`POST /v1/aws/register?x-amzn-marketplace-token=...`
+
+This endpoint exchanges the token for an AWS `CustomerIdentifier` and provisions a new SupraWall tenant with either `developer` or `business` tier defaults based on the offer.
+
+### 2. Entitlement Logic
+Entitlements are automatically managed via SNS notifications:
+`POST /v1/aws/sns`
+
+Handles:
+- `subscribe-success`: Activate tenant
+- `unsubscribe-success`: Downgrade to `open_source` tier
+- `entitlement-updated`: Upgrade/Downgrade based on new plan selection
+
+### 3. Metering
+Usage-based billing is reported via the `BatchMeterUsage` API. Every `ALLOW` decision on the `/v1/evaluate` endpoint counts towards the monthly metered dimension.
+
 ---
 
 *SupraWall - The Security Layer for Autonomous AI.*
-*Keywords: AI Agent Security, LLM Guardrails, Programmatic AI Governance, Agent Audit Logs, Secure Tool Use.*
+*Keywords: AI Agent Security, LLM Guardrails, Programmatic AI Governance, Agent Audit Logs, Secure Tool Use, AWS Marketplace AI Guardrail.*

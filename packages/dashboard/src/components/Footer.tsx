@@ -54,16 +54,16 @@ export function Footer() {
                         <li><Link href="/login" className="hover:text-neutral-800 transition-colors">Policy Regulations</Link></li>
                         <li><Link href="/legal/dpa" className="hover:text-emerald-500 transition-colors">Privacy DPA</Link></li>
                         <li><Link href="/privacy" className="hover:text-emerald-500 transition-colors">Privacy Policy</Link></li>
-                        <li><Link href="/certificate" className="hover:text-emerald-500 transition-colors">SOC 2 Portal</Link></li>
+                        <li><Link href="/dashboard" className="hover:text-emerald-500 transition-colors">SOC 2 Portal</Link></li>
                     </ul>
                 </div>
                 <div>
                     <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Open Source</h4>
                     <ul className="space-y-4">
-                        <li><Link href="https://github.com/suprawall/suprawall" className="hover:text-emerald-500 transition-colors">GitHub Repository</Link></li>
+                        <li><Link href="https://github.com/wiserautomation/SupraWall" className="hover:text-emerald-500 transition-colors">GitHub Repository</Link></li>
                         <li><Link href="/beta" className="hover:text-emerald-400 transition-colors">Self-Host Guide</Link></li>
-                        <li><Link href="https://github.com/suprawall/suprawall/blob/main/CONTRIBUTING.md" className="hover:text-emerald-500 transition-colors">Contributing</Link></li>
-                        <li><Link href="https://github.com/suprawall/suprawall/blob/main/LICENSE" className="hover:text-emerald-500 transition-colors">Apache 2.0</Link></li>
+                        <li><Link href="https://github.com/wiserautomation/SupraWall/blob/main/CONTRIBUTING.md" className="hover:text-emerald-500 transition-colors">Contributing</Link></li>
+                        <li><Link href="https://github.com/wiserautomation/SupraWall/blob/main/LICENSE" className="hover:text-emerald-500 transition-colors">Apache 2.0</Link></li>
                     </ul>
                 </div>
             </div>

@@ -14,7 +14,7 @@ func TestNew(t *testing.T) {
 		t.Errorf("Expected ApiKey ag_test_key, got %s", sw.Options.ApiKey)
 	}
 
-	if sw.Options.CloudFunctionUrl != "https://api.supra-wall.com/v1/evaluate" {
+	if sw.Options.CloudFunctionUrl != "https://www.supra-wall.com/api/v1/evaluate" {
 		t.Errorf("Expected default URL, got %s", sw.Options.CloudFunctionUrl)
 	}
 }

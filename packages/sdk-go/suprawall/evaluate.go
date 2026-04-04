@@ -36,7 +36,7 @@ type SupraWall struct {
 
 func New(options SupraWallOptions) *SupraWall {
 	if options.CloudFunctionUrl == "" {
-		options.CloudFunctionUrl = "https://api.supra-wall.com/v1/evaluate"
+		options.CloudFunctionUrl = "https://www.supra-wall.com/api/v1/evaluate"
 	}
 	if options.OnNetworkError == "" {
 		options.OnNetworkError = "fail-open"

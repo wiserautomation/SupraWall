@@ -4,7 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace SUPRA-WALL.Models
+namespace SupraWall.Models
 {
     public class EvaluateRequest
     {
@@ -33,7 +33,7 @@ namespace SUPRA-WALL.Models
         public Client(string key = null, string url = null)
         {
             apiKey = key ?? Environment.GetEnvironmentVariable("SUPRAWALL_API_KEY");
-            apiUrl = url ?? Environment.GetEnvironmentVariable("suprawall_API_URL") ?? "https://api.suprawall.io/v1/evaluate";
+            apiUrl = url ?? Environment.GetEnvironmentVariable("SUPRAWALL_API_URL") ?? "https://www.supra-wall.com/api/v1/evaluate";
 
             if (string.IsNullOrEmpty(apiKey)) throw new ArgumentException("SUPRAWALL_API_KEY is required");
         }
@@ -65,7 +65,7 @@ namespace SUPRA-WALL.Models
 
             if (!response.IsSuccessStatusCode)
             {
-                throw new HttpRequestException("SUPRA-WALL Network Error: Failing closed.");
+                throw new HttpRequestException("SupraWall Network Error: Failing closed.");
             }
 
             var responseString = await response.Content.ReadAsStringAsync();
@@ -73,11 +73,11 @@ namespace SUPRA-WALL.Models
 
             if (result.Decision == "DENY")
             {
-                throw new PolicyViolationException($"SUPRA-WALL Policy Violation: Tool '{toolName}' explicitly denied.");
+                throw new PolicyViolationException($"SupraWall Policy Violation: Tool '{toolName}' explicitly denied.");
             }
             else if (result.Decision == "REQUIRE_APPROVAL")
             {
-                throw new PolicyViolationException($"SUPRA-WALL Policy Violation: Tool '{toolName}' requires human approval.");
+                throw new PolicyViolationException($"SupraWall Policy Violation: Tool '{toolName}' requires human approval.");
             }
 
             return result;

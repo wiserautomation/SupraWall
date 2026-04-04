@@ -326,11 +326,16 @@ async function internalEvaluate(
     let isLoopDetected = false;
     if (loopDetection) {
         const callSig = `${toolName}:${JSON.stringify(args, Object.keys(args || {}).sort())}`;
-        const history = _sessionCallHistory.get(sessionId) ?? [];
+        let history = _sessionCallHistory.get(sessionId) ?? [];
         history.push(callSig);
+        
+        // Prevent memory leak by keeping only what's needed for threshold checking
+        if (history.length > loopThreshold) {
+            history = history.slice(-loopThreshold);
+        }
         _sessionCallHistory.set(sessionId, history);
 
-        const recent = history.slice(-loopThreshold);
+        const recent = history;
         if (recent.length === loopThreshold && new Set(recent).size === 1) {
             isLoopDetected = true;
             // Don't stop yet, let's report it to the server in the next step

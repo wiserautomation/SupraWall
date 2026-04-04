@@ -42,10 +42,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @suprawall/vercel-ai
-        run: cd plugins/vercel-ai && npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
 
   publish-pypi:
     name: Publish to PyPI
@@ -100,7 +97,7 @@ jobs:
             npm install @suprawall/sdk-ts
 
             # Go
-            go get github.com/suprawall/suprawall-go
+            go get github.com/wiserautomation/SupraWall/packages/sdk-go
             ```
 
             See the [CHANGELOG](https://github.com/wiserautomation/SupraWall/blob/main/CHANGELOG.md) for full details.

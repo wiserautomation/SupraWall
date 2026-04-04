@@ -21,18 +21,18 @@ pub struct EvaluateResponse {
     pub reason: String,
 }
 
-pub struct SUPRA-WALLClient {
+pub struct SupraWallClient {
     api_key: String,
     api_url: String,
     client: reqwest::Client,
 }
 
-impl SUPRA-WALLClient {
+impl SupraWallClient {
     pub fn new() -> Result<Self, Box<dyn Error>> {
         let api_key = env::var("SUPRAWALL_API_KEY").map_err(|_| "SUPRAWALL_API_KEY is required")?;
-        let api_url = env::var("suprawall_API_URL").unwrap_or_else(|_| "https://api.suprawall.io/v1/evaluate".to_string());
+        let api_url = env::var("SUPRAWALL_API_URL").unwrap_or_else(|_| "https://www.supra-wall.com/api/v1/evaluate".to_string());
         
-        Ok(SUPRA-WALLClient {
+        Ok(SupraWallClient {
             api_key,
             api_url,
             client: reqwest::Client::new(),
@@ -40,7 +40,7 @@ impl SUPRA-WALLClient {
     }
 
     pub async fn evaluate(&self, agent_id: &str, tool_name: &str, arguments: serde_json::Value) -> Result<EvaluateResponse, Box<dyn Error>> {
-        if self.api_key.starts_with("ag_test_") {
+        if self.api_key.starts_with("sw_test_") {
             return Ok(EvaluateResponse {
                 decision: "ALLOW".to_string(),
                 reason: "Test mode bypass".to_string(),
@@ -61,15 +61,15 @@ impl SUPRA-WALLClient {
             .await?;
 
         if !response.status().is_success() {
-            return Err("SUPRA-WALL Network Error: Failing closed.".into());
+            return Err("SupraWall Network Error: Failing closed.".into());
         }
 
         let resp_data: EvaluateResponse = response.json().await?;
 
         if resp_data.decision == "DENY" {
-            return Err(format!("SUPRA-WALL Policy Violation: Tool '{}' explicitly denied.", tool_name).into());
+            return Err(format!("SupraWall Policy Violation: Tool '{}' explicitly denied.", tool_name).into());
         } else if resp_data.decision == "REQUIRE_APPROVAL" {
-            return Err(format!("SUPRA-WALL Policy Violation: Tool '{}' requires human approval.", tool_name).into());
+            return Err(format!("SupraWall Policy Violation: Tool '{}' requires human approval.", tool_name).into());
         }
 
         Ok(resp_data)

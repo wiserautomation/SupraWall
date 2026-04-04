@@ -69,7 +69,7 @@ ${uniqueBaseRoutes.flatMap(r => {
 
 ## Resource Links
 - Website: https://www.supra-wall.com
-- Github: https://github.com/suprawall/suprawall
+- Github: https://github.com/wiserautomation/SupraWall
 - Contact: founders@supra-wall.com
 `;
 
