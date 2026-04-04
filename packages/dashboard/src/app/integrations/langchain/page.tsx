@@ -149,10 +149,11 @@ export default function LangChainIntegrationPage() {
                             </p>
                             <div className="bg-neutral-900 rounded-3xl p-8 border border-white/5 font-mono text-emerald-400 shadow-2xl">
                                 <p># Python</p>
-                                <p className="mb-4 text-emerald-500">pip install <span className="text-white font-bold">suprawall</span></p>
-                                <p className="text-neutral-500"># and wrap your executor</p>
-                                <p className="text-emerald-300">from <span className="text-white">suprawall.langchain</span> import <span className="text-white">protect</span></p>
-                                <p className="text-emerald-300">secured_agent = protect(agent_executor)</p>
+                                <p className="mb-4 text-emerald-500">pip install <span className="text-white font-bold">langchain-suprawall</span></p>
+                                <p className="text-neutral-500"># usage with AgentExecutor</p>
+                                <p className="text-emerald-300">from <span className="text-white">langchain_suprawall</span> import <span className="text-white">SupraWallCallbackHandler</span></p>
+                                <p className="text-emerald-300">callback = SupraWallCallbackHandler()</p>
+                                <p className="text-emerald-300">agent_executor = AgentExecutor(..., <span className="text-white font-bold">callbacks=[callback]</span>)</p>
                             </div>
 
                             <h2 className="text-4xl font-black uppercase italic tracking-tight text-white mt-24 mb-8">
