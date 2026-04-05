@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db as firestore } from '@/lib/firebase-admin';
-import { pool } from "@/lib/db_sql";
+import { pool, ensureSchema } from "@/lib/db_sql";
 
 export async function GET(request: NextRequest) {
     try {
@@ -29,36 +29,8 @@ export async function GET(request: NextRequest) {
             console.warn("[IdentityMapping] Firebase lookup failed for stats:", e);
         }
 
-        // Ensure tables exist
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS audit_logs (
-                id SERIAL PRIMARY KEY,
-                tenantid VARCHAR(255) NOT NULL,
-                agentid VARCHAR(255),
-                toolname VARCHAR(255),
-                decision VARCHAR(50),
-                riskscore INTEGER,
-                cost_usd FLOAT DEFAULT 0,
-                reason TEXT,
-                arguments TEXT,
-                timestamp TIMESTAMP DEFAULT NOW(),
-                parameters JSONB,
-                metadata JSONB
-            );
-            CREATE TABLE IF NOT EXISTS approval_requests (
-                id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                tenantid VARCHAR(255) NOT NULL,
-                agentid VARCHAR(255) NOT NULL,
-                toolname VARCHAR(255) NOT NULL,
-                parameters JSONB,
-                status VARCHAR(50) DEFAULT 'PENDING',
-                decision_by VARCHAR(255),
-                decision_at TIMESTAMP,
-                decision_comment TEXT,
-                metadata JSONB,
-                created_at TIMESTAMP DEFAULT NOW()
-            );
-        `);
+        // Ensure all tables exist
+        await ensureSchema();
 
         // 2. Fetch Aggregated Data from Postgres
         const totalCallsRes = await pool.query(

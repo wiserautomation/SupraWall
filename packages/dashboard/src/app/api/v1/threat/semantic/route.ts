@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from '@/lib/db_sql';
+import { pool, ensureSchema } from '@/lib/db_sql';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -35,22 +35,7 @@ export async function GET(request: NextRequest) {
             console.warn("[IdentityMapping] Firebase lookup failed for semantic log:", e);
         }
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS semantic_analysis_log (
-                id SERIAL PRIMARY KEY,
-                tenant_id VARCHAR(255) NOT NULL,
-                agent_id VARCHAR(255),
-                tool_name VARCHAR(255),
-                semantic_score INTEGER,
-                anomaly_score INTEGER,
-                confidence VARCHAR(50),
-                decision_override VARCHAR(50),
-                reasoning TEXT,
-                model_used VARCHAR(100),
-                latency_ms INTEGER,
-                timestamp TIMESTAMP DEFAULT NOW()
-            );
-        `);
+        await ensureSchema();
 
         const result = await pool.query(
             `SELECT id, agent_id, tool_name, semantic_score, anomaly_score,
@@ -66,7 +51,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(result.rows);
     } catch (err: any) {
         console.error("[API Semantic GET] Error:", err);
-        return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 

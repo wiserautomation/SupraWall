@@ -8,6 +8,7 @@
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
+[![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
 [![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](https://www.supra-wall.com/docs)
 
 </div>
@@ -61,6 +62,7 @@ npx suprawall init
 - 🚫 **Policy engine** — ALLOW / DENY / REQUIRE_APPROVAL per tool
 - 🧹 **PII Shield** — scrubs sensitive data before execution
 - 📋 **Audit Trail** — RSA-signed, EU AI Act Article 9/13/14 ready
+- ☁️ **AWS Marketplace** — Integrated SaaS & Container fulfillment (Bedrock ready)
 - 🛡️ **Injection Shield** — blocks prompt injection at the runtime boundary
 
 ---

@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             languages,
         },
         robots: {
-            index: isDefault,
+            index: true,
             follow: true,
         },
         openGraph: {
@@ -77,7 +77,7 @@ export default async function EuAiActHubPage({
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
-            <EuAiActClient dictionary={dictionary} />
+            <EuAiActClient dictionary={dictionary} lang={lang} />
         </div>
     );
 }

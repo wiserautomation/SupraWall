@@ -107,7 +107,7 @@ const FAQS = [
     },
     {
         q: "Does Vault create audit logs for EU AI Act compliance?",
-        a: "Yes. Every credential access attempt — approved or denied — is logged with agent ID, timestamp, policy applied, and outcome. Exportable as HOE (Human Oversight Evidence) reports.",
+        a: "Yes. Every credential access attempt — approved or denied — is logged with agent ID, timestamp, policy applied, and outcome. These logs are essential for Article 12 compliance and help calculate the financial impact of agent operations, as detailed in our guide on AI Agent Runaway Costs.",
     },
 ];
 
@@ -514,7 +514,17 @@ export default function VaultClient() {
                                 </button>
                                 {openFaq === i && (
                                     <div className="px-8 pb-6 text-neutral-400 text-sm leading-relaxed border-t border-white/5 pt-4">
-                                        {faq.a}
+                                        {faq.a.includes("AI Agent Runaway Costs") ? (
+                                            <>
+                                                {faq.a.split("AI Agent Runaway Costs")[0]}
+                                                <Link href="/learn/ai-agent-runaway-costs" className="text-emerald-500 underline decoration-emerald-500/30 hover:decoration-emerald-500 transition-all font-bold">
+                                                    AI Agent Runaway Costs
+                                                </Link>
+                                                {faq.a.split("AI Agent Runaway Costs")[1]}
+                                            </>
+                                        ) : (
+                                            faq.a
+                                        )}
                                     </div>
                                 )}
                             </div>

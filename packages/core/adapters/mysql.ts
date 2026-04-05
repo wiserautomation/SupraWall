@@ -8,6 +8,12 @@ type MySQLConnection = {
     end: () => Promise<void>;
 };
 
+const ALLOWED_COLUMNS = new Set([
+    "name", "description", "status", "scopes", "slack_webhook",
+    "max_cost_usd", "budget_alert_usd", "max_iterations", "loop_detection",
+    "apikeyhash", "tenantid", "user_id", "metadata", "user_email", "total_evaluation_count"
+]);
+
 export class MySQLAdapter implements Adapter {
     private connection: MySQLConnection | null = null;
 
@@ -27,7 +33,7 @@ export class MySQLAdapter implements Adapter {
             "INSERT INTO agents (name, description) VALUES (?, ?)",
             [agent.name, agent.description ?? null]
         );
-        const insertResult = result as any as { insertId: number };
+        const insertResult = result as unknown as { insertId: number | string };
         return { id: String(insertResult.insertId), ...agent };
     }
 
@@ -39,7 +45,7 @@ export class MySQLAdapter implements Adapter {
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
         const { id: _ignoreId, ...fields } = updates;
-        const keys = Object.keys(fields);
+        const keys = Object.keys(fields).filter(k => ALLOWED_COLUMNS.has(k));
         if (keys.length === 0) {
             const existing = await this.getAgent(id);
             if (!existing) throw new Error(`Agent ${id} not found`);
@@ -60,7 +66,7 @@ export class MySQLAdapter implements Adapter {
 
     async deleteAgent(id: string): Promise<boolean> {
         const [result] = await this.db.execute("DELETE FROM agents WHERE id = ?", [id]);
-        const res = result as any as { affectedRows: number };
+        const res = result as unknown as { affectedRows: number };
         return res.affectedRows > 0;
     }
 

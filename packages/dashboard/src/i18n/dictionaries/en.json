@@ -706,5 +706,45 @@
       "cta": "Implement SDK Now",
       "guide": "Read the GDPR Developer Guide"
     }
+  },
+  "qa": {
+    "isLangChainSecure": {
+      "title": "Is LangChain Secure?",
+      "answer": "LangChain is a framework, not a security layer. While current versions are safer than early releases, LangChain agents are inherently vulnerable to prompt injection and rogue tool execution unless protected by a deterministic runtime guardrail. Security must be managed at the SDK execution boundary to ensure autonomous actions remain within defined policy limits.",
+      "risk1Title": "Rogue Tool Use",
+      "risk1Desc": "Agents can autonomously decide to call destructive shell or database tools.",
+      "risk2Title": "Data Leakage",
+      "risk2Desc": "LLMs can accidentally leak PII through outbound tool parameters.",
+      "solutionTitle": "Hardening Your Swarm",
+      "solutionP": "To secure LangChain in production, implement **SupraWall**. It acts as a callback-driven security shim that intercepts every tool invocation *before* execution, providing a deterministic layer of protection that persists even if the agent's prompt context is hijacked.",
+      "guideLink": "View the LangChain security implementation guide"
+    },
+    "whatIsPromptInjection": {
+      "title": "What is Prompt Injection?",
+      "answer": "Prompt injection is a security vulnerability where an attacker provides malicious input that hijacks an LLM's instructions, forcing it to ignore its original system prompt and execute unauthorized actions—such as exfiltrating data, accessing unauthorized tools, or bypassing safety guardrails.",
+      "direct": "Direct Injection",
+      "directDesc": "User directly types \"Ignore previous instructions and...\"",
+      "indirect": "Indirect Injection",
+      "indirectDesc": "The agent reads an external file or webpage containing malicious commands.",
+      "solutionTitle": "The Prevention Layer",
+      "solutionP": "Prompt injection cannot be solved by \"better prompts\" alone. It requires Agent Runtime Security (ARS)—a deterministic interception layer that validates tool calls *outside* the LLM context.",
+      "productAction": "SupraWall Interception",
+      "productDesc": "Automatically blocks unauthorized tool execution even if the LLM is compromised.",
+      "guideLink": "Read the complete guide to prompt injection prevention"
+    },
+    "howToComplyArticle12": {
+      "title": "EU AI Act Article 12",
+      "answer": "Article 12 of the EU AI Act requires \"high-risk\" AI systems to automatically record events (logs) throughout their lifetime. For autonomous agents, this translates to immutable, deterministic audit trails of every tool invocation, data input, and instruction origin, ensuring traceability and accountability for AI decision-making.",
+      "checklistTitle": "Article 12 Checklist",
+      "step1Title": "Automatic Event Logging",
+      "step1Desc": "Logs must be generated in real-time, independent of the LLM context.",
+      "step2Title": "Traceability",
+      "step2Desc": "Every tool call must link back to a specific policy version and session identifier.",
+      "step3Title": "Integrity protection",
+      "step3Desc": "Audit logs must be stored in a tamper-proof environment (SOC2 type 2 equivalent).",
+      "solutionTitle": "Automating Compliance",
+      "solutionP": "SupraWall's SDK acts as the Article 12 compliance engine by automatically intercepting tool calls at the runtime boundary and streaming them to an immutable audit ledger. This ensures that every \"reasoned\" action by an agent is traceable back to a source instruction in the event of a regulatory audit.",
+      "guideLink": "View Article 12 detailed mapping"
+    }
   }
 }

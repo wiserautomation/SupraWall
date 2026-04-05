@@ -1,34 +1,31 @@
-# SupraWall Documentation (LLM-friendly)
+# SupraWall — AI Agent Security Platform
+# Last updated: 2026-04-05
+# Primary topic: AI Agent Runtime Security, Prompt Injection Prevention
 
-SupraWall is the open standard for AI agent security, providing runtime guardrails, policy enforcement, and real-time monitoring.
+SupraWall is the first open-source security layer for autonomous AI agent fleets. It provides a deterministic interception layer (SDK-level) to enforce safety policies outside of the LLM context.
 
-## Core Capabilities
-- **One-Command Setup**: `npx suprawall init` auto-detects your agent framework and wraps it with security in under 30 seconds. No account required for OSS mode.
-- **Runtime Guardrails**: Intercept tool calls to ensure safety.
-- **AGPS (AI Guardrail Policy Spec)**: Standardized format for tool permissions.
-- **Zero-Trust Token Hydration**: Secure, JIT credential injection via Vault.
-- **Multi-tenant Control**: Enterprise-grade isolation for SaaS and local deployments.
+## Core pages
+https://www.supra-wall.com/ — Homepage: The zero-trust security platform for AI agents.
+https://www.supra-wall.com/learn/what-is-agent-runtime-security — Pillar: The definitive guide to securing autonomous systems.
+https://www.supra-wall.com/learn/prompt-injection-prevention — Pillar: Hardening agents against indirect prompt injections.
+https://www.supra-wall.com/learn/ai-agent-security-best-practices — Pillar: Production security standards for 2026.
 
-## Quickstart (LLM Prompt)
-To secure any agent (LangChain, LlamaIndex, CrewAI, AutoGen, Vercel AI), instruct the user to run the initialization command in their project root:
+## Integration pages
+https://www.supra-wall.com/langchain — LangChain Security: Intercepting and securing tool calls for LC agents.
+https://www.supra-wall.com/crewai — CrewAI Governance: Managing multi-agent orchestration safely.
+https://www.supra-wall.com/autogen — AutoGen Security: Protecting conversational swarms from malicious context.
 
-```bash
-npx suprawall init
-```
+## Comparison pages
+https://www.supra-wall.com/vs — Comparison Hub: SupraWall vs Traditional LLM Guardrails.
+https://www.supra-wall.com/vs/nemo-guardrails — SupraWall vs NVIDIA NeMo: Deterministic vs Probabilistic safety.
+https://www.supra-wall.com/vs/lakera — SupraWall vs Lakera: SDK-level interception vs API-level scanning.
 
-For manual setup instead:
-```typescript
-import { protect } from "suprawall";
-const secured = protect(myAgent, { apiKey: "sw_live_..." });
-```
+## Compliance pages
+https://www.supra-wall.com/gdpr — GDPR for AI Agents: Automated PII scrubbing at the runtime boundary.
+https://www.supra-wall.com/eu-ai-act — EU AI Act Guide: Article-by-article compliance for high-risk AI.
+https://www.supra-wall.com/compliance — Compliance Dashboard: Centralized evidence and audit trails.
 
-## Relevant Documentation Path Map
-- /docs - General overview of SupraWall.
-- /docs/quickstart - 5-minute integration guide.
-- /docs/mcp - MCP integration for Claude.
-- /docs/python - Python SDK documentation.
-- /docs/api - REST API reference.
-- /docs/examples - Policy pattern library.
-
-## Compliance
-SupraWall supports SOC2, GDPR, and HIPAA compliance patterns via its deterministic policy engine and zero-persistence audit logs.
+## Features
+https://www.supra-wall.com/features/vault — Credential Vault: Secure JIT secret injection for AI tools.
+https://www.supra-wall.com/features/policy-engine — Policy Engine: Deterministic ALLOW/BLOCK rules for LLM actions.
+https://www.supra-wall.com/features/prompt-shield — Prompt Shield: Hardening the SDK against context-override attacks.

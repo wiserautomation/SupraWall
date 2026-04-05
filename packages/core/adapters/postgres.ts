@@ -3,6 +3,14 @@
 
 import { Adapter, Agent } from "../types";
 
+// Whitelist of columns that may appear in UPDATE SET clauses.
+// Prevents SQL injection via dynamically-constructed column names.
+const ALLOWED_COLUMNS = new Set([
+    "name", "description", "status", "scopes", "slack_webhook",
+    "max_cost_usd", "budget_alert_usd", "max_iterations", "loop_detection",
+    "apikeyhash", "tenantid", "user_id", "metadata",
+]);
+
 export class PostgresAdapter implements Adapter {
     private client: {
         query: (sql: string, params?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>;
@@ -37,7 +45,7 @@ export class PostgresAdapter implements Adapter {
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
         const { id: _ignoreId, ...fields } = updates;
-        const keys = Object.keys(fields);
+        const keys = Object.keys(fields).filter(k => ALLOWED_COLUMNS.has(k));
         if (keys.length === 0) {
             const existing = await this.getAgent(id);
             if (!existing) throw new Error(`Agent ${id} not found`);

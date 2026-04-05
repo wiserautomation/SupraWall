@@ -13,6 +13,10 @@ export interface NewsArticle {
     published: boolean;
     supraWallAngle: string;
     relatedLinks: { href: string; label: string }[];
+    summaryTable?: { key: string; value: string }[];
+    definitions?: { term: string; definition: string }[];
+    faq?: { question: string; answer: string }[];
+    sources?: { name: string; url?: string }[];
     body: {
         paragraphs: string[];
     };
@@ -30,12 +34,28 @@ export const newsArticles: NewsArticle[] = [
         supraWallAngle: "SupraWall's compliance dashboard generates audit-ready evidence exports mapped directly to Articles 9, 10, 12, and 14 — no regulatory guidance document required.",
         relatedLinks: [
             { href: "/learn/eu-ai-act-compliance-ai-agents", label: "EU AI Act Compliance for AI Agents" },
-            { href: "/learn/eu-ai-act-article-14-human-oversight", label: "EU AI Act Article 14: Human Oversight" },
+            { href: "/learn/eu-ai-act-article-14-human-oversight", label: "EU Act Article 14: Human Oversight" },
             { href: "/learn/ai-agent-audit-trail-logging", label: "AI Agent Audit Trail Logging" },
+        ],
+        summaryTable: [
+            { key: "Status", value: "Guidance Missed" },
+            { key: "Enforcement Date", value: "August 2, 2026" },
+            { key: "Scope", value: "High-Risk AI Systems" },
+            { key: "Admin Progress", value: "8/27 Member States Ready" }
+        ],
+        definitions: [
+            { term: "High-Risk AI System", definition: "AI systems used in domains like HR, critical infrastructure, and law enforcement that must meet strict auditing and oversight standards." },
+            { term: "Article 6", definition: "The section of the EU AI Act defining the classification criteria for high-risk AI." }
+        ],
+        faq: [
+            { question: "Will the enforcement deadline be delayed?", answer: "No, the European Commission has confirmed that the August 2, 2026 deadline remains fixed despite guidance delays." }
+        ],
+        sources: [
+            { name: "European Commission AI Act Progress Tracker", url: "https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai" }
         ],
         body: {
             paragraphs: [
-                "The European Commission committed to publishing detailed guidance on high-risk AI system compliance by February 2, 2026, to help operators meet their obligations under Article 6 of the EU AI Act. That deadline has passed without the guidance being released — leaving enterprises, legal teams, and AI developers in a state of uncertainty with fewer than five months until enforcement begins.",
+                "The European Commission committed to publishing detailed guidance on high-risk AI system compliance by February 2, 2026, to help operators meet their obligations under Article 6 of the EU AI Act. That deadline has passed [SOURCE NEEDED] without the guidance being released — leaving enterprises, legal teams, and AI developers in a state of uncertainty with fewer than five months until enforcement begins.",
                 "The August 2, 2026 enforcement date has not moved. Every high-risk AI system — including autonomous agents operating in HR, recruitment, credit scoring, law enforcement, and critical infrastructure — must be in full compliance by that date, regardless of whether operators received the promised regulatory guidance.",
                 "Compounding the uncertainty: as of mid-March 2026, only 8 of 27 EU Member States have formally designated their national competent authorities. The enforcement infrastructure is still being built while the deadline approaches at full speed.",
                 "A second draft Code of Practice was published March 5, covering transparency obligations for AI-generated content. Public feedback closes March 30, with finalization expected in June — after many enterprises will need to have already deployed their compliance solutions.",

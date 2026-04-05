@@ -15,137 +15,105 @@ import {
 
 export const metadata: Metadata = {
   title:
-    'EU AI Act High-Risk Deadline Delayed to 2027: What AI Agent Teams Must Do Now | SupraWall',
+    "EU AI Act High-Risk Deadline Delayed: 2027 Timeline | SupraWall",
   description:
-    'EU Parliament backed fixed 2027-2028 deadlines for high-risk AI. But Article 12 transparency and audit logging requirements still apply from August 2026.',
+    "The EU AI Act high-risk deadline is delayed to 2027, but Article 12 audit logging is still required by August 2026. See the new compliance timeline.",
   keywords: [
-    'EU AI Act delay 2027',
-    'EU AI Act high-risk deadline',
-    'AI Act compliance timeline',
-    'EU AI Act August 2026',
-    'Article 12 audit logging',
-    'AI agent compliance',
+    "EU AI Act delay 2027",
+    "EU AI Act high-risk deadline",
+    "AI Act compliance timeline",
+    "EU AI Act August 2026",
+    "Article 12 audit logging",
+    "AI agent compliance",
   ],
   alternates: {
-    canonical: 'https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027',
+    canonical: "https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027",
   },
   openGraph: {
     title:
-      'EU AI Act High-Risk Deadline Delayed to 2027: What AI Agent Teams Must Do Now',
+      "EU AI Act High-Risk Deadline Delayed: 2027 Timeline | SupraWall",
     description:
-      'EU Parliament backed fixed 2027-2028 deadlines for high-risk AI. But Article 12 transparency and audit logging requirements still apply from August 2026.',
-    url: 'https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027',
-    type: 'article',
+      "The EU AI Act high-risk deadline is delayed to 2027, but Article 12 audit logging is still required by August 2026. See the new compliance timeline.",
+    url: "https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027",
+    type: "article",
     images: [
       {
-        url: 'https://www.supra-wall.com/og-eu-ai-act-delay.png',
+        url: "https://www.supra-wall.com/og-eu-ai-act-delay.png",
         width: 1200,
         height: 630,
-        alt: 'EU AI Act Deadline Delay 2027',
+        alt: "EU AI Act Deadline Delay 2027",
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: "summary_large_image",
     title:
-      'EU AI Act High-Risk Deadline Delayed to 2027: What AI Agent Teams Must Do Now',
+      "EU AI Act High-Risk Deadline Delayed: 2027 Timeline | SupraWall",
     description:
-      'EU Parliament backed fixed 2027-2028 deadlines for high-risk AI. But Article 12 transparency and audit logging requirements still apply from August 2026.',
-    images: ['https://www.supra-wall.com/og-eu-ai-act-delay.png'],
+      "The EU AI Act high-risk deadline is delayed to 2027, but Article 12 audit logging is still required by August 2026. See the new compliance timeline.",
+    images: ["https://www.supra-wall.com/og-eu-ai-act-delay.png"],
   },
 };
 
 export default function EUIAActDelayPost() {
   const techArticleSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'TechArticle',
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
     headline:
-      'EU AI Act High-Risk Deadline Delayed to 2027: What AI Agent Teams Must Do Now',
+      "EU AI Act High-Risk AI Deadline: What Changed for 2027 and What You Must Do by August 2026",
     description:
-      'EU Parliament backed fixed 2027-2028 deadlines for high-risk AI. But Article 12 transparency and audit logging requirements still apply from August 2026.',
-    image: 'https://www.supra-wall.com/og-eu-ai-act-delay.png',
-    datePublished: '2026-03-25T00:00:00Z',
-    dateModified: '2026-03-25T00:00:00Z',
+      "EU Parliament backed fixed 2027-2028 deadlines for high-risk AI. But Article 12 transparency and audit logging requirements still apply from August 2026.",
+    image: "https://www.supra-wall.com/og-eu-ai-act-delay.png",
+    datePublished: "2026-03-25T00:00:00Z",
+    dateModified: "2026-04-05T00:00:00Z",
     author: {
-      '@type': 'Organization',
-      name: 'SupraWall',
-      url: 'https://www.supra-wall.com',
+      "@type": "Organization",
+      name: "SupraWall",
+      url: "https://www.supra-wall.com",
     },
     publisher: {
-      '@type': 'Organization',
-      name: 'SupraWall',
+      "@type": "Organization",
+      name: "SupraWall",
       logo: {
-        '@type': 'ImageObject',
-        url: 'https://www.supra-wall.com/logo.png',
+        "@type": "ImageObject",
+        url: "https://www.supra-wall.com/logo.png",
       },
     },
     mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': 'https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027',
+      "@type": "WebPage",
+      "@id": "https://www.supra-wall.com/blog/eu-ai-act-high-risk-deadline-delayed-2027",
     },
-    genre: 'Regulatory Analysis',
+    genre: "Regulatory Analysis",
     keywords:
-      'EU AI Act delay, high-risk deadline, Article 12, audit logging, AI compliance',
+      "EU AI Act delay, high-risk deadline, Article 12, audit logging, AI compliance",
   };
 
   const faqSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'FAQPage',
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
     mainEntity: [
       {
-        '@type': 'Question',
-        name: 'Has the EU AI Act been delayed?',
+        "@type": "Question",
+        name: "Is the EU AI Act high-risk deadline delayed to 2027?",
         acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Yes, the EU Parliament joint committee backed fixed 2027-2028 deadlines for high-risk AI systems. On March 18, 2026, the joint committee voted 101 in favor of this timeline shift.',
+          "@type": "Answer",
+          text: "Yes. On March 18, 2026, the EU Parliament's joint committee backed a report to delay full high-risk compliance to late 2027 and mid-2028. However, Article 12 requirements are NOT delayed.",
         },
       },
       {
-        '@type': 'Question',
-        name: 'Which EU AI Act deadlines still apply in 2026?',
+        "@type": "Question",
+        name: "What EU AI Act requirements start in August 2026?",
         acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Article 12 transparency and record-keeping requirements still apply from August 2, 2026. Additionally, Article 14 human oversight requirements remain on the original August 2, 2026 deadline.',
+          "@type": "Answer",
+          text: "Article 12 (Automatic Logging) and Article 14 (Human Oversight) requirements remain active and enforceable starting August 2, 2026, regardless of the high-risk delay.",
         },
       },
       {
-        '@type': 'Question',
-        name: 'What does Article 12 of the EU AI Act require?',
+        "@type": "Question",
+        name: "Do AI agents need to comply with the EU AI Act by 2026?",
         acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Article 12 mandates automatic logging of AI system operations, creating traceable and tamper-evident records of all decisions made by high-risk AI systems, with time-stamped action records for audit purposes.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'How does the EU AI Act affect AI agents?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Autonomous agents that make consequential decisions or take independent actions fall under high-risk AI classification, triggering requirements for human oversight, audit logging, and comprehensive documentation.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'What should AI teams do now to prepare for EU AI Act compliance?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Start implementing audit logging, human-in-the-loop governance mechanisms, and compliance documentation immediately. Taking action before August 2, 2026 gives you a five-month head start on competitors.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'How does SupraWall help with EU AI Act compliance?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'SupraWall provides runtime audit logging, one-click PDF compliance exports, a time-travel audit view for investigation, human-in-the-loop middleware for approval workflows, and policy-driven risk management—all specifically designed for EU AI Act requirements.',
-        },
-      },
-      {
-        '@type': 'Question',
-        name: 'What are the penalties for EU AI Act non-compliance?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'Fines for EU AI Act violations can reach up to €35 million or 7% of a company\'s global annual turnover, whichever is higher. Given that GDPR fines increased 22% year-over-year in 2025, AI compliance penalties are expected to escalate rapidly.',
+          "@type": "Answer",
+          text: "Yes. If your AI agents fall under 'high-risk' categories (e.g., in HR, credit, or critical infrastructure), you must implement Article 12-compliant audit logging and Article 14 human oversight by August 2, 2026.",
         },
       },
     ],
@@ -168,19 +136,46 @@ export default function EUIAActDelayPost() {
         <article className="max-w-4xl mx-auto space-y-12">
           {/* Header */}
           <section className="space-y-8">
-            <div className="inline-flex items-center px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-[10px] font-black text-amber-400 tracking-[0.2em] uppercase">
-              Regulatory Analysis • EU AI Act
+            <div className="inline-flex flex-col gap-2">
+               <div className="inline-flex items-center px-4 py-2 rounded-full border border-amber-500/30 bg-amber-500/10 text-[10px] font-black text-amber-400 tracking-[0.2em] uppercase w-fit">
+                 Regulatory Analysis • EU AI Act
+               </div>
+               <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest ml-4">
+                 Last updated: April 2026
+               </p>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] uppercase italic">
-              EU AI Act Deadline{' '}
-              <span className="text-amber-400">Delayed</span> to 2027: What
-              Teams Must Do <span className="text-emerald-500">Now</span>
+              EU AI Act <span className="text-amber-400">High-Risk</span> AI Deadline:{" "}
+              What Changed for 2027 and What You Must Do by August 2026
             </h1>
+
+            {/* What Changed Summary Box (GEO Optimized) */}
+            <div className="summary-box p-8 rounded-[2rem] bg-amber-500/5 border border-amber-500/20 space-y-4">
+               <h3 className="text-amber-400 text-[10px] font-black uppercase tracking-[0.2em]">Summary of March 18 Vote</h3>
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  <div className="space-y-2">
+                     <p className="text-white font-bold text-sm">Delayed to 2027/2028</p>
+                     <ul className="text-neutral-400 text-xs space-y-1 list-disc list-inside">
+                        <li>High-risk conformity assessments</li>
+                        <li>Full technical documentation</li>
+                        <li>Post-market monitoring plans</li>
+                     </ul>
+                  </div>
+                  <div className="space-y-2 border-l border-white/5 pl-8">
+                     <p className="text-rose-400 font-bold text-sm">STILL ACTIVE August 2026</p>
+                     <ul className="text-neutral-400 text-xs space-y-1 list-disc list-inside">
+                        <li>Article 12: Automatic Logging</li>
+                        <li>Article 14: Human Oversight</li>
+                        <li>Transparency for AI Agents</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
 
             <div className="border-l-4 border-emerald-500 pl-8">
               <p className="text-xl md:text-2xl text-neutral-300 leading-snug font-medium italic">
-                On March 18, 2026, the EU Parliament's joint committee adopted a
+                On March 18, 2026, the EU Parliament&apos;s joint committee adopted a
                 report backing fixed 2027–2028 deadlines for high-risk AI system
                 compliance, with 101 votes in favor. However, the delay does not
                 apply to all obligations — Article 12 transparency and

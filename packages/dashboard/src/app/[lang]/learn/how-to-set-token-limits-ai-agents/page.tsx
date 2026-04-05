@@ -14,9 +14,9 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Set Token Limits on AI Agents (LangChain, Vercel, CrewAI)",
+  title: "How to Set Token Limits for AI Agents | SupraWall",
   description:
-    "Step-by-step guide to enforcing per-call and monthly token limits on AI agents — with code examples in Python and TypeScript.",
+    "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
   keywords: [
     "set AI agent token limits",
     "LangChain token budget",
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
       "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
   },
   openGraph: {
-    title: "How to Set Token Limits on AI Agents (LangChain, Vercel, CrewAI)",
+    title: "How to Set Token Limits for AI Agents | SupraWall",
     description:
-      "Step-by-step guide to enforcing per-call and monthly token limits on AI agents — with code examples in Python and TypeScript.",
+      "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
     url: "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
     siteName: "SupraWall",
     type: "article",
@@ -43,33 +43,33 @@ export default function HowToSetTokenLimitsPage() {
   const howToSchema = {
     "@context": "https://schema.org",
     "@type": "HowTo",
-    name: "How to Set Token Limits on AI Agents",
+    name: "How to Set Token Limits for AI Agents",
     description:
       "A step-by-step guide to implementing hard token caps and budget limits on LangChain, CrewAI, AutoGen, and OpenAI Assistants API agents.",
     step: [
       {
         "@type": "HowToStep",
         position: 1,
-        name: "Choose between hard caps and soft limits",
-        text: "Determine whether you need a soft limit (logging/warning) or a hard cap (terminates execution). Hard caps are required for production agents.",
+        name: "Install SupraWall",
+        text: "Add the SupraWall SDK to your Python or TypeScript project to enable intercepting tool calls.",
       },
       {
         "@type": "HowToStep",
         position: 2,
-        name: "Implement per-call max_tokens at the model level",
-        text: "Set max_tokens on your LLM initialization to cap individual response length. This is the baseline but does not prevent accumulation across calls.",
+        name: "Configure Token Policy",
+        text: "Define your security policy with specific daily_limit_usd or session_tokens thresholds.",
       },
       {
         "@type": "HowToStep",
         position: 3,
-        name: "Add per-session token tracking with SupraWall",
-        text: "Wrap your agent with SupraWall's protect() function and configure session_tokens and daily_limit_usd to track cumulative spend across all calls.",
+        name: "Set Per-Agent Limits",
+        text: "Apply your budget policy to individual agents using the protect() wrapper.",
       },
       {
         "@type": "HowToStep",
         position: 4,
-        name: "Configure circuit breakers for loop detection",
-        text: "Add circuit_breaker config with max_identical_calls and window_seconds to detect and halt repetitive tool call patterns before they compound.",
+        name: "Test Enforcement",
+        text: "Run a simulated loop to verify that SupraWall halts the agent exactly when the limit is reached.",
       },
     ],
   };
@@ -77,7 +77,7 @@ export default function HowToSetTokenLimitsPage() {
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
-    headline: "How to Set Token Limits on AI Agents (2026)",
+    headline: "How to Set Token Limits for AI Agents (Python & TypeScript)",
     description:
       "Hard cap vs. soft limit: which token control strategy actually prevents runaway AI agent costs? Step-by-step implementation guide for LangChain, CrewAI, AutoGen.",
     author: { "@type": "Organization", name: "SupraWall" },
@@ -191,17 +191,41 @@ export default function HowToSetTokenLimitsPage() {
               How to Set{" "}
               <span className="text-emerald-500">Token Limits</span>
               <br />
-              on AI Agents.
+              for AI Agents (Python & TypeScript)
             </h1>
-            <p className="text-xl text-neutral-300 border-l-8 border-emerald-600 pl-8 py-4 italic leading-relaxed">
-              Setting token limits on AI agents requires distinguishing between
-              per-call limits (max tokens for a single LLM invocation),
-              per-session limits (total tokens across an entire agent run), and
-              per-day budget caps (dollar spend converted from token
-              consumption). This guide covers all three layers and their
-              implementation across LangChain, CrewAI, AutoGen, and the OpenAI
-              Assistants API.
+            <p className="answer-first-paragraph text-xl text-neutral-300 border-l-8 border-emerald-600 pl-8 py-4 italic leading-relaxed">
+              Setting token limits for AI agents prevents runaway LLM spend by capping the number of tokens any single agent run can consume. This guide shows how to implement token budget enforcement using SupraWall in under 5 minutes.
             </p>
+
+            {/* Quick Summary Table (GEO Optimized) */}
+            <div className="quick-summary-table mt-12 bg-neutral-900 border border-white/10 rounded-[2rem] overflow-hidden">
+               <table className="w-full text-left text-sm border-collapse">
+                 <thead>
+                    <tr className="bg-white/5 border-b border-white/10">
+                       <th className="px-8 py-4 text-[10px] font-black text-emerald-400 uppercase tracking-widest">What</th>
+                       <th className="px-8 py-4 text-[10px] font-black text-emerald-400 uppercase tracking-widest">Answer</th>
+                    </tr>
+                 </thead>
+                 <tbody className="divide-y divide-white/5">
+                    <tr>
+                       <td className="px-8 py-4 text-white font-bold">What causes it?</td>
+                       <td className="px-8 py-4 text-neutral-400">Infinite loops, uncapped tool calls, no token limits</td>
+                    </tr>
+                    <tr>
+                       <td className="px-8 py-4 text-white font-bold">Financial risk</td>
+                       <td className="px-8 py-4 text-neutral-400">$100–$10,000+ unexpected charges per incident</td>
+                    </tr>
+                    <tr>
+                       <td className="px-8 py-4 text-white font-bold">SupraWall fix</td>
+                       <td className="px-8 py-4 text-neutral-400">Token budget policies enforced at the SDK layer</td>
+                    </tr>
+                    <tr>
+                       <td className="px-8 py-4 text-white font-bold">Time to implement</td>
+                       <td className="px-8 py-4 text-neutral-400">5 minutes</td>
+                    </tr>
+                 </tbody>
+               </table>
+            </div>
           </div>
 
           {/* TLDR Box */}

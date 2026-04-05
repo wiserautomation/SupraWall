@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from "@/lib/db_sql";
+import { pool, ensureSchema } from "@/lib/db_sql";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -32,17 +32,7 @@ export async function GET(request: NextRequest) {
         console.warn("[IdentityMapping] Firebase lookup failed for threat events:", e);
     }
 
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS threat_events (
-            id SERIAL PRIMARY KEY,
-            tenantid VARCHAR(255) NOT NULL,
-            agentid VARCHAR(255),
-            event_type VARCHAR(100) NOT NULL,
-            severity VARCHAR(50) DEFAULT 'medium',
-            details JSONB,
-            timestamp TIMESTAMP DEFAULT NOW()
-        );
-    `);
+    await ensureSchema();
 
     // Alias timestamp as createdat for UI compatibility
     const result = await pool.query(
@@ -54,7 +44,7 @@ export async function GET(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Threat Events GET] Error:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 

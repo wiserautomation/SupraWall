@@ -37,11 +37,11 @@ const sslConfig = process.env.NODE_ENV === 'production'
     : false;
 
 const pgPool = new Pool({
-    connectionString: dbUrl || "postgresql://postgres:postgres@localhost:5432/suprawall",
+    connectionString: dbUrl || (isLocalNoDocker ? "" : (() => { throw new Error("[DB] DATABASE_URL is required in production"); })()),
     ssl: sslConfig,
-    max: 10,
-    idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 10000, 
+    max: 20, // Increased for production concurrency
+    idleTimeoutMillis: 10000, // Reduced to reclaim idle connections faster
+    connectionTimeoutMillis: 5000, // Fail fast on connection stalls
 });
 
 interface QueryResult {
@@ -402,6 +402,13 @@ export const initDb = async () => {
         -- Enable encryption (pgcrypto)
         CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+        -- PERFORMANCE INDEXES (Critical for high-volume logs and policy lookups)
+        CREATE INDEX IF NOT EXISTS idx_audit_logs_tenant_timestamp ON audit_logs(tenantid, timestamp DESC);
+        CREATE INDEX IF NOT EXISTS idx_policies_tenant_agent_tool ON policies(tenantid, agentid, toolname);
+        CREATE INDEX IF NOT EXISTS idx_agents_apikeyhash ON agents(apikeyhash);
+        CREATE INDEX IF NOT EXISTS idx_tenants_master_key ON tenants(master_api_key);
+        CREATE INDEX IF NOT EXISTS idx_approval_requests_tenant_status ON approval_requests(tenantid, status);
+
         -- Vault: encrypted secret storage
         CREATE TABLE IF NOT EXISTS vault_secrets (
             id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -415,6 +422,7 @@ export const initDb = async () => {
             created_at TIMESTAMP DEFAULT NOW(),
             UNIQUE(tenant_id, secret_name)
         );
+        CREATE INDEX IF NOT EXISTS idx_vault_secrets_tenant ON vault_secrets(tenant_id);
 
         -- Vault: access rules
         CREATE TABLE IF NOT EXISTS vault_access_rules (
@@ -429,6 +437,30 @@ export const initDb = async () => {
             UNIQUE(tenant_id, agent_id, secret_id)
         );
 
+        -- Vault: access logs
+        CREATE TABLE IF NOT EXISTS vault_access_log (
+            id SERIAL PRIMARY KEY,
+            tenant_id VARCHAR(255) NOT NULL,
+            agent_id VARCHAR(255) NOT NULL,
+            secret_name VARCHAR(255) NOT NULL,
+            tool_name VARCHAR(255),
+            action VARCHAR(50) NOT NULL, -- INJECTED | DENIED | EXPIRED | NOT_FOUND
+            request_metadata JSONB,
+            created_at TIMESTAMP DEFAULT NOW()
+        );
+        CREATE INDEX IF NOT EXISTS idx_vault_access_log_tenant ON vault_access_log(tenant_id, created_at DESC);
+
+        -- Vault: rate limits
+        CREATE TABLE IF NOT EXISTS vault_rate_limits (
+            id SERIAL PRIMARY KEY,
+            tenant_id VARCHAR(255) NOT NULL,
+            agent_id VARCHAR(255) NOT NULL,
+            secret_name VARCHAR(255) NOT NULL,
+            window_start TIMESTAMP NOT NULL,
+            use_count INT DEFAULT 1,
+            UNIQUE(tenant_id, agent_id, secret_name, window_start)
+        );
+
         -- Threat Intel
         CREATE TABLE IF NOT EXISTS threat_events (
             id SERIAL PRIMARY KEY,
@@ -439,6 +471,7 @@ export const initDb = async () => {
             details JSONB,
             timestamp TIMESTAMP DEFAULT NOW()
         );
+        CREATE INDEX IF NOT EXISTS idx_threat_events_tenant ON threat_events(tenantid, timestamp DESC);
 
         CREATE TABLE IF NOT EXISTS threat_summaries (
             id SERIAL PRIMARY KEY,

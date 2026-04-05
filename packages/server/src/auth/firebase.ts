@@ -1,9 +1,6 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Copyright 2026 SupraWall Contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { AuthProvider, AgentInfo } from "./types";
 import type { firestore } from "firebase-admin";
 import { logger } from "../logger";

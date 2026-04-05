@@ -204,7 +204,7 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
                     
                     logger.warn(`[ThreatEngine] ${labelDesc} blocked`, { agentId, toolName, pattern: logPattern });
                     
-                    pool.query(
+                    await pool.query(
                         "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
                         [tenantId, agentId, `${rule.type}_attempt`, rule.severity, JSON.stringify({ toolName, pattern: logPattern })]
                     ).catch(err => logger.error(`Failed to log ${rule.type} threat`, { error: err }));

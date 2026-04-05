@@ -47,10 +47,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
       languages,
     },
     robots: {
-      index: lang === i18n.defaultLocale,
+      index: true,
       follow: true,
       googleBot: {
-        index: lang === i18n.defaultLocale,
+        index: true,
         follow: true,
       },
     },
@@ -95,12 +95,14 @@ export default async function LocaleLayout({
     ],
     "description": "Enterprise-grade security and compliance for autonomous AI agents.",
     "inLanguage": lang,
-    "areaServed": "EU"
+    "areaServed": "EU",
+    "iso6523": "0088:suprawall"
   };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
+    "inLanguage": lang,
     "itemListElement": [
       {
         "@type": "ListItem",
@@ -109,6 +111,15 @@ export default async function LocaleLayout({
         "item": `https://www.supra-wall.com/${lang}`
       }
     ]
+  };
+
+  const speakableSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "speakable": {
+      "@type": "SpeakableSpecification",
+      "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]
+    }
   };
 
   return (
@@ -128,7 +139,12 @@ export default async function LocaleLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+        />
         {children}
+
         <GoogleAnalytics gaId="G-5LXMT6RZQS" />
       </body>
     </html>

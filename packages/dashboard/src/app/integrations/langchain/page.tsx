@@ -7,6 +7,8 @@ import Link from "next/link";
 import { Metadata } from "next";
 import LangChainClient from "./LangChainClient";
 
+import { HowToSchema } from "@/components/HowToSchema";
+
 export const metadata: Metadata = {
     title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
     description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
@@ -41,34 +43,24 @@ export default function LangChainIntegrationPage() {
         ]
     };
 
-    const howToSchema = {
-        "@context": "https://schema.org",
-        "@type": "HowTo",
-        "name": "How to secure LangChain agents",
-        "description": "Step-by-step guide to securing your LangChain agents using SupraWall runtime guardrails.",
-        "step": [
-            {
-                "@type": "HowToStep",
-                "name": "Install the SDK",
-                "text": "Run 'pip install suprawall' for Python or 'npm install @suprawall/sdk' for Node.js."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "Initialize the protector",
-                "text": "Import the 'protect' helper from 'suprawall.langchain' in your Python script."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "Wrap your agent",
-                "text": "Wrap your LangChain AgentExecutor or Graph with the 'protect' helper to enable zero-trust interception."
-            },
-            {
-                "@type": "HowToStep",
-                "name": "Configure policies",
-                "text": "Define tool-level ALLOW/DENY rules in the SupraWall dashboard for real-time enforcement."
-            }
-        ]
-    };
+    const howToSteps = [
+        {
+            name: "Install the SDK",
+            text: "Run 'pip install suprawall' for Python or 'npm install @suprawall/sdk' for Node.js."
+        },
+        {
+            name: "Initialize the protector",
+            text: "Import the 'protect' helper from 'suprawall.langchain' in your Python script."
+        },
+        {
+            name: "Wrap your agent",
+            text: "Wrap your LangChain AgentExecutor or Graph with the 'protect' helper to enable zero-trust interception."
+        },
+        {
+            name: "Configure policies",
+            text: "Define tool-level ALLOW/DENY rules in the SupraWall dashboard for real-time enforcement."
+        }
+    ];
 
     const faqJsonLd = {
         "@context": "https://schema.org",
@@ -99,9 +91,10 @@ export default function LangChainIntegrationPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
+            <HowToSchema 
+                name="How to secure LangChain agents"
+                description="Step-by-step guide to securing your LangChain agents using SupraWall runtime guardrails."
+                steps={howToSteps}
             />
             <script
                 type="application/ld+json"
@@ -181,8 +174,8 @@ export default function LangChainIntegrationPage() {
                                     <FileText className="w-8 h-8" />
                                     <h3 className="text-2xl font-black uppercase italic tracking-tight">EU AI Act Compliance</h3>
                                 </div>
-                                <p className="text-neutral-300 font-medium italic">
-                                    Large-scale LangChain deployments are subject to the EU AI Act's strict oversight rules. SupraWall automates your <span className="text-emerald-400">Logging (Article 12)</span> and <span className="text-emerald-400">Technical Documentation (Article 11)</span> requirements by providing a tamper-proof record of every autonomous tool execution and security decision.
+                                <p className="text-neutral-300 font-medium italic leading-relaxed">
+                                    Large-scale LangChain deployments are subject to the EU AI Act's strict oversight rules. SupraWall automates your compliance through our <Link href="/eu-ai-act/article-12" className="text-emerald-400 underline decoration-emerald-400/30 hover:decoration-emerald-400 transition-all font-bold tracking-tight">Article 12 Record-Keeping framework</Link>, providing a tamper-proof record of every autonomous tool execution and security decision required by the August 2026 deadline.
                                 </p>
                             </div>
 

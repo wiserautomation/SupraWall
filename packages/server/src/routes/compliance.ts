@@ -151,7 +151,7 @@ router.get("/report", adminAuth, resolveTier, async (req: Request, res: Response
             policySql += " AND agentid = $2";
             policyParams.push(agentId as string);
         }
-        policySql += " ORDER BY createdat ASC";
+        policySql += " ORDER BY created_at ASC";
 
         const [auditResult, policyResult] = await Promise.all([
             pool.query(auditSql, auditParams),

@@ -3,46 +3,29 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from "@/lib/db_sql";
+import { verifyAuth, unauthorizedResponse } from '@/lib/api-auth';
+import { db as firestore } from '@/lib/firebase-admin';
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
+    // SECURITY: Authenticate request
+    const userId = await verifyAuth(request);
+    if (!userId) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenantId');
+    const tenantId = searchParams.get('tenantId') || userId;
     const agentId = searchParams.get('agentId');
     const limitParam = parseInt(searchParams.get('limit') || '50', 10);
-    
-    if (!tenantId) {
-      return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
-    }
 
-    // Ensure table exists (Self-healing schema)
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS audit_logs (
-            id SERIAL PRIMARY KEY,
-            tenantid VARCHAR(255) NOT NULL,
-            agentid VARCHAR(255),
-            toolname VARCHAR(255),
-            decision VARCHAR(50),
-            riskscore INTEGER,
-            cost_usd FLOAT DEFAULT 0,
-            reason TEXT,
-            arguments TEXT,
-            timestamp TIMESTAMP DEFAULT NOW(),
-            parameters JSONB,
-            metadata JSONB
-        );
-    `);
-
-    // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
+    // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
     let effectiveTenantId = tenantId;
     try {
-        const { getAdminDb } = require('@/lib/firebase-admin');
-        const db = getAdminDb();
-        const userDoc = await db.collection("users").doc(tenantId).get();
-        if (userDoc.exists && userDoc.data()?.tenantId) {
-            effectiveTenantId = userDoc.data().tenantId;
+        const userDoc = await firestore.collection("users").doc(tenantId).get();
+        const data = userDoc.data();
+        if (userDoc.exists && data && data.tenantId) {
+            effectiveTenantId = data.tenantId;
         }
     } catch (e) {
         // Fallback to the provided tenantId (UID)
@@ -95,7 +78,7 @@ export async function GET(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Audit Logs GET] Fatal Error:", err);
-    return NextResponse.json({ error: "Internal Server Error", details: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 

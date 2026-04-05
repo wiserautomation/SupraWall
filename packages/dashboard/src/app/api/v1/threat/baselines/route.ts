@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from '@/lib/db_sql';
+import { pool, ensureSchema } from '@/lib/db_sql';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -34,19 +34,7 @@ export async function GET(request: NextRequest) {
             console.warn("[IdentityMapping] Firebase lookup failed for baselines:", e);
         }
 
-        await pool.query(`
-            CREATE TABLE IF NOT EXISTS agent_behavioral_baselines (
-                id SERIAL PRIMARY KEY,
-                tenant_id VARCHAR(255) NOT NULL,
-                agent_id VARCHAR(255) NOT NULL,
-                tool_name VARCHAR(255) NOT NULL,
-                avg_args_length INTEGER DEFAULT 0,
-                avg_calls_per_hour INTEGER DEFAULT 0,
-                common_arg_patterns JSONB DEFAULT '[]',
-                total_samples INTEGER DEFAULT 0,
-                last_updated TIMESTAMP DEFAULT NOW()
-            );
-        `);
+        await ensureSchema();
 
         const result = await pool.query(
             `SELECT agent_id, tool_name, avg_args_length, avg_calls_per_hour,
@@ -61,7 +49,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(result.rows);
     } catch (err: any) {
         console.error("[API Baselines GET] Error:", err);
-        return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }
 

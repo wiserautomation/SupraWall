@@ -69,39 +69,49 @@ export default function sitemap(): MetadataRoute.Sitemap {
     // Get base routes from app root (excluding [lang] for now)
     const baseRoutes = getRoutes(appDir);
     
-    // We want to generate a flat list of all localized versions
-    const allLocalizedRoutes: string[] = [];
-    
-    // For each discovered route, generate it for each locale
-    // Note: This assumes that slugs are the same across languages in the file system,
-    // which they are if we use [lang]/[...slug]. 
-    // If we have distinct folders like /de/vorordnung, we'd need more complex mapping.
-    // For Phase 1, we assume structure migration.
-    
     const sitemapEntries: MetadataRoute.Sitemap = [];
 
     // Combine manual and discovered routes
     const uniqueRoutes = Array.from(new Set(['/', ...baseRoutes]));
 
     uniqueRoutes.forEach((route) => {
-        const cleanRoute = route.replace(/\/+/g, '/').replace(/\/$/, '') || '';
-        // Extract internal slug to check against SLUG_MAP
-        const internalSlug = cleanRoute.startsWith('/') ? cleanRoute.substring(1) : cleanRoute;
+        // Normalize the route path
+        const internalSlug = route.split('/').filter(Boolean).join('/');
 
-        // ONLY generate sitemap entries for English for now
-        // This avoids crawling non-existent localized pages until dictionaries are full
-        const locale = 'en';
-        const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
-        const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/');
-        const fullUrl = `${BASE_URL}${localizedPath}`;
+        // Generate entries for all supported locales
+        i18n.locales.forEach((locale) => {
+            const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
+            // Clean paths and ensure they start with /
+            const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
+            const finalPath = localizedPath || `/${locale}`;
+            const fullUrl = `${BASE_URL}${finalPath}`;
 
-        sitemapEntries.push({
-            url: fullUrl,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: cleanRoute === '' ? 1.0 : cleanRoute.split('/').length > 2 ? 0.6 : 0.8,
+            // Build alternates for this URL
+            const languages: Record<string, string> = {};
+            i18n.locales.forEach((altLocale) => {
+                const altPublicSlug = SLUG_MAP[internalSlug]?.[altLocale] || internalSlug;
+                const altLocalizedPath = `/${altLocale}/${altPublicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
+                languages[altLocale] = `${BASE_URL}${altLocalizedPath || `/${altLocale}`}`;
+            });
+            
+            // Add x-default (usually English)
+            const defaultSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
+            const defaultPath = `/en/${defaultSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
+            languages['x-default'] = `${BASE_URL}${defaultPath || '/en'}`;
+
+            sitemapEntries.push({
+                url: fullUrl,
+                lastModified: new Date(),
+                changeFrequency: 'weekly' as const,
+                priority: internalSlug === '' ? 1.0 : internalSlug.split('/').length > 1 ? 0.6 : 0.8,
+                // @ts-ignore
+                alternates: {
+                    languages,
+                }
+            });
         });
     });
 
     return sitemapEntries;
 }
+

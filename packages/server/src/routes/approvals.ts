@@ -67,7 +67,7 @@ router.get("/pending/:tenantId", adminAuth, async (req, res) => {
         }
 
         const result = await pool.query(
-            "SELECT * FROM approval_requests WHERE tenantid = $1 AND status = 'pending' ORDER BY createdat DESC",
+            "SELECT * FROM approval_requests WHERE tenantid = $1 AND status = 'pending' ORDER BY created_at DESC",
             [authenticatedTenantId]
         );
         res.json(result.rows);

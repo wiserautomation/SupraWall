@@ -710,3 +710,41 @@ export function ComplianceTemplatesSection() {
         </section>
     );
 }
+
+export function ResourceHub({ lang }: { lang: string }) {
+    const resources = [
+        { title: "EU AI Act Compliance", href: `/${lang}/eu-ai-act`, desc: "Article-by-article breakdown for high-risk AI systems." },
+        { title: "GDPR for AI Agents", href: `/${lang}/gdpr`, desc: "Automated PII scrubbing and data protection guardrails." },
+        { title: "Agent Audit Trails", href: `/${lang}/learn/ai-agent-audit-trail-logging`, desc: "How to generate signed evidence for regulatory audits." },
+        { title: "Secure Vault", href: `/${lang}/features/vault`, desc: "Permissioned credential injection for autonomous systems." },
+        { title: "Prompt Injection Protection", href: `/${lang}/features/prompt-shield`, desc: "Hardening agents against context-override attacks." },
+        { title: "Runtime Policy Engine", href: `/${lang}/features/policy-engine`, desc: "Deterministic controls for non-deterministic models." }
+    ];
+
+    return (
+        <section className="py-24 px-6 bg-[#020202] border-t border-white/5">
+            <div className="max-w-7xl mx-auto space-y-16">
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="space-y-4">
+                        <TagBadge children="Knowledge Base" />
+                        <h2 className="text-4xl md:text-6xl font-black italic tracking-tighter uppercase text-white">
+                            Security <span className="text-emerald-500">Resource Hub</span>
+                        </h2>
+                    </div>
+                    <Link href={`/${lang}/learn`} className="text-sm font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                        View All Articles <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {resources.map((r) => (
+                        <Link key={r.title} href={r.href} className="group p-8 rounded-3xl bg-white/[0.02] border border-white/[0.05] hover:border-emerald-500/20 transition-all">
+                            <h3 className="text-xl font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors">{r.title}</h3>
+                            <p className="text-neutral-500 text-sm font-medium leading-relaxed">{r.desc}</p>
+                        </Link>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}

@@ -6,8 +6,8 @@ import { Navbar } from "@/components/Navbar";
 import BlogHubClient from "./BlogHubClient";
 
 export const metadata: Metadata = {
-    title: "AI Agent Security Blog | SupraWall",
-    description: "Expert analysis, original research, and perspectives on AI agent security, EU AI Act compliance, and the future of autonomous AI. Updated regularly.",
+    title: "AI Agent Security Blog: Research, Compliance & Hardening | SupraWall",
+    description: "The leading blog for AI agent security. Original research on runaway costs, prompt injection defense, and EU AI Act compliance. Read the 2026 State of Security report.",
     keywords: [
         "ai agent security blog",
         "ai agent security articles",

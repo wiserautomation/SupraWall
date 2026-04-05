@@ -278,7 +278,7 @@ tool_result = {"error": "rate_limit_exceeded", "message": "Too many requests", "
                 involving large datasets or multi-step processes where the agent
                 cannot easily verify its own output. The result is a full
                 restart from scratch — consuming the same resources as the
-                original run — repeated until the budget is exhausted.
+                original run — repeated until the budget is exhausted. This is a primary driver of <Link href="/learn/ai-agent-runaway-costs" className="text-emerald-500 underline decoration-emerald-500/30 hover:decoration-emerald-500 transition-all font-bold">AI agent runaway costs</Link> in enterprise production environments.
               </p>
               <div className="bg-black/40 border border-white/5 rounded-[1.5rem] p-6 font-mono text-sm overflow-x-auto">
                 <pre className="text-neutral-300 leading-relaxed">{`# Agent completes a report generation task

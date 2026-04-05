@@ -60,6 +60,6 @@ export async function GET(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Threat Aggregate GET] Error:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

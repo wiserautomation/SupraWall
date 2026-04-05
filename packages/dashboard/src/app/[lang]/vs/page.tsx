@@ -44,7 +44,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             languages,
         },
         robots: {
-            index: isDefault,
+            index: true,
             follow: true,
         },
         openGraph: {

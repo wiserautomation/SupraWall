@@ -10,7 +10,7 @@ import {
     Github
 } from "lucide-react";
 import Link from "next/link";
-import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection } from "@/app/HomeClient";
+import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection, ResourceHub } from "@/app/HomeClient";
 import { Locale } from "@/i18n/config";
 
 export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lang: Locale }) {
@@ -114,6 +114,8 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                 <section className="py-40 px-6 bg-[#030303] border-y border-white/5 relative overflow-hidden">
                     <ICPEntryPoints />
                 </section>
+
+                <ResourceHub lang={lang} />
             </main>
 
             <Footer />

@@ -137,25 +137,56 @@ program
             console.log(chalk.blue(`Evaluating local policies against tool '${options.tool}'...`));
             
             let decision = "ALLOW";
-            for (const p of policies) {
-                if (new RegExp(p.condition).test(options.tool)) {
-                    const policyDecision = p.decision || p.ruleType;
-                    if (policyDecision === "DENY") {
-                        decision = "DENY";
-                        break;
-                    } else if (policyDecision === "REQUIRE_APPROVAL") {
-                        decision = "REQUIRE_APPROVAL";
-                        break;
+            let matchedPolicy = null;
+
+            // Normalize policy array if it's a single object
+            const policyList = Array.isArray(policies) ? policies : (policies.policies || [policies]);
+
+            for (const p of policyList) {
+                // Case-insensitive key lookup
+                const getVal = (keys: string[]) => {
+                    const foundKey = Object.keys(p).find(k => keys.includes(k.toLowerCase()));
+                    return foundKey ? p[foundKey] : undefined;
+                };
+
+                const toolPattern = getVal(['toolname', 'toolpattern', 'condition']);
+                if (!toolPattern) continue;
+
+                try {
+                    const regexSource = toolPattern.includes('*') 
+                        ? '^' + toolPattern.replace(/\*/g, '.*') + '$'
+                        : toolPattern;
+                    
+                    const re = new RegExp(regexSource, 'i'); // Default to case-insensitive tool matching
+                    if (re.test(options.tool)) {
+                        const rawDecision = getVal(['ruletype', 'decision', 'action']) || "ALLOW";
+                        const policyDecision = String(rawDecision).toUpperCase();
+                        if (policyDecision === "DENY") {
+                            decision = "DENY";
+                            matchedPolicy = p;
+                            break;
+                        } else if (policyDecision === "REQUIRE_APPROVAL") {
+                            decision = "REQUIRE_APPROVAL";
+                            matchedPolicy = p;
+                            break;
+                        } else if (policyDecision === "ALLOW") {
+                            decision = "ALLOW";
+                            matchedPolicy = p;
+                        }
                     }
+                } catch (e) {
+                    console.warn(chalk.yellow(`Warning: Skipping invalid tool pattern: ${toolPattern}`));
                 }
             }
             
             if (decision === "DENY") {
                 console.log(chalk.red(`❌ DENIED by local policy.`));
+                if (matchedPolicy) console.log(chalk.gray(`Reason: ${matchedPolicy.description || "Blocking rule matched"}`));
             } else if (decision === "ALLOW") {
                 console.log(chalk.green(`✔ ALLOWED by local policy.`));
             } else {
                 console.log(chalk.yellow(`⚠ REQUIRES APPROVAL by local policy.`));
+                if (matchedPolicy) console.log(chalk.gray(`Reason: ${matchedPolicy.description || "Human-in-the-loop required"}`));
             }
 
         } catch (e: any) {

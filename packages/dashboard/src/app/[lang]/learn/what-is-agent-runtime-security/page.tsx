@@ -102,7 +102,7 @@ export default function AgentRuntimeSecurityPage() {
                             Security.
                         </h1>
 
-                        <p className="text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
+                        <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
                             Agent Runtime Security (ARS) is a specialized security framework that intercepts and governs autonomous AI agent actions in real-time.
                             Unlike output filtering, ARS focuses on the machine-to-machine boundary, preventing unauthorized tool execution, infinite loops, and data exfiltration
                             before any instruction reaches your backend infrastructure.

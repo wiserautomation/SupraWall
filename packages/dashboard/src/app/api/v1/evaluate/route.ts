@@ -11,7 +11,7 @@ import * as crypto from 'crypto';
 import { resolveVaultTokens } from '@/lib/vault-server';
 import { scrubPii } from '@/lib/guardrail-scrubber';
 import { analyzeCall, updateBaseline, type SemanticAnalysisResult, type SemanticLayerMode } from '@/lib/semantic-server';
-import { pool as pgPool } from '@/lib/db_sql';
+import { pool as pgPool, ensureSchema } from '@/lib/db_sql';
 
 // ── Types ──
 
@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
                     severity: threatResult.severity,
                     details: threatResult.detail,
                     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                }).catch(() => {});
+                }).catch(err => console.error("[ThreatEvent] Firestore write failed:", err));
 
                 // Log threat to Postgres for dashboard visibility
                 logThreat(tenantId, agentId, toolName, threatResult.threatType!, threatResult.severity!, threatResult.detail || threatResult.reason!);
@@ -570,17 +570,7 @@ function estimateActionCost(finalArgs: any, toolName: string, model: string, inT
 async function logThreat(tenantId: string, agentId: string, toolName: string, eventType: string, severity: string, details: string) {
     (async () => {
         try {
-            await pgPool.query(`
-                CREATE TABLE IF NOT EXISTS threat_events (
-                    id SERIAL PRIMARY KEY,
-                    tenantid VARCHAR(255) NOT NULL,
-                    agentid VARCHAR(255),
-                    event_type VARCHAR(100) NOT NULL,
-                    severity VARCHAR(50) DEFAULT 'medium',
-                    details JSONB,
-                    timestamp TIMESTAMP DEFAULT NOW()
-                );
-            `);
+            await ensureSchema();
             await pgPool.query(
                 `INSERT INTO threat_events (tenantid, agentid, event_type, severity, details)
                  VALUES ($1, $2, $3, $4, $5)`,
@@ -604,20 +594,7 @@ async function createApprovalRequest(userId: string, agentId: string, agentName:
     const requestId = res.id;
     (async () => {
         try {
-            await pgPool.query(`
-                CREATE TABLE IF NOT EXISTS approval_requests (
-                    id VARCHAR(255) PRIMARY KEY,
-                    tenantid VARCHAR(255) NOT NULL,
-                    agentid VARCHAR(255),
-                    agentname VARCHAR(255),
-                    toolname VARCHAR(255),
-                    arguments TEXT,
-                    status VARCHAR(50) DEFAULT 'pending',
-                    estimated_cost_usd FLOAT DEFAULT 0,
-                    metadata JSONB,
-                    timestamp TIMESTAMP DEFAULT NOW()
-                );
-            `);
+            await ensureSchema();
             await pgPool.query(
                 `INSERT INTO approval_requests (id, tenantid, agentid, agentname, toolname, arguments, status, estimated_cost_usd, metadata)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
@@ -645,22 +622,7 @@ async function logAudit(tenantId: string, agentId: string, toolName: string, fin
     // Non-blocking schema sync + write
     (async () => {
         try {
-            await pgPool.query(`
-                CREATE TABLE IF NOT EXISTS audit_logs (
-                    id SERIAL PRIMARY KEY,
-                    tenantid VARCHAR(255) NOT NULL,
-                    agentid VARCHAR(255),
-                    toolname VARCHAR(255),
-                    decision VARCHAR(50),
-                    riskscore INTEGER,
-                    cost_usd FLOAT DEFAULT 0,
-                    reason TEXT,
-                    arguments TEXT,
-                    timestamp TIMESTAMP DEFAULT NOW(),
-                    parameters JSONB,
-                    metadata JSONB
-                );
-            `);
+            await ensureSchema();
             await pgPool.query(
                 `INSERT INTO audit_logs (tenantid, agentid, toolname, parameters, decision, riskscore, cost_usd, metadata)
                  VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,

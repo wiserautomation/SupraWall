@@ -24,11 +24,11 @@ router.post("/log", threatLogRateLimit, gatekeeperAuth, async (req: Request, res
             return res.status(400).json({ error: "Missing eventType" });
         }
 
-        // Fire and forget (don't wait for write completion to return 200)
-        pool.query(
+        // Await the write to ensure consistency (especially for high-risk audits)
+        await pool.query(
             "INSERT INTO threat_events (tenantid, agentid, event_type, severity, details) VALUES ($1, $2, $3, $4, $5)",
             [tenantId, agentId, eventType, severity || "medium", JSON.stringify(details || {})]
-        ).catch(err => logger.error("[Threat] Write Error:", err));
+        );
 
         res.json({ status: "logged" });
     } catch (e) {
@@ -51,7 +51,7 @@ router.get("/events", adminAuth, async (req: Request, res: Response) => {
         if (!tenantId) return res.status(400).json({ error: "Missing tenantId" });
 
         const result = await pool.query(
-            "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY createdat DESC LIMIT $2 OFFSET $3",
+            "SELECT * FROM threat_events WHERE tenantid = $1 ORDER BY timestamp DESC LIMIT $2 OFFSET $3",
             [tenantId, limit, offset]
         );
 
@@ -109,7 +109,7 @@ router.post("/aggregate", adminAuth, async (req: Request, res: Response) => {
         const weights = { low: 1, medium: 5, high: 20, critical: 100 };
 
         const events = await pool.query(
-            "SELECT agentid, severity, COUNT(*) as count FROM threat_events WHERE tenantid = $1 AND createdat >= NOW() - INTERVAL '24 hours' GROUP BY agentid, severity",
+            "SELECT agentid, severity, COUNT(*) as count FROM threat_events WHERE tenantid = $1 AND timestamp >= NOW() - INTERVAL '24 hours' GROUP BY agentid, severity",
             [tenantId]
         );
 

@@ -4,7 +4,7 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from "@/lib/db_sql";
+import { pool, ensureSchema } from "@/lib/db_sql";
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,28 +14,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    // Ensure tables exist
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS threat_events (
-            id SERIAL PRIMARY KEY,
-            tenantid VARCHAR(255) NOT NULL,
-            agentid VARCHAR(255),
-            event_type VARCHAR(100) NOT NULL,
-            severity VARCHAR(50) DEFAULT 'medium',
-            details JSONB,
-            timestamp TIMESTAMP DEFAULT NOW()
-        );
-        CREATE TABLE IF NOT EXISTS threat_summaries (
-            id SERIAL PRIMARY KEY,
-            tenantid VARCHAR(255) NOT NULL,
-            entity_id VARCHAR(255) NOT NULL, 
-            entity_type VARCHAR(50) NOT NULL,
-            threat_score FLOAT DEFAULT 0,
-            total_events INTEGER DEFAULT 0,
-            last_updated TIMESTAMP DEFAULT NOW(),
-            UNIQUE(tenantid, entity_id, entity_type)
-        );
-    `);
+    // Ensure all tables exist
+    await ensureSchema();
 
     // Aggregation logic (Severity weights)
     const weights: Record<string, number> = { low: 1, medium: 5, high: 20, critical: 100 };
@@ -85,7 +65,7 @@ export async function POST(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Threat Aggregate POST] Error:", err);
-    return NextResponse.json({ error: "Failed to aggregate scores from Postgres", details: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Failed to aggregate scores" }, { status: 500 });
   }
 }
 

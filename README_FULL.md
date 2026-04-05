@@ -11,9 +11,11 @@
 [![npm version](https://img.shields.io/npm/v/@suprawall/sdk-ts?label=npm&color=22c55e)](https://www.npmjs.com/package/@suprawall/sdk-ts)
 [![PyPI version](https://img.shields.io/pypi/v/suprawall?color=22c55e)](https://pypi.org/project/suprawall/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
 [![GitHub Stars](https://img.shields.io/github/stars/wiserautomation/Supra-Wall-Private?style=social)](https://github.com/wiserautomation/Supra-Wall-Private)
-[![Discord](https://img.shields.io/badge/Discord-Join%20Community-7289da)](https://discord.gg/suprawall)
-[![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](#-quick-start)
+[![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
+[![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
+[![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](https://www.supra-wall.com/docs)
 
 [Quick Start](#-quick-start) · [Why SupraWall](#-why-suprawall) · [EU AI Act](#-eu-ai-act-compliance) · [Self-Host vs Cloud](#-run-anywhere) · [Docs](https://www.supra-wall.com/docs) · [Contributing](CONTRIBUTING.md)
 
@@ -229,6 +231,7 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 - **8 programming languages** — Python, TypeScript, Go, Ruby, PHP, Java, Rust, C#
 - **6 framework plugins** — LangChain, AutoGen, CrewAI, Vercel AI, LlamaIndex, OpenClaw
 - **5 database adapters** — PostgreSQL, MySQL, MongoDB, Supabase, Firebase
+- **AWS Marketplace** — Integrated SaaS & Container fulfillment with Bedrock AgentCore support
 - **MCP Server** — Native Model Context Protocol integration
 - **CLI Tool** — Manage agents, policies, and logs from the terminal
 - **Dry-run mode** — Test policies without enforcement
@@ -261,9 +264,15 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 | Rust | `cargo add suprawall` | Beta |
 | C# | `dotnet add package Suprawall` | Beta |
 
-### Databases
+### Marketplaces
 
-PostgreSQL (primary) · MySQL · MongoDB · Supabase · Firebase Firestore · SQLite (local dev)
+| Platform | Category | Listing |
+|----------|----------|---------|
+| **AWS Marketplace** | **AI Agents & Tools > Guardrail** | [SaaS / Container](#) |
+| **Dify Plugin Hub** | Security / Guardrail | [Install](https://github.com/wiserautomation/suprawall-plugins) |
+| **Anthropic MCP Hub** | Developer Tools | [Configure](https://github.com/wiserautomation/Supra-Wall-Private/blob/main/MCP_SUBMISSION_README.md) |
+
+### Databases
 
 ---
 
@@ -281,6 +290,16 @@ export SUPRAWALL_API_KEY=ag_your_key
 Includes: managed Vault with HSM encryption, Slack approval routing, PDF compliance reports, 99.9% SLA, usage-based pricing starting at $0/month for the first 10K evaluations.
 
 **[Deploy on Cloud →](https://www.supra-wall.com/pricing)**
+
+### AWS Marketplace (Enterprise SaaS / Self-Host)
+
+Suprawall is available as a pre-certified **Guardrail** tool on the AWS Marketplace.
+
+- **SaaS API:** Use your existing AWS bill to pay for Suprawall Cloud.
+- **Container:** Deploy the Suprawall policy engine directly into your VPC on ECS/EKS for maximum data residency.
+- **Bedrock Integration:** Native support for Amazon Bedrock AgentCore.
+
+**[Find us on AWS Marketplace →](https://aws.amazon.com/marketplace/pp/prodview-suprawall)**
 
 ### Self-Hosted (Docker)
 

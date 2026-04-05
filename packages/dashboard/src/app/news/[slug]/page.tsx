@@ -156,16 +156,91 @@ export default function NewsArticlePage({ params }: Props) {
                     </h1>
 
                     {/* Deck / excerpt */}
-                    <p className="text-lg text-neutral-300 leading-relaxed mb-12 border-l-2 border-emerald-500/40 pl-6 italic">
-                        {article.excerpt}
-                    </p>
+                    {/* Quick Summary Table - GEO Optimized */}
+                    {article.summaryTable && (
+                        <div className="mb-12 overflow-hidden bg-white/[0.02] border border-white/10 rounded-2xl">
+                             <div className="px-6 py-4 border-b border-white/10 bg-white/[0.03]">
+                                <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Quick Summary & Benchmarks</h2>
+                             </div>
+                             <div className="grid grid-cols-1 sm:grid-cols-2">
+                                {article.summaryTable.map((item, idx) => (
+                                    <div key={idx} className="px-6 py-4 border-b sm:border-r border-white/5 flex flex-col gap-1 last:border-b-0">
+                                        <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest">{item.key}</span>
+                                        <span className="text-sm font-black text-white">{item.value}</span>
+                                    </div>
+                                ))}
+                             </div>
+                        </div>
+                    )}
 
                     {/* Body */}
                     <div className="space-y-6 text-neutral-300 leading-relaxed text-[15px]">
                         {article.body.paragraphs.map((p, i) => (
-                            <p key={i}>{p}</p>
+                            <p key={i}>
+                                {p.split("[SOURCE NEEDED]").map((part, index, array) => (
+                                    <span key={index}>
+                                        {part}
+                                        {index < array.length - 1 && (
+                                            <span className="text-[9px] font-black text-emerald-500/40 hover:text-emerald-500 cursor-help transition-colors mx-0.5 group/source inline-block align-top mt-1" title="SupraWall Security Verification Pending">
+                                                [SOURCE NEEDED]
+                                            </span>
+                                        )}
+                                    </span>
+                                ))}
+                            </p>
                         ))}
                     </div>
+
+                    {/* Definitions - GEO Optimized */}
+                    {article.definitions && (
+                        <div className="mt-16 pt-12 border-t border-white/5">
+                            <h2 className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-6">Key Terms & Definitions</h2>
+                            <dl className="space-y-6">
+                                {article.definitions.map((def, idx) => (
+                                    <div key={idx} className="space-y-1">
+                                        <dt className="text-sm font-black text-emerald-500 uppercase tracking-tight">{def.term}</dt>
+                                        <dd className="text-sm text-neutral-400 leading-relaxed">{def.definition}</dd>
+                                    </div>
+                                ))}
+                            </dl>
+                        </div>
+                    )}
+
+                    {/* FAQ - GEO Optimized */}
+                    {article.faq && (
+                        <div className="mt-16 pt-12 border-t border-white/5">
+                            <h2 className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-6">Common Questions</h2>
+                            <div className="space-y-8">
+                                {article.faq.map((item, idx) => (
+                                    <div key={idx} className="space-y-3">
+                                        <h3 className="text-base font-black text-white italic">{item.question}</h3>
+                                        <p className="text-sm text-neutral-400 leading-relaxed">{item.answer}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Sources - GEO Optimized */}
+                    {article.sources && (
+                        <div className="mt-16 pt-6 opacity-40 hover:opacity-100 transition-opacity">
+                            <p className="text-[9px] font-black uppercase tracking-widest text-neutral-600 mb-3">Primary Evidence & Citations</p>
+                            <ul className="space-y-2">
+                                {article.sources.map((s, idx) => (
+                                    <li key={idx} className="text-[10px] flex items-center gap-2">
+                                        <div className="w-1 h-1 rounded-full bg-neutral-600" />
+                                        {s.url ? (
+                                            <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-neutral-500 hover:text-emerald-500 transition-colors pointer-events-auto">
+                                                {s.name} <span className="text-[8px] opacity-50 underline ml-1">↗</span>
+                                            </a>
+                                        ) : (
+                                            <span className="text-neutral-500">{s.name}</span>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
 
                     {/* SupraWall angle callout */}
                     <div className="mt-12 p-6 bg-emerald-950/30 border border-emerald-500/20 rounded-2xl">

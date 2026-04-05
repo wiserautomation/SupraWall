@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             languages,
         },
         robots: {
-            index: isDefault,
+            index: true,
             follow: true,
         },
         openGraph: {
@@ -75,7 +75,7 @@ export default async function Page({
         <div className="min-h-screen bg-black text-white selection:bg-purple-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
-            <GdprClient dictionary={dictionary} />
+            <GdprClient dictionary={dictionary} lang={lang} />
         </div>
     );
 }

@@ -12,7 +12,7 @@ import {
 import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
 
-export default function EuAiActClient({ dictionary }: { dictionary: any }) {
+export default function EuAiActClient({ dictionary, lang }: { dictionary: any, lang: string }) {
     const t = dictionary.euAiAct || {};
     
     // Add safety checks for each nested property to prevent build crashes
@@ -78,10 +78,12 @@ export default function EuAiActClient({ dictionary }: { dictionary: any }) {
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
                              {t.hero?.subheadline || "The definitive security layer for autonomous agent compliance."}
+                             {" "}See how we map to <Link href={`/${lang}/gdpr`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10">GDPR data processing rules</Link> and <Link href={`/${lang}/learn/owasp-llm-top-10`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10">OWASP LLM Top 10 alignment</Link>.
                         </p>
                     </div>
                 </div>
             </section>
+
 
              {/* 🎯 TABLE MAPPING SECTION */}
             <section className="py-24 px-6 bg-black border-y border-white/5">

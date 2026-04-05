@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from "@/lib/db_sql";
+import { pool, ensureSchema } from "@/lib/db_sql";
 
 export const dynamic = "force-dynamic";
 
@@ -30,22 +30,8 @@ export async function GET(request: NextRequest) {
         // Fallback to the provided tenantId (UID)
     }
 
-    // Ensure table exists (Self-healing schema) - aligning with SDK types
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS approval_requests (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            tenantid VARCHAR(255) NOT NULL,
-            agentid VARCHAR(255),
-            toolname VARCHAR(255),
-            parameters TEXT,
-            status VARCHAR(50) DEFAULT 'PENDING',
-            decision_by VARCHAR(255),
-            decision_at TIMESTAMP,
-            decision_comment TEXT,
-            metadata JSONB,
-            created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-        );
-    `);
+    // Ensure all tables exist
+    await ensureSchema();
 
     // Only fetch PENDING requests for the Approvals dashboard (SDK uses 'PENDING')
     const result = await pool.query(
@@ -74,6 +60,6 @@ export async function GET(request: NextRequest) {
 
   } catch (err: any) {
     console.error("[API Approvals GET] Error:", err);
-    return NextResponse.json({ error: "Internal Server Error", details: err.message }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

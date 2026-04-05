@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db as firestore } from '@/lib/firebase-admin';
 import { checkResourceLimit } from '@/lib/tier-enforcement';
 import { verifyAuth, unauthorizedResponse } from '@/lib/api-auth';
-import { pool } from "@/lib/db_sql";
+import { pool, ensureSchema } from "@/lib/db_sql";
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -20,22 +20,7 @@ export async function GET(request: NextRequest) {
     const userDoc = await firestore.collection("users").doc(userId).get();
     const tenantId = userDoc.data()?.tenantId || userId;
 
-    await pool.query(`
-        CREATE TABLE IF NOT EXISTS agents (
-            id VARCHAR(255) PRIMARY KEY,
-            tenantid VARCHAR(255) NOT NULL,
-            name VARCHAR(255) NOT NULL,
-            apikeyhash VARCHAR(255),
-            scopes TEXT[] DEFAULT '{}',
-            status VARCHAR(50) DEFAULT 'active',
-            slack_webhook VARCHAR(255),
-            max_cost_usd FLOAT DEFAULT 10,
-            budget_alert_usd FLOAT DEFAULT 8,
-            max_iterations INTEGER DEFAULT 50,
-            loop_detection BOOLEAN DEFAULT FALSE,
-            createdat TIMESTAMP DEFAULT NOW()
-        );
-    `);
+    await ensureSchema();
 
     const result = await pool.query(
         "SELECT * FROM agents WHERE tenantid = $1 OR tenantid = $2 ORDER BY createdat DESC",
@@ -59,7 +44,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(agents);
   } catch (err: any) {
     console.error("[API Agents GET] Error:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -105,7 +90,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (err: any) {
     console.error("[API Agents POST] Error:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
@@ -125,7 +110,7 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ message: `Successfully deleted ${result.rowCount} agents for tenant.` });
   } catch (err: any) {
     console.error("[API Agents DELETE] Error:", err);
-    return NextResponse.json({ error: err.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
 
