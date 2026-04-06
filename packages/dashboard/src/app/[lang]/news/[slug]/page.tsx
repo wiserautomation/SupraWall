@@ -6,21 +6,31 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
-import { newsArticles, getArticle, formatDate, CATEGORY_COLORS } from "../newsData";
+import { newsArticles, getArticle, formatDate, CATEGORY_COLORS, NewsArticle } from "../newsData";
+import { i18n, Locale } from "@/i18n/config";
 
 interface Props {
-    params: { slug: string };
+    params: { slug: string; lang: string };
 }
 
 export function generateStaticParams() {
-    return newsArticles
-        .filter((a) => a.published)
-        .map((a) => ({ slug: a.slug }));
+    const params: { lang: string; slug: string }[] = [];
+    i18n.locales.forEach((lang) => {
+        newsArticles
+            .filter((a: NewsArticle) => a.published)
+            .forEach((a: NewsArticle) => {
+                params.push({ lang, slug: a.slug });
+            });
+    });
+    return params;
 }
 
 export function generateMetadata({ params }: Props): Metadata {
     const article = getArticle(params.slug);
     if (!article) return { title: "Not Found" };
+
+    const { lang } = params;
+    const baseUrl = `https://www.supra-wall.com/${lang}`;
 
     return {
         title: `${article.title} | SupraWall News`,
@@ -32,12 +42,12 @@ export function generateMetadata({ params }: Props): Metadata {
             "agentic AI",
         ],
         alternates: {
-            canonical: `https://www.supra-wall.com/news/${article.slug}`,
+            canonical: `${baseUrl}/news/${article.slug}`,
         },
         openGraph: {
             title: article.title,
             description: article.excerpt,
-            url: `https://www.supra-wall.com/news/${article.slug}`,
+            url: `${baseUrl}/news/${article.slug}`,
             siteName: "SupraWall",
             type: "article",
             publishedTime: article.date,
@@ -53,8 +63,11 @@ export function generateMetadata({ params }: Props): Metadata {
 }
 
 export default function NewsArticlePage({ params }: Props) {
-    const article = getArticle(params.slug);
+    const { slug, lang } = params;
+    const article = getArticle(slug);
     if (!article) notFound();
+
+    const baseUrl = `https://www.supra-wall.com/${lang}`;
 
     const newsArticleSchema = {
         "@context": "https://schema.org",
@@ -81,7 +94,7 @@ export default function NewsArticlePage({ params }: Props) {
         },
         mainEntityOfPage: {
             "@type": "WebPage",
-            "@id": `https://www.supra-wall.com/news/${article.slug}`,
+            "@id": `${baseUrl}/news/${article.slug}`,
         },
     };
 
@@ -89,10 +102,10 @@ export default function NewsArticlePage({ params }: Props) {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.supra-wall.com" },
-            { "@type": "ListItem", position: 2, name: "News", item: "https://www.supra-wall.com/news" },
-            { "@type": "ListItem", position: 3, name: article.category, item: `https://www.supra-wall.com/news` },
-            { "@type": "ListItem", position: 4, name: article.title, item: `https://www.supra-wall.com/news/${article.slug}` },
+            { "@type": "ListItem", position: 1, name: "Home", item: `https://www.supra-wall.com/${lang}` },
+            { "@type": "ListItem", position: 2, name: "News", item: `${baseUrl}/news` },
+            { "@type": "ListItem", position: 3, name: article.category, item: `${baseUrl}/news` },
+            { "@type": "ListItem", position: 4, name: article.title, item: `${baseUrl}/news/${article.slug}` },
         ],
     };
 
@@ -106,7 +119,7 @@ export default function NewsArticlePage({ params }: Props) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang as Locale} />
 
             <main className="pt-40 pb-32 px-6">
                 <article className="max-w-3xl mx-auto">
@@ -163,7 +176,7 @@ export default function NewsArticlePage({ params }: Props) {
                                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-500">Quick Summary & Benchmarks</h2>
                              </div>
                              <div className="grid grid-cols-1 sm:grid-cols-2">
-                                {article.summaryTable.map((item, idx) => (
+                                {article.summaryTable.map((item: { key: string; value: string }, idx: number) => (
                                     <div key={idx} className="px-6 py-4 border-b sm:border-r border-white/5 flex flex-col gap-1 last:border-b-0">
                                         <span className="text-[9px] font-bold text-neutral-600 uppercase tracking-widest">{item.key}</span>
                                         <span className="text-sm font-black text-white">{item.value}</span>
@@ -175,9 +188,9 @@ export default function NewsArticlePage({ params }: Props) {
 
                     {/* Body */}
                     <div className="space-y-6 text-neutral-300 leading-relaxed text-[15px]">
-                        {article.body.paragraphs.map((p, i) => (
+                        {article.body.paragraphs.map((p: string, i: number) => (
                             <p key={i}>
-                                {p.split("[SOURCE NEEDED]").map((part, index, array) => (
+                                {p.split("[SOURCE NEEDED]").map((part: string, index: number, array: string[]) => (
                                     <span key={index}>
                                         {part}
                                         {index < array.length - 1 && (
@@ -196,7 +209,7 @@ export default function NewsArticlePage({ params }: Props) {
                         <div className="mt-16 pt-12 border-t border-white/5">
                             <h2 className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-6">Key Terms & Definitions</h2>
                             <dl className="space-y-6">
-                                {article.definitions.map((def, idx) => (
+                                {article.definitions.map((def: { term: string; definition: string }, idx: number) => (
                                     <div key={idx} className="space-y-1">
                                         <dt className="text-sm font-black text-emerald-500 uppercase tracking-tight">{def.term}</dt>
                                         <dd className="text-sm text-neutral-400 leading-relaxed">{def.definition}</dd>
@@ -211,7 +224,7 @@ export default function NewsArticlePage({ params }: Props) {
                         <div className="mt-16 pt-12 border-t border-white/5">
                             <h2 className="text-[10px] font-black uppercase tracking-widest text-neutral-600 mb-6">Common Questions</h2>
                             <div className="space-y-8">
-                                {article.faq.map((item, idx) => (
+                                {article.faq.map((item: { question: string; answer: string }, idx: number) => (
                                     <div key={idx} className="space-y-3">
                                         <h3 className="text-base font-black text-white italic">{item.question}</h3>
                                         <p className="text-sm text-neutral-400 leading-relaxed">{item.answer}</p>
@@ -226,7 +239,7 @@ export default function NewsArticlePage({ params }: Props) {
                         <div className="mt-16 pt-6 opacity-40 hover:opacity-100 transition-opacity">
                             <p className="text-[9px] font-black uppercase tracking-widest text-neutral-600 mb-3">Primary Evidence & Citations</p>
                             <ul className="space-y-2">
-                                {article.sources.map((s, idx) => (
+                                {article.sources.map((s: { name: string; url?: string }, idx: number) => (
                                     <li key={idx} className="text-[10px] flex items-center gap-2">
                                         <div className="w-1 h-1 rounded-full bg-neutral-600" />
                                         {s.url ? (
@@ -258,7 +271,7 @@ export default function NewsArticlePage({ params }: Props) {
                             Related Reading
                         </p>
                         <div className="space-y-3">
-                            {article.relatedLinks.map((link) => (
+                            {article.relatedLinks.map((link: { href: string; label: string }) => (
                                 <Link
                                     key={link.href}
                                     href={link.href}

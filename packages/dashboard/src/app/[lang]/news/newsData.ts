@@ -33,9 +33,9 @@ export const newsArticles: NewsArticle[] = [
         published: true,
         supraWallAngle: "SupraWall's compliance dashboard generates audit-ready evidence exports mapped directly to Articles 9, 10, 12, and 14 — no regulatory guidance document required.",
         relatedLinks: [
-            { href: "/learn/eu-ai-act-compliance-ai-agents", label: "EU AI Act Compliance for AI Agents" },
-            { href: "/learn/eu-ai-act-article-14-human-oversight", label: "EU Act Article 14: Human Oversight" },
-            { href: "/learn/ai-agent-audit-trail-logging", label: "AI Agent Audit Trail Logging" },
+            { href: "/en/learn/eu-ai-act-compliance-ai-agents", label: "EU AI Act Compliance for AI Agents" },
+            { href: "/en/learn/eu-ai-act-article-14-human-oversight", label: "EU Act Article 14: Human Oversight" },
+            { href: "/en/learn/ai-agent-audit-trail-logging", label: "AI Agent Audit Trail Logging" },
         ],
         summaryTable: [
             { key: "Status", value: "Guidance Missed" },
@@ -73,9 +73,9 @@ export const newsArticles: NewsArticle[] = [
         published: true,
         supraWallAngle: "SupraWall's SDK-level interception provides the tool-call visibility the 79% of organizations are missing — logging every action, enforcing policies in real time, and generating the audit trails required for both internal governance and EU AI Act compliance.",
         relatedLinks: [
-            { href: "/learn/ai-agent-audit-trail-logging", label: "AI Agent Audit Trail & Logging" },
-            { href: "/learn/ai-agent-security-best-practices", label: "AI Agent Security Best Practices" },
-            { href: "/learn/zero-trust-ai-agents", label: "Zero Trust for AI Agents" },
+            { href: "/en/learn/ai-agent-audit-trail-logging", label: "AI Agent Audit Trail & Logging" },
+            { href: "/en/learn/ai-agent-security-best-practices", label: "AI Agent Security Best Practices" },
+            { href: "/en/learn/zero-trust-ai-agents", label: "Zero Trust for AI Agents" },
         ],
         body: {
             paragraphs: [
@@ -96,9 +96,9 @@ export const newsArticles: NewsArticle[] = [
         published: true,
         supraWallAngle: "Identity-level governance and SDK-level enforcement are complementary, not competing — Token Security prevents the wrong agent from having credentials; SupraWall prevents the right agent from misusing them. Runtime interception catches what identity controls miss.",
         relatedLinks: [
-            { href: "/learn/what-are-ai-agent-guardrails", label: "What Are AI Agent Guardrails?" },
-            { href: "/learn/zero-trust-ai-agents", label: "Zero Trust for AI Agents" },
-            { href: "/learn/protect-api-keys-from-ai-agents", label: "Protect API Keys from AI Agents" },
+            { href: "/en/learn/what-are-ai-agent-guardrails", label: "What Are AI Agent Guardrails?" },
+            { href: "/en/learn/zero-trust-ai-agents", label: "Zero Trust for AI Agents" },
+            { href: "/en/learn/protect-api-keys-from-ai-agents", label: "Protect API Keys from AI Agents" },
         ],
         body: {
             paragraphs: [
@@ -119,9 +119,9 @@ export const newsArticles: NewsArticle[] = [
         published: true,
         supraWallAngle: "Any autonomous agent operating in a production environment — including security agents — benefits from a deterministic guardrail layer. The trust assumptions that apply to Aardvark are the same ones that apply to every agent: don't give it more authority than it needs, and verify what it does.",
         relatedLinks: [
-            { href: "/learn/prompt-injection-credential-theft", label: "Prompt Injection & Credential Theft" },
-            { href: "/learn/what-is-agent-runtime-security", label: "What Is Agent Runtime Security?" },
-            { href: "/learn/mcp-server-security", label: "MCP Server Security" },
+            { href: "/en/learn/prompt-injection-credential-theft", label: "Prompt Injection & Credential Theft" },
+            { href: "/en/learn/what-is-agent-runtime-security", label: "What Is Agent Runtime Security?" },
+            { href: "/en/learn/mcp-server-security", label: "MCP Server Security" },
         ],
         body: {
             paragraphs: [

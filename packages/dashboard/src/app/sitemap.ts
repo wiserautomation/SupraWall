@@ -6,6 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { i18n } from '../i18n/config';
 import { SLUG_MAP } from '../i18n/slug-map';
+import { newsArticles } from './[lang]/news/newsData';
 
 const BASE_URL = 'https://www.supra-wall.com';
 
@@ -72,7 +73,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const sitemapEntries: MetadataRoute.Sitemap = [];
 
     // Combine manual and discovered routes
-    const uniqueRoutes = Array.from(new Set(['/', ...baseRoutes]));
+    const newsRoutes = newsArticles.filter(a => a.published).map(a => `/news/${a.slug}`);
+    const uniqueRoutes = Array.from(new Set(['/', ...baseRoutes, ...newsRoutes]));
 
     uniqueRoutes.forEach((route) => {
         // Normalize the route path

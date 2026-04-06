@@ -112,70 +112,68 @@
   },
   "compliance": {
     "hero": {
-      "badge": "Enterprise Ready",
-      "titlePrefix": "EU AI Act",
-      "titleEmphasis": "Compliance.",
-      "titleSuffix": "Solved.",
-      "description": "SupraWall maps every autonomous agent tool call to specific regulatory requirements. Automate your compliance reporting and de-risk your AI transformation."
+      "badge": "The Compliance OS for AI Agents",
+      "title": "One SDK.",
+      "emphasis": "Universal Compliance.",
+      "description": "SupraWall is the runtime layer that implements every major EU and international AI regulation in one integration. Don't build six separate systems for GDPR, NIS2, and the AI Act — standardize your governance with SupraWall."
     },
-    "articles": {
-      "art12": {
-        "name": "Record-keeping",
-        "desc": "Automatic logging of events during the operation of high-risk AI systems.",
-        "feature": "Deterministic Audit Logs"
+    "regulations": {
+      "title": "The Full Regulatory Stack",
+      "subtitle": "Direct features mapping to every enforcement deadline.",
+      "headers": {
+        "reg": "Regulation",
+        "deadline": "Enforcement",
+        "fine": "Max Fine",
+        "feature": "SupraWall Feature"
       },
-      "art14": {
-        "name": "Human Oversight",
-        "desc": "Designing systems that can be effectively overseen by natural persons.",
-        "feature": "Human-in-the-loop Protocol"
-      },
-      "art10": {
-        "name": "Data Governance",
-        "desc": "Ensuring training and testing datasets are subject to appropriate governance.",
-        "feature": "Tool Access Control"
-      },
-      "art15": {
-        "name": "Robustness & Security",
-        "desc": "Appropriate level of robustness, accuracy and cybersecurity.",
-        "feature": "Deterministic Shim Layer"
-      }
-    },
-    "roadmap": {
-      "title": "Compliance Roadmap",
-      "subtitle": "How SupraWall ensures your AI agents remain within legal guardrails.",
-      "table": {
-        "head": {
-          "req": "Framework Requisition",
-          "control": "SupraWall Control",
-          "status": "Status"
+      "rows": {
+        "euAiAct": {
+          "name": "EU AI Act",
+          "deadline": "Aug 2, 2026",
+          "fine": "€35M / 7%",
+          "feature": "Policy Engine, Audit Trail, HITL"
         },
-        "rows": {
-          "transparency": {
-            "req": "Transparency (Art 4b)",
-            "control": "System Prompt Injection Guards"
-          },
-          "techDoc": {
-            "req": "Technical Documentation (Art 11)",
-            "control": "Auto-generated Compliance PDF"
-          },
-          "riskMgmt": {
-            "req": "Risk Management (Art 9)",
-            "control": "Deterministic Out-of-bounds Detection"
-          },
-          "conformity": {
-            "req": "Conformity Assessment (Art 43)",
-            "control": "Validation Audit Trails"
-          }
+        "gdpr": {
+          "name": "GDPR",
+          "deadline": "Active NOW",
+          "fine": "€20M / 4%",
+          "feature": "PII Shield, Audit Trail"
+        },
+        "nis2": {
+          "name": "NIS2",
+          "deadline": "Oct 2026",
+          "fine": "€10M / 2%",
+          "feature": "Incident logging, controls"
+        },
+        "dora": {
+          "name": "DORA",
+          "deadline": "Active NOW",
+          "fine": "1% daily income",
+          "feature": "Risk mgmt, audit trail"
+        },
+        "iso": {
+          "name": "ISO 42001",
+          "deadline": "Procurement",
+          "fine": "ROI / Sales",
+          "feature": "AIMS lifecycle docs"
         }
       }
     },
+    "matrix": {
+      "title": "The Compliance Matrix",
+      "subtitle": "Every article. Every requirement. Every piece of evidence.",
+      "headers": {
+        "article": "Article",
+        "requirement": "Requirement",
+        "feature": "SupraWall Feature",
+        "evidence": "Evidence Generated"
+      }
+    },
     "cta": {
-      "titlePrefix": "Make Your Agents",
-      "titleEmphasis": "Legal-Proof",
-      "titleSuffix": "in One Line.",
-      "description": "Integrate SupraWall with any LLM framework and automate your Articles 12 & 14 requirements today.",
-      "bookAudit": "Book Compliance Audit",
-      "viewDocs": "View Documentation"
+      "title": "The AI Compliance Evidence Kit",
+      "description": "Download a sample of the documentation your auditors will require for high-risk AI systems. RSA-signed logs, policy templates, and human oversight records.",
+      "cta": "Get Evidence Kit",
+      "checker": "Start Compliance Checker"
     }
   },
 
@@ -700,11 +698,23 @@
     },
     "final": {
       "badge": "Start the Shield",
-      "title": "Secure the",
-      "emphasis": "Context Window.",
-      "description": "Don't leak user data to external API providers. Activate the PII shield and operate your agents with confidence.",
+      "title": "Compliance",
+      "emphasis": "by Design.",
+      "description": "Implement the six pillars of GDPR compliance for autonomous agents in one line of code.",
       "cta": "Implement SDK Now",
       "guide": "Read the GDPR Developer Guide"
+    },
+    "deep": {
+      "titles": {
+        "art5": "Art. 5(1)(c): Data Minimization",
+        "art22": "Art. 22: Automated Decisions",
+        "art30": "Art. 30: ROPA Records"
+      },
+      "desc": {
+        "art5": "The PII Shield automatically redacts Names, SSNs, and Emails from tool call parameters before they leave your network, ensuring compliance with data minimization mandates.",
+        "art22": "SupraWall's Human-in-the-Loop (HITL) protocol ensures that high-impact agentic actions are reviewed by a human operator, satisfying Article 22's oversight requirements.",
+        "art30": "The immutable, RSA-signed audit trail serves as the primary record for all agentic data processing activities, directly feeding your ROPA reports."
+      }
     }
   },
   "qa": {
