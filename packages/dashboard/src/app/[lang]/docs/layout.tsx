@@ -10,41 +10,42 @@ import { AskAI } from "@/components/AskAI";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
+    const lang = pathname.split('/')[1] || 'en';
 
     const sections = [
         {
             title: "Getting Started",
             items: [
-                { name: "Introduction", href: "/docs", icon: BookOpen },
-                { name: "Quickstart", href: "/docs/quickstart", icon: Zap },
-                { name: "AI Assistant Guide", href: "/docs/ai-assistants", icon: Sparkles },
+                { name: "Introduction", href: `/${lang}/docs`, icon: BookOpen },
+                { name: "Quickstart", href: `/${lang}/docs/quickstart`, icon: Zap },
+                { name: "AI Assistant Guide", href: `/${lang}/docs/ai-assistants`, icon: Sparkles },
             ]
         },
         {
             title: "Client Integrations",
             items: [
-                { name: "Python SDK", href: "/docs/python", icon: Terminal },
-                { name: "Claude (MCP)", href: "/docs/mcp", icon: Puzzle },
-                { name: "Browser (OpenClaw)", href: "/docs/integrations/openclaw", icon: Terminal },
-                { name: "Stripe Marketplace", href: "/docs/integrations/stripe", icon: BadgeDollarSign },
+                { name: "Python SDK", href: `/${lang}/docs/python`, icon: Terminal },
+                { name: "Claude (MCP)", href: `/${lang}/docs/mcp`, icon: Puzzle },
+                { name: "Browser (OpenClaw)", href: `/${lang}/docs/integrations/openclaw`, icon: Terminal },
+                { name: "Stripe Marketplace", href: `/${lang}/docs/integrations/stripe`, icon: BadgeDollarSign },
             ]
         },
         {
             title: "Frameworks (Interactive)",
             items: [
-                { name: "LangChain", href: "/docs/frameworks/langchain", icon: Code },
-                { name: "LlamaIndex", href: "/docs/frameworks/llamaindex", icon: Code },
-                { name: "Vercel AI SDK", href: "/docs/frameworks/vercel-ai", icon: Terminal },
-                { name: "AutoGen", href: "/docs/frameworks/autogen", icon: Cpu },
-                { name: "CrewAI", href: "/docs/frameworks/crewai", icon: Cpu },
+                { name: "LangChain", href: `/${lang}/docs/frameworks/langchain`, icon: Code },
+                { name: "LlamaIndex", href: `/${lang}/docs/frameworks/llamaindex`, icon: Code },
+                { name: "Vercel AI SDK", href: `/${lang}/docs/frameworks/vercel-ai`, icon: Terminal },
+                { name: "AutoGen", href: `/${lang}/docs/frameworks/autogen`, icon: Cpu },
+                { name: "CrewAI", href: `/${lang}/docs/frameworks/crewai`, icon: Cpu },
             ]
         },
         {
             title: "Platform",
             items: [
-                { name: "API Reference", href: "/docs/api", icon: Key },
-                { name: "Policy Patterns", href: "/docs/examples", icon: Lightbulb },
-                { name: "Open Spec (AGPS)", href: "/spec", icon: Shield },
+                { name: "API Reference", href: `/${lang}/docs/api`, icon: Key },
+                { name: "Policy Patterns", href: `/${lang}/docs/examples`, icon: Lightbulb },
+                { name: "Open Spec (AGPS)", href: `/${lang}/spec`, icon: Shield },
             ]
         }
     ];

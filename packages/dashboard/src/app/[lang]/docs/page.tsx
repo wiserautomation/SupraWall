@@ -4,7 +4,12 @@
 import Link from "next/link";
 import { ArrowRight, BookOpen, Shield, BrickWall, Code, Server, FastForward, CheckCircle2 } from "lucide-react";
 
-export default function DocsPage() {
+export default async function DocsPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = await params;
     return (
         <div className="space-y-12 animate-in fade-in zoom-in-95 duration-500 pb-20">
             <div className="space-y-4">
@@ -20,7 +25,7 @@ export default function DocsPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Link href="/docs/quickstart" className="group p-6 rounded-2xl bg-neutral-900 border border-white/5 hover:border-emerald-500/50 hover:bg-neutral-800 transition-all flex flex-col items-start text-left">
+                <Link href={`/${lang}/docs/quickstart`} className="group p-6 rounded-2xl bg-neutral-900 border border-white/5 hover:border-emerald-500/50 hover:bg-neutral-800 transition-all flex flex-col items-start text-left">
                     <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg mb-4 group-hover:scale-110 transition-transform">
                         <FastForward className="w-6 h-6" />
                     </div>
@@ -33,7 +38,7 @@ export default function DocsPage() {
                     </div>
                 </Link>
 
-                <Link href="/spec" className="group p-6 rounded-2xl bg-neutral-900 border border-white/5 hover:border-emerald-500/50 hover:bg-neutral-800 transition-all flex flex-col items-start text-left">
+                <Link href={`/${lang}/spec`} className="group p-6 rounded-2xl bg-neutral-900 border border-white/5 hover:border-emerald-500/50 hover:bg-neutral-800 transition-all flex flex-col items-start text-left">
                     <div className="p-3 bg-emerald-500/20 text-emerald-400 rounded-lg mb-4 group-hover:scale-110 transition-transform">
                         <BrickWall className="w-6 h-6" />
                     </div>
@@ -51,11 +56,11 @@ export default function DocsPage() {
                 <h2 className="text-2xl font-bold text-white tracking-wide">Interactive Framework Guides</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {[
-                        { name: "LangChain", href: "/docs/frameworks/langchain", icon: Code },
-                        { name: "LlamaIndex", href: "/docs/frameworks/llamaindex", icon: Code },
-                        { name: "AutoGen", href: "/docs/frameworks/autogen", icon: Server },
-                        { name: "Vercel AI SDK", href: "/docs/frameworks/vercel-ai", icon: Server },
-                        { name: "CrewAI", href: "/docs/frameworks/crewai", icon: Code },
+                        { name: "LangChain", href: `/${lang}/docs/frameworks/langchain`, icon: Code },
+                        { name: "LlamaIndex", href: `/${lang}/docs/frameworks/llamaindex`, icon: Code },
+                        { name: "AutoGen", href: `/${lang}/docs/frameworks/autogen`, icon: Server },
+                        { name: "Vercel AI SDK", href: `/${lang}/docs/frameworks/vercel-ai`, icon: Server },
+                        { name: "CrewAI", href: `/${lang}/docs/frameworks/crewai`, icon: Code },
                     ].map((fw) => (
                         <Link key={fw.name} href={fw.href} className="flex items-center p-4 bg-neutral-900 border border-white/5 rounded-xl hover:bg-neutral-800 hover:border-white/20 transition-all group">
                             <fw.icon className="w-5 h-5 text-neutral-400 mr-3 group-hover:text-emerald-400 transition-colors" />

@@ -45,10 +45,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Matcher ignoring paths that should never be redirected
   matcher: [
-    // Only match marketing pages, exclude app/auth/api/static routes
-    // Matcher syntax: Negative lookahead for excluded segments
-    '/((?!dashboard|login|admin|api|stripe|share|audit|beta|_next|static|legal|docs|connect|blog|integrations|quickstart|security|privacy|for-developers|for-enterprise|changelog|self-host|partner|news|tools|use-cases|spec|compare|certificate|mcp|.*\\..*).*)',
+    // Skip all internal paths (_next, static)
+    // Skip static files (images, favicon, robots.txt, etc.)
+    // Skip API routes
+    // Skip private dashboard/admin area
+    '/((?!api|dashboard|login|admin|share|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|og-image.png|.*\\..*).*)',
   ],
 };

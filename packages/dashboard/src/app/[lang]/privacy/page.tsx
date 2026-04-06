@@ -11,10 +11,15 @@ export const metadata: Metadata = {
     description: "SupraWall Privacy Policy — How we handle data for AI agent security and compliance.",
 };
 
-export default function PrivacyPage() {
+export default async function PrivacyPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
     return (
         <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-emerald-500/30 selection:text-white">
-            <Navbar />
+            <Navbar lang={lang} />
             
             <main className="pt-32 pb-24 px-6">
                 <div className="max-w-4xl mx-auto space-y-16">
@@ -89,7 +94,7 @@ export default function PrivacyPage() {
                         <section className="space-y-4 pt-8 border-t border-white/10">
                             <div className="flex items-center gap-3 text-emerald-500">
                                 <ArrowLeft className="w-6 h-6" />
-                                <Link href="/" className="text-sm font-black uppercase tracking-widest hover:text-white transition-colors">
+                                <Link href={`/${lang}`} className="text-sm font-black uppercase tracking-widest hover:text-white transition-colors">
                                     Back to Home
                                 </Link>
                             </div>
