@@ -69,8 +69,11 @@ const LEARN_CATEGORIES = [
     }
 ];
 
-export default function LearnHubClient({ dictionary }: { dictionary: any }) {
+import { Locale } from "@/i18n/config";
+
+export default function LearnHubClient({ lang = 'en', dictionary }: { lang?: Locale, dictionary: any }) {
     const t = dictionary.learn;
+    const prefix = (path: string) => `/${lang}${path}`;
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -92,7 +95,7 @@ export default function LearnHubClient({ dictionary }: { dictionary: any }) {
                     </div>
 
                     {/* Featured Article - 'Start Here' */}
-                    <Link href="/learn/what-is-agent-runtime-security" className="group w-full max-w-4xl p-12 rounded-[3.5rem] bg-gradient-to-br from-neutral-900 to-black border-2 border-white/5 hover:border-emerald-500/30 transition-all text-left relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
+                    <Link href={prefix("/learn/what-is-agent-runtime-security")} className="group w-full max-w-4xl p-12 rounded-[3.5rem] bg-gradient-to-br from-neutral-900 to-black border-2 border-white/5 hover:border-emerald-500/30 transition-all text-left relative overflow-hidden flex flex-col md:flex-row gap-8 items-center">
                          <div className="absolute top-0 right-0 p-12 opacity-5 group-hover:scale-110 transition-transform">
                              <ShieldCheck className="w-64 h-64" />
                          </div>
@@ -125,7 +128,7 @@ export default function LearnHubClient({ dictionary }: { dictionary: any }) {
                                 {cat.articles.map((art: any, j: number) => (
                                     <Link 
                                         key={j} 
-                                        href={`/learn/${art.title.toLowerCase().replace(/ /g, '-')}`}
+                                        href={prefix(`/learn/${art.title.toLowerCase().replace(/ /g, '-')}`)}
                                         className="p-8 rounded-[2.5rem] bg-neutral-900/40 border border-white/10 hover:border-emerald-500/30 transition-all group relative overflow-hidden flex flex-col justify-between min-h-[280px]"
                                     >
                                         <div className="space-y-4 relative z-10">
@@ -151,10 +154,10 @@ export default function LearnHubClient({ dictionary }: { dictionary: any }) {
                             <h3 className="text-3xl font-black italic uppercase tracking-tighter">{t.browseByRegulation}</h3>
                             <div className="flex flex-wrap gap-3">
                                 {[
-                                    { name: "EU AI Act", href: "/eu-ai-act" },
-                                    { name: "GDPR", href: "/gdpr" },
-                                    { name: "HIPAA", href: "/learn/healthcare-ai-governance" },
-                                    { name: "Article 12", href: "/learn/eu-ai-act-article-12-automatic-logging" }
+                                    { name: "EU AI Act", href: prefix("/eu-ai-act") },
+                                    { name: "GDPR", href: prefix("/gdpr") },
+                                    { name: "HIPAA", href: prefix("/learn/healthcare-ai-governance") },
+                                    { name: "Article 12", href: prefix("/learn/eu-ai-act-article-12-automatic-logging") }
                                 ].map(r => (
                                     <Link key={r.name} href={r.href} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all">{r.name}</Link>
                                 ))}
@@ -164,10 +167,10 @@ export default function LearnHubClient({ dictionary }: { dictionary: any }) {
                             <h3 className="text-3xl font-black italic uppercase tracking-tighter">{t.browseByFramework}</h3>
                             <div className="flex flex-wrap gap-3">
                                 {[
-                                    { name: "LangChain", href: "/integrations/langchain" },
-                                    { name: "CrewAI", href: "/integrations/crewai" },
-                                    { name: "Vercel AI SDK", href: "/integrations/vercel" },
-                                    { name: "AutoGen", href: "/integrations/autogen" }
+                                    { name: "LangChain", href: prefix("/integrations/langchain") },
+                                    { name: "CrewAI", href: prefix("/integrations/crewai") },
+                                    { name: "Vercel AI SDK", href: prefix("/integrations/vercel") },
+                                    { name: "AutoGen", href: prefix("/integrations/autogen") }
                                 ].map(f => (
                                     <Link key={f.name} href={f.href} className="px-6 py-3 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all">{f.name}</Link>
                                 ))}
@@ -190,7 +193,7 @@ export default function LearnHubClient({ dictionary }: { dictionary: any }) {
                         {t.footer.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href="/beta" className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] tracking-tighter flex items-center gap-4 group">
+                        <Link href={prefix("/beta")} className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] tracking-tighter flex items-center gap-4 group">
                              {t.footer.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

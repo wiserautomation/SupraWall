@@ -40,21 +40,21 @@ export default function EuAiActClient({ dictionary, lang }: { dictionary: any, l
     const EU_ACT_ARTICLES = [
         {
             title: t.articles?.art9?.title || "Risk Management",
-            href: "/learn/eu-ai-act-high-risk-ai-assessment",
+            href: `/${lang}/learn/eu-ai-act-high-risk-ai-assessment`,
             desc: t.articles?.art9?.desc || "Article 9 requirements for high-risk AI agent systems.",
             icon: <ShieldCheck className="w-6 h-6 text-blue-400" />,
             pill: "Foundation"
         },
         {
             title: t.articles?.art12?.title || "Automatic Logging",
-            href: "/eu-ai-act/article-12",
+            href: `/${lang}/eu-ai-act/article-12`,
             desc: t.articles?.art12?.desc || "Article 12 compliance for autonomous agent monitoring.",
             icon: <History className="w-6 h-6 text-blue-400" />,
             pill: "Monitoring"
         },
         {
             title: t.articles?.art14?.title || "Human Oversight",
-            href: "/eu-ai-act/article-14",
+            href: `/${lang}/eu-ai-act/article-14`,
             desc: t.articles?.art14?.desc || "Article 14 controls for agent-human interaction.",
             icon: <ShieldAlert className="w-6 h-6 text-blue-400" />,
             pill: "Oversight"
@@ -157,7 +157,7 @@ export default function EuAiActClient({ dictionary, lang }: { dictionary: any, l
                         {t.conformity?.description || "SupraWall satisfies the most critical requirements for autonomous agent safety."}
                      </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                         <Link href="/learn/eu-ai-act-compliance-ai-agents" className="px-12 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all underline decoration-white/10 underline-offset-8">
+                         <Link href={`/${lang}/learn/eu-ai-act-compliance-ai-agents`} className="px-12 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all underline decoration-white/10 underline-offset-8">
                              Read Compliance Guide
                          </Link>
                     </div>
@@ -177,7 +177,7 @@ export default function EuAiActClient({ dictionary, lang }: { dictionary: any, l
                         {t.final?.description || "Deploy the industry's first deterministic guardrail system today."}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href="/beta" className="px-16 py-8 bg-blue-600 text-white font-black text-3xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(59,130,246,0.3)] tracking-tighter flex items-center gap-4 group">
+                        <Link href={`/${lang}/beta`} className="px-16 py-8 bg-blue-600 text-white font-black text-3xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(59,130,246,0.3)] tracking-tighter flex items-center gap-4 group">
                              {t.final?.cta || "Join Beta"} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

@@ -63,7 +63,7 @@ export default async function LearnHubPage({
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
-            <LearnHubClient dictionary={dictionary} />
+            <LearnHubClient lang={lang} dictionary={dictionary} />
         </div>
     );
 }
