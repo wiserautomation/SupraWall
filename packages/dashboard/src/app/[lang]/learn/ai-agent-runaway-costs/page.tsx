@@ -13,30 +13,24 @@ import {
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "AI Agent Runaway Costs — Detection & Prevention | SupraWall",
-  description:
-    "Stop AI agents from consuming uncapped tokens and blowing your cloud budget. SupraWall enforces token limits in real time. See how it works.",
-  keywords: [
-    "AI agent runaway costs",
-    "LLM token limits",
-    "stop AI agent overspending",
-    "AI agent budget caps",
-    "LangChain token management",
-    "Vercel AI SDK security",
-  ],
-  alternates: {
-    canonical: "https://www.supra-wall.com/learn/ai-agent-runaway-costs",
-  },
-  openGraph: {
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  return generateLocalizedMetadata({
+    params,
     title: "AI Agent Runaway Costs — Detection & Prevention | SupraWall",
-    description:
-      "Stop AI agents from consuming uncapped tokens and blowing your cloud budget. SupraWall enforces token limits in real time. See how it works.",
-    url: "https://www.supra-wall.com/learn/ai-agent-runaway-costs",
-    siteName: "SupraWall",
-    type: "article",
-  },
-};
+    description: "Stop AI agents from consuming uncapped tokens and blowing your cloud budget. SupraWall enforces token limits in real time. See how it works.",
+    keywords: [
+      "AI agent runaway costs",
+      "LLM token limits",
+      "stop AI agent overspending",
+      "AI agent budget caps",
+      "LangChain token management",
+      "Vercel AI SDK security",
+    ],
+    internalPath: "learn/ai-agent-runaway-costs"
+  });
+}
 
 export default function AIAgentRunawayCostsPage() {
   const jsonLd = {

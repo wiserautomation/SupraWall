@@ -7,24 +7,11 @@ import { i18n, Locale } from "@/i18n/config";
 import { SLUG_MAP } from "../../../i18n/slug-map";
 import GdprClient from "./GdprClient";
 
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = "https://www.supra-wall.com";
-    const isDefault = lang === i18n.defaultLocale;
-    const internalSlug = 'gdpr';
-
-    // Build alternates for hreflang pointing to public aliases
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        const publicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
-        languages[l] = `${baseUrl}/${l}/${publicSlug}`;
-    });
-    const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-    languages["x-default"] = `${baseUrl}/en/${defaultPublicSlug}`;
-
-    const currentPublicSlug = SLUG_MAP[internalSlug]?.[lang] || internalSlug;
-
-    return {
+    return generateLocalizedMetadata({
+        params,
         title: "GDPR for AI Agents. Secured at the SDK. | SupraWall",
         description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
         keywords: [
@@ -35,22 +22,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             "automated data masking for agents",
             "suprawall pii shield gdpr",
         ],
-        alternates: {
-            canonical: `${baseUrl}/${lang}/gdpr`,
-            languages,
-        },
-        robots: {
-            index: true,
-            follow: true,
-        },
-        openGraph: {
-            title: "GDPR for AI Agents. Secured at the SDK.",
-            description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
-            url: `${baseUrl}/${lang}/gdpr`,
-            siteName: "SupraWall",
-            type: "website",
-        },
-    };
+        internalPath: "gdpr"
+    });
 }
 
 import { getDictionary } from "../../../i18n/getDictionary";

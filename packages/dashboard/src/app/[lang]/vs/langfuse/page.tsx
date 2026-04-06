@@ -5,14 +5,17 @@ import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import LangfuseClient from "./LangfuseClient";
 
-export const metadata: Metadata = {
-    title: "SupraWall vs Langfuse | AI Observability vs Security Comparison",
-    description: "Technical comparison between SupraWall and Langfuse. Learn why tracing alone isn't enough for agent security and how runtime enforcement prevents tool misuse.",
-    keywords: ["suprawall vs langfuse", "ai observability vs security", "langfuse alternative security", "agent tracing guardrails"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/vs/langfuse',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        title: "SupraWall vs Langfuse | AI Observability vs Security Comparison",
+        description: "Technical comparison between SupraWall and Langfuse. Learn why tracing alone isn't enough for agent security and how runtime enforcement prevents tool misuse.",
+        keywords: ["suprawall vs langfuse", "ai observability vs security", "langfuse alternative security", "agent tracing guardrails"],
+        internalPath: "vs/langfuse"
+    });
+}
 
 export default function vsLangfuse() {
     const comparisonData = [

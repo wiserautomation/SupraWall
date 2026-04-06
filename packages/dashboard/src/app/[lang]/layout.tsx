@@ -43,7 +43,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     description: "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
     keywords: ["AI agent security", "runtime guardrails", "prompt injection prevention", "secure langchain", "ai agent firewall"],
     alternates: {
-      canonical: `${baseUrl}/${lang}`,
       languages,
     },
     robots: {
@@ -57,7 +56,6 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     openGraph: {
       type: "website",
       locale: lang === 'en' ? 'en_US' : lang,
-      url: `${baseUrl}/${lang}`,
       siteName: "SupraWall",
       images: ["/og-image.png"],
     },

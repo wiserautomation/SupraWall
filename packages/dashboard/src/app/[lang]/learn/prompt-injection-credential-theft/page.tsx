@@ -14,31 +14,23 @@ import {
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Prompt Injection & Credential Theft in AI Agents | SupraWall",
-  description:
-    "Indirect prompt injection can trick AI agents into exfiltrating your API keys, passwords, and tokens. Here's how the attack works and how to stop it.",
-  keywords: [
-    "prompt injection credential theft",
-    "indirect prompt injection AI agent",
-    "AI agent credential exfiltration",
-    "LLM prompt injection attack",
-    "agent security injection",
-  ],
-  alternates: {
-    canonical:
-      "https://www.supra-wall.com/learn/prompt-injection-credential-theft",
-  },
-  openGraph: {
-    title:
-      "Prompt Injection and Credential Theft: The AI Agent Attack Nobody Talks About",
-    description:
-      "Indirect prompt injection can trick AI agents into exfiltrating your API keys, passwords, and tokens. Here's how the attack works and how to stop it.",
-    url: "https://www.supra-wall.com/learn/prompt-injection-credential-theft",
-    siteName: "SupraWall",
-    type: "article",
-  },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  return generateLocalizedMetadata({
+    params,
+    title: "Prompt Injection & Credential Theft in AI Agents | SupraWall",
+    description: "Indirect prompt injection can trick AI agents into exfiltrating your API keys, passwords, and tokens. Here's how the attack works and how to stop it.",
+    keywords: [
+      "prompt injection credential theft",
+      "indirect prompt injection AI agent",
+      "AI agent credential exfiltration",
+      "LLM prompt injection attack",
+      "agent security injection",
+    ],
+    internalPath: "learn/prompt-injection-credential-theft"
+  });
+}
 
 export default function PromptInjectionCredentialTheftPage() {
   const jsonLd = {

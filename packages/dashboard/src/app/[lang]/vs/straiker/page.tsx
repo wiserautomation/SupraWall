@@ -8,20 +8,22 @@ import Link from "next/link";
 import { ArrowRight, BarChart3 } from "lucide-react";
 import { Check, X } from "lucide-react";
 
-export const metadata: Metadata = {
-    title: "SupraWall vs Straiker | Developer-First Agent Security",
-    description:
-        "SupraWall vs Straiker: self-serve one-line integration vs enterprise sales-led. Compare runtime security features, developer experience, vault support, and EU AI Act compliance.",
-    keywords: [
-        "suprawall vs straiker",
-        "straiker alternative",
-        "agent runtime security comparison",
-        "straiker guardrails comparison",
-    ],
-    alternates: {
-        canonical: "https://www.supra-wall.com/vs/straiker",
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        title: "SupraWall vs Straiker | Developer-First Agent Security",
+        description: "SupraWall vs Straiker: self-serve one-line integration vs enterprise sales-led. Compare runtime security features, developer experience, vault support, and EU AI Act compliance.",
+        keywords: [
+            "suprawall vs straiker",
+            "straiker alternative",
+            "agent runtime security comparison",
+            "straiker guardrails comparison",
+        ],
+        internalPath: "vs/straiker"
+    });
+}
 
 export default function vsStraikerPage() {
     const faqSchema = {

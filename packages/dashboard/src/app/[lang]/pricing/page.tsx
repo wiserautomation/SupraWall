@@ -6,30 +6,15 @@ import { Navbar } from "@/components/Navbar";
 import { i18n, Locale } from "@/i18n/config";
 import PricingClient from "./PricingClient";
 
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = "https://www.supra-wall.com";
-    const isDefault = lang === i18n.defaultLocale;
-
-    // Build alternates for hreflang
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        languages[l] = `${baseUrl}/${l}/pricing`;
-    });
-    languages["x-default"] = `${baseUrl}/en/pricing`;
-
-    return {
+    return generateLocalizedMetadata({
+        params,
         title: "Transparent Enterprise Pricing | SupraWall Security",
         description: "Zero-trust security and compliance for AI agentic applications, priced for the scale of autonomous swarms.",
-        alternates: {
-            canonical: `${baseUrl}/${lang}/pricing`,
-            languages,
-        },
-        robots: {
-            index: true,
-            follow: true,
-        },
-    };
+        internalPath: "pricing"
+    });
 }
 
 import { getDictionary } from "../../../i18n/getDictionary";
