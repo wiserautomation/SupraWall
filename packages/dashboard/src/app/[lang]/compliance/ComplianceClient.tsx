@@ -3,170 +3,173 @@
 
 "use client";
 
-import { Navbar } from "@/components/Navbar";
 import { 
     Shield, CheckCircle2, ArrowRight, FileText, Scale, 
-    Lock, Activity, Globe, Zap, ListCheck 
+    Lock, Activity, Globe, Zap, ListCheck, AlertTriangle,
+    ShieldCheck, ClipboardCheck, Clock
 } from "lucide-react";
 import Link from "next/link";
+import { TagBadge } from "@/app/HomeClient";
+import { complianceMatrix, Regulation } from "@/data/compliance-matrix";
 
-export default function ComplianceClient({ dictionary }: { dictionary: any }) {
+export default function ComplianceClient({ dictionary, lang }: { dictionary: any, lang: string }) {
     const t = dictionary.compliance;
     const common = dictionary.common;
 
-    const articles = [
-        {
-            article: "Article 12",
-            name: t.articles.art12.name,
-            desc: t.articles.art12.desc,
-            feature: t.articles.art12.feature,
-            href: "/eu-ai-act/article-12"
-        },
-        {
-            article: "Article 14",
-            name: t.articles.art14.name,
-            desc: t.articles.art14.desc,
-            feature: t.articles.art14.feature,
-            href: "/eu-ai-act/article-14"
-        },
-        {
-            article: "Article 10",
-            name: t.articles.art10.name,
-            desc: t.articles.art10.desc,
-            feature: t.articles.art10.feature,
-            href: "#"
-        },
-        {
-            article: "Article 15",
-            name: t.articles.art15.name,
-            desc: t.articles.art15.desc,
-            feature: t.articles.art15.feature,
-            href: "#"
-        }
-    ];
-
-    const roadmapRows = [
-        { req: t.roadmap.table.rows.transparency.req, control: t.roadmap.table.rows.transparency.control, status: "Active" },
-        { req: t.roadmap.table.rows.techDoc.req, control: t.roadmap.table.rows.techDoc.control, status: "Active" },
-        { req: t.roadmap.table.rows.riskMgmt.req, control: t.roadmap.table.rows.riskMgmt.control, status: "Active" },
-        { req: t.roadmap.table.rows.conformity.req, control: t.roadmap.table.rows.conformity.control, status: "Active" }
-    ];
+    const regulationIcons: Record<Regulation, any> = {
+        'EU_AI_ACT': <Shield className="w-6 h-6 text-blue-400" />,
+        'GDPR': <Lock className="w-6 h-6 text-purple-400" />,
+        'NIS2': <ShieldCheck className="w-6 h-6 text-emerald-400" />,
+        'DORA': <Activity className="w-6 h-6 text-amber-400" />,
+        'ISO_42001': <ClipboardCheck className="w-6 h-6 text-blue-500" />,
+        'CRA': <Zap className="w-6 h-6 text-rose-400" />
+    };
 
     return (
-        <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
-            <main className="pt-48 pb-32 px-6">
-                <div className="max-w-7xl mx-auto space-y-32">
-                    
-                    {/* Hero Section */}
-                    <section className="text-center space-y-12 max-w-4xl mx-auto">
-                        <div className="inline-flex items-center px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-sm font-black text-emerald-400 uppercase tracking-widest animate-fade-in">
-                            <Globe className="w-4 h-4 mr-2" /> {t.hero.badge}
-                        </div>
-                        <h2 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic leading-[0.9]">
-                            {t.hero.titlePrefix} <br />
-                            <span className="text-emerald-500 text-glow">{t.hero.titleEmphasis}</span> <br />
-                            {t.hero.titleSuffix}
-                        </h2>
-                        <p className="text-xl md:text-2xl text-neutral-400 font-medium italic leading-relaxed">
-                            {t.hero.description}
-                        </p>
-                    </section>
+        <main className="overflow-hidden bg-[#030303] text-white">
+            {/* 🚀 HERO */}
+            <section className="relative pt-48 pb-32 px-6">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1000px] opacity-10 pointer-events-none">
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[800px] bg-emerald-500/20 blur-[180px] rounded-full" />
+                </div>
 
-                    {/* Mapping Grid */}
-                    <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {articles.map((item, i) => (
-                            <div key={i} className="group p-8 rounded-3xl bg-neutral-900/40 border border-white/5 hover:border-emerald-500/30 transition-all">
-                                <div className="flex justify-between items-start mb-8">
-                                    <div className="space-y-4">
-                                        <div className="text-emerald-500 font-black text-4xl italic tracking-tighter uppercase">{item.article}</div>
-                                        <h3 className="text-2xl font-bold">{item.name}</h3>
+                <div className="max-w-7xl mx-auto flex flex-col items-center text-center space-y-12 relative z-10">
+                    <TagBadge>{t.hero.badge}</TagBadge>
+                    <div className="space-y-6">
+                        <h1 className="text-6xl md:text-[100px] font-black tracking-tighter text-white leading-[0.85] uppercase italic text-glow">
+                             {t.hero.title} <br />
+                             <span className="text-emerald-500 font-bold italic underline decoration-white/10 italic">{t.hero.emphasis}</span>
+                        </h1>
+                        <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
+                             {t.hero.description}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* 📑 THE FULL REGULATORY STACK */}
+            <section className="py-24 px-6 border-y border-white/5 bg-black/50 backdrop-blur-sm">
+                <div className="max-w-7xl mx-auto space-y-16">
+                    <div className="text-center space-y-4">
+                        <h2 className="text-4xl md:text-5xl font-black italic uppercase tracking-tighter uppercase italic">{t.regulations.title}</h2>
+                        <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter">{t.regulations.subtitle}</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Object.entries(t.regulations.rows).map(([key, reg]: [string, any]) => (
+                            <div key={key} className="p-8 rounded-[2rem] bg-neutral-900/40 border border-white/5 hover:border-emerald-500/30 transition-all group">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div className="p-4 bg-white/5 rounded-2xl group-hover:scale-110 transition-transform">
+                                        {regulationIcons[key.toUpperCase().replace('EUAI', 'EU_AI_') as Regulation] || <Shield />}
                                     </div>
-                                    <div className="p-3 rounded-2xl bg-white/5 group-hover:bg-emerald-500/10 transition-colors">
-                                        <Scale className="w-6 h-6 text-neutral-400 group-hover:text-emerald-500" />
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[10px] font-black uppercase text-rose-500 tracking-widest">{reg.fine}</span>
+                                        <span className="text-[10px] font-black uppercase text-neutral-500 tracking-widest flex items-center gap-1">
+                                            <Clock className="w-3 h-3" /> {reg.deadline}
+                                        </span>
                                     </div>
                                 </div>
-                                <p className="text-neutral-400 mb-8 leading-relaxed">
-                                    {item.desc}
-                                </p>
-                                <div className="pt-8 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                                        <span className="text-sm font-bold text-white uppercase tracking-tight">{item.feature}</span>
-                                    </div>
-                                    {item.href !== "#" && (
-                                        <Link href={item.href} className="text-emerald-500 font-bold uppercase text-xs flex items-center gap-2 group-hover:translate-x-1 transition-transform">
-                                            Deep Dive <ArrowRight className="w-4 h-4" />
-                                        </Link>
-                                    )}
-                                </div>
+                                <h3 className="text-2xl font-black italic uppercase tracking-tighter mb-4">{reg.name}</h3>
+                                <p className="text-neutral-400 text-sm font-bold uppercase tracking-tight mb-6">{reg.feature}</p>
+                                <Link href={`/${lang}/learn/${key.replace(/([A-Z])/g, '-$1').toLowerCase()}`} className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-500 hover:text-white transition-colors">
+                                    View Pillar <ArrowRight className="w-4 h-4" />
+                                </Link>
                             </div>
                         ))}
-                    </section>
+                    </div>
+                </div>
+            </section>
 
-                    {/* Enterprise Comparison/Feature Table */}
-                    <section className="space-y-12">
-                        <div className="text-center space-y-4">
-                            <h2 className="text-4xl font-black uppercase italic tracking-tight">{t.roadmap.title}</h2>
-                            <p className="text-neutral-500">{t.roadmap.subtitle}</p>
+            {/* 🛡️ THE MASTER MATRIX */}
+            <section className="py-32 px-6">
+                <div className="max-w-7xl mx-auto space-y-16">
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+                        <div className="space-y-4 max-w-2xl">
+                            <h2 className="text-5xl font-black italic uppercase tracking-tighter uppercase italic leading-none">{t.matrix.title}</h2>
+                            <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-snug">
+                                {t.matrix.subtitle}
+                            </p>
                         </div>
+                        <div className="flex gap-4">
+                             <div className="flex items-center gap-2 px-4 py-2 bg-rose-500/10 border border-rose-500/20 rounded-xl text-[10px] font-black uppercase text-rose-500 tracking-widest">
+                                <AlertTriangle className="w-3 h-3" /> Critical Liability
+                             </div>
+                        </div>
+                    </div>
 
-                        <div className="overflow-hidden rounded-3xl border border-white/10 bg-neutral-900/20 backdrop-blur-xl">
+                    <div className="overflow-hidden rounded-[2.5rem] border border-white/10 bg-neutral-900/20 backdrop-blur-2xl shadow-2xl">
+                        <div className="overflow-x-auto">
                             <table className="w-full text-left border-collapse">
-                                <thead className="bg-white/5 border-b border-white/10">
-                                    <tr>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.req}</th>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.control}</th>
-                                        <th className="p-6 text-sm font-black uppercase tracking-widest text-neutral-400">{t.roadmap.table.head.status}</th>
+                                <thead>
+                                    <tr className="bg-white/5 border-b border-white/10">
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-400">{t.matrix.headers.article}</th>
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-400">{t.matrix.headers.requirement}</th>
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-400">{t.matrix.headers.feature}</th>
+                                        <th className="p-8 text-[10px] font-black uppercase tracking-widest text-neutral-400">{t.matrix.headers.evidence}</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
-                                    {roadmapRows.map((row, i) => (
-                                        <tr key={i} className="hover:bg-white/5 transition-colors">
-                                            <td className="p-6 font-bold">{row.req}</td>
-                                            <td className="p-6 text-neutral-400">{row.control}</td>
-                                            <td className="p-6">
-                                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-500 uppercase">
-                                                    {row.status}
-                                                </span>
+                                    {complianceMatrix.map((item, i) => (
+                                        <tr key={i} className="hover:bg-white/5 transition-colors group">
+                                            <td className="p-8">
+                                                <div className="space-y-1">
+                                                    <div className="text-emerald-500 font-black text-xl italic tracking-tighter uppercase">{item.article}</div>
+                                                    <div className="text-[9px] font-black uppercase text-neutral-600 tracking-widest">{item.regulation.replace('_', ' ')}</div>
+                                                </div>
+                                            </td>
+                                            <td className="p-8">
+                                                <p className="text-white text-sm font-bold leading-relaxed max-w-xs">{item.requirement}</p>
+                                            </td>
+                                            <td className="p-8">
+                                                <div className="flex flex-wrap gap-2">
+                                                    {item.suprawallFeature.map(f => (
+                                                        <span key={f} className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[9px] font-black uppercase tracking-widest text-neutral-400 group-hover:border-emerald-500/30 group-hover:text-emerald-400 transition-all">
+                                                            {f.replace('-', ' ')}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </td>
+                                            <td className="p-8">
+                                                <div className="flex items-center gap-3 text-neutral-500 group-hover:text-white transition-colors">
+                                                    <FileText className="w-4 h-4" />
+                                                    <span className="text-[10px] font-black uppercase tracking-widest">{item.evidenceGenerated}</span>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
                         </div>
-                    </section>
-
-                    {/* Technical Integration CTA */}
-                    <section className="relative p-1 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600 rounded-[3rem] overflow-hidden">
-                        <div className="bg-black rounded-[2.9rem] p-12 md:p-20 flex flex-col items-center text-center space-y-10 relative overflow-hidden">
-                            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none" />
-                            
-                            <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic leading-none max-w-4xl relative z-10">
-                                {t.cta.titlePrefix} <br />
-                                <span className="text-emerald-500">{t.cta.titleEmphasis}</span> {t.cta.titleSuffix}
-                            </h2>
-                            <p className="text-xl text-neutral-400 max-w-2xl relative z-10">
-                                {t.cta.description}
-                            </p>
-                            
-                            <div className="flex flex-col sm:flex-row gap-6 relative z-10">
-                                <Link 
-                                    href="/beta" 
-                                    className="px-12 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105"
-                                >
-                                    {t.cta.bookAudit}
-                                </Link>
-                                <Link 
-                                    href="/docs" 
-                                    className="px-12 py-5 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all"
-                                >
-                                    {common.viewDocs}
-                                </Link>
-                            </div>
-                        </div>
-                    </section>
+                    </div>
                 </div>
-            </main>
-        </div>
+            </section>
+
+            {/* 🎁 EVIDENCE KIT CTA */}
+            <section className="py-32 px-6">
+                <div className="max-w-5xl mx-auto rounded-[4rem] p-1 bg-gradient-to-br from-emerald-500/20 via-white/5 to-purple-500/20">
+                    <div className="bg-[#050505] rounded-[3.9rem] p-16 md:p-24 space-y-12 text-center relative overflow-hidden">
+                         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-emerald-500/5 blur-[100px] rounded-full -mr-48 -mt-48" />
+                         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-500/5 blur-[100px] rounded-full -ml-48 -mb-48" />
+                         
+                         <TagBadge>Regulator Ready</TagBadge>
+                         <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter leading-none text-glow">
+                             {t.cta.title}
+                         </h2>
+                         <p className="text-xl text-neutral-400 max-w-2xl mx-auto italic font-medium">
+                             {t.cta.description}
+                         </p>
+                         
+                         <div className="flex flex-col sm:flex-row justify-center gap-6 pt-6">
+                             <Link href="#" className="px-12 py-6 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-[0_0_50px_rgba(255,255,255,0.1)]">
+                                 {t.cta.cta}
+                             </Link>
+                             <Link href="#" className="px-12 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-white/5 transition-all">
+                                 {t.cta.checker}
+                             </Link>
+                         </div>
+                    </div>
+                </div>
+            </section>
+        </main>
     );
 }
