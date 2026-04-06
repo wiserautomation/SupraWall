@@ -177,6 +177,29 @@
     }
   },
 
+  "euAiActPillar": {
+    "hero": {
+      "badge": "August 2026 Compliance roadmap",
+      "title": "The EU AI Act &",
+      "emphasis": "AI Agents.",
+      "description": "Enforcement begins August 2, 2026. Autonomous AI agents are explicitly classified as high-risk AI systems. Fines reach €30 million. Here is your complete compliance roadmap."
+    },
+    "countdown": {
+      "days": "Days",
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "seconds": "Seconds",
+      "label": "Until August 2, 2026 Enforcement"
+    },
+    "articles": {
+      "title": "The 4 Critical Articles",
+      "subtitle": "Articles 9, 12, and 14 are the technical pillars for autonomous AI agents.",
+      "a9": { "title": "Risk Management", "desc": "Article 9 requires an ongoing risk management system for the entire lifecycle." },
+      "a12": { "title": "Record-keeping", "desc": "Article 12 mandates automatic logging of events for high-risk AI systems." },
+      "a14": { "title": "Human Oversight", "desc": "Article 14 requires that high-risk AI allow for effective oversight." }
+    }
+  },
+
   "features": {
     "hero": {
       "badge": "6 Core Pillars",

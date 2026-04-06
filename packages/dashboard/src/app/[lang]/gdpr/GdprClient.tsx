@@ -6,8 +6,9 @@
 import { motion } from "framer-motion";
 import { 
     EyeOff, ShieldCheck, ArrowRight, Lock, 
-    CheckCircle2, Globe, FileText, Fingerprint, 
-    ShieldAlert, Search, Trash2, Cpu
+    CheckCircle2, FileText, Fingerprint, 
+    ShieldAlert, Search, ClipboardList, Zap,
+    Scale, UserCheck, Database
 } from "lucide-react";
 import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
@@ -18,7 +19,7 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
     const t = dictionary.gdpr;
 
     return (
-        <main className="overflow-hidden bg-[#030303]">
+        <main className="overflow-hidden bg-[#030303] text-white">
             {/* 🚀 HERO */}
             <section className="relative pt-48 pb-32 px-6">
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1000px] opacity-10 pointer-events-none">
@@ -44,7 +45,7 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
                 <div className="max-w-7xl mx-auto space-y-16">
                     <div className="text-center space-y-4">
                         <h2 className="text-4xl font-black italic uppercase tracking-tighter">
-                            {t.comparison.title} & <Link href={`/${lang}/learn/what-is-agent-runtime-security`} className="text-purple-500 hover:text-white transition-colors underline decoration-white/10">agent runtime security</Link>
+                            {t.comparison.title}
                         </h2>
 
                         <div className="flex justify-center gap-2 p-1.5 bg-neutral-900 border border-white/10 rounded-2xl w-fit mx-auto text-glow">
@@ -111,6 +112,109 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
                 </div>
             </section>
 
+             {/* 📑 DEEP DIVE SECTIONS: Articles 5, 22, 30 */}
+             <section className="py-32 px-6">
+                <div className="max-w-7xl mx-auto space-y-32">
+                    {/* Article 5: Minimization */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                        <div className="space-y-8">
+                            <TagBadge>GDPR Art. 5(1)(c)</TagBadge>
+                            <h2 className="text-5xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">{t.deep.minimization.title}</h2>
+                            <p className="text-xl text-neutral-400 font-medium italic">{t.deep.minimization.description}</p>
+                            <ul className="space-y-6">
+                                {t.deep.minimization.list.map((item: string, i: number) => (
+                                    <li key={i} className="flex gap-4 items-start">
+                                        <div className="mt-1 p-1 bg-purple-500/20 rounded-full"><CheckCircle2 className="w-4 h-4 text-purple-500" /></div>
+                                        <span className="text-neutral-300 font-bold uppercase text-xs tracking-tight">{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="relative group">
+                             <div className="absolute -inset-1 bg-gradient-to-r from-purple-500/50 to-emerald-500/50 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                             <div className="relative aspect-square rounded-[3rem] bg-neutral-900 border border-white/10 overflow-hidden flex flex-col p-12 space-y-8">
+                                <Database className="w-16 h-16 text-purple-500" />
+                                <div className="space-y-4">
+                                    <div className="h-4 w-3/4 bg-white/5 rounded-full" />
+                                    <div className="h-4 w-full bg-white/5 rounded-full" />
+                                    <div className="h-4 w-5/6 bg-white/5 rounded-full" />
+                                    <div className="h-4 w-1/2 bg-purple-500/20 rounded-full animate-pulse" />
+                                </div>
+                                <div className="p-6 bg-black/40 rounded-2xl border border-white/5">
+                                    <p className="text-[10px] font-black uppercase text-neutral-500 tracking-widest mb-2">SupraWall Policy Enforcement</p>
+                                    <p className="text-xs font-mono text-emerald-500 uppercase italic tracking-tighter">PII_REDACTION: SUCCESS</p>
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+
+                    {/* Article 22: Automated Decision Making */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                        <div className="relative group order-last lg:order-first">
+                             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-500/50 to-blue-500/50 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                             <div className="relative aspect-square rounded-[3rem] bg-neutral-900 border border-white/10 overflow-hidden flex flex-col p-12 space-y-8">
+                                <UserCheck className="w-16 h-16 text-emerald-500" />
+                                <div className="p-6 bg-emerald-500/10 rounded-2xl border border-emerald-500/20">
+                                    <p className="text-[10px] font-black uppercase text-emerald-500 tracking-widest mb-4">Human-in-the-loop required</p>
+                                    <div className="flex justify-between items-center bg-black/40 p-4 rounded-xl">
+                                        <span className="text-xs font-bold">Approve Action?</span>
+                                        <div className="flex gap-2">
+                                            <div className="w-8 h-8 rounded-lg bg-emerald-600" />
+                                            <div className="w-8 h-8 rounded-lg bg-rose-600" />
+                                        </div>
+                                    </div>
+                                </div>
+                             </div>
+                        </div>
+                        <div className="space-y-8">
+                            <TagBadge>GDPR Art. 22</TagBadge>
+                            <h2 className="text-5xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">{t.deep.decision.title}</h2>
+                            <p className="text-xl text-neutral-400 font-medium italic">{t.deep.decision.description}</p>
+                            <ul className="space-y-6">
+                                {t.deep.decision.list.map((item: string, i: number) => (
+                                    <li key={i} className="flex gap-4 items-start">
+                                        <div className="mt-1 p-1 bg-emerald-500/20 rounded-full"><CheckCircle2 className="w-4 h-4 text-emerald-500" /></div>
+                                        <span className="text-neutral-300 font-bold uppercase text-xs tracking-tight">{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+
+                    {/* Article 30: Processing Logs */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                        <div className="space-y-8">
+                            <TagBadge>GDPR Art. 30</TagBadge>
+                            <h2 className="text-5xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">{t.deep.records.title}</h2>
+                            <p className="text-xl text-neutral-400 font-medium italic">{t.deep.records.description}</p>
+                            <ul className="space-y-6">
+                                {t.deep.records.list.map((item: string, i: number) => (
+                                    <li key={i} className="flex gap-4 items-start">
+                                        <div className="mt-1 p-1 bg-blue-500/20 rounded-full"><CheckCircle2 className="w-4 h-4 text-blue-500" /></div>
+                                        <span className="text-neutral-300 font-bold uppercase text-xs tracking-tight">{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        <div className="relative group">
+                             <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/50 to-purple-500/50 rounded-[3rem] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200" />
+                             <div className="relative aspect-square rounded-[3rem] bg-neutral-900 border border-white/10 overflow-hidden flex flex-col p-12 space-y-6">
+                                <ClipboardList className="w-16 h-16 text-blue-500" />
+                                <div className="space-y-3 font-mono text-[10px] text-neutral-500 overflow-hidden">
+                                     <p className="text-blue-400">{"{\"timestamp\": \"2026-04-06T12:00:00Z\","}</p>
+                                     <p>{" \"action\": \"api_call\","}</p>
+                                     <p>{" \"purpose\": \"customer_support\","}</p>
+                                     <p className="text-emerald-400 text-[8px]">{" \"compliance\": \"VALIDATED\"}"}</p>
+                                </div>
+                                <div className="mt-auto px-6 py-4 bg-blue-500 text-white font-black uppercase tracking-widest text-xs rounded-2xl text-center italic">
+                                    Export Audit Kit
+                                </div>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+             </section>
+
              {/* 🎯 FINAL CTA */}
              <section className="py-48 px-6 bg-black relative text-center">
                 <div className="absolute inset-0 bg-purple-500/5 blur-[150px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] pointer-events-none" />
@@ -124,11 +228,11 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
                         {t.final.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href="/beta" className="px-16 py-8 bg-purple-600 text-white font-black text-3xl rounded-3xl hover:bg-purple-500 transition-all shadow-[0_0_100px_rgba(168,85,247,0.3)] tracking-tighter flex items-center gap-4 group">
+                        <Link href={`/${lang}/beta`} className="px-16 py-8 bg-purple-600 text-white font-black text-3xl rounded-3xl hover:bg-purple-500 transition-all shadow-[0_0_100px_rgba(168,85,247,0.3)] tracking-tighter flex items-center gap-4 group">
                              {t.final.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>
-                    <Link href="/learn/eu-ai-act-compliance-ai-agents" className="block text-xs font-black uppercase tracking-widest text-neutral-500 underline underline-offset-8 mt-10">{t.final.guide} &rarr;</Link>
+                    <Link href={`/${lang}/learn/eu-ai-act-compliance-ai-agents`} className="block text-xs font-black uppercase tracking-widest text-neutral-500 underline underline-offset-8 mt-10">{t.final.guide} &rarr;</Link>
                 </div>
             </section>
         </main>

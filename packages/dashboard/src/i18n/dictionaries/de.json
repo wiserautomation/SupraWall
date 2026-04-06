@@ -102,11 +102,34 @@
       "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
     },
     "final": {
-      "badge": "Ready for Audit",
-      "titlePrefix": "Compliance Won.",
-      "titleEmphasis": "Evidence Shipped.",
-      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "badge": "Bereit für das Audit",
+      "titlePrefix": "Compliance gewonnen.",
+      "titleEmphasis": "Nachweise geliefert.",
+      "description": "Bauen Sie kein Compliance-Team auf. Aktivieren Sie den SupraWall Audit Trail und konzentrieren Sie sich wieder auf Ihr Produkt.",
       "cta": "Implement AI Act Shield"
+    }
+  },
+
+  "euAiActPillar": {
+    "hero": {
+      "badge": "EU-KI-Gesetz Roadmap August 2026",
+      "title": "Das EU-KI-Gesetz &",
+      "emphasis": "KI-Agenten.",
+      "description": "Die Durchsetzung beginnt am 2. August 2026. Autonome KI-Agenten werden explizit als Hochrisiko-KI-Systeme eingestuft. Bußgelder erreichen 30 Millionen Euro. Hier ist Ihre vollständige Compliance-Roadmap."
+    },
+    "countdown": {
+      "days": "Tage",
+      "hours": "Stunden",
+      "minutes": "Minuten",
+      "seconds": "Sekunden",
+      "label": "Bis zur Durchsetzung am 2. August 2026"
+    },
+    "articles": {
+      "title": "Die 4 kritischen Artikel",
+      "subtitle": "Die Artikel 9, 12 und 14 sind die technischen Säulen für autonome KI-Agenten.",
+      "a9": { "title": "Risikomanagement", "desc": "Artikel 9 erfordert ein fortlaufendes Risikomanagementsystem für den gesamten Lebenszyklus." },
+      "a12": { "title": "Protokollierung", "desc": "Artikel 12 schreibt die automatische Aufzeichnung von Ereignissen für Hochrisiko-KI-Systeme vor." },
+      "a14": { "title": "Menschliche Aufsicht", "desc": "Artikel 14 verlangt, dass Hochrisiko-KI eine wirksame Aufsicht ermöglicht." }
     }
   },
   "compliance": {

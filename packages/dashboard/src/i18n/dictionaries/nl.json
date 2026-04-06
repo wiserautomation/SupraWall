@@ -102,11 +102,34 @@
       "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
     },
     "final": {
-      "badge": "Ready for Audit",
-      "titlePrefix": "Compliance Won.",
-      "titleEmphasis": "Evidence Shipped.",
-      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "badge": "Klaar voor Audit",
+      "titlePrefix": "Compliance Behaald.",
+      "titleEmphasis": "Bewijslast Geleverd.",
+      "description": "Bouw geen compliance-team. Schakel de SupraWall Audit Trail in en focus weer op je product.",
       "cta": "Implement AI Act Shield"
+    }
+  },
+
+  "euAiActPillar": {
+    "hero": {
+      "badge": "EU AI Act Compliance-roadmap augustus 2026",
+      "title": "De EU AI Act &",
+      "emphasis": "AI-agenten.",
+      "description": "De handhaving begint op 2 augustus 2026. Autonome AI-agenten worden expliciet geclassificeerd als systemen met een hoog risico. Boetes lopen op tot €30 miljoen. Hier is je volledige compliance-roadmap."
+    },
+    "countdown": {
+      "days": "Dagen",
+      "hours": "Uren",
+      "minutes": "Minuten",
+      "seconds": "Seconden",
+      "label": "Tot handhaving op 2 augustus 2026"
+    },
+    "articles": {
+      "title": "De 4 kritieke artikelen",
+      "subtitle": "Artikelen 9, 12 en 14 zijn de technische pijlers voor autonome AI-agenten.",
+      "a9": { "title": "Risicomanagement", "desc": "Artikel 9 vereist een doorlopend risicomanagementsysteem gedurende de gehele levenscyclus." },
+      "a12": { "title": "Logboekregistratie", "desc": "Artikel 12 verplicht de automatische registratie van gebeurtenissen voor AI-systemen met een hoog risico." },
+      "a14": { "title": "Menselijk toezicht", "desc": "Artikel 14 vereist dat hoog-risico AI effectief toezicht mogelijk maakt." }
     }
   },
   "compliance": {

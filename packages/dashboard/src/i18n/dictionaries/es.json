@@ -102,11 +102,34 @@
       "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
     },
     "final": {
-      "badge": "Ready for Audit",
-      "titlePrefix": "Compliance Won.",
-      "titleEmphasis": "Evidence Shipped.",
-      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "badge": "Listo para la Auditoría",
+      "titlePrefix": "Compliance ganada.",
+      "titleEmphasis": "Evidencia enviada.",
+      "description": "No construyas un equipo de cumplimiento. Activa el Audit Trail de SupraWall y vuelve a construir tu producto.",
       "cta": "Implement AI Act Shield"
+    }
+  },
+
+  "euAiActPillar": {
+    "hero": {
+      "badge": "Hoja de ruta de cumplimiento de la Ley de IA de la UE para agosto de 2026",
+      "title": "La Ley de IA de la UE y",
+      "emphasis": "Agentes de IA.",
+      "description": "La aplicación de la ley comienza el 2 de agosto de 2026. Los agentes de IA autónomos se clasifican explícitamente como sistemas de IA de alto riesgo. Las multas alcanzan los 30 millones de euros. Aquí tienes tu hoja de ruta completa de cumplimiento."
+    },
+    "countdown": {
+      "days": "Días",
+      "hours": "Horas",
+      "minutes": "Minutos",
+      "seconds": "Segundos",
+      "label": "Hasta la aplicación del 2 de agosto de 2026"
+    },
+    "articles": {
+      "title": "Los 4 Artículos Críticos",
+      "subtitle": "Los artículos 9, 12 y 14 son los pilares técnicos para los agentes de IA autónomos.",
+      "a9": { "title": "Gestión de Riesgos", "desc": "El artículo 9 exige un sistema de gestión de riesgos continuo durante todo el ciclo de vida." },
+      "a12": { "title": "Mantenimiento de Registros", "desc": "El artículo 12 exige el registro automático de eventos para los sistemas de IA de alto riesgo." },
+      "a14": { "title": "Vigilancia Humana", "desc": "El artículo 14 exige que la IA de alto riesgo permita una vigilancia eficaz." }
     }
   },
   "compliance": {

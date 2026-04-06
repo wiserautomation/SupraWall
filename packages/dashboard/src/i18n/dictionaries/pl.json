@@ -102,11 +102,34 @@
       "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
     },
     "final": {
-      "badge": "Ready for Audit",
-      "titlePrefix": "Compliance Won.",
-      "titleEmphasis": "Evidence Shipped.",
-      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "badge": "Gotowy do audytu",
+      "titlePrefix": "Zgodność osiągnięta.",
+      "titleEmphasis": "Dowody dostarczone.",
+      "description": "Nie buduj zespołu ds. zgodności. Aktywuj SupraWall Audit Trail i wróć do budowania swojego produktu.",
       "cta": "Implement AI Act Shield"
+    }
+  },
+
+  "euAiActPillar": {
+    "hero": {
+      "badge": "Mapa drogowa zgodności z Aktem o AI UE na sierpień 2026",
+      "title": "Akt o AI UE i",
+      "emphasis": "Agenci AI.",
+      "description": "Egzekwowanie przepisów rozpoczyna się 2 sierpnia 2026 r. Autonomiczni agenci AI są wyraźnie sklasyfikowani jako systemy AI wysokiego ryzyka. Kary sięgają 30 mln euro. Oto Twoja kompletna mapa drogowa zgodności."
+    },
+    "countdown": {
+      "days": "Dni",
+      "hours": "Godziny",
+      "minutes": "Minuty",
+      "seconds": "Sekundy",
+      "label": "Do rozpoczęcia egzekwowania 2 sierpnia 2026"
+    },
+    "articles": {
+      "title": "4 kluczowe artykuły",
+      "subtitle": "Artykuły 9, 12 i 14 są technicznymi filarami dla autonomicznych agentów AI.",
+      "a9": { "title": "Zarządzanie ryzykiem", "desc": "Artykuł 9 wymaga ciągłego systemu zarządzania ryzykiem przez cały cykl życia." },
+      "a12": { "title": "Prowadzenie dokumentacji", "desc": "Artykuł 12 nakazuje automatyczne rejestrowanie zdarzeń dla systemów AI wysokiego ryzyka." },
+      "a14": { "title": "Nadzór ludzki", "desc": "Artykuł 14 wymaga, aby systemy AI wysokiego ryzyka umożliwiały skuteczny nadzór." }
     }
   },
   "compliance": {

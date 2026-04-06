@@ -102,11 +102,34 @@
       "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
     },
     "final": {
-      "badge": "Ready for Audit",
-      "titlePrefix": "Compliance Won.",
-      "titleEmphasis": "Evidence Shipped.",
-      "description": "Don't build a compliance team. Enable SupraWall Audit Trail and get back to building the product.",
+      "badge": "Prêt pour l'audit",
+      "titlePrefix": "Compliance gagnée.",
+      "titleEmphasis": "Preuves livrées.",
+      "description": "Ne construisez pas une équipe de conformité. Activez l'Audit Trail de SupraWall et concentrez-vous sur votre produit.",
       "cta": "Implement AI Act Shield"
+    }
+  },
+
+  "euAiActPillar": {
+    "hero": {
+      "badge": "Feuille de route de conformité à l'IA Act de l'UE pour août 2026",
+      "title": "L'IA Act de l'UE et",
+      "emphasis": "les agents d'IA.",
+      "description": "L'application commence le 2 août 2026. Les agents d'IA autonomes sont explicitement classés comme des systèmes d'IA à haut risque. Les amendes atteignent 30 millions d'euros. Voici votre feuille de route complète vers la conformité."
+    },
+    "countdown": {
+      "days": "Jours",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes",
+      "label": "Jusqu'à l'application du 2 août 2026"
+    },
+    "articles": {
+      "title": "Les 4 articles critiques",
+      "subtitle": "Les articles 9, 12 et 14 sont les piliers techniques pour les agents d'IA autonomes.",
+      "a9": { "title": "Gestion des risques", "desc": "L'article 9 exige un système de gestion des risques continu pendant tout le cycle de vie." },
+      "a12": { "title": "Tenue de registres", "desc": "L'article 12 impose l'enregistrement automatique des événements pour les systèmes d'IA à haut risque." },
+      "a14": { "title": "Surveillance humaine", "desc": "L'article 14 exige que l'IA à haut risque permette une surveillance efficace." }
     }
   },
   "compliance": {
