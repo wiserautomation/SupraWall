@@ -1,10 +1,10 @@
-<div align="center">
+<div align="center">***
 
 <img src="assets/logo.jpg" alt="SupraWall Logo" width="120">
 
 # SupraWall
 
-**The deterministic security layer for AI agents.**
+**The deterministic security layer for AI agents. Open-source (Apache 2.0)**
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
