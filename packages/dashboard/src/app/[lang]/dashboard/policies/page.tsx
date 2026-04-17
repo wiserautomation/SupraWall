@@ -177,6 +177,23 @@ export default function PoliciesPage() {
         if (!user || !selectedAgentId) return;
         setActivatingTemplate(template.id);
         try {
+            // 1. Sync compliance config to agent record
+            const agentUpdateRes = await fetch(`/api/v1/agents/${selectedAgentId}`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    complianceConfig: {
+                        templateId: template.id,
+                        sector: template.industry,
+                        baseline: template.baseline,
+                        overrides: template.overrides,
+                        activatedAt: new Date().toISOString(),
+                    }
+                })
+            });
+            if (!agentUpdateRes.ok) throw new Error("Failed to update agent compliance config");
+
+            // 2. Create granular policy rules
             for (const rule of template.rules) {
                 const res = await fetch("/api/v1/policies", {
                     method: "POST",
@@ -274,45 +291,109 @@ export default function PoliciesPage() {
                                     btn: "bg-violet-600/80 hover:bg-violet-500 disabled:bg-violet-900/40",
                                     badge: "bg-violet-500/10 text-violet-400 border-violet-500/20",
                                 },
+                                amber: {
+                                    border: "border-amber-500/20 hover:border-amber-500/40",
+                                    tag: "text-amber-400/70 bg-amber-500/10 border-amber-500/20",
+                                    btn: "bg-amber-600/80 hover:bg-amber-500 disabled:bg-amber-900/40",
+                                    badge: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+                                },
+                                emerald: {
+                                    border: "border-emerald-500/20 hover:border-emerald-500/40",
+                                    tag: "text-emerald-400/70 bg-emerald-500/10 border-emerald-500/20",
+                                    btn: "bg-emerald-600/80 hover:bg-emerald-500 disabled:bg-emerald-900/40",
+                                    badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+                                },
+                                indigo: {
+                                    border: "border-indigo-500/20 hover:border-indigo-500/40",
+                                    tag: "text-indigo-400/70 bg-indigo-500/10 border-indigo-500/20",
+                                    btn: "bg-indigo-600/80 hover:bg-indigo-500 disabled:bg-indigo-900/40",
+                                    badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+                                },
+                                cyan: {
+                                    border: "border-cyan-500/20 hover:border-cyan-500/40",
+                                    tag: "text-cyan-400/70 bg-cyan-500/10 border-cyan-500/20",
+                                    btn: "bg-cyan-600/80 hover:bg-cyan-500 disabled:bg-cyan-900/40",
+                                    badge: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
+                                },
+                                fuchsia: {
+                                    border: "border-fuchsia-500/20 hover:border-fuchsia-500/40",
+                                    tag: "text-fuchsia-400/70 bg-fuchsia-500/10 border-fuchsia-500/20",
+                                    btn: "bg-fuchsia-600/80 hover:bg-fuchsia-500 disabled:bg-fuchsia-900/40",
+                                    badge: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20",
+                                },
                             };
                             const c = accentColors[template.accentClass] ?? accentColors.blue;
                             return (
                                 <motion.div
                                     key={template.id}
-                                    initial={{ opacity: 0, y: 6 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className={`relative flex flex-col gap-3 p-5 rounded-xl bg-black/40 border transition-colors duration-300 ${c.border}`}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    whileHover={{ y: -4, transition: { duration: 0.2 } }}
+                                    className={`relative flex flex-col gap-4 p-5 rounded-2xl bg-black/40 border backdrop-blur-md transition-all duration-300 ${c.border} group`}
                                 >
-                                    <div>
-                                        <span className={`inline-block text-[9px] font-black uppercase tracking-[0.18em] px-2 py-0.5 rounded border mb-2 ${c.tag}`}>
-                                            {template.industry}
-                                        </span>
-                                        <h3 className="text-sm font-black text-white uppercase italic tracking-tight">{template.name}</h3>
-                                        <p className="text-xs text-neutral-400 mt-1 leading-relaxed">{template.tagline}</p>
+                                    <div className="absolute -top-px left-8 right-8 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                                    
+                                    <div className="space-y-3">
+                                        <div className="flex items-start justify-between">
+                                            <span className={`inline-block text-[8px] font-black uppercase tracking-[0.2em] px-2 py-0.5 rounded border ${c.tag}`}>
+                                                {template.industry}
+                                            </span>
+                                            <div className="flex items-center gap-1 opacity-40 group-hover:opacity-100 transition-opacity">
+                                                <Shield className="w-3 h-3 text-white" />
+                                                <span className="text-[8px] font-bold text-white uppercase italic">Tier 1</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <h3 className="text-sm font-black text-white uppercase italic tracking-tighter">{template.name}</h3>
+                                            <p className="text-[10px] text-neutral-400 mt-1 leading-relaxed font-medium line-clamp-2">{template.tagline}</p>
+                                        </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-1.5">
-                                        {template.articles.map(a => (
-                                            <span key={a} className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${c.badge}`}>{a}</span>
-                                        ))}
-                                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full border bg-white/[0.04] text-neutral-400 border-white/10">
-                                            {template.rules.length} rules
-                                        </span>
+
+                                    <div className="space-y-3 mt-auto">
+                                        <div className="flex flex-wrap gap-1.5 pt-2">
+                                            {template.articles.map(a => (
+                                                <span key={a} className={`text-[8px] font-bold px-1.5 py-0.5 rounded border ${c.badge}`}>{a}</span>
+                                            ))}
+                                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded border bg-white/[0.04] text-neutral-500 border-white/10 whitespace-nowrap">
+                                                {template.rules.length} Runtime Rules
+                                            </span>
+                                            <span className="text-[8px] font-bold px-1.5 py-0.5 rounded border bg-emerald-500/10 text-emerald-400 border-emerald-500/20 whitespace-nowrap">
+                                                13 Baseline Controls
+                                            </span>
+                                        </div>
+
+                                        <Button
+                                            size="sm"
+                                            disabled={!selectedAgentId || isActivating || isActivated}
+                                            onClick={() => handleActivateTemplate(template)}
+                                            className={`w-full text-white text-[10px] font-black tracking-widest uppercase h-9 transition-all active:scale-[0.98] disabled:opacity-30 disabled:grayscale ${c.btn} shadow-lg shadow-black/20`}
+                                        >
+                                            {isActivating ? (
+                                                <><Loader2 className="mr-2 h-3 w-3 animate-spin" /> Deploying Layered Config…</>
+                                            ) : isActivated ? (
+                                                <><CheckCircle2 className="mr-2 h-3 w-3" /> Activated & Locked</>
+                                            ) : (
+                                                <><Save className="mr-2 h-3 w-3" /> Activate Template</>
+                                            )}
+                                        </Button>
                                     </div>
-                                    <Button
-                                        size="sm"
-                                        disabled={!selectedAgentId || isActivating || isActivated}
-                                        onClick={() => handleActivateTemplate(template)}
-                                        className={`mt-auto w-full text-white text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${c.btn}`}
-                                    >
-                                        {isActivating ? (
-                                            <><Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" /> Activating…</>
-                                        ) : isActivated ? (
-                                            <><CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> Activated</>
-                                        ) : (
-                                            "Activate Template"
-                                        )}
-                                    </Button>
+                                    
+                                    {/* Hover info for baseline */}
+                                    <div className="absolute inset-0 bg-black/95 rounded-2xl p-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center pointer-events-none border border-white/10">
+                                        <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest mb-3">Layer 1: Shared Baseline</p>
+                                        <ul className="grid grid-cols-2 gap-y-2 gap-x-4">
+                                            {["Risk Eval", "Data Govt", "Tech Docs", "Auto Log", "Transparency", "Human Gate", "Acc. Mon", "QMS Audit", "CE Trace", "EU DB Reg"].map(val => (
+                                                <li key={val} className="flex items-center gap-2 text-[8px] font-bold text-neutral-300">
+                                                    <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                                                    {val}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                        <p className="text-[8px] text-neutral-500 mt-4 italic font-medium">All 13 baseline controls enforced by default.</p>
+                                    </div>
                                 </motion.div>
+                            );
                             );
                         })}
                     </div>

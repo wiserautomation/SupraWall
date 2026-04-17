@@ -81,6 +81,7 @@ export async function PATCH(
     if ("budget_alert_usd" in body) updateData.budget_alert_usd = body.budget_alert_usd;
     if ("max_iterations" in body) updateData.max_iterations = body.max_iterations;
     if ("loop_detection" in body) updateData.loop_detection = body.loop_detection;
+    if ("complianceConfig" in body) updateData.complianceConfig = body.complianceConfig;
 
     await docRef.update(updateData);
 
