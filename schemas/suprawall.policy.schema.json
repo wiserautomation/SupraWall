@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "title": "SupraWall Policy",
+  "description": "Deterministic security policy for AI agent tool calls",
+  "type": "object",
+  "required": ["name", "version", "rules"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Link to the SupraWall policy schema"
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the policy"
+    },
+    "version": {
+      "type": "string",
+      "description": "Version of the policy (e.g., 1.0.0)"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of what this policy secures"
+    },
+    "rules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["tool", "action"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Short name for the rule"
+          },
+          "description": {
+            "type": "string",
+            "description": "Explanation of why this rule exists"
+          },
+          "tool": {
+            "type": "string",
+            "description": "Tool name pattern to match (e.g., 'bash', 'database:*', 'send_email')"
+          },
+          "action": {
+            "type": "string",
+            "enum": ["ALLOW", "DENY", "REQUIRE_APPROVAL"],
+            "description": "Action to take when the tool matches"
+          },
+          "condition": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "enum": ["regex", "contains"]
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Pattern to match against the JSON-stringified tool arguments"
+              }
+            },
+            "required": ["type", "pattern"]
+          },
+          "message": {
+            "type": "string",
+            "description": "Custom message to return when this rule is triggered"
+          }
+        }
+      }
+    }
+  }
+}

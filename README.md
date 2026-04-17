@@ -31,47 +31,47 @@ AI agents execute tool calls autonomously. They can delete databases, leak crede
 
 SupraWall intercepts every tool call **before it executes**. Not probabilistically. Not after the fact. Deterministically, at the boundary, in under 2ms.
 
-One command setup:
+### One-command setup:
 
 ```bash
 npx suprawall init
 ```
 
-```text
-  ███████╗██╗   ██╗██████╗ ██████╗  █████╗ ██╗    ██╗ █████╗ ██╗     ██╗
-  ██╔════╝██║   ██║██╔══██╗██╔══██╗██╔══██╗██║    ██║██╔══██╗██║     ██║
-  ███████╗██║   ██║██████╔╝██████╔╝███████║██║ █╗ ██║███████║██║     ██║
-  ╚════██║██║   ██║██╔═══╝ ██╔══██╗██╔══██║██║███╗██║██╔══██║██║     ██║
-  ███████║╚██████╔╝██║     ██║  ██║██║  ██║╚███╔███╔╝██║  ██║███████╗███████╗
-  ╚══════╝ ╚═════╝ ╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝ ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝
-  The Compliance OS for AI Agents
+### 🔐 Layer 1: Deterministic Security (OSS & Local)
 
-? Detected: my-agent.ts — secure it? (Y/n) y
-? How do you want to run SupraWall?
-  ❯ Cloud (free account — EU AI Act audit reports)
-    Self-hosted (no account needed)
-    
-  🛡️  Your agent is protected. EU AI Act Article 12 audit trail: ON
+Secure your agents by defining policies in simple JSON files. No API key required.
+
+```bash
+# Validate your agent against a local policy
+npx suprawall validate ./policies/langchain-safe.json --tool "bash" --args '{"query": "ls"}'
 ```
 
-### Two layers. Seven threats. One SDK.
+### 🧠 Layer 2: Semantic Intelligence (Cloud)
 
-- 🧠 **AI Semantic Layer** — LLM-powered contextual threat detection (Cloud only)
-- 🔐 **Vault** — agents never see real credentials (JIT injection)
-- 💸 **Hard budget caps** — deterministic spend limits with circuit breakers
-- 🚫 **Policy engine** — ALLOW / DENY / REQUIRE_APPROVAL per tool
-- 🧹 **PII Shield** — scrubs sensitive data before execution
-- 📋 **Audit Trail** — RSA-signed, EU AI Act Article 9/13/14 ready
-- ☁️ **AWS Marketplace** — Integrated SaaS & Container fulfillment (Bedrock ready)
-- 🛡️ **Injection Shield** — blocks prompt injection at the runtime boundary
+Optional AI-powered threat detection and behavioral analysis. Requires an API key and an account at [supra-wall.com](https://www.supra-wall.com).
 
 ---
 
 ## Two-Layer Architecture
 
 SupraWall employs a defense-in-depth strategy:
-1. **Layer 1: Deterministic Engine (<2ms)** — Catches known patterns (SQLi, XSS, Prompt Injection) with zero false negatives. Available in all tiers.
-2. **Layer 2: AI Semantic Analysis** — Analyzes context, behavioral anomalies, and cross-tool attack sequences. Available on Cloud Team+ tiers.
+1. **Layer 1: Deterministic Engine (<1.2ms)** — Evaluates local [policy files](policies/) (Regex/Glob). Zero network, zero latency, 100% deterministic. **Local policy always wins.**
+2. **Layer 2: AI Semantic Analysis** — Analyzes context and behavioral anomalies. Opt-in via Cloud API.
+
+---
+
+## Built-in Policies
+
+We ship with "batteries included" security templates for major frameworks:
+
+| Policy | What it protects |
+|--------|------------------|
+| [LangChain Safe](policies/langchain-safe.json) | Bash `rm -rf`, `.env` reads, unwhitelisted shell. |
+| [PII Shield](policies/pii-protection.json) | SSN, Credit Card, and Email exfiltration. |
+| [EU AI Act](policies/eu-ai-act-audit.json) | Enforces human-in-the-loop for high-risk tools. |
+| [Budget Guard](policies/budget-guardrail.json) | Token/cost circuit breakers. |
+
+[→ View all 8 starter policies](policies/)
 
 ---
 

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "name": "New Integration Policy",
+  "version": "1.0.0",
+  "description": "Describe what tools this policy secures (e.g., 'Secures the Google Search tool for PydanticAI')",
+  "rules": [
+    {
+      "name": "Example Rule",
+      "description": "Describe what this rule does",
+      "tool": "tool_name_pattern:*",
+      "action": "DENY",
+      "condition": {
+        "type": "regex",
+        "pattern": "dangerous_pattern"
+      },
+      "message": "This tool call was blocked because it contains a dangerous pattern."
+    }
+  ]
+}

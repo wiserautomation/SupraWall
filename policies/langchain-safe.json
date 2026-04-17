@@ -1,0 +1,34 @@
+{
+  "$schema": "../schemas/suprawall.policy.schema.json",
+  "name": "LangChain Safe Baseline",
+  "version": "1.0.0",
+  "description": "Deterministic blocks for dangerous LangChain tool calls (bash, env reads, unwhitelisted HTTP)",
+  "rules": [
+    {
+      "name": "Block Destructive Bash",
+      "tool": "bash",
+      "action": "DENY",
+      "condition": {
+        "type": "regex",
+        "pattern": "rm -rf|mkfs|dd if|shutdown|reboot|:>|truncate"
+      },
+      "message": "Destructive shell commands are not permitted."
+    },
+    {
+      "name": "Block Environment Access",
+      "tool": "read_file",
+      "action": "DENY",
+      "condition": {
+        "type": "regex",
+        "pattern": "\\.env|config/secrets"
+      },
+      "message": "Access to environment and secret files is restricted."
+    },
+    {
+      "name": "Block Unprotected SSH",
+      "tool": "ssh:*",
+      "action": "REQUIRE_APPROVAL",
+      "message": "SSH tool calls require humanitarian approval."
+    }
+  ]
+}

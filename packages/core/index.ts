@@ -61,6 +61,7 @@ export const suprawall = new SupraWall();
 export { SupabaseAdapter, FirebaseAdapter };
 
 export * from "./types";
+export * from "./engine";
 export * from "./semantic";
 export * from "./vault";
 export * from "./src/templates/types";

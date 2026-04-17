@@ -1,6 +1,28 @@
-# Contributing to SupraWall
+## The 30-Minute Integration Path
 
-Thank you for your interest in contributing to SupraWall! Whether it's a bug fix, new feature, documentation improvement, or framework plugin — every contribution makes AI agent security better for everyone.
+SupraWall is powered by community policies. If you use a framework or tool that isn't secured yet, you can add it in under 30 minutes.
+
+### 1. Pick a Template
+Copy the [integration template](templates/integration-template.json) to the `policies/` directory.
+
+```bash
+cp templates/integration-template.json policies/my-new-integration.json
+```
+
+### 2. Define Your Rules
+Edit the JSON file. Use the [Policy Specification](docs/policy-spec.md) for reference. Don't forget to point the `$schema` to our schema file for autocompletion.
+
+### 3. Validate Locally
+Use the CLI to ensure your policy works as expected without needing an API key.
+
+```bash
+npx suprawall validate policies/my-new-integration.json --tool "my_tool" --args '{"key": "value"}'
+```
+
+### 4. Submit a PR
+Open a Pull Request with your new JSON file. Our CI will automatically validate the schema and run integration tests.
+
+---
 
 ## Code of Conduct
 
