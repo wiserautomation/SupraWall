@@ -36,10 +36,6 @@ export default function SettingsPage() {
     const [slackWebhookUrl, setSlackWebhookUrl] = useState("");
     const [notificationEmail, setNotificationEmail] = useState("");
     const [masterKey, setMasterKey] = useState("");
-    useEffect(() => {
-        // Mocking fetching current key
-        setMasterKey("sw_admin_5f2e8a1b9c3d4e7f");
-    }, []);
     const [openrouterAppUrl, setOpenrouterAppUrl] = useState("");
     const [openrouterAppTitle, setOpenrouterAppTitle] = useState("");
     const [openrouterCategories, setOpenrouterCategories] = useState("");
