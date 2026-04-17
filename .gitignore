@@ -106,3 +106,4 @@ claude-plugins-official/
 **/check_stuff.js
 **/find_key_owner.js
 cleanup_domains.js
+.npmrc
