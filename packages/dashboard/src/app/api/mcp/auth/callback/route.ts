@@ -5,19 +5,22 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db, admin } from '@/lib/firebase-admin';
+import { requireDashboardAuth } from '@/lib/api-guard';
 import * as crypto from 'crypto';
 
 /**
- * Internal callback to generate OAuth code after consent
+ * Internal callback to generate OAuth code after consent.
+ * Requires the user to be authenticated — userId is derived from JWT.
  */
 export async function POST(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     const { clientId, redirectUri } = await req.json();
 
-    // In a real app, we'd get the current user session here
-    const userId = "demo_user_123"; 
-
     const code = crypto.randomBytes(16).toString('hex');
-    
+
     await db.collection('mcp_oauth_codes').doc(code).set({
         userId,
         clientId,

@@ -3,23 +3,31 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/approvals
- * 
- * Fetches pending and recent approval requests for the organization.
+ *
+ * Fetches pending and recent approval requests for the authenticated user.
  */
 export async function GET(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+    const { userId: authUserId } = guard;
+
     try {
         const { searchParams } = new URL(request.url);
-        const userId = searchParams.get('userId'); // In production, get from auth session
+        const userId = searchParams.get('userId');
         const status = searchParams.get('status') || 'pending';
 
         if (!userId) {
             return NextResponse.json({ error: 'userId is required.' }, { status: 400 });
         }
+
+        if (userId !== authUserId) return apiError.forbidden();
 
         let query = db.collection('approvalRequests')
             .where('userId', '==', userId);

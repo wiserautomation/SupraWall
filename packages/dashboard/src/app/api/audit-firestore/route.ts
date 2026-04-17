@@ -3,11 +3,17 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase-admin";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = "force-dynamic";
 
 // GET /api/audit-firestore?userId=<uid>&limit=200
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId: authUserId } = guard;
+
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get("userId");
@@ -16,6 +22,8 @@ export async function GET(req: NextRequest) {
         if (!userId) {
             return NextResponse.json({ error: "userId is required" }, { status: 400 });
         }
+
+        if (userId !== authUserId) return apiError.forbidden();
 
         // Step 1a: Get the user's regular agent IDs
         const agentsSnap = await db.collection("agents").where("userId", "==", userId).get();
@@ -35,7 +43,7 @@ export async function GET(req: NextRequest) {
         let allLogs: any[] = [];
         // Fetch latest logs for each agent individually to use native single-field + orderBy index
         // This avoids FAILED_PRECONDITION errors from missing composite indices on 'IN' queries.
-        const logQueries = agentIds.map(id => 
+        const logQueries = agentIds.map(id =>
             db.collection("audit_logs")
               .where("agentId", "==", id)
               .orderBy("timestamp", "desc")
@@ -44,7 +52,7 @@ export async function GET(req: NextRequest) {
         );
 
         const queryResults = await Promise.all(logQueries);
-        
+
         for (const logsSnap of queryResults) {
             for (const doc of logsSnap.docs) {
                 const data = doc.data();

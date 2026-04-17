@@ -6,12 +6,19 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     const { searchParams } = new URL(req.url);
     const tenantId = searchParams.get('tenantId');
 
     if (!tenantId) return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
+    if (tenantId !== userId) return apiError.forbidden();
 
     const snap = await db.collection("vault_access_rules")
         .where("tenant_id", "==", tenantId)
@@ -26,12 +33,18 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     const body = await req.json();
     const { tenantId, agentId, secretId, allowedTools, maxUsesPerHour, requiresApproval } = body;
 
     if (!tenantId || !agentId || !secretId) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    if (tenantId !== userId) return apiError.forbidden();
 
     // Get secret name for the rule
     const secretSnap = await db.collection("vault_secrets").doc(secretId).get();

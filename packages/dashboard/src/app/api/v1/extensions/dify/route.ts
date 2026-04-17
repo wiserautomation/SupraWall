@@ -1,3 +1,7 @@
+// Copyright 2026 SupraWall Contributors
+// SPDX-License-Identifier: Apache-2.0
+// PUBLIC ENDPOINT — no auth by design. Called by Dify's webhook system with a shared secret in the body.
+
 import { NextResponse } from 'next/server';
 
 /**

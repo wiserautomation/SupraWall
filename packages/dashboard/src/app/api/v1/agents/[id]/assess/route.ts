@@ -5,11 +5,18 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { db } from '@/lib/firebase-admin';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function POST(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { id } = await params;
         const { description } = await req.json();
@@ -18,14 +25,20 @@ export async function POST(
             return NextResponse.json({ error: "Missing agent description" }, { status: 400 });
         }
 
+        // Verify the agent belongs to the authenticated user
+        const agentSnap = await db.collection('agents').doc(id).get();
+        if (!agentSnap.exists || agentSnap.data()?.userId !== userId) {
+            return apiError.forbidden();
+        }
+
         if (!process.env.GEMINI_API_KEY) {
             return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
         }
 
         const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-        
+
         const prompt = `
-Act as a Senior AI Security Architect for SupraWall. 
+Act as a Senior AI Security Architect for SupraWall.
 Given the following description of an AI agent's functionality, suggest the most appropriate security guardrails and policies to apply.
 
 Agent Functionality: "${description}"
@@ -51,9 +64,9 @@ Respond ONLY with a JSON object in this format:
     "piiScrubbing": { "enabled": true, "patterns": ["email"] }
   },
   "suggestedPolicies": [
-    { 
-      "toolName": "tool_name", 
-      "ruleType": "ALLOW|DENY", 
+    {
+      "toolName": "tool_name",
+      "ruleType": "ALLOW|DENY",
       "condition": "regex_pattern",
       "description": "Human readable explanation of what this regex does"
     }

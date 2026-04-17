@@ -3,26 +3,17 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { pool } from "@/lib/db_sql";
-import { admin } from "@/lib/firebase-admin";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
-  try {
-    // Authentication: verify Firebase ID token
-    const authHeader = request.headers.get('authorization');
-    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
-    if (!token) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    let verifiedUid: string;
-    try {
-      const decoded = await admin.auth().verifyIdToken(token);
-      verifiedUid = decoded.uid;
-    } catch {
-      return NextResponse.json({ error: "Invalid or expired session token" }, { status: 401 });
-    }
+  const guard = await requireDashboardAuth(request);
+  if (guard instanceof NextResponse) return guard;
+  const { userId } = guard;
 
+  try {
     const { searchParams } = new URL(request.url);
     const tenantId = searchParams.get('tenantId');
     const limit = Math.min(parseInt(searchParams.get('limit') || '10', 10), 100);
@@ -31,10 +22,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
 
-    // Ensure the authenticated user is only querying their own tenant
-    if (verifiedUid !== tenantId) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    if (tenantId !== userId) return apiError.forbidden();
 
     // Resolve Effective Tenant ID
     let effectiveTenantId = tenantId;

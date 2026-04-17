@@ -5,24 +5,22 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 /**
  * GET /api/audit/export
- * 
- * Exports forensic audit logs for an agent or organization.
+ *
+ * Exports forensic audit logs for the authenticated user's organization.
  */
 export async function GET(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
-        const searchParams = request.nextUrl.searchParams;
-        const orgId = searchParams.get('orgId'); // In a real app, get this from JWT/Session
-
-        if (!orgId) {
-            return NextResponse.json({ error: 'Unauthorized. Organization link required.' }, { status: 401 });
-        }
-
-        // Query logs for the org
+        // Query logs for the authenticated user's org
         const logsSnapshot = await db.collection('auditLogs')
-            .where('orgId', '==', orgId)
+            .where('orgId', '==', userId)
             .orderBy('createdAt', 'desc')
             .limit(5000) // limit for safety
             .get();

@@ -4,11 +4,23 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db, admin } from "@/lib/firebase-admin";
 import { nanoid } from "nanoid";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = "force-dynamic";
 
+/** Verify the authenticated user owns the given platform. */
+async function verifyPlatformOwnership(platformId: string, userId: string): Promise<boolean> {
+    const snap = await db.collection("platforms").doc(platformId).get();
+    return snap.exists && snap.data()?.ownerId === userId;
+}
+
 // GET /api/v1/platforms/keys?platformId=...
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { searchParams } = new URL(req.url);
         const platformId = searchParams.get("platformId");
@@ -16,6 +28,8 @@ export async function GET(req: NextRequest) {
         if (!platformId) {
             return NextResponse.json({ error: "Missing platformId" }, { status: 400 });
         }
+
+        if (!await verifyPlatformOwnership(platformId, userId)) return apiError.forbidden();
 
         const snapshot = await db.collection("connect_keys").where("platformId", "==", platformId).get();
         const keys = snapshot.docs.map(doc => ({
@@ -32,6 +46,10 @@ export async function GET(req: NextRequest) {
 
 // POST /api/v1/platforms/keys
 export async function POST(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { platformId, customerId, customerLabel, policyOverrides, rateLimitOverride } = await req.json();
 
@@ -39,13 +57,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        if (!await verifyPlatformOwnership(platformId, userId)) return apiError.forbidden();
+
         // Check if customerId already exists for this platform
         const snapshot = await db.collection("connect_keys")
             .where("platformId", "==", platformId)
             .where("customerId", "==", customerId)
             .limit(1)
             .get();
-        
+
         if (!snapshot.empty) {
             return NextResponse.json({ error: "Connect sub-key already exists for this customer ID" }, { status: 400 });
         }
@@ -66,7 +86,7 @@ export async function POST(req: NextRequest) {
         };
 
         await db.collection("connect_keys").doc(subKeyId).set(subKeyData);
-        
+
         // Atomically increment totalSubKeys on the platform
         await db.collection("platforms").doc(platformId).update({
             totalSubKeys: admin.firestore.FieldValue.increment(1)
@@ -82,6 +102,10 @@ export async function POST(req: NextRequest) {
 
 // DELETE /api/v1/platforms/keys?subKeyId=...
 export async function DELETE(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { searchParams } = new URL(req.url);
         const subKeyId = searchParams.get("subKeyId");
@@ -97,14 +121,14 @@ export async function DELETE(req: NextRequest) {
         }
 
         const platformId = subKeySnap.data()?.platformId;
+        if (!platformId || !await verifyPlatformOwnership(platformId, userId)) return apiError.forbidden();
+
         await subKeyRef.delete();
 
         // Atomically decrement totalSubKeys on the platform
-        if (platformId) {
-            await db.collection("platforms").doc(platformId).update({
-                totalSubKeys: admin.firestore.FieldValue.increment(-1)
-            });
-        }
+        await db.collection("platforms").doc(platformId).update({
+            totalSubKeys: admin.firestore.FieldValue.increment(-1)
+        });
 
         return NextResponse.json({ success: true });
     } catch (err: any) {

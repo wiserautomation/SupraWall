@@ -54,7 +54,11 @@
               },
               "pattern": {
                 "type": "string",
-                "description": "Pattern to match against the JSON-stringified tool arguments"
+                "description": "Pattern to match against the JSON-stringified tool arguments or targeted field"
+              },
+              "field": {
+                "type": "string",
+                "description": "Specific argument field to target for matching"
               }
             },
             "required": ["type", "pattern"]

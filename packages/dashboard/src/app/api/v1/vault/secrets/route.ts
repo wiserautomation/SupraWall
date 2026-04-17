@@ -10,13 +10,19 @@ import { admin } from '@/lib/firebase-admin';
 import { encrypt } from '@/lib/vault-server';
 import { checkResourceLimit } from '@/lib/tier-enforcement';
 import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { searchParams } = new URL(req.url);
         const tenantId = searchParams.get('tenantId');
 
         if (!tenantId) return apiError.badRequest("Missing required parameter: tenantId");
+        if (tenantId !== userId) return apiError.forbidden();
 
         const snap = await db.collection("vault_secrets")
             .where("tenant_id", "==", tenantId)
@@ -37,6 +43,10 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const body = await req.json().catch(() => null);
         if (!body || typeof body !== 'object') {
@@ -57,6 +67,8 @@ export async function POST(req: NextRequest) {
                 { missing, note: "Expected shape: { tenantId, secretName, secretValue, description?, expiresAt?, assignedAgents? }" }
             );
         }
+
+        if (tenantId !== userId) return apiError.forbidden();
 
         // --- Tier Enforcement: Secret Count ---
         const { allowed, count, limit } = await checkResourceLimit(tenantId, 'vault_secrets', 'tenant_id');

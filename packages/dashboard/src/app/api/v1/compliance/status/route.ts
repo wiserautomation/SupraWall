@@ -4,16 +4,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/firebase-admin";
 import { pool } from "@/lib/db_sql";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { searchParams } = new URL(request.url);
         const tenantId = searchParams.get("tenantId");
         if (!tenantId) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
+
+        if (tenantId !== userId) return apiError.forbidden();
 
         // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
         let mappedTenantId = tenantId;
@@ -43,14 +51,14 @@ export async function GET(request: NextRequest) {
         try {
             const [auditRes, approvalsRes] = await Promise.all([
                 pool.query(
-                    `SELECT COUNT(*) as count, MIN(timestamp) as oldest 
-                     FROM audit_logs 
+                    `SELECT COUNT(*) as count, MIN(timestamp) as oldest
+                     FROM audit_logs
                      WHERE tenantid = $1 OR tenantid = $2`,
                     [tenantId, mappedTenantId]
                 ),
                 pool.query(
-                    `SELECT COUNT(*) as count 
-                     FROM approval_requests 
+                    `SELECT COUNT(*) as count
+                     FROM approval_requests
                      WHERE (tenantid = $1 OR tenantid = $2) AND status != 'PENDING'`,
                     [tenantId, mappedTenantId]
                 )

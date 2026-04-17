@@ -3,6 +3,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +12,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireDashboardAuth(request);
+  if (guard instanceof NextResponse) return guard;
+  const { userId } = guard;
+
   const db = getAdminDb();
   try {
     const { id } = await params;
@@ -19,6 +25,8 @@ export async function DELETE(
     if (!tenantId) {
       return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
     }
+
+    if (tenantId !== userId) return apiError.forbidden();
 
     const docRef = db.collection("policies").doc(id);
     const docSnap = await docRef.get();

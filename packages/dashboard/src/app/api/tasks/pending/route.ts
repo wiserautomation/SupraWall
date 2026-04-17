@@ -3,11 +3,15 @@
 
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 // GET /api/tasks/pending - Fetch approved or revision tasks for orchestrator
-export async function GET() {
+export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+
     try {
         const db = getAdminDb();
 

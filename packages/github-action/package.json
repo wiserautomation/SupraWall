@@ -2,6 +2,9 @@
   "name": "suprawall-scan",
   "version": "1.0.0",
   "description": "SupraWall CI/CD Security Scanner for AI Agents",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "ncc build src/index.ts -o dist --minify --no-cache",

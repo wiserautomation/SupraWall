@@ -1,5 +1,5 @@
 {
-  "$schema": "../schemas/suprawall.policy.schema.json",
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
   "name": "OpenAI Assistants Safe",
   "version": "1.0.0",
   "description": "Security layer for OpenAI Assistants tool calls",

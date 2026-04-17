@@ -2,6 +2,9 @@
   "name": "suprawall-monorepo",
   "private": true,
   "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "workspaces": [
     "packages/*",
     "plugins/*",

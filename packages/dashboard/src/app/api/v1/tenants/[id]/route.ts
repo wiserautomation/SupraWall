@@ -5,19 +5,27 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireDashboardAuth(request);
+  if (guard instanceof NextResponse) return guard;
+  const { userId } = guard;
+
   const db = getAdminDb();
   try {
     const { id } = await params;
-    
+
+    if (id !== userId) return apiError.forbidden();
+
     console.log(`[API Tenants GET] Fetching settings for tenant: ${id}`);
     const docRef = db.collection("tenants").doc(id);
     const docSnap = await docRef.get();
-    
+
     if (!docSnap.exists) {
       console.warn(`[API Tenants GET] Tenant not found: ${id}. Returning default.`);
       return NextResponse.json({
@@ -49,14 +57,21 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const guard = await requireDashboardAuth(request);
+  if (guard instanceof NextResponse) return guard;
+  const { userId } = guard;
+
   const db = getAdminDb();
   try {
     const { id } = await params;
+
+    if (id !== userId) return apiError.forbidden();
+
     const body = await request.json();
-    
+
     console.log(`[API Tenants POST] Updating settings for tenant: ${id}`, body);
     const docRef = db.collection("tenants").doc(id);
-    
+
     await docRef.set({
         ...body,
         updatedAt: new Date()

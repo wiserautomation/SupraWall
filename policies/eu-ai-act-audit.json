@@ -1,5 +1,5 @@
 {
-  "$schema": "../schemas/suprawall.policy.schema.json",
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
   "name": "EU AI Act Audit Compliance",
   "version": "1.0.0",
   "description": "Enforces mandatory human-in-the-loop and audit logs for high-risk AI operations (Article 9/13/14 ready)",

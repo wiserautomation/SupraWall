@@ -7,11 +7,17 @@ export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
 import { encrypt } from '@/lib/vault-server';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function PUT(
     req: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     const { id } = await params;
     const body = await req.json();
     const { tenantId, newValue } = body;
@@ -19,6 +25,8 @@ export async function PUT(
     if (!tenantId || !newValue) {
         return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
+
+    if (tenantId !== userId) return apiError.forbidden();
 
     const docRef = db.collection("vault_secrets").doc(id);
     const snap = await docRef.get();

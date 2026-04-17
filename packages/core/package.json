@@ -2,17 +2,22 @@
   "name": "@suprawall/core",
   "version": "1.0.0",
   "description": "Database-agnostic core for SupraWall",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "dev": "tsc -w"
+    "dev": "tsc -w",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@types/mongodb": "^4.0.6",
     "@types/pg": "^8.20.0",
     "firebase": "^12.9.0",
-    "typescript": "^5.0.0"
+    "typescript": "^5.0.0",
+    "vitest": "^1.6.0"
   },
   "peerDependencies": {
     "firebase": "^12.9.0"

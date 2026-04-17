@@ -1,5 +1,6 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
+// PUBLIC ENDPOINT — no auth by design. Called client-side to scrub vault tokens from display strings.
 
 export const dynamic = 'force-dynamic';
 

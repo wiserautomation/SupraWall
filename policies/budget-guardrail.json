@@ -1,5 +1,5 @@
 {
-  "$schema": "../schemas/suprawall.policy.schema.json",
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
   "name": "Budget Guardrail",
   "version": "1.0.0",
   "description": "Deterministic cost circuit-breaker for high-token agent sessions",

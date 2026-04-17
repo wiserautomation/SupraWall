@@ -1,5 +1,5 @@
 {
-  "$schema": "../schemas/suprawall.policy.schema.json",
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
   "name": "CrewAI Anti-Escalation",
   "version": "1.0.0",
   "description": "Prevents agent-to-agent escalation loops and unrestricted multi-agent writes",

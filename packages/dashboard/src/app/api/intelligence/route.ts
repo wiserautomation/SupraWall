@@ -3,12 +3,16 @@
 
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { admin } from '@/lib/firebase-admin';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 // POST /api/intelligence - Create weekly brief
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+
     try {
         const body = await request.json();
         const db = getAdminDb();
@@ -17,10 +21,6 @@ export async function POST(request: Request) {
             ...body,
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         };
-
-        if (body.weekStart) {
-            // weekStart is expected to be a string like "2026-03-02"
-        }
 
         const docRef = await db.collection('intelligence_briefs').add(briefData);
 
@@ -35,7 +35,10 @@ export async function POST(request: Request) {
 }
 
 // GET /api/intelligence - Fetch latest brief
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+
     try {
         const db = getAdminDb();
 

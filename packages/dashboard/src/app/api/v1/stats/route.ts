@@ -4,10 +4,15 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
-import { db as firestore } from '@/lib/firebase-admin';
 import { pool, ensureSchema } from "@/lib/db_sql";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function GET(request: NextRequest) {
+    const guard = await requireDashboardAuth(request);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
         const { searchParams } = new URL(request.url);
         const tenantId = searchParams.get('tenantId');
@@ -15,6 +20,8 @@ export async function GET(request: NextRequest) {
         if (!tenantId) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
+
+        if (tenantId !== userId) return apiError.forbidden();
 
         let effectiveTenantId = tenantId;
         try {
@@ -33,20 +40,8 @@ export async function GET(request: NextRequest) {
         await ensureSchema();
 
         // 2. Fetch Aggregated Data from Postgres
-        const totalCallsRes = await pool.query(
-            "SELECT COUNT(*) FROM audit_logs WHERE tenantid = $1 OR tenantid = $2",
-            [tenantId, effectiveTenantId]
-        );
-        const blockedActionsRes = await pool.query(
-            "SELECT COUNT(*) FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2) AND decision = 'DENY'",
-            [tenantId, effectiveTenantId]
-        );
-        const costSavedRes = await pool.query(
-            "SELECT SUM(cost_usd) as total FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2) AND decision = 'DENY'",
-            [tenantId, effectiveTenantId]
-        );
         const statsResult = await pool.query(`
-            SELECT 
+            SELECT
                 COUNT(*) as total_calls,
                 SUM(cost_usd) as total_spend,
                 COUNT(*) FILTER (WHERE decision = 'DENY') as blocked_actions
@@ -61,18 +56,18 @@ export async function GET(request: NextRequest) {
 
         // 3. Fetch Pending Approvals
         const approvalsResult = await pool.query(`
-            SELECT COUNT(*) FROM approval_requests 
+            SELECT COUNT(*) FROM approval_requests
             WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING'
         `, [tenantId, effectiveTenantId]);
         const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 
         // 4. Generate chart data for the last 7 days
         const chartResult = await pool.query(`
-            SELECT 
+            SELECT
                 TO_CHAR(timestamp, 'Dy') as day_name,
                 COUNT(*) as call_count
             FROM audit_logs
-            WHERE (tenantid = $1 OR tenantid = $2) 
+            WHERE (tenantid = $1 OR tenantid = $2)
               AND timestamp > NOW() - INTERVAL '7 days'
             GROUP BY TO_CHAR(timestamp, 'Dy'), DATE_TRUNC('day', timestamp)
             ORDER BY DATE_TRUNC('day', timestamp)

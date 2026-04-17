@@ -2,6 +2,9 @@
   "name": "@suprawall/cli",
   "version": "0.1.0-beta.1",
   "description": "Powerful developer CLI for suprawall",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "main": "dist/bin.js",
   "bin": {
     "suprawall": "./dist/bin.js"

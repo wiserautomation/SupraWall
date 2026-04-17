@@ -1,5 +1,5 @@
 {
-  "$schema": "../schemas/suprawall.policy.schema.json",
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
   "name": "LangChain Safe Baseline",
   "version": "1.0.0",
   "description": "Deterministic blocks for dangerous LangChain tool calls (bash, env reads, unwhitelisted HTTP)",

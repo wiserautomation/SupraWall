@@ -5,8 +5,14 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from "next/server";
 import { pool, ensureSchema } from "@/lib/db_sql";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId: authUserId } = guard;
+
     try {
         const { searchParams } = new URL(req.url);
         const userId = searchParams.get("userId"); // maps to tenantId in server
@@ -19,11 +25,13 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "userId (tenantId) is required" }, { status: 400 });
         }
 
+        if (userId !== authUserId) return apiError.forbidden();
+
         console.log(`[AuditDB] Fetching logs directly for UID: ${userId}`);
-        
+
         // Ensure all tables exist
         await ensureSchema();
-        
+
         // 1. Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
         let mappedTenantId = userId;
         try {
@@ -39,7 +47,7 @@ export async function GET(req: NextRequest) {
         }
 
         console.log(`[AuditDB] Fetching logs with identity mapping: ${userId} -> ${mappedTenantId}`);
-        
+
         // Build base query
         let query = "SELECT * FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2)";
         const params: any[] = [userId, mappedTenantId];
@@ -48,13 +56,13 @@ export async function GET(req: NextRequest) {
             params.push(agentId);
             query += ` AND agentid = $${params.length}`;
         }
-        
+
         if (decision && decision !== "ALL") {
             query += " AND decision = $" + (params.length + 1);
             // Ensure uppercase for canonical SDK decisions
             params.push(decision.toUpperCase());
         }
-        
+
         query += ` ORDER BY timestamp DESC LIMIT $${params.length + 1}`;
         params.push(limitParam);
 
@@ -65,7 +73,7 @@ export async function GET(req: NextRequest) {
         let logs = rows.map((row: any) => {
             // Map Postgres metadata to top-level fields if they exist
             const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : (row.metadata || {});
-            
+
             return {
                 id: row.id,
                 agentid: row.agentid, // For Monitoring UI
@@ -89,8 +97,6 @@ export async function GET(req: NextRequest) {
             };
         });
 
-
-
         // Text search filter (client-side)
         if (search) {
             const q = search.toLowerCase();
@@ -103,16 +109,16 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        return NextResponse.json({ 
-            logs, 
-            stats: { 
-                total: logs.length, 
-                allowed: logs.filter((l: any) => l.decision === "ALLOW").length, 
+        return NextResponse.json({
+            logs,
+            stats: {
+                total: logs.length,
+                allowed: logs.filter((l: any) => l.decision === "ALLOW").length,
                 denied: logs.filter((l: any) => l.decision === "DENY").length,
                 approvals: logs.filter((l: any) => l.decision === "REQUIRE_APPROVAL").length,
                 avgRisk: logs.length > 0 ? Math.round(logs.reduce((sum: number, l: any) => sum + (l.riskScore ?? 0), 0) / logs.length) : 0,
                 totalCost: parseFloat(logs.reduce((sum: number, l: any) => sum + (l.cost_usd || 0), 0).toFixed(6)),
-            } 
+            }
         });
     } catch (error: any) {
         console.error("Forensic audit query failed:", error);

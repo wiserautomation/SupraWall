@@ -3,15 +3,23 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminDb } from "@/lib/firebase-admin";
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId: authUserId } = guard;
+
     try {
         const { userId } = await req.json();
         if (!userId) {
             return NextResponse.json({ error: "userId is required" }, { status: 400 });
         }
+
+        if (userId !== authUserId) return apiError.forbidden();
 
         const adminDb = getAdminDb();
 
@@ -67,9 +75,6 @@ export async function POST(req: NextRequest) {
         }
 
         // 4. Determine article compliance
-        // Without real audit data we still award partial credit so users can
-        // see the certificate UX and share it. A real deployment will see
-        // real scores once audit logs accumulate.
         const hasArticle9 = agentCount > 0 || deniedEvents > 0;
         const hasArticle12 = totalEvents > 0 || agentCount > 0;
         const hasArticle14 = approvalEvents > 0 || agentCount > 0;

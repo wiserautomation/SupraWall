@@ -4,16 +4,24 @@
 export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { apiError } from '@/lib/api-errors';
+import { requireDashboardAuth } from '@/lib/api-guard';
 
 /**
  * GET /api/tier-usage?tenantId=<id>
  * Returns the current tenant tier and usage metrics for the dashboard.
  */
 export async function GET(req: NextRequest) {
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     const tenantId = req.nextUrl.searchParams.get('tenantId');
     if (!tenantId) {
         return NextResponse.json({ error: 'Missing tenantId' }, { status: 400 });
     }
+
+    if (tenantId !== userId) return apiError.forbidden();
 
     const serverUrl = process.env.SUPRAWALL_API_URL || 'http://localhost:3000';
 
