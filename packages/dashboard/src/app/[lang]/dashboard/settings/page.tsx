@@ -11,7 +11,8 @@ import { doc, getDoc, setDoc, onSnapshot, updateDoc, arrayUnion, arrayRemove } f
 import { useAuthState } from "react-firebase-hooks/auth";
 import Link from "next/link";
 import { requestNotificationPermission } from "@/lib/notifications";
-import { Bell, BellOff, Info } from "lucide-react";
+import { Bell, BellOff, Info, Lock, User } from "lucide-react";
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "firebase/auth";
 
 export default function SettingsPage() {
     const [user] = useAuthState(auth);
@@ -39,6 +40,14 @@ export default function SettingsPage() {
     const [openrouterAppUrl, setOpenrouterAppUrl] = useState("");
     const [openrouterAppTitle, setOpenrouterAppTitle] = useState("");
     const [openrouterCategories, setOpenrouterCategories] = useState("");
+
+    // Password Update States
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [newPassword, setNewPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+    const [passwordUpdating, setPasswordUpdating] = useState(false);
+    const [passwordSaved, setPasswordSaved] = useState(false);
+    const [passwordError, setPasswordError] = useState("");
 
     const API_BASE = "/api";
 
@@ -197,6 +206,48 @@ export default function SettingsPage() {
         setTimeout(() => setCopiedKey(false), 2000);
     };
 
+    const handleUpdatePassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!user || !user.email) return;
+        
+        if (newPassword !== confirmPassword) {
+            setPasswordError("Passwords do not match");
+            return;
+        }
+
+        if (newPassword.length < 8) {
+            setPasswordError("Password must be at least 8 characters");
+            return;
+        }
+
+        setPasswordUpdating(true);
+        setPasswordError("");
+
+        try {
+            // Re-authenticate first
+            const credential = EmailAuthProvider.credential(user.email, currentPassword);
+            await reauthenticateWithCredential(user, credential);
+            
+            // Update password
+            await updatePassword(user, newPassword);
+            
+            setPasswordSaved(true);
+            setCurrentPassword("");
+            setNewPassword("");
+            setConfirmPassword("");
+            setTimeout(() => setPasswordSaved(false), 3000);
+        } catch (error: any) {
+            console.error("Error updating password:", error);
+            if (error.code === "auth/wrong-password") {
+                setPasswordError("Incorrect current password");
+            } else {
+                setPasswordError(error.message || "Failed to update password");
+            }
+        } finally {
+            setPasswordUpdating(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="flex items-center justify-center h-full">
@@ -221,6 +272,141 @@ export default function SettingsPage() {
                     Infrastructure, notifications, and organizational access.
                 </p>
             </motion.div>
+
+            {/* PROFILE SECTION */}
+            <section className="space-y-6">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-neutral-500/10 rounded-xl border border-white/10 shadow-[0_0_15px_rgba(255,255,255,0.05)]">
+                        <User className="w-5 h-5 text-neutral-300" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Profile Information</h2>
+                        <p className="text-sm text-neutral-400">Your account identity and organizational context.</p>
+                    </div>
+                </div>
+
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.98 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    className="p-8 bg-black/60 backdrop-blur-xl border border-white/10 rounded-2xl relative shadow-xl overflow-hidden"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-none">Email Address</span>
+                            <p className="text-lg font-bold text-white tracking-tight">{user?.email || "No email linked"}</p>
+                        </div>
+                        <div className="space-y-1">
+                            <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest leading-none">Unique Tenant ID</span>
+                            <div className="flex items-center gap-2">
+                                <code className="text-xs bg-white/5 px-2.5 py-1.5 rounded-lg border border-white/10 text-emerald-400 font-mono">{user?.uid}</code>
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(user?.uid || "");
+                                    }}
+                                    className="p-1.5 hover:bg-white/5 rounded-md transition-colors text-neutral-500 hover:text-white"
+                                >
+                                    <Copy className="w-3.5 h-3.5" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </motion.div>
+            </section>
+
+            {/* USER PASSWORD SECTION */}
+            {user?.providerData.some(p => p.providerId === 'password') && (
+                <section className="space-y-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                            <Lock className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Account Security</h2>
+                            <p className="text-sm text-neutral-400">Manage your password and authentication profile.</p>
+                        </div>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl relative shadow-xl overflow-hidden"
+                    >
+                        <form onSubmit={handleUpdatePassword} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-neutral-300">Current Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                                    />
+                                </div>
+                                <div className="hidden md:block" />
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-neutral-300">New Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-sm font-semibold text-neutral-300">Confirm New Password</label>
+                                    <input
+                                        type="password"
+                                        required
+                                        value={confirmPassword}
+                                        onChange={(e) => setConfirmPassword(e.target.value)}
+                                        className="w-full bg-black/60 border border-white/10 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 shadow-inner"
+                                    />
+                                </div>
+                            </div>
+
+                            {passwordError && (
+                                <p className="text-xs text-rose-500 font-bold uppercase tracking-wider">{passwordError}</p>
+                            )}
+
+                            <div className="flex justify-end pt-4 border-t border-white/5">
+                                <Button
+                                    type="submit"
+                                    disabled={passwordUpdating}
+                                    className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${passwordSaved ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
+                                >
+                                    {passwordUpdating ? <RefreshCcw className="w-4 h-4 mr-2 animate-spin" /> : 
+                                     passwordSaved ? <CheckCircle2 className="w-4 h-4 mr-2" /> : 
+                                     <Save className="w-4 h-4 mr-2" />}
+                                    {passwordUpdating ? "Updating..." : passwordSaved ? "Updated" : "Update Password"}
+                                </Button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </section>
+            )}
+
+            {user?.providerData.every(p => p.providerId !== 'password') && (
+                 <section className="space-y-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+                            <Lock className="w-5 h-5 text-emerald-400" />
+                        </div>
+                        <div>
+                            <h2 className="text-lg font-black text-white uppercase italic tracking-tighter">Account Security</h2>
+                        </div>
+                    </div>
+                    <div className="p-8 bg-black/60 backdrop-blur-xl border border-emerald-500/10 rounded-2xl">
+                        <p className="text-sm text-neutral-400 italic">You are logged in with 
+                            {user?.providerData.map(p => p.providerId).join(', ')}. 
+                            Authentication is managed by your provider.
+                        </p>
+                    </div>
+                 </section>
+            )}
 
             {/* MASTER API KEY SECTION */}
             <section className="space-y-6">
