@@ -21,7 +21,7 @@ export class MongoAdapter implements Adapter {
 
     async connect(connectionString: string): Promise<void> {
         // Requires optional peer dependency: npm install mongodb
-        const { MongoClient } = await import("mongodb");
+        const { MongoClient } = require("mongodb");
         this.client = new MongoClient(connectionString) as unknown as NonNullable<MongoAdapter["client"]>;
         await this.client.connect();
         this._db = this.client.db();
@@ -39,7 +39,7 @@ export class MongoAdapter implements Adapter {
     }
 
     async getAgent(id: string): Promise<Agent | null> {
-        const { ObjectId } = await import("mongodb");
+        const { ObjectId } = require("mongodb");
         const doc = await this.agents.findOne({ _id: new ObjectId(id) });
         if (!doc) return null;
         const { _id, ...rest } = doc;
@@ -47,14 +47,14 @@ export class MongoAdapter implements Adapter {
     }
 
     async updateAgent(id: string, updates: Partial<Agent>): Promise<Agent> {
-        const { ObjectId } = await import("mongodb");
+        const { ObjectId } = require("mongodb");
         const { id: _id, ...fields } = updates;
         await this.agents.updateOne({ _id: new ObjectId(id) }, { $set: fields as Record<string, unknown> });
         return { id, ...updates } as Agent;
     }
 
     async deleteAgent(id: string): Promise<boolean> {
-        const { ObjectId } = await import("mongodb");
+        const { ObjectId } = require("mongodb");
         const result = await this.agents.deleteOne({ _id: new ObjectId(id) });
         return result.deletedCount > 0;
     }

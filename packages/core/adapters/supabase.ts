@@ -14,7 +14,7 @@ export class SupabaseAdapter implements Adapter {
         if (!supabaseUrl || !supabaseKey) {
             throw new Error("SupabaseAdapter: SUPABASE_URL and SUPABASE_KEY are required");
         }
-        const { createClient } = await import("@supabase/supabase-js");
+        const { createClient } = require("@supabase/supabase-js");
         this.supabase = createClient(supabaseUrl, supabaseKey) as unknown as SupabaseClient;
     }
 

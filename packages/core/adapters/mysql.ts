@@ -19,7 +19,7 @@ export class MySQLAdapter implements Adapter {
 
     async connect(connectionString: string): Promise<void> {
         // Requires optional peer dependency: npm install mysql2
-        const mysql = await import("mysql2/promise");
+        const mysql = require("mysql2/promise");
         this.connection = await mysql.createConnection(connectionString) as unknown as MySQLConnection;
     }
 
