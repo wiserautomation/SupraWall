@@ -15,9 +15,11 @@ import {
     RefreshCw,
     Eye,
     ArrowRight,
+    Activity,
 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
     title: "AI Agent Guardrails: What They Are & How to Enforce Them",
@@ -56,6 +58,16 @@ export default function WhatAreAIAgentGuardrailsPage() {
         genre: "Security Guide",
         keywords:
             "AI agent guardrails, LLM guardrails, agentic AI security, runtime enforcement",
+    };
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".tldr-point"]
+        },
+        "url": "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails"
     };
 
     const faqSchema = {
@@ -113,11 +125,23 @@ export default function WhatAreAIAgentGuardrailsPage() {
         ],
     };
 
+    const summaryRows = [
+        { label: "Core Concept", value: "Runtime interception of tool calls before execution." },
+        { label: "Primary Difference", value: "Text filters only block speech; guardrails block actions." },
+        { label: "Injection Resistance", value: "Deterministic SDK shims prevent override by prompt instructions." },
+        { label: "Control Mechanism", value: "Centralized policy engine with ALLOW/DENY/APPROVAL rules." },
+        { label: "Speed", value: "Ultra-low latency policy evaluation (<5ms)." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
             />
             <script
                 type="application/ld+json"
@@ -144,9 +168,14 @@ export default function WhatAreAIAgentGuardrailsPage() {
                             </p>
                         </div>
 
-                        <p className="text-xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
-                            LLM output filters are not agent guardrails. Real guardrails intercept tool calls at the execution layer — before dangerous actions reach your systems, databases, or APIs. Here is everything you need to know.
-                        </p>
+                        <div className="space-y-12">
+                            <p className="answer-first-paragraph text-xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
+                                AI agent guardrails are deterministic controls that intercept tool calls at the execution layer — not the language layer. 
+                                Unlike LLM output filters which analyze text responses, runtime guardrails verify every system interaction against secure policies before they reach your databases or APIs. 
+                                This ensures that agents cannot execute unauthorized actions even if they receive malicious injected instructions.
+                            </p>
+                            <QuickSummaryTable rows={summaryRows} />
+                        </div>
                     </div>
 
                     {/* TLDR Box */}

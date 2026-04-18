@@ -6,16 +6,16 @@ import { ArrowRight, Code2, Shield, Zap, Terminal, CheckCircle2, FileText } from
 import Link from "next/link";
 import { Metadata } from "next";
 import LangChainClient from "./LangChainClient";
-
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 import { HowToSchema } from "@/components/HowToSchema";
 
 export const metadata: Metadata = {
     title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
     description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
-    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],    alternates: {
+    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],
+    alternates: {
         canonical: 'https://www.supra-wall.com/integrations/langchain',
     },
-
 };
 
 export default function LangChainIntegrationPage() {
@@ -41,6 +41,16 @@ export default function LangChainIntegrationPage() {
             "Real-time Audit Logs",
             "Human-in-the-loop Approvals"
         ]
+    };
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".code-section"]
+        },
+        "url": "https://www.supra-wall.com/integrations/langchain"
     };
 
     const howToSteps = [
@@ -85,11 +95,23 @@ export default function LangChainIntegrationPage() {
         ]
     };
 
+    const summaryRows = [
+        { label: "What is it?", value: "A zero-trust runtime security layer for LangChain agents and executors." },
+        { label: "Why secure LangChain?", value: "To prevent unauthorized tool calls and prompt injection in autonomous loops." },
+        { label: "Primary mechanism", value: "Custom callback handlers that intercept and validate Tool calls at the SDK level." },
+        { label: "Compliance target", value: "EU AI Act Articles 12 (logging) and 14 (human oversight)." },
+        { label: "Setup time", value: "Under 3 minutes using the 'SupraWallCallbackHandler'." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
             />
             <HowToSchema 
                 name="How to secure LangChain agents"
@@ -116,12 +138,13 @@ export default function LangChainIntegrationPage() {
                             Agents
                         </h1>
 
-                        <div className="max-w-3xl mx-auto">
-                            <p className="text-2xl text-neutral-300 leading-snug font-medium italic">
-                                LangChain agent security is critical for production AI systems to prevent prompt injection and unauthorized shell access.
-                                SupraWall provides a zero-trust runtime security layer that intercepts and validates every tool call against enterprise-grade policies,
-                                ensuring your agents operate within safe boundaries.
+                        <div className="max-w-4xl mx-auto space-y-12">
+                            <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic text-left">
+                                LangChain agent security is the process of governing autonomous tool execution to prevent prompt injection and unauthorized shell access. 
+                                Without SDK-level interception, LangChain agents are vulnerable to indirect instruction overrides that can manipulate tool arguments in real-time. 
+                                SupraWall addresses this by providing a zero-trust callback handler that verifies every tool call before it reaches your backend tools.
                             </p>
+                            <QuickSummaryTable rows={summaryRows} />
                         </div>
 
                         <div className="flex justify-center gap-6 pt-8">

@@ -7,6 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool, ensureSchema } from "@/lib/db_sql";
 import { apiError } from '@/lib/api-errors';
 import { requireDashboardAuth } from '@/lib/api-guard';
+import { getEffectiveTenantId } from '@/lib/user';
+import { getAdminDb } from '@/lib/firebase-admin';
 
 export async function GET(request: NextRequest) {
     const guard = await requireDashboardAuth(request);
@@ -21,25 +23,16 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: "Missing tenantId" }, { status: 400 });
         }
 
-        if (tenantId !== userId) return apiError.forbidden();
-
-        let effectiveTenantId = tenantId;
-        try {
-            const { getAdminDb } = require('@/lib/firebase-admin');
-            const db = getAdminDb();
-            const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
-            const data = userDoc?.data();
-            if (userDoc && userDoc.exists && data && data.tenantId) {
-                effectiveTenantId = data.tenantId;
-            }
-        } catch (e) {
-            console.warn("[IdentityMapping] Firebase lookup failed for stats:", e);
+        // SEC-011: Verify mapping
+        const effectiveTenantId = await getEffectiveTenantId(userId);
+        if (tenantId !== userId && tenantId !== effectiveTenantId) {
+            return apiError.forbidden();
         }
 
         // Ensure all tables exist
         await ensureSchema();
 
-        // 2. Fetch Aggregated Data from Postgres
+        // 1. Fetch Aggregated Data from Postgres (Modern Source)
         const statsResult = await pool.query(`
             SELECT
                 COUNT(*) as total_calls,
@@ -47,21 +40,41 @@ export async function GET(request: NextRequest) {
                 COUNT(*) FILTER (WHERE decision = 'DENY') as blocked_actions
             FROM audit_logs
             WHERE tenantid = $1 OR tenantid = $2
-        `, [tenantId, effectiveTenantId]);
+        `, [userId, effectiveTenantId]);
 
         const statsRow = statsResult.rows[0];
-        const totalCalls = parseInt(statsRow.total_calls || "0", 10);
-        const actualSpend = parseFloat(statsRow.total_spend || "0");
-        const blockedActions = parseInt(statsRow.blocked_actions || "0", 10);
+        let totalCalls = parseInt(statsRow.total_calls || "0", 10);
+        let actualSpend = parseFloat(statsRow.total_spend || "0");
+        let blockedActions = parseInt(statsRow.blocked_actions || "0", 10);
 
-        // 3. Fetch Pending Approvals
+        // 2. Fetch Aggregated Data from Firestore (Legacy Source)
+        try {
+            const db = getAdminDb();
+            const queryIds = Array.from(new Set([userId, effectiveTenantId]));
+            
+            // Count legacy agents that might not be in Postgres
+            const agentsCountSnap = await db.collection("agents").where("userId", "in", queryIds).count().get();
+            const legacyAgentsCount = agentsCountSnap.data().count;
+
+            // Count legacy audit logs
+            const logsCountSnap = await db.collection("audit_logs").where("userId", "in", queryIds).count().get();
+            const legacyLogsCount = logsCountSnap.data().count;
+            
+            totalCalls += legacyLogsCount;
+            // Note: actualSpend and blockedActions from Firestore are harder to aggregate without a full scan
+            // For now we just restore the visibility of the primary volume KPI
+        } catch (e) {
+            console.warn("[API Stats GET] Legacy Firestore count failed:", e);
+        }
+
+        // 3. Fetch Pending Approvals (Postgres)
         const approvalsResult = await pool.query(`
             SELECT COUNT(*) FROM approval_requests
             WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING'
-        `, [tenantId, effectiveTenantId]);
+        `, [userId, effectiveTenantId]);
         const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 
-        // 4. Generate chart data for the last 7 days
+        // 4. Generate chart data for the last 7 days (Postgres only - legacy data is usually stagnant)
         const chartResult = await pool.query(`
             SELECT
                 TO_CHAR(timestamp, 'Dy') as day_name,
@@ -71,7 +84,7 @@ export async function GET(request: NextRequest) {
               AND timestamp > NOW() - INTERVAL '7 days'
             GROUP BY TO_CHAR(timestamp, 'Dy'), DATE_TRUNC('day', timestamp)
             ORDER BY DATE_TRUNC('day', timestamp)
-        `, [tenantId, effectiveTenantId]);
+        `, [userId, effectiveTenantId]);
 
         const chartData = chartResult.rows.map(row => ({
             name: row.day_name,
@@ -97,6 +110,6 @@ export async function GET(request: NextRequest) {
 
     } catch (error: any) {
         console.error('[API Stats GET] Error:', error);
-        return NextResponse.json({ error: 'Failed to fetch dashboard statistics from Postgres' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to fetch dashboard statistics' }, { status: 500 });
     }
 }

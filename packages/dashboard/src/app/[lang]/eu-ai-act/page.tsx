@@ -3,6 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { i18n, Locale } from "@/i18n/config";
 import { SLUG_MAP } from "../../../i18n/slug-map";
 import EuAiActClient from "./EuAiActClient";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;
@@ -59,6 +60,7 @@ export default async function EuAiActHubPage({
 }) {
     const { lang } = (await params) as { lang: Locale };
     const dictionary = await getDictionary(lang);
+    
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -73,10 +75,40 @@ export default async function EuAiActHubPage({
         ]
     };
 
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".article-mapping-table"]
+        },
+        "url": `https://www.supra-wall.com/${lang}/eu-ai-act`
+    };
+
+    const summaryRows = [
+        { label: "Core Requirement", value: "Article 14 Human Oversight and Article 12 Automatic Logging for high-risk AI." },
+        { label: "Compliance Solution", value: "SupraWall SDK-level interception for deterministic audit trails." },
+        { label: "Enforcement Date", value: "August 2, 2026." },
+        { label: "Penalty Risk", value: "Up to €30M or 6% of global turnover." },
+        { label: "Target Systems", value: "Autonomous agents, LLM-driven tools, and agentic workflows." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }} />
             <Navbar lang={lang} dictionary={dictionary} />
+            
+            <div className="pt-32 pb-10 px-6 max-w-7xl mx-auto space-y-12">
+                <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-blue-600 pl-8 py-4 italic text-left max-w-4xl">
+                    EU AI Act compliance for AI agents is the process of implementing deterministic human oversight (Article 14) and automatic logging (Article 12) to mitigate the risks of autonomous systems. 
+                    SupraWall provides the industry's first SDK-level security layer that satisfies these requirements by intercepting and validating every agent action before execution.
+                </p>
+                <div className="max-w-2xl">
+                    <QuickSummaryTable rows={summaryRows} />
+                </div>
+            </div>
+
             <EuAiActClient dictionary={dictionary} lang={lang} />
         </div>
     );

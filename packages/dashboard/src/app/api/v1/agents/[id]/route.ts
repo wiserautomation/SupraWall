@@ -1,10 +1,9 @@
-// Copyright 2026 SupraWall Contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminDb } from '@/lib/firebase-admin';
 import { requireDashboardAuth } from '@/lib/api-guard';
 import { apiError } from '@/lib/api-errors';
+import { pool } from '@/lib/db_sql';
+import { getEffectiveTenantId } from '@/lib/user';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -15,32 +14,72 @@ export async function GET(
 ) {
   const guard = await requireDashboardAuth(request);
   if (guard instanceof NextResponse) return guard;
+  const { userId } = guard;
 
-  const db = getAdminDb();
   try {
     const { id } = await params;
+    const effectiveTenantId = await getEffectiveTenantId(userId);
 
-    console.log(`[API Agent GET] Fetching agent detail by ID: ${id}`);
+    console.log(`[API Agent GET] Fetching agent detail: ${id}`);
+
+    // 1. Try PostgreSQL (Modern)
+    const pgResult = await pool.query(
+        "SELECT * FROM agents WHERE id = $1",
+        [id]
+    );
+
+    if (pgResult.rowCount && pgResult.rowCount > 0) {
+        const row = pgResult.rows[0];
+        // Authorization check
+        if (row.tenantid !== userId && row.tenantid !== effectiveTenantId) {
+            return apiError.forbidden();
+        }
+        return NextResponse.json({
+            id: row.id,
+            name: row.name,
+            tenantId: row.tenantid,
+            status: row.status,
+            createdAt: row.createdat,
+            scopes: row.scopes,
+            max_cost_usd: row.max_cost_usd,
+            budget_alert_usd: row.budget_alert_usd,
+            max_iterations: row.max_iterations,
+            loop_detection: row.loop_detection,
+            source: 'postgres'
+        });
+    }
+
+    // 2. Try Firestore (Legacy)
+    const db = getAdminDb();
     const docRef = db.collection("agents").doc(id);
     const docSnap = await docRef.get();
 
-    if (!docSnap.exists) {
-      console.warn(`[API Agent GET] Agent not found: ${id}`);
-      return apiError.notFound("Agent");
+    if (docSnap.exists) {
+        const data = docSnap.data();
+        const agentOwnerId = data?.userId || data?.tenantId;
+        
+        // Authorization check
+        if (agentOwnerId !== userId && agentOwnerId !== effectiveTenantId) {
+            return apiError.forbidden();
+        }
+
+        const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
+            if (value && typeof value === 'object' && '_seconds' in value) {
+                return new Date(value._seconds * 1000).toISOString();
+            }
+            return value;
+        }));
+
+        return NextResponse.json({
+            id: docSnap.id,
+            ...sanitized,
+            source: 'firestore'
+        });
     }
 
-    const data = docSnap.data();
-    const sanitized = JSON.parse(JSON.stringify(data, (key, value) => {
-      if (value && typeof value === 'object' && '_seconds' in value) {
-        return new Date(value._seconds * 1000).toISOString();
-      }
-      return value;
-    }));
+    console.warn(`[API Agent GET] Agent not found in any backend: ${id}`);
+    return apiError.notFound("Agent");
 
-    return NextResponse.json({
-      id: docSnap.id,
-      ...sanitized
-    });
   } catch (err: any) {
     console.error("[API Agent GET] Error:", err);
     return apiError.internal();

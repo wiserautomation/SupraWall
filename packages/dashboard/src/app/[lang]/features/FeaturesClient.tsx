@@ -214,7 +214,7 @@ export default function FeaturesClient({ dictionary }: { dictionary: any }) {
                         {t.try.title} <span className="text-emerald-500 underline decoration-white/10">{t.try.emphasis}</span>
                     </h2>
                     <p className="text-xl md:text-2xl text-neutral-400 font-medium italic max-w-2xl mx-auto">
-                        {t.try.description}
+                        {t.try.description} SupraWall protects <Link href={`/${lang}/integrations/langchain`} className="text-emerald-400 hover:text-white transition-colors underline decoration-white/10 italic">LangChain agent protection</Link> from <Link href={`/${lang}/use-cases/prompt-injection`} className="text-emerald-400 hover:text-white transition-colors underline decoration-white/10 italic">prompt injection attacks</Link> better than traditional <Link href={`/${lang}/vs/guardrails-ai`} className="text-emerald-400 hover:text-white transition-colors underline decoration-white/10 italic">LLM guardrails</Link>.
                     </p>
                     <div className="p-6 md:p-8 bg-[#0a0a0a] rounded-[2rem] border border-emerald-500/20 font-mono text-[13px] relative overflow-hidden group shadow-[0_0_80px_rgba(16,185,129,0.15)] text-left cursor-copy mx-auto max-w-2xl hover:border-emerald-500/50 transition-all" onClick={() => navigator.clipboard && navigator.clipboard.writeText('npx suprawall init')} title="Copy command">
                         <div className="absolute top-4 right-6 text-emerald-500/30 text-[10px] font-black uppercase tracking-widest italic group-hover:text-emerald-500 transition-colors">

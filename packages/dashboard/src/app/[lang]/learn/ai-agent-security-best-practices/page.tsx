@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
     title: "AI Agent Security Best Practices 2026 | SupraWall",
@@ -68,6 +69,16 @@ export default function AIAgentSecurityBestPracticesPage() {
         keywords: "AI agent security, best practices, zero trust, prompt injection, audit logs",
     };
 
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".best-practice-card"]
+        },
+        "url": "https://www.supra-wall.com/learn/ai-agent-security-best-practices"
+    };
+
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -99,11 +110,23 @@ export default function AIAgentSecurityBestPracticesPage() {
         ],
     };
 
+    const summaryRows = [
+        { label: "Critical Control", value: "Zero-Trust default-deny tool execution policy." },
+        { label: "Top Threat", value: "Indirect prompt injection via external data sources." },
+        { label: "Compliance Requirement", value: "Article 12 (Automatic logging) and Article 14 (Human-in-the-loop)." },
+        { label: "Cost Prevention", value: "Budget caps and loop detection circuit breakers." },
+        { label: "Architecture", value: "SDK-level callback interception (SupraWall pattern)." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
             />
             <script
                 type="application/ld+json"
@@ -125,9 +148,14 @@ export default function AIAgentSecurityBestPracticesPage() {
                             <span className="text-emerald-500">Best Practices.</span>
                         </h1>
 
-                        <p className="text-xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
-                            12 battle-tested controls for hardening autonomous AI agent deployments. From zero-trust tool interception to compliance-grade audit trails — everything production teams need to ship agents safely.
-                        </p>
+                        <div className="space-y-12">
+                            <p className="answer-first-paragraph text-xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
+                                AI agent security best practices focus on providing a safe execution boundary for autonomous actors. 
+                                The most critical control is the implementation of zero-trust tool access, ensuring that an agent can only execute whitelisted capabilities regardless of LLM output. 
+                                Secondary controls include hard budget caps, human-in-the-loop approvals for write-actions, and compliant audit logging as required by the EU AI Act.
+                            </p>
+                            <QuickSummaryTable rows={summaryRows} />
+                        </div>
                     </div>
 
                     {/* TLDR Box */}

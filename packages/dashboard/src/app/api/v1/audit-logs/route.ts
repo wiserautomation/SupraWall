@@ -15,39 +15,60 @@ export async function GET(request: NextRequest) {
     if (!userId) return unauthorizedResponse();
 
     const { searchParams } = new URL(request.url);
-    const tenantId = searchParams.get('tenantId') || userId;
-    const agentId = searchParams.get('agentId');
-    const limitParam = parseInt(searchParams.get('limit') || '50', 10);
+    const tenantId = await getEffectiveTenantId(userId);
 
-    // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
-    let effectiveTenantId = tenantId;
-    try {
-        const userDoc = await firestore.collection("users").doc(tenantId).get();
-        const data = userDoc.data();
-        if (userDoc.exists && data && data.tenantId) {
-            effectiveTenantId = data.tenantId;
-        }
-    } catch (e) {
-        // Fallback to the provided tenantId (UID)
-    }
-
-    // Query Postgres directly
-    let query = "SELECT * FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2)";
-    const params: any[] = [tenantId, effectiveTenantId];
+    // 1. Fetch from PostgreSQL (Source of Truth for new logs)
+    let pgQuery = "SELECT * FROM audit_logs WHERE (tenantid = $1 OR tenantid = $2)";
+    const pgParams: any[] = [userId, tenantId];
 
     if (agentId && agentId !== "ALL") {
-        params.push(agentId);
-        query += ` AND agentid = $${params.length}`;
+        pgParams.push(agentId);
+        pgQuery += ` AND agentid = $${pgParams.length}`;
     }
     
-    query += ` ORDER BY timestamp DESC LIMIT $${params.length + 1}`;
-    params.push(limitParam);
+    pgQuery += ` ORDER BY timestamp DESC LIMIT $${pgParams.length + 1}`;
+    pgParams.push(limitParam);
 
-    const result = await pool.query(query, params);
-    const rows = result.rows || [];
+    const pgResult = await pool.query(pgQuery, pgParams);
+    const pgRows = pgResult.rows || [];
 
-    // Map to common dashboard format
-    const logs = rows.map((row: any) => {
+    // 2. Fetch from Firestore (Legacy logs)
+    let fsRows: any[] = [];
+    try {
+        const queryIds = Array.from(new Set([userId, tenantId]));
+        let fsQuery = firestore.collection("audit_logs")
+            .where("userId", "in", queryIds);
+            
+        if (agentId && agentId !== "ALL") {
+            fsQuery = fsQuery.where("agentId", "==", agentId);
+        }
+        
+        const fsSnap = await fsQuery.orderBy("createdAt", "desc").limit(limitParam).get();
+        fsRows = fsSnap.docs.map(doc => {
+            const data = doc.data();
+            return {
+                id: doc.id,
+                agentid: data.agentId,
+                toolname: data.toolName,
+                decision: data.decision,
+                reason: data.reason,
+                cost_usd: data.cost_usd || 0,
+                timestamp: data.createdAt?.toDate?.() || data.createdAt,
+                metadata: data.metadata || {},
+                source: 'firestore'
+            };
+        });
+    } catch (e) {
+        console.warn("[API Audit Logs GET] Legacy Firestore fetch failed:", e);
+    }
+
+    const allRows = [...pgRows, ...fsRows].sort((a, b) => {
+        const tA = new Date(a.timestamp || a.createdAt || 0).getTime();
+        const tB = new Date(b.timestamp || b.createdAt || 0).getTime();
+        return tB - tA;
+    }).slice(0, limitParam);
+
+    const logs = allRows.map((row: any) => {
         const metadata = typeof row.metadata === 'string' ? JSON.parse(row.metadata) : (row.metadata || {});
         return {
             id: row.id,
@@ -60,17 +81,13 @@ export async function GET(request: NextRequest) {
             cost_usd: row.cost_usd || 0,
             riskScore: row.riskscore ?? null,
             timestamp: row.timestamp || null,
-            createdAt: row.timestamp || null,
-            arguments: row.parameters ? (typeof row.parameters === 'string' ? row.parameters : JSON.stringify(row.parameters)) : "{}",
+            createdAt: row.timestamp || row.createdAt || null,
+            arguments: row.parameters ? (typeof row.parameters === 'string' ? row.parameters : JSON.stringify(row.parameters)) : (metadata.arguments ? JSON.stringify(metadata.arguments) : "{}"),
             sessionId: metadata.sessionId || null,
             is_loop: metadata.isLoop || false,
             agentRole: metadata.agentRole || null,
             integrityHash: metadata.integrityHash || null,
-            // Layer 2 Fields
-            semanticScore: metadata.semanticScore ?? null,
-            anomalyScore: metadata.anomalyScore ?? null,
-            semanticDecision: metadata.semanticDecision ?? null,
-            semanticLatencyMs: metadata.semanticLatencyMs ?? null,
+            source: row.source || 'postgres'
         };
     });
 

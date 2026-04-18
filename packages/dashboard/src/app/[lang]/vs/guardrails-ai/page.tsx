@@ -4,14 +4,15 @@
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import GuardrailsAIClient from "./GuardrailsAIClient";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
     title: "SupraWall vs Guardrails AI | Runtime Security Comparison",
     description: "Technical comparison between SupraWall and Guardrails AI. Learn why action-level runtime security is essential for autonomous agents compared to validation-only guardrails.",
-    keywords: ["suprawall vs guardrails ai", "llm guardrails comparison", "agent runtime security", "autonomous agent safety"],    alternates: {
+    keywords: ["suprawall vs guardrails ai", "llm guardrails comparison", "agent runtime security", "autonomous agent safety"],
+    alternates: {
         canonical: 'https://www.supra-wall.com/vs/guardrails-ai',
     },
-
 };
 
 export default function vsGuardrailsAI() {
@@ -22,6 +23,16 @@ export default function vsGuardrailsAI() {
         { feature: "Managed Hub", suprawall: true, guard: true, note: "Both have a policy hub, but SupraWall focuses on live enforcement." },
         { feature: "Audit Rail", suprawall: "Action-Level", guard: "Content-Level", note: "SupraWall audits exactly what the agent *did* vs what it *said*." }
     ];
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".comparison-verdict"]
+        },
+        "url": "https://www.supra-wall.com/vs/guardrails-ai"
+    };
 
     const faqSchema = {
         "@context": "https://schema.org",
@@ -46,8 +57,20 @@ export default function vsGuardrailsAI() {
         ]
     };
 
+    const summaryRows = [
+        { label: "Core Difference", value: "Guardrails AI validates language/schema; SupraWall intercepts and blocks tool execution." },
+        { label: "Primary Use Case", value: "SupraWall is for autonomous agents with tool access; Guardrails AI is for structured data pipelines." },
+        { label: "Security Enforcement", value: "SupraWall provides deterministic blocking; Guardrails AI relies on re-prompting the LLM." },
+        { label: "Performance", value: "SupraWall adds <5ms; Guardrails AI latency varies based on re-prompting requirements." },
+        { label: "Verdict", value: "Use both for layered defense, or SupraWall for action-critical safety." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -56,6 +79,15 @@ export default function vsGuardrailsAI() {
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
+                    <div className="space-y-8 text-center">
+                        <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic text-left max-w-4xl mx-auto">
+                            SupraWall vs Guardrails AI: Guardrails AI is a validation library for structured LLM outputs, while SupraWall is a runtime firewall for autonomous agent actions. 
+                            Without action-level interception, agents remain vulnerable to prompt injection attacks that bypass linguistic checks to execute unauthorized tools. 
+                            SupraWall addresses this by implementing a deterministic security shim at the SDK layer.
+                        </p>
+                        <QuickSummaryTable rows={summaryRows} />
+                    </div>
+
                     <GuardrailsAIClient comparisonData={comparisonData} />
                 </div>
             </main>

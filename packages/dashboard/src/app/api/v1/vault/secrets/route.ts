@@ -11,6 +11,7 @@ import { encrypt } from '@/lib/vault-server';
 import { checkResourceLimit } from '@/lib/tier-enforcement';
 import { apiError } from '@/lib/api-errors';
 import { requireDashboardAuth } from '@/lib/api-guard';
+import { getEffectiveTenantId } from '@/lib/user';
 
 export async function GET(req: NextRequest) {
     const guard = await requireDashboardAuth(req);
@@ -22,7 +23,12 @@ export async function GET(req: NextRequest) {
         const tenantId = searchParams.get('tenantId');
 
         if (!tenantId) return apiError.badRequest("Missing required parameter: tenantId");
-        if (tenantId !== userId) return apiError.forbidden();
+        
+        // SEC-011: Verify that the requested tenantId belongs to the authenticated user
+        const effectiveTenantId = await getEffectiveTenantId(userId);
+        if (tenantId !== userId && tenantId !== effectiveTenantId) {
+            return apiError.forbidden();
+        }
 
         const snap = await db.collection("vault_secrets")
             .where("tenant_id", "==", tenantId)
@@ -68,7 +74,10 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        if (tenantId !== userId) return apiError.forbidden();
+        const effectiveTenantId = await getEffectiveTenantId(userId);
+        if (tenantId !== userId && tenantId !== effectiveTenantId) {
+            return apiError.forbidden();
+        }
 
         // --- Tier Enforcement: Secret Count ---
         const { allowed, count, limit } = await checkResourceLimit(tenantId, 'vault_secrets', 'tenant_id');

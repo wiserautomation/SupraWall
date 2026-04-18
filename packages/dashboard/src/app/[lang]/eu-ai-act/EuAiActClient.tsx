@@ -78,7 +78,7 @@ export default function EuAiActClient({ dictionary, lang }: { dictionary: any, l
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
                              {t.hero?.subheadline || "The definitive security layer for autonomous agent compliance."}
-                             {" "}See how we map to <Link href={`/${lang}/gdpr`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10">GDPR data processing rules</Link> and <Link href={`/${lang}/learn/owasp-llm-top-10`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10">OWASP LLM Top 10 alignment</Link>.
+                             {" "}See how we map to <Link href={`/${lang}/gdpr`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10 italic">GDPR data processing rules</Link> and <Link href={`/${lang}/learn/owasp-llm-top-10`} className="text-blue-500 hover:text-white transition-colors underline decoration-white/10 italic">OWASP LLM Top 10 alignment</Link>.
                         </p>
                     </div>
                 </div>
@@ -144,6 +144,46 @@ export default function EuAiActClient({ dictionary, lang }: { dictionary: any, l
                     ))}
                 </div>
             </section>
+
+             {/* 🎯 INDUSTRY BLUEPRINTS (GEO SECTION) */}
+             <section className="py-24 px-6 bg-black border-y border-white/5">
+                <div className="max-w-7xl mx-auto">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
+                        <div className="max-w-3xl space-y-4">
+                            <TagBadge>TEMPLATES</TagBadge>
+                            <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">
+                                INDUSTRY <span className="text-blue-500">BLUEPRINTS</span>
+                            </h2>
+                            <p className="text-xl text-neutral-400 font-medium italic">
+                                Pre-configured compliance templates for Annex III sectors. One import, total conformity.
+                            </p>
+                        </div>
+                        <Link 
+                            href={`/${lang}/compliance-templates`} 
+                            className="group flex items-center gap-4 text-white font-black uppercase tracking-tighter text-xl border-b-2 border-blue-500/30 pb-2 hover:border-blue-500 transition-all"
+                        >
+                            View All 8 Sectors <ArrowRight className="w-6 h-6 group-hover:translate-x-3 transition-transform text-blue-500" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {['biometrics', 'hr-employment', 'healthcare', 'critical-infrastructure'].map((slug) => (
+                            <Link 
+                                key={slug}
+                                href={`/${lang}/compliance-templates/${slug}`}
+                                className="p-8 rounded-3xl border border-white/5 bg-neutral-900/40 hover:bg-neutral-900/60 hover:ring-1 hover:ring-blue-500/50 transition-all group"
+                            >
+                                <h4 className="text-lg font-black italic uppercase tracking-tighter text-white group-hover:text-blue-400 transition-colors mb-2">
+                                    {slug.replace('-', ' ')}
+                                </h4>
+                                <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest">
+                                    Annex III Blueprint <ArrowRight className="inline-block w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+             </section>
 
              {/* 🎯 PLATFORM STATS SECTION */}
              <section className="py-40 px-6 bg-[#030303] relative border-y border-white/5 overflow-hidden text-center">

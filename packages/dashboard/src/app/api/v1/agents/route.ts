@@ -11,24 +11,25 @@ import crypto from 'crypto';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+import { getEffectiveTenantId } from '@/lib/user';
+
 export async function GET(request: NextRequest) {
   try {
     // SECURITY: Authenticate and derive tenantId from token
     const userId = await verifyAuth(request);
     if (!userId) return unauthorizedResponse();
 
-    // Fetch mapped tenantId if any
-    const userDoc = await firestore.collection("users").doc(userId).get();
-    const tenantId = userDoc.data()?.tenantId || userId;
+    const tenantId = await getEffectiveTenantId(userId);
 
     await ensureSchema();
 
-    const result = await pool.query(
+    // 1. Fetch from PostgreSQL (Source of Truth for new agents)
+    const pgResult = await pool.query(
         "SELECT * FROM agents WHERE tenantid = $1 OR tenantid = $2 ORDER BY createdat DESC",
         [userId, tenantId]
     );
 
-    const agents = result.rows.map(row => ({
+    const pgAgents = pgResult.rows.map(row => ({
         id: row.id,
         name: row.name,
         tenantId: row.tenantid,
@@ -40,9 +41,42 @@ export async function GET(request: NextRequest) {
         budget_alert_usd: row.budget_alert_usd,
         max_iterations: row.max_iterations,
         loop_detection: row.loop_detection,
+        source: 'postgres'
     }));
 
-    return NextResponse.json(agents);
+    // 2. Fetch from Firestore (Legacy support for existing agents)
+    const fsAgents: any[] = [];
+    try {
+        const queryIds = Array.from(new Set([userId, tenantId]));
+        const fsSnap = await firestore.collection("agents").where("userId", "in", queryIds).get();
+        fsSnap.docs.forEach(doc => {
+            const data = doc.data();
+            // Avoid duplicates if already in Postgres (unlikely but possible if moved)
+            if (pgAgents.some(a => a.id === doc.id)) return;
+            
+            fsAgents.push({
+                id: doc.id,
+                name: data.name,
+                tenantId: data.tenantId || data.userId,
+                userId: data.userId,
+                status: data.status || 'active',
+                createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+                scopes: data.scopes || ["*:*"],
+                source: 'firestore'
+            });
+        });
+    } catch (e) {
+        console.warn("[API Agents GET] Legacy Firestore fetch failed:", e);
+    }
+
+    // Combine and sort
+    const allAgents = [...pgAgents, ...fsAgents].sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+    });
+
+    return NextResponse.json(allAgents);
   } catch (err: any) {
     console.error("[API Agents GET] Error:", err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
@@ -72,8 +106,7 @@ export async function POST(request: NextRequest) {
         }, { status: 403 });
     }
 
-    const userDoc = await firestore.collection("users").doc(userId).get();
-    const effectiveTenantId = userDoc.data()?.tenantId || userId;
+    const effectiveTenantId = await getEffectiveTenantId(userId);
 
     const agentId = `agent_${crypto.randomBytes(8).toString('hex')}`;
     
@@ -100,8 +133,7 @@ export async function DELETE(request: NextRequest) {
     const userId = await verifyAuth(request);
     if (!userId) return unauthorizedResponse();
 
-    const userDoc = await firestore.collection("users").doc(userId).get();
-    const tenantId = userDoc.data()?.tenantId || userId;
+    const tenantId = await getEffectiveTenantId(userId);
 
     const result = await pool.query(
         "DELETE FROM agents WHERE tenantid = $1 OR tenantid = $2",

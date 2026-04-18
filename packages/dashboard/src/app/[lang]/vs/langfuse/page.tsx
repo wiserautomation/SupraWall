@@ -4,7 +4,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import LangfuseClient from "./LangfuseClient";
-
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -25,6 +25,16 @@ export default function vsLangfuse() {
         { feature: "Policy Engine", suprawall: "Deterministic", comp: "Analytics", note: "SupraWall enforces rules; Langfuse analyzes outcomes." },
         { feature: "Edge Runtime", suprawall: "Native (<1ms)", comp: "Cloud/Self-Host", note: "SupraWall is optimized for zero-latency edge security." }
     ];
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".comparison-verdict"]
+        },
+        "url": "https://www.supra-wall.com/vs/langfuse"
+    };
 
     const faqSchema = {
         "@context": "https://schema.org",
@@ -49,8 +59,20 @@ export default function vsLangfuse() {
         ]
     };
 
+    const summaryRows = [
+        { label: "Core Difference", value: "Langfuse tracks what happened; SupraWall controls what is allowed to happen." },
+        { label: "Execution Layer", value: "SupraWall sits in the tool execution path; Langfuse sits in the logging path." },
+        { label: "Incident Prevention", value: "SupraWall blocks rogue tool calls in real-time; Langfuse alerts after the trace is captured." },
+        { label: "Compatibility", value: "Fully integrated with LangChain/CrewAI callback ecosystems." },
+        { label: "Verdict", value: "Use Langfuse for debugging; use SupraWall for governance and safety." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 font-sans">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
+            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
@@ -59,6 +81,13 @@ export default function vsLangfuse() {
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
+                    <div className="space-y-8 text-center">
+                        <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-blue-600 pl-8 py-4 italic text-left max-w-4xl mx-auto">
+                            SupraWall vs Langfuse: Langfuse is an AI observability platform for post-hoc tracing and analysis, whereas SupraWall is a runtime security firewall designed for deterministic blocking of unauthorized tool actions. 
+                            While Langfuse provides visibility into agent behavior, SupraWall is essential for preventing security breaches by enforcing access control policies before tool execution occurs.
+                        </p>
+                        <QuickSummaryTable rows={summaryRows} />
+                    </div>
                     <LangfuseClient comparisonData={comparisonData} />
                 </div>
             </main>

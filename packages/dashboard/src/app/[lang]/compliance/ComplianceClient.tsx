@@ -144,6 +144,47 @@ export default function ComplianceClient({ dictionary, lang }: { dictionary: any
                 </div>
             </section>
 
+            {/* 🎯 SECTOR-SPECIFIC BLUEPRINTS (GEO SECTION) */}
+            <section className="py-24 px-6 bg-black border-y border-white/5">
+                <div className="max-w-7xl mx-auto space-y-16">
+                    <div className="flex flex-col md:flex-row justify-between items-end gap-8">
+                        <div className="space-y-4 max-w-2xl">
+                            <TagBadge>ANNEX III</TagBadge>
+                            <h2 className="text-5xl font-black italic uppercase tracking-tighter leading-none">SECTOR-SPECIFIC <span className="text-blue-500">TEMPLATES</span></h2>
+                            <p className="text-neutral-500 text-lg font-bold italic uppercase tracking-tighter leading-snug">
+                                Pre-configured guardrail blueprints for the 8 high-risk categories of the EU AI Act. 
+                            </p>
+                        </div>
+                        <Link 
+                            href={`/${lang}/compliance-templates`} 
+                            className="group flex items-center gap-4 text-white font-black uppercase tracking-tighter text-xl border-b-2 border-emerald-500/30 pb-2 hover:border-emerald-500 transition-all"
+                        >
+                            View All Blueprints <ArrowRight className="w-6 h-6 group-hover:translate-x-3 transition-transform text-emerald-500" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {['biometrics', 'hr-employment', 'education', 'healthcare'].map((slug) => (
+                            <Link 
+                                key={slug}
+                                href={`/${lang}/compliance-templates/${slug}`}
+                                className="p-8 rounded-[2.5rem] bg-neutral-900/40 border border-white/5 hover:border-emerald-500/30 transition-all group relative overflow-hidden"
+                            >
+                                <div className="absolute top-0 right-0 p-6 opacity-20 group-hover:opacity-100 transition-opacity">
+                                    <div className="h-2 w-2 rounded-full bg-blue-500 animate-pulse" />
+                                </div>
+                                <h3 className="text-xl font-black italic uppercase tracking-tighter mb-2 text-white group-hover:text-blue-400 transition-colors">
+                                    {slug.replace('-', ' ')}
+                                </h3>
+                                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-600 group-hover:text-emerald-500 transition-colors">
+                                    Get Template <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
             {/* 🎁 EVIDENCE KIT CTA */}
             <section className="py-32 px-6">
                 <div className="max-w-5xl mx-auto rounded-[4rem] p-1 bg-gradient-to-br from-emerald-500/20 via-white/5 to-purple-500/20">
