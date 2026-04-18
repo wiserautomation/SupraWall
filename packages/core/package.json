@@ -31,9 +31,9 @@
       "browser": "./dist/browser.js",
       "default": "./dist/index.js"
     },
-    "./templates": "./dist/src/templates/sector-templates.js",
-    "./types": "./dist/src/templates/types.js",
-    "./baseline": "./dist/src/templates/baseline-controls.js"
+    "./templates": "./dist/templates/sector-templates.js",
+    "./types": "./dist/templates/types.js",
+    "./baseline": "./dist/templates/baseline-controls.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.101.1",

@@ -1,7 +1,7 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { scrubPayload } from "./src/scrubber";
+import { scrubPayload } from "./scrubber";
 import { IDatabasePool } from "./types";
 
 export interface SemanticAnalysisRequest {
