@@ -68,7 +68,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.google-analytics.com https://*.googletagmanager.com https://*.firebaseapp.com https://*.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.firebaseio.com https://*.googleapis.com; frame-src 'self' https://checkout.stripe.com https://*.clerk.accounts.dev https://*.firebaseapp.com; upgrade-insecure-requests;",
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://*.google-analytics.com https://*.googletagmanager.com https://*.firebaseapp.com https://*.googleapis.com https://apis.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' blob: data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://*.firebaseio.com https://*.googleapis.com; frame-src 'self' https://checkout.stripe.com https://*.clerk.accounts.dev https://*.firebaseapp.com https://*.googleapis.com; upgrade-insecure-requests;",
           },
           {
             key: 'Strict-Transport-Security',
@@ -105,11 +105,11 @@ const nextConfig: NextConfig = {
             value: 'noindex',
           },
         ],
-        // Only apply when served from the Vercel preview domain
+        // Only apply when served from the Vercel preview domain (not production domains)
         has: [
           {
             type: 'host',
-            value: '(?!www\\.supra-wall\\.com).*\\.vercel\\.app',
+            value: '(?!supra-wall\\.com)(?!www\\.supra-wall\\.com).*\\.vercel\\.app',
           },
         ],
       },
