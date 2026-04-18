@@ -135,6 +135,8 @@ function CostTicker() {
 
 // ── Cost Calculator ──
 function CostCalculator() {
+    const params = useParams();
+    const lang = (params?.lang as string) || 'en';
     const [agents, setAgents] = useState(5);
     const [callsPerDay, setCallsPerDay] = useState(500);
     const [tokensPerCall, setTokensPerCall] = useState(5000);
