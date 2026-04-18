@@ -41,9 +41,9 @@ export async function GET(request: NextRequest) {
     // Ensure all tables exist
     await ensureSchema();
 
-    // Only fetch PENDING requests for the Approvals dashboard (SDK uses 'PENDING')
+    // Only fetch PENDING requests for the Approvals dashboard (SDK/DB uses 'pending')
     const result = await pool.query(
-        "SELECT * FROM approval_requests WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING' ORDER BY created_at DESC",
+        "SELECT * FROM approval_requests WHERE (tenantid = $1 OR tenantid = $2) AND status ILIKE 'pending' ORDER BY created_at DESC",
         [tenantId, effectiveTenantId]
     );
 

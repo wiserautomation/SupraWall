@@ -67,10 +67,9 @@ export async function GET(request: NextRequest) {
             console.warn("[API Stats GET] Legacy Firestore count failed:", e);
         }
 
-        // 3. Fetch Pending Approvals (Postgres)
         const approvalsResult = await pool.query(`
             SELECT COUNT(*) FROM approval_requests
-            WHERE (tenantid = $1 OR tenantid = $2) AND status = 'PENDING'
+            WHERE (tenantid = $1 OR tenantid = $2) AND status = 'pending'
         `, [userId, effectiveTenantId]);
         const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 

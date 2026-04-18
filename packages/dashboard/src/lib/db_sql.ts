@@ -56,7 +56,27 @@ export function ensureSchema(): Promise<void> {
                     budget_alert_usd FLOAT DEFAULT 8,
                     max_iterations INTEGER DEFAULT 50,
                     loop_detection BOOLEAN DEFAULT FALSE,
-                    createdat TIMESTAMP DEFAULT NOW()
+                );
+                
+                CREATE TABLE IF NOT EXISTS tenants (
+                    id VARCHAR(255) PRIMARY KEY,
+                    name VARCHAR(255),
+                    master_api_key VARCHAR(255),
+                    db_type VARCHAR(50) DEFAULT 'firebase',
+                    db_string TEXT,
+                    webhook_url TEXT,
+                    webhook_secret VARCHAR(255),
+                    slack_webhook_url TEXT,
+                    notification_email VARCHAR(255),
+                    openrouter_app_url TEXT,
+                    openrouter_app_title VARCHAR(255),
+                    openrouter_categories TEXT,
+                    tier VARCHAR(20) DEFAULT 'open_source',
+                    stripe_customer_id TEXT,
+                    stripe_subscription_id TEXT,
+                    billing_cycle_start TIMESTAMP DEFAULT NOW(),
+                    tier_expires_at TIMESTAMP,
+                    created_at TIMESTAMP DEFAULT NOW()
                 );
 
                 CREATE TABLE IF NOT EXISTS audit_logs (

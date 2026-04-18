@@ -677,7 +677,7 @@ export const initDb = async () => {
             agentid VARCHAR(255) NOT NULL,
             toolname VARCHAR(255) NOT NULL,
             parameters JSONB,
-            status VARCHAR(50) DEFAULT 'PENDING',
+            status VARCHAR(50) DEFAULT 'pending',
             decision_by VARCHAR(255),
             decision_at TIMESTAMP,
             decision_comment TEXT,
