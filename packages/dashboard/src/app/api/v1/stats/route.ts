@@ -53,12 +53,12 @@ export async function GET(request: NextRequest) {
             const queryIds = Array.from(new Set([userId, effectiveTenantId]));
             
             // Count legacy agents that might not be in Postgres
-            const agentsCountSnap = await db.collection("agents").where("userId", "in", queryIds).count().get();
-            const legacyAgentsCount = agentsCountSnap.data().count;
+            const agentsCountSnap = await db.collection("agents").where("userId", "in", queryIds).get();
+            const legacyAgentsCount = agentsCountSnap.size;
 
             // Count legacy audit logs
-            const logsCountSnap = await db.collection("audit_logs").where("userId", "in", queryIds).count().get();
-            const legacyLogsCount = logsCountSnap.data().count;
+            const logsCountSnap = await db.collection("audit_logs").where("userId", "in", queryIds).get();
+            const legacyLogsCount = logsCountSnap.size;
             
             totalCalls += legacyLogsCount;
             // Note: actualSpend and blockedActions from Firestore are harder to aggregate without a full scan
