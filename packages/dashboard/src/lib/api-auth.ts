@@ -108,6 +108,6 @@ async function verifyAdminKey(rawKey: string): Promise<AuthResult | null> {
 export function unauthorizedResponse() {
     return NextResponse.json(
         { error: 'Unauthorized: Missing or invalid authentication token.' },
-        { status: 401 }
+        { status: 401, headers: { 'WWW-Authenticate': 'Bearer' } }
     );
 }
