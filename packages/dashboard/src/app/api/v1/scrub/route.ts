@@ -7,7 +7,33 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 
+// In-memory rate limiting (H11 remediation - resets on deploy)
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+const LIMIT = 60;
+const WINDOW_MS = 60 * 1000;
+
 export async function POST(req: NextRequest) {
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || (req as any).ip || "unknown";
+
+    const now = Date.now();
+    const window = rateLimitMap.get(ip);
+
+    if (!window || window.resetAt < now) {
+        rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    } else {
+        if (window.count >= LIMIT) {
+            const retryAfter = Math.ceil((window.resetAt - now) / 1000);
+            return NextResponse.json(
+                { error: "Too many requests. Please slow down." },
+                { 
+                    status: 429,
+                    headers: { 'Retry-After': retryAfter.toString() }
+                }
+            );
+        }
+        window.count++;
+    }
+
     try {
         const { text, secretValues } = await req.json();
 

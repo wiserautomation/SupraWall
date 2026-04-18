@@ -49,7 +49,10 @@ export async function POST(req: NextRequest) {
 
     // ── C7: Token Validation ──
     if (!token || !token.startsWith("sw_temp_")) {
-        return NextResponse.json({ error: "Missing or invalid activation token." }, { status: 401 });
+        return NextResponse.json(
+            { error: "Missing or invalid activation token." }, 
+            { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="paperclip-token"' } }
+        );
     }
 
     try {

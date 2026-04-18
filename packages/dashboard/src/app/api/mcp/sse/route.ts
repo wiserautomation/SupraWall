@@ -25,11 +25,17 @@ export async function GET(req: NextRequest) {
     // ── H5: Auth Guard ──
     const authHeader = req.headers.get('Authorization');
     if (!authHeader?.startsWith('Bearer ')) {
-        return NextResponse.json({ error: "Unauthorized: Missing MCP access token" }, { status: 401 });
+        return NextResponse.json(
+            { error: "Unauthorized: Missing MCP access token" }, 
+            { status: 401, headers: { 'WWW-Authenticate': 'Bearer' } }
+        );
     }
     const tokenData = await verifyMCPToken(authHeader.split(' ')[1]);
     if (!tokenData) {
-        return NextResponse.json({ error: "Invalid or expired MCP access token" }, { status: 401 });
+        return NextResponse.json(
+            { error: "Invalid or expired MCP access token" }, 
+            { status: 401, headers: { 'WWW-Authenticate': 'Bearer' } }
+        );
     }
 
     const sessionId = crypto.randomUUID();
