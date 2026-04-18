@@ -33,7 +33,9 @@
         "STRIPE_DEVELOPER_PRICE_ID",
         "STRIPE_DEVELOPER_METERED_PRICE_ID",
         "PAPERCLIP_WEBHOOK_SECRET",
-        "NPM_CONFIG_LEGACY_PEER_DEPS"
+        "NPM_CONFIG_LEGACY_PEER_DEPS",
+        "CRON_SECRET",
+        "SUPRAWALL_API_URL"
       ]
     },
     "lint": {

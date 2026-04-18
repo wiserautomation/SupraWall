@@ -47,8 +47,9 @@ export interface EvaluateResponse {
 
 export interface Agent {
     id?: string;
-    userId: string;
-    name: string;
+    userId?: string;
+    name?: string;
+    description?: string;
     apiKey?: string;
     scopes?: string[];
     scopeLimits?: Record<string, number>;
