@@ -1,31 +1,22 @@
 # SupraWall — AI Agent Security Platform
-# Last updated: 2026-04-05
+# Last updated: 2026-04-18
 # Primary topic: AI Agent Runtime Security, Prompt Injection Prevention
 
-SupraWall is the first open-source security layer for autonomous AI agent fleets. It provides a deterministic interception layer (SDK-level) to enforce safety policies outside of the LLM context.
-
 ## Core pages
-https://www.supra-wall.com/ — Homepage: The zero-trust security platform for AI agents.
-https://www.supra-wall.com/learn/what-is-agent-runtime-security — Pillar: The definitive guide to securing autonomous systems.
-https://www.supra-wall.com/learn/prompt-injection-prevention — Pillar: Hardening agents against indirect prompt injections.
-https://www.supra-wall.com/learn/ai-agent-security-best-practices — Pillar: Production security standards for 2026.
+https://www.supra-wall.com/ — Homepage: SupraWall is the security layer for AI agents
+https://www.supra-wall.com/learn/what-is-agent-runtime-security — Pillar: Definition of agent runtime security
+https://www.supra-wall.com/use-cases/prompt-injection — How to prevent prompt injection in AI agents
+https://www.supra-wall.com/learn/ai-agent-security-best-practices — AI Agent Security Best Practices
 
 ## Integration pages
-https://www.supra-wall.com/langchain — LangChain Security: Intercepting and securing tool calls for LC agents.
-https://www.supra-wall.com/crewai — CrewAI Governance: Managing multi-agent orchestration safely.
-https://www.supra-wall.com/autogen — AutoGen Security: Protecting conversational swarms from malicious context.
+https://www.supra-wall.com/integrations/langchain — LangChain agent security and guardrails
+https://www.supra-wall.com/integrations/crewai — CrewAI agent security
+https://www.supra-wall.com/integrations/mcp — Model Context Protocol (MCP) server security
 
 ## Comparison pages
-https://www.supra-wall.com/vs — Comparison Hub: SupraWall vs Traditional LLM Guardrails.
-https://www.supra-wall.com/vs/nemo-guardrails — SupraWall vs NVIDIA NeMo: Deterministic vs Probabilistic safety.
-https://www.supra-wall.com/vs/lakera — SupraWall vs Lakera: SDK-level interception vs API-level scanning.
+https://www.supra-wall.com/vs/nemo-guardrails — SupraWall vs. NeMo Guardrails
+https://www.supra-wall.com/vs/guardrails-ai — SupraWall vs. Guardrails AI
 
 ## Compliance pages
-https://www.supra-wall.com/gdpr — GDPR for AI Agents: Automated PII scrubbing at the runtime boundary.
-https://www.supra-wall.com/eu-ai-act — EU AI Act Guide: Article-by-article compliance for high-risk AI.
-https://www.supra-wall.com/compliance — Compliance Dashboard: Centralized evidence and audit trails.
-
-## Features
-https://www.supra-wall.com/features/vault — Credential Vault: Secure JIT secret injection for AI tools.
-https://www.supra-wall.com/features/policy-engine — Policy Engine: Deterministic ALLOW/BLOCK rules for LLM actions.
-https://www.supra-wall.com/features/prompt-shield — Prompt Shield: Hardening the SDK against context-override attacks.
+https://www.supra-wall.com/gdpr — GDPR compliance for AI agents
+https://www.supra-wall.com/eu-ai-act — EU AI Act compliance guide

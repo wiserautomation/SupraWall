@@ -34,7 +34,7 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
                              <span className="text-purple-500 font-bold italic underline decoration-white/10 italic">{t.hero.emphasis}</span>
                         </h1>
                         <p className="text-xl md:text-2xl text-neutral-400 max-w-4xl mx-auto leading-relaxed font-medium italic">
-                             {t.hero.description}
+                             {t.hero.description} SupraWall ensures full <Link href={`/${lang}/eu-ai-act`} className="text-purple-400 hover:underline">EU AI Act compliance</Link> by governing agent behavior at the edge.
                         </p>
                     </div>
                 </div>
@@ -120,7 +120,9 @@ export default function GdprClient({ dictionary, lang }: { dictionary: any, lang
                         <div className="space-y-8">
                             <TagBadge>GDPR Art. 5(1)(c)</TagBadge>
                             <h2 className="text-5xl md:text-6xl font-black uppercase italic tracking-tighter leading-none">{t.deep.titles.art5}</h2>
-                            <p className="text-xl text-neutral-400 font-medium italic">{t.deep.desc.art5}</p>
+                            <p className="text-xl text-neutral-400 font-medium italic">
+                                {t.deep.desc.art5} Implementation of <Link href={`/${lang}/learn/what-is-agent-runtime-security`} className="text-purple-400 hover:underline">agent runtime security</Link> ensures that PII is never processed by unverified tools.
+                            </p>
                             <ul className="space-y-6">
                                 {[
                                     "Automated identification of PII in tool call payloads.",

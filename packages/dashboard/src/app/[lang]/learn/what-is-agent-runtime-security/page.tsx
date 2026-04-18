@@ -6,14 +6,15 @@ import { Shield, Lock, Terminal, Activity, CheckCircle2, ArrowRight, FileText } 
 import Link from "next/link";
 import { Metadata } from "next";
 import LearnClient from "./LearnClient";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
     title: "What is Agent Runtime Security? | AI Guardrails Explained",
     description: "Agent Runtime Security (ARS) is the layer of protection between autonomous AI agents and your systems. Learn about EU AI Act compliance and agent firewalls.",
-    keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],    alternates: {
+    keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],
+    alternates: {
         canonical: 'https://www.supra-wall.com/learn/what-is-agent-runtime-security',
     },
-
 };
 
 export default function AgentRuntimeSecurityPage() {
@@ -28,6 +29,16 @@ export default function AgentRuntimeSecurityPage() {
         },
         "genre": "Security Guide",
         "keywords": "ai agents, security, runtime, guardrails"
+    };
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]
+        },
+        "url": "https://www.supra-wall.com/learn/what-is-agent-runtime-security"
     };
 
     const faqSchema = {
@@ -77,11 +88,23 @@ export default function AgentRuntimeSecurityPage() {
         ]
     };
 
+    const summaryRows = [
+        { label: "What is it?", value: "A security framework that intercept and governs AI agent tool calls in real-time." },
+        { label: "Who needs it?", value: "AI engineers, security teams, and enterprises deploying autonomous agents." },
+        { label: "Key risk without it", value: "Unauthorized system access, data exfiltration, and infinite execution loops." },
+        { label: "SupraWall solution", value: "Deterministic SDK-level middleware with sub-5ms policy evaluation." },
+        { label: "Time to implement", value: "Under 2 minutes via Python or TypeScript SDK." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
             />
             <script
                 type="application/ld+json"
@@ -103,13 +126,16 @@ export default function AgentRuntimeSecurityPage() {
                         </h1>
 
                         <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-emerald-600 pl-8 py-4 italic">
-                            Agent Runtime Security (ARS) is a specialized security framework that intercepts and governs autonomous AI agent actions in real-time.
-                            Unlike output filtering, ARS focuses on the machine-to-machine boundary, preventing unauthorized tool execution, infinite loops, and data exfiltration
-                            before any instruction reaches your backend infrastructure.
+                            Agent Runtime Security (ARS) is a specialized safety layer that intercepts and governs autonomous AI agent actions in real-time. 
+                            Without ARS, organizations risk unauthorized tool usage and destructive system modifications that standard linguistic guardrails cannot detect. 
+                            SupraWall addresses this by implementing a deterministic security shim between the LLM and your backend tools.
                         </p>
+
+                        <QuickSummaryTable rows={summaryRows} />
                     </div>
 
                     {/* Content Section */}
+                    {/* ... rest of the file ... */}
                     <div className="prose prose-invert max-w-none space-y-20 text-neutral-400">
                         <section className="space-y-8 uppercase tracking-tight">
                             <h2 className="text-4xl font-black italic text-white flex items-center gap-4">

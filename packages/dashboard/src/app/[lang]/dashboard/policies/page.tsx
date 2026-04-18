@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Trash2, ShieldAlert, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
+import { Trash2, ShieldAlert, Shield, PlusCircle, Sparkles, Loader2, Coins, RefreshCw, Save, Activity, BookOpen, CheckCircle2 } from "lucide-react";
 import { POLICY_TEMPLATES, type PolicyTemplate } from "@/lib/policy-templates";
 import type { Agent, Policy, RuleType } from "@/types/database";
 import { motion, AnimatePresence } from "framer-motion";

@@ -5,6 +5,7 @@ import { Navbar } from "@/components/Navbar";
 import { ShieldAlert, Terminal, Lock, ChevronRight, Zap, AlertCircle, FileCode2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
     title: "Preventing Prompt Injection in AI Agents | Security Guide",
@@ -13,10 +14,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "How to Stop Prompt Injection in Autonomous Agents",
         description: "Enterprise-grade protection against prompt injection and jailbreaks for agentic workflows.",
-    },    alternates: {
+    },
+    alternates: {
         canonical: 'https://www.supra-wall.com/use-cases/prompt-injection',
     },
-
 };
 
 export default function PromptInjectionPage() {
@@ -39,6 +40,16 @@ export default function PromptInjectionPage() {
                 "text": "Define a fail-closed policy for unverified tool arguments."
             }
         ]
+    };
+
+    const speakableSchema = {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]
+        },
+        "url": "https://www.supra-wall.com/use-cases/prompt-injection"
     };
 
     const faqSchema = {
@@ -88,11 +99,23 @@ export default function PromptInjectionPage() {
         ],
     };
 
+    const summaryRows = [
+        { label: "What is it?", value: "An attack technique that overwrites AI agent instructions to execute malicious actions." },
+        { label: "Who needs it?", value: "Teams deploying agents that consume untrusted web content, emails, or user data." },
+        { label: "Key risk without it", value: "Credential theft, unauthorized data deletion, and system compromise." },
+        { label: "SupraWall solution", value: "Zero-trust action interception and behavioral heuristic analysis." },
+        { label: "Time to implement", value: "Instant protection via 'fail-closed' tool wrapping." }
+    ];
+
     return (
         <div className="min-h-screen bg-black text-white selection:bg-rose-500/30 font-sans">
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
             />
             <script
                 type="application/ld+json"
@@ -109,19 +132,18 @@ export default function PromptInjectionPage() {
                             Security Protocol • Vulnerability Guide
                         </div>
 
-                        {/* H1: SPEC REQUIRED */}
                         <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] uppercase italic">
                             Stop <span className="text-rose-500">Prompt</span> <br />
                             Injection.
                         </h1>
 
-                        {/* P1: GEO EXTRACTION TARGET - SPEC REQUIRED */}
                         <div className="max-w-3xl">
-                            <p className="text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-rose-600 pl-8 py-4 italic">
-                                Prompt injection prevention is the top priority for production AI agents interacting with live data.
-                                By implementing a zero-trust runtime firewall, developers can verify agent intent at the tool-calling boundary,
-                                effectively neutralizing "ignore previous instructions" attacks before they can access sensitive system resources.
+                            <p className="answer-first-paragraph text-2xl text-neutral-300 leading-snug font-medium border-l-8 border-rose-600 pl-8 py-4 italic">
+                                Prompt injection is an attack where malicious instructions hidden in data cause an AI agent to execute unauthorized actions. 
+                                Without dedicated prevention, agents are vulnerable to indirect instruction overrides that bypass traditional chat filters. 
+                                SupraWall addresses this by implementing a zero-trust runtime firewall that verifies every tool call before it executes.
                             </p>
+                            <QuickSummaryTable rows={summaryRows} />
                         </div>
                     </div>
 
