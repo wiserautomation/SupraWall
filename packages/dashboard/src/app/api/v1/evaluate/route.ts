@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
 
     const parsed = BodySchema.safeParse(body);
     if (!parsed.success) {
-        const missing = parsed.error.errors.map(e => e.path.join('.'));
+        const missing = parsed.error.issues.map(e => e.path.join('.'));
         // apiKey missing → 401; other validation failures → 400
         if (missing.includes('apiKey')) {
             return NextResponse.json(
@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
             );
         }
         return NextResponse.json(
-            { error: "Invalid request", details: parsed.error.errors.map(e => ({ field: e.path.join('.'), message: e.message })) },
+            { error: "Invalid request", details: parsed.error.issues.map(e => ({ field: e.path.join('.'), message: e.message })) },
             { status: 400 }
         );
     }

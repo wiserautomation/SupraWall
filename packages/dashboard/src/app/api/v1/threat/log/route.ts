@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 
     const parsed = LogBodySchema.safeParse(body);
     if (!parsed.success) {
-        const missing = parsed.error.errors.map(e => ({ field: e.path.join('.'), message: e.message }));
+        const missing = parsed.error.issues.map(e => ({ field: e.path.join('.'), message: e.message }));
         if (missing.some(e => e.field === 'apiKey')) {
             return NextResponse.json(
                 { error: "API key required" },
