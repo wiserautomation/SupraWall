@@ -8,7 +8,8 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": ["es2022", "dom"]
+        "lib": ["es2022", "dom"],
+        "types": ["node"]
     },
     "include": [
         "./**/*.ts"

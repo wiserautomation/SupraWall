@@ -109,7 +109,7 @@ export class DeterministicEngine {
             if (typeof process !== 'undefined' && process.versions && process.versions.node) {
                 try {
                     // Dynamic require to avoid bundling issues in browsers
-                    const vm = require('node:vm');
+                    const vm = require('vm') as any;
                     const script = new vm.Script(`new RegExp(pattern, 'i').test(input)`);
                     const context = vm.createContext({ pattern, input });
                     return script.runInContext(context, { timeout: this.REGEX_TIMEOUT_MS });

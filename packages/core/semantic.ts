@@ -124,7 +124,7 @@ async function computeAnomalyScore(pool: IDatabasePool, req: SemanticAnalysisReq
 
         const known: string[] = Array.isArray(b.common_arg_patterns) ? b.common_arg_patterns : [];
         const argKeys = (req.args && typeof req.args === 'object' && !Array.isArray(req.args))
-            ? Object.keys(req.args) : [];
+            ? Object.keys(req.args as Record<string, unknown>) : [];
         if (argKeys.length > 0) {
             const unknownKeys = argKeys.filter(k => !known.includes(k));
             if (unknownKeys.length > 0) anomaly += 0.3 * (unknownKeys.length / argKeys.length);
@@ -139,7 +139,7 @@ export async function updateBaseline(
 ): Promise<void> {
     const argsLen = JSON.stringify(args).length;
     const argKeys = (args && typeof args === 'object' && !Array.isArray(args))
-        ? Object.keys(args) : [];
+        ? Object.keys(args as Record<string, unknown>) : [];
 
     await pool.query(
         `INSERT INTO agent_behavioral_baselines
