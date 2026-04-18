@@ -110,6 +110,135 @@
       "cta": "Implement AI Act Shield"
     }
   },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Annex III Compliance Templates",
+        "title": "One Import.",
+        "emphasis": "All 8 Sectors.",
+        "description": "Deterministic safety templates for every high-risk AI category. Each template pre-configures the 13 mandatory baseline controls plus sector-specific logic for EU AI Act Annex III.",
+        "cta": "Access Templates"
+      },
+      "grid": {
+        "title": "Sector-Specific Templates",
+        "subtitle": "Select your industry to see the regulatory requires and technical configuration."
+      },
+      "buildVsBuy": {
+        "title": "Build vs. Template",
+        "subtitle": "The true cost of implementing EU AI Act compliance from scratch.",
+        "headers": {
+          "approach": "Approach",
+          "time": "Time",
+          "cost": "Cost",
+          "maint": "Maintenance",
+          "evidence": "Evidence",
+          "audit": "Audit-Ready"
+        },
+        "rows": {
+            "diy": {
+                "name": "Build from scratch",
+                "time": "17–35 weeks",
+                "cost": "€68K–€140K",
+                "maint": "Ongoing engineering",
+                "evidence": "Manual collection",
+                "audit": "High audit risk"
+            },
+            "suprawall": {
+                "name": "SupraWall Template",
+                "time": "15 minutes",
+                "cost": "Developer Tier",
+                "maint": "Automatic updates",
+                "evidence": "Auto-generated PDF",
+                "audit": "Certified Evidence"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Requirement",
+        "artHeader": "Article",
+        "complexityHeader": "Complexity",
+        "templateHeader": "SupraWall Template",
+        "buildHeader": "How to Build It Yourself",
+        "engineeringWeeks": "Engineering Weeks",
+        "costEstimate": "Engineering Cost Estimate",
+        "totalEstimate": "Total Engineering Estimate",
+        "activationHeader": "One-Line Activation",
+        "cta": "Access Template",
+        "preconfigured": "Pre-configured",
+        "hitl": "HITL Queue",
+        "blocks": "Prohibited Blocks",
+        "logs": "Audit Trails"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Biometric AI Compliance",
+            "badge": "Annex III Category 1",
+            "opening": "Biometric AI agents are strictly regulated. Remote biometric identification in public spaces is PROHIBITED (Art. 5). All other biometric systems require third-party assessment. Compliance is required by August 2, 2026.",
+            "faq": [
+                { "q": "Is remote biometric identification allowed in the EU?", "a": "Generally prohibited under Art. 5, with very narrow exceptions for law enforcement." },
+                { "q": "Does emotion recognition AI need compliance?", "a": "Yes, if used in education or workplace contexts, it is high-risk under Annex III." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Critical Infrastructure",
+            "badge": "Annex III Category 2",
+            "opening": "AI managing water, energy, or traffic infrastructure are high-risk. Overlaps with NIS2 requirements. High safety priority: every physical action must be HITL-gated.",
+            "faq": [
+                { "q": "How does this overlap with NIS2?", "a": "AI compliance must be integrated with NIS2 incident reporting and risk management." }
+            ]
+        },
+        "education": {
+            "title": "Education & Training",
+            "badge": "Annex III Category 3",
+            "opening": "AI for admissions, assessments, or proctoring is high-risk. Must ensure no autonomous denial of access to education.",
+            "faq": [
+                { "q": "Can AI autonomously grade students?", "a": "Yes, but results that impact access to education must have human oversight." }
+            ]
+        },
+        "hr-employment": {
+            "title": "HR & Employment",
+            "badge": "Annex III Category 4",
+            "opening": "AI for CV screening, hiring, or performance monitoring is high-risk. Triggers GDPR DPIA. No autonomous hire/fire decisions.",
+            "faq": [
+                { "q": "Can AI make final hiring decisions?", "a": "No. EU law requires a human decision-maker for consequential employment actions." },
+                { "q": "Do I need a GDPR DPIA for HR AI?", "a": "Almost certainly. SupraWall automates the technical data for the assessment." }
+            ]
+        },
+        "healthcare": {
+            "title": "Healthcare & Essential Services",
+            "badge": "Annex III Category 5",
+            "opening": "Spans medical devices (Aug 2027) and public services (Aug 2026). No autonomous denial of benefits or triage.",
+            "faq": [
+                { "q": "What is the medical device deadline?", "a": "AI embedded in medical devices has an extension until August 2027." }
+            ]
+        },
+        "law-enforcement": {
+            "title": "Law Enforcement",
+            "badge": "Annex III Category 6",
+            "opening": "Restricted systems for risk scoring or evidence reliability. Third-party assessment mandatory. Prohibits profiling-only actions.",
+            "faq": [
+                { "q": "Is profiling allowed for law enforcement?", "a": "Strictly limited. Decisions cannot be based solely on automated profiling." }
+            ]
+        },
+        "migration-border-control": {
+            "title": "Migration & Border",
+            "badge": "Annex III Category 7",
+            "opening": "Visa/asylum risk assessments. Third-party mandatory. Hard block on autonomous asylum outcomes.",
+            "faq": [
+                { "q": "Can AI decide on visa applications?", "a": "No. Immigration officers must review and sign off on all high-impact actions." }
+            ]
+        },
+        "justice-democracy": {
+            "title": "Justice & Democracy",
+            "badge": "Annex III Category 8",
+            "opening": "AI for judicial fact-mapping or electoral influence. Third-party mandatory. All output must be research-only.",
+            "faq": [
+                { "q": "Can AI assist in sentencing?", "a": "Yes, but only as a non-binding research aid with explicit uncertainty markers." }
+            ]
+        }
+    }
+  },
   "compliance": {
     "hero": {
       "badge": "Enterprise Ready",
