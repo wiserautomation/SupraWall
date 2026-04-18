@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { i18n, Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
+import { SLUG_MAP } from "@/i18n/slug-map";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { sectorTemplates, getTemplateBySlug } from "@/data/compliance-matrix";
