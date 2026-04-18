@@ -110,6 +110,133 @@
       "cta": "Implement AI Act Shield"
     }
   },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Szablony zgodności Załącznika III",
+        "title": "Jeden import.",
+        "emphasis": "Wszystkie 8 sektorów.",
+        "description": "Deterministyczne szablony bezpieczeństwa dla każdej kategorii sztucznej inteligencji wysokiego ryzyka. Każdy szablon wstępnie konfiguruje 13 obowiązkowych kontroli bazowych oraz logikę specyficzną dla sektora zgodnie z Załącznikiem III aktu o sztucznej inteligencji UE.",
+        "cta": "Dostęp do szablonów"
+      },
+      "grid": {
+        "title": "Szablony specyficzne dla sektora",
+        "subtitle": "Wybierz swoją branżę, aby zobaczyć wymagania regulacyjne i konfigurację techniczną."
+      },
+      "buildVsBuy": {
+        "title": "Budowa własna vs Szablon",
+        "subtitle": "Rzeczywisty koszt wdrożenia zgodności z aktem o sztucznej inteligencji UE od zera.",
+        "headers": {
+          "approach": "Podejście",
+          "time": "Czas",
+          "cost": "Koszt",
+          "maint": "Utrzymanie",
+          "evidence": "Dowody",
+          "audit": "Gotowość do audytu"
+        },
+        "rows": {
+            "diy": {
+                "name": "Budowa od zera",
+                "time": "17–35 tygodni",
+                "cost": "68 tys. € – 140 tys. €",
+                "maint": "Bieżące prace inżynieryjne",
+                "evidence": "Ręczne zbieranie",
+                "audit": "Wysokie ryzyko audytu"
+            },
+            "suprawall": {
+                "name": "Szablon SupraWall",
+                "time": "15 minut",
+                "cost": "Poziom Deweloperski",
+                "maint": "Automatyczne aktualizacje",
+                "evidence": "Automatycznie generowany PDF",
+                "audit": "Certyfikowane dowody"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Wymóg",
+        "artHeader": "Artykuł",
+        "complexityHeader": "Złożoność",
+        "templateHeader": "Szablon SupraWall",
+        "buildHeader": "Jak zbudować to samemu",
+        "engineeringWeeks": "Tygodnie inżynieryjne",
+        "costEstimate": "Szacunkowy koszt inżynieryjny",
+        "totalEstimate": "Całkowity szacunek inżynieryjny",
+        "activationHeader": "Aktywacja jedną linią",
+        "cta": "Dostęp do szablonu",
+        "preconfigured": "Wstępnie skonfigurowane",
+        "hitl": "Kolejka HITL",
+        "blocks": "Zabronione bloki",
+        "logs": "Ścieżki audytu"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Zgodność Biometrycznej SI",
+            "badge": "Załącznik III Kategoria 1",
+            "opening": "Agenci SI wykorzystujący dane biometryczne są pod ścisłą regulacją. Zdalna identyfikacja biometryczna w przestrzeniach publicznych jest ZABRONIONA (Art. 5). Wszystkie inne systemy biometryczne wymagają oceny strony trzeciej. Zgodność jest wymagana do 2 sierpnia 2026 r.",
+            "faq": [
+                { "q": "Czy zdalna identyfikacja biometryczna jest dozwolona w UE?", "a": "Zazwyczaj zabroniona na mocy art. 5, z bardzo wąskimi wyjątkami dla organów ścigania." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Infrastruktura krytyczna",
+            "badge": "Załącznik III Kategoria 2",
+            "opening": "SI zarządzająca infrastrukturą wodną, energetyczną lub transportową to system wysokiego ryzyka. Nakłada się na wymagania NIS2. Wysoki priorytet bezpieczeństwa: każde działanie fizyczne musi być zatwierdzane przez człowieka.",
+            "faq": [
+                { "q": "Jak to się nakłada na NIS2?", "a": "Zgodność SI musi być zintegrowana z raportowaniem incydentów i zarządzaniem ryzykiem NIS2." }
+            ]
+        },
+        "education": {
+            "title": "Edukacja i szkolenia zawodowe",
+            "badge": "Załącznik III Kategoria 3",
+            "opening": "SI stosowana do rekrutacji, oceniania lub nadzorowania egzaminów jest systemem wysokiego ryzyka. Musi gwarantować brak autonomicznej odmowy dostępu do edukacji.",
+            "faq": [
+                { "q": "Czy SI może autonomicznie oceniać uczniów?", "a": "Tak, ale wyniki wpływająca na dostęp do edukacji muszą podlegać nadzorowi ludzkiemu." }
+            ]
+        },
+        "hr-employment": {
+            "title": "HR i zatrudnienie",
+            "badge": "Załącznik III Kategoria 4",
+            "opening": "SI do skanowania CV, zatrudniania lub monitorowania wydajności to system wysokiego ryzyka. Wymaga oceny DPIA zgodnie z RODO. Brak autonomicznych decyzji o zatrudnieniu/zwolnieniu.",
+            "faq": [
+                { "q": "Czy SI może podejmować ostateczne decyzje o zatrudnieniu?", "a": "Nie. Prawo UE wymaga ludzkiego decydenta w przypadku istotnych działań związanych z zatrudnieniem." }
+            ]
+        },
+        "healthcare": {
+          "title": "Opieka zdrowotna i usługi kluczowe",
+          "badge": "Załącznik III Kategoria 5",
+          "opening": "Obejmuje wyroby medyczne (sierpień 2027) i usługi publiczne (sierpień 2026). Brak autonomicznej odmowy świadczeń lub triażu.",
+          "faq": [
+              { "q": "Jaki jest termin dla wyrobów medycznych?", "a": "SI wbudowana w wyroby medyczne ma przedłużenie do sierpnia 2027 r." }
+          ]
+        },
+        "law-enforcement": {
+          "title": "Organy ścigania",
+          "badge": "Załącznik III Kategoria 6",
+          "opening": "Ograniczone systemy do oceny ryzyka lub wiarygodności dowodów. Obowiązkowa ocena strony trzeciej. Zakaz działań opartych wyłącznie na profilowaniu.",
+          "faq": [
+              { "q": "Czy profilowanie jest dozwolone dla organów ścigania?", "a": "Ściśle ograniczone. Decyzje nie mogą opierać się wyłącznie na zautomatyzowanym profilowaniu." }
+          ]
+        },
+        "migration-border-control": {
+          "title": "Migracja i granice",
+          "badge": "Załącznik III Kategoria 7",
+          "opening": "Oceny ryzyka wizowego/azylowego. Obowiązkowa ocena strony trzeciej. Twardy blok dla autonomicznych decyzji azylowych.",
+          "faq": [
+              { "q": "Czy SI może decydować o wnioskach wizowych?", "a": "Nie. Urzędnicy imigracyjni muszą przeglądać i zatwierdzać wszystkie działania o dużym wpływie." }
+          ]
+        },
+        "justice-democracy": {
+          "title": "Wymiar sprawiedliwości i demokracja",
+          "badge": "Załącznik III Kategoria 8",
+          "opening": "SI do mapowania faktów sądowych lub wpływu na wybory. Obowiązkowa ocena strony trzeciej. Wszystkie wyniki muszą służyć wyłącznie celom badawczym.",
+          "faq": [
+              { "q": "Czy SI może pomagać w wydawaniu wyroków?", "a": "Tak, ale tylko jako niewiążąca pomoc badawcza z wyraźnymi znacznikami niepewności." }
+          ]
+        }
+    }
+  },
   "compliance": {
     "hero": {
       "badge": "Enterprise Ready",

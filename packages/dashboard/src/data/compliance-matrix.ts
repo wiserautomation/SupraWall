@@ -4,6 +4,27 @@
 export type Regulation = 'EU_AI_ACT' | 'GDPR' | 'NIS2' | 'DORA' | 'ISO_42001' | 'CRA'
 export type SupraWallFeature = 'policy-engine' | 'audit-trail' | 'hitl' | 'incident-detection' | 'pii-detection' | 'analytics'
 
+export interface TemplateConfig {
+  slug: string                    // 'hr-employment', 'biometrics', etc.
+  annexIIICategory: number        // 1–8
+  conformityAssessment: 
+    | 'self-assessment' 
+    | 'third-party-mandatory'
+    | 'third-party-conditional'   // healthcare medical devices
+  diyEngineeringWeeks: {
+    min: number
+    max: number
+  }
+  diyCostEur: {
+    min: number
+    max: number
+  }
+  sectorProhibitions: string[]    // what the agent CANNOT do
+  sectorMandatoryControls: string[] // what the agent MUST do
+  regulationOverlap: Regulation[] // which other regulations also apply
+  deadline: string                // '2026-08-02' or '2027-08-02' for medical devices
+}
+
 export interface ComplianceEntry {
   regulation: Regulation
   article: string          // "Art. 12" | "Clause 8.4"
@@ -153,3 +174,97 @@ export const getCritical = () =>
 
 export const getActiveDeadlines = () =>
   complianceMatrix.filter(e => e.deadline !== 'procurement-driven')
+
+export const sectorTemplates: TemplateConfig[] = [
+  {
+    slug: 'biometrics',
+    annexIIICategory: 1,
+    conformityAssessment: 'third-party-mandatory',
+    diyEngineeringWeeks: { min: 19, max: 30 },
+    diyCostEur: { min: 76000, max: 120000 },
+    sectorProhibitions: ['Remote biometric identification in public spaces (Art. 5)'],
+    sectorMandatoryControls: ['Identification event logging', 'Prohibited-use blockers', 'Emotion recognition limits'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'critical-infrastructure',
+    annexIIICategory: 2,
+    conformityAssessment: 'self-assessment',
+    diyEngineeringWeeks: { min: 21, max: 33 },
+    diyCostEur: { min: 84000, max: 132000 },
+    sectorProhibitions: ['Autonomous execution of physical infrastructure changes'],
+    sectorMandatoryControls: ['Physical action HITL gate', 'Failsafe override system', 'Real-time incident detection'],
+    regulationOverlap: ['NIS2'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'education',
+    annexIIICategory: 3,
+    conformityAssessment: 'self-assessment',
+    diyEngineeringWeeks: { min: 17, max: 27 },
+    diyCostEur: { min: 68000, max: 108000 },
+    sectorProhibitions: ['Autonomous denial of education access'],
+    sectorMandatoryControls: ['Admission HITL gate', 'Assessment explanation engine', 'Anomaly threshold monitoring'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'hr-employment',
+    annexIIICategory: 4,
+    conformityAssessment: 'self-assessment',
+    diyEngineeringWeeks: { min: 21, max: 34 },
+    diyCostEur: { min: 84000, max: 136000 },
+    sectorProhibitions: ['Autonomous hire/fire decisions'],
+    sectorMandatoryControls: ['Final decision HITL gate', 'Bias audit trail', 'Employee monitoring disclosure'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'healthcare',
+    annexIIICategory: 5,
+    conformityAssessment: 'third-party-conditional',
+    diyEngineeringWeeks: { min: 22, max: 36 },
+    diyCostEur: { min: 88000, max: 144000 },
+    sectorProhibitions: ['Autonomous denial of healthcare benefits or triage'],
+    sectorMandatoryControls: ['PHI encryption', 'Breach notification pipeline', 'Medical device pathway alignment'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'law-enforcement',
+    annexIIICategory: 6,
+    conformityAssessment: 'third-party-mandatory',
+    diyEngineeringWeeks: { min: 21, max: 35 },
+    diyCostEur: { min: 84000, max: 140000 },
+    sectorProhibitions: ['Actions based solely on automated profiling'],
+    sectorMandatoryControls: ['Automated action refusal', 'Probabilistic output labeling', 'Profiling detection'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'migration-border-control',
+    annexIIICategory: 7,
+    conformityAssessment: 'third-party-mandatory',
+    diyEngineeringWeeks: { min: 21, max: 34 },
+    diyCostEur: { min: 84000, max: 136000 },
+    sectorProhibitions: ['Autonomous asylum or visa outcomes'],
+    sectorMandatoryControls: ['Asylum decision hard block', 'Nationality bias guard', 'Individual risk score HITL'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  },
+  {
+    slug: 'justice-democracy',
+    annexIIICategory: 8,
+    conformityAssessment: 'third-party-mandatory',
+    diyEngineeringWeeks: { min: 21, max: 35 },
+    diyCostEur: { min: 84000, max: 140000 },
+    sectorProhibitions: ['Autonomous legal interpretation', 'Electoral influence'],
+    sectorMandatoryControls: ['Non-binding output labeler', 'Sentencing flag enforcer', 'Electoral influence disable'],
+    regulationOverlap: ['GDPR'],
+    deadline: '2026-08-02'
+  }
+]
+
+export const getTemplateBySlug = (slug: string) =>
+  sectorTemplates.find(t => t.slug === slug)

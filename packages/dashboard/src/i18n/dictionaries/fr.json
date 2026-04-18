@@ -110,6 +110,133 @@
       "cta": "Implement AI Act Shield"
     }
   },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Modèles de conformité Annex III",
+        "title": "Un seul import.",
+        "emphasis": "Tous les 8 secteurs.",
+        "description": "Modèles de sécurité déterministes pour chaque catégorie d'IA à haut risque. Chaque modèle pré-configure les 13 contrôles de base obligatoires plus la logique sectorielle pour l'Annexe III de l'IA Act.",
+        "cta": "Accéder aux modèles"
+      },
+      "grid": {
+        "title": "Modèles spécifiques aux secteurs",
+        "subtitle": "Sélectionnez votre industrie pour voir les exigences réglementaires et la configuration technique."
+      },
+      "buildVsBuy": {
+        "title": "Construire vs Modèle",
+        "subtitle": "Le coût réel de la mise en œuvre de la conformité à l'AI Act en partant de zéro.",
+        "headers": {
+          "approach": "Approche",
+          "time": "Temps",
+          "cost": "Coût",
+          "maint": "Maintenance",
+          "evidence": "Preuves",
+          "audit": "Prêt pour l'audit"
+        },
+        "rows": {
+            "diy": {
+                "name": "Construire soi-même",
+                "time": "17–35 semaines",
+                "cost": "68k€–140k€",
+                "maint": "Ingénierie continue",
+                "evidence": "Collecte manuelle",
+                "audit": "Risque d'audit élevé"
+            },
+            "suprawall": {
+                "name": "Modèle SupraWall",
+                "time": "15 minutes",
+                "cost": "Niveau Développeur",
+                "maint": "Mises à jour automatiques",
+                "evidence": "PDF auto-généré",
+                "audit": "Preuves certifiées"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Exigence",
+        "artHeader": "Article",
+        "complexityHeader": "Complexité",
+        "templateHeader": "Modèle SupraWall",
+        "buildHeader": "Comment le construire soi-même",
+        "engineeringWeeks": "Semaines d'ingénierie",
+        "costEstimate": "Estimation du coût",
+        "totalEstimate": "Estimation totale de l'ingénierie",
+        "activationHeader": "Activation en une ligne",
+        "cta": "Accéder au modèle",
+        "preconfigured": "Pré-configuré",
+        "hitl": "File d'attente HITL",
+        "blocks": "Blocages interdits",
+        "logs": "Audit Trails"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Conformité IA Biométrique",
+            "badge": "Annexe III Catégorie 1",
+            "opening": "Les agents d'IA biométrique sont strictement réglementés. L'identification biométrique à distance dans les espaces publics est INTERDITE (Art. 5). Tous les autres systèmes biométriques nécessitent une évaluation par un tiers. La conformité est requise d'ici le 2 août 2026.",
+            "faq": [
+                { "q": "L'identification biométrique à distance est-elle autorisée dans l'UE ?", "a": "Généralement interdite selon l'Art. 5, avec des exceptions très étroites pour l'application de la loi." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Infrastructures Critiques",
+            "badge": "Annexe III Catégorie 2",
+            "opening": "L'IA gérant les infrastructures d'eau, d'énergie ou de transport est à haut risque. Chevauchement avec les exigences NIS2. Priorité de sécurité élevée : chaque action physique doit être validée par un humain.",
+            "faq": [
+                { "q": "Comment cela se chevauche-t-il avec NIS2 ?", "a": "La conformité de l'IA doit être intégrée aux rapports d'incidents et à la gestion des risques de NIS2." }
+            ]
+        },
+        "education": {
+            "title": "Éducation & Formation",
+            "badge": "Annexe III Catégorie 3",
+            "opening": "L'IA pour les admissions, les évaluations ou la surveillance des examens est à haut risque. Doit garantir l'absence de refus autonome d'accès à l'éducation.",
+            "faq": [
+                { "q": "L'IA peut-elle noter les élèves de manière autonome ?", "a": "Oui, mais les résultats impactant l'accès à l'éducation doivent faire l'objet d'une surveillance humaine." }
+            ]
+        },
+        "hr-employment": {
+            "title": "RH & Emploi",
+            "badge": "Annexe III Catégorie 4",
+            "opening": "L'IA pour le tri de CV, le recrutement ou le suivi des performances est à haut risque. Déclenche un DPIA RGPD. Aucune décision autonome d'embauche/licenciement.",
+            "faq": [
+                { "q": "L'IA peut-elle prendre des décisions d'embauche finales ?", "a": "Non. Le droit de l'UE exige un décideur humain pour les actions d'emploi importantes." }
+            ]
+        },
+        "healthcare": {
+          "title": "Santé & Services Essentiels",
+          "badge": "Annexe III Catégorie 5",
+          "opening": "Englobe les dispositifs médicaux (août 2027) et les services publics (août 2026). Pas de refus autonome de prestations ou de triage.",
+          "faq": [
+              { "q": "Quelle est la date limite pour les dispositifs médicaux ?", "a": "L'IA intégrée aux dispositifs médicaux bénéficie d'une extension jusqu'en août 2027." }
+          ]
+        },
+        "law-enforcement": {
+          "title": "Application de la loi",
+          "badge": "Annexe III Catégorie 6",
+          "opening": "Systèmes restreints pour le scoring des risques ou la fiabilité des preuves. Évaluation par un tiers obligatoire. Interdit les actions basées uniquement sur le profilage.",
+          "faq": [
+              { "q": "Le profilage est-il autorisé pour l'application de la loi ?", "a": "Strictement limité. Les décisions ne peuvent pas être basées uniquement sur un profilage automatisé." }
+          ]
+        },
+        "migration-border-control": {
+          "title": "Migration & Frontières",
+          "badge": "Annexe III Catégorie 7",
+          "opening": "Évaluations des risques pour les visas/asile. Tiers obligatoire. Blocage strict des décisions d'asile autonomes.",
+          "faq": [
+              { "q": "L'IA peut-elle décider des demandes de visa ?", "a": "Non. Les agents d'immigration doivent examiner et valider toutes les actions à fort impact." }
+          ]
+        },
+        "justice-democracy": {
+          "title": "Justice & Démocratie",
+          "badge": "Annexe III Catégorie 8",
+          "opening": "IA pour la cartographie judiciaire des faits ou l'influence électorale. Tiers obligatoire. Toutes les sorties doivent être réservées à la recherche.",
+          "faq": [
+              { "q": "L'IA peut-elle aider au prononcé des peines ?", "a": "Oui, mais uniquement comme aide à la recherche non contraignante avec des marqueurs d'incertitude explicites." }
+          ]
+        }
+    }
+  },
   "compliance": {
     "hero": {
       "badge": "Enterprise Ready",

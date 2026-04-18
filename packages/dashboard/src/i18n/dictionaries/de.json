@@ -110,6 +110,135 @@
       "cta": "Implement AI Act Shield"
     }
   },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Annex III Compliance-Vorlagen",
+        "title": "Ein Import.",
+        "emphasis": "Alle 8 Sektoren.",
+        "description": "Deterministische Sicherheitsvorlagen für jede Hochrisiko-KI-Kategorie. Jede Vorlage konfiguriert die 13 obligatorischen Basiskontrollen plus sektorspezifische Logik für den EU AI Act Annex III.",
+        "cta": "Vorlagen aufrufen"
+      },
+      "grid": {
+        "title": "Sektorspezifische Vorlagen",
+        "subtitle": "Wählen Sie Ihre Branche aus, um die regulatorischen Anforderungen und die technische Konfiguration zu sehen."
+      },
+      "buildVsBuy": {
+        "title": "Build vs. Vorlage",
+        "subtitle": "Die tatsächlichen Kosten der Implementierung der EU AI Act Compliance von Grund auf.",
+        "headers": {
+          "approach": "Ansatz",
+          "time": "Zeit",
+          "cost": "Kosten",
+          "maint": "Wartung",
+          "evidence": "Nachweise",
+          "audit": "Audit-bereit"
+        },
+        "rows": {
+            "diy": {
+                "name": "Selbst bauen",
+                "time": "17–35 Wochen",
+                "cost": "70k€–140k€",
+                "maint": "Laufende Entwicklung",
+                "evidence": "Manuelle Sammlung",
+                "audit": "Hohes Audit-Risiko"
+            },
+            "suprawall": {
+                "name": "SupraWall Vorlage",
+                "time": "15 Minuten",
+                "cost": "Developer Tier",
+                "maint": "Automatische Updates",
+                "evidence": "Auto-generierte PDF",
+                "audit": "Zertifizierte Nachweise"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Anforderung",
+        "artHeader": "Artikel",
+        "complexityHeader": "Komplexität",
+        "templateHeader": "SupraWall Vorlage",
+        "buildHeader": "Wie Sie es selbst bauen",
+        "engineeringWeeks": "Entwicklungswochen",
+        "costEstimate": "Kostenschätzung",
+        "totalEstimate": "Gesamte Kostenschätzung",
+        "activationHeader": "Ein-Zeilen-Aktivierung",
+        "cta": "Vorlage aufrufen",
+        "preconfigured": "Vorkonfiguriert",
+        "hitl": "HITL-Warteschlange",
+        "blocks": "Verbotene Blöcke",
+        "logs": "Audit-Trails"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Biometrische KI-Compliance",
+            "badge": "Annex III Kategorie 1",
+            "opening": "Biometrische KI-Agenten sind streng reguliert. Fernidentifizierung in öffentlichen Räumen ist VERBOTEN (Art. 5). Alle anderen biometrischen Systeme erfordern eine Bewertung durch Dritte. Compliance ist bis zum 2. August 2026 erforderlich.",
+            "faq": [
+                { "q": "Ist biometrische Fernidentifizierung in der EU erlaubt?", "a": "Generell verboten gemäß Art. 5, mit sehr engen Ausnahmen für die Strafverfolgung." },
+                { "q": "Benötigt Emotionserkennungs-KI Compliance?", "a": "Ja, wenn sie in Bildungs- oder Arbeitsplatzumgebungen eingesetzt wird, ist sie laut Annex III ein Hochrisiko-System." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Kritische Infrastruktur",
+            "badge": "Annex III Kategorie 2",
+            "opening": "KI zur Verwaltung von Wasser-, Energie- oder Verkehrsinfrastruktur ist hochriskant. Überschneidungen mit NIS2-Anforderungen. Hohe Sicherheitspriorität: Jede physische Aktion muss HITL-gesteuert sein.",
+            "faq": [
+                { "q": "Wie überschneidet sich dies mit NIS2?", "a": "Die KI-Compliance muss in das NIS2-Incident-Reporting und Risikomanagement integriert werden." }
+            ]
+        },
+        "education": {
+            "title": "Bildung & Ausbildung",
+            "badge": "Annex III Kategorie 3",
+            "opening": "KI für Zulassungen, Bewertungen oder Prüfungsaufsicht ist hochriskant. Es muss sichergestellt werden, dass der Zugang zu Bildung nicht autonom verweigert wird.",
+            "faq": [
+                { "q": "Kann KI Studenten autonom bewerten?", "a": "Ja, aber Ergebnisse, die den Zugang zur Bildung beeinflussen, müssen menschlich überwacht werden." }
+            ]
+        },
+        "hr-employment": {
+            "title": "Personal & Beschäftigung",
+            "badge": "Annex III Kategorie 4",
+            "opening": "KI für Lebenslauf-Screening, Einstellung oder Leistungsüberwachung ist hochriskant. Löst eine DSGVO-DPIA aus. Keine autonomen Einstellungs-/Entlassungsentscheidungen.",
+            "faq": [
+                { "q": "Kann KI endgültige Einstellungsentscheidungen treffen?", "a": "Nein. Das EU-Recht erfordert einen menschlichen Entscheidungsträger für folgenschwere Beschäftigungsaktionen." },
+                { "q": "Benötige ich eine DSGVO-DPIA für HR-KI?", "a": "Ziemlich sicher. SupraWall automatisiert die technischen Daten für die Bewertung." }
+            ]
+        },
+        "healthcare": {
+          "title": "Gesundheitswesen & soziale Dienste",
+          "badge": "Annex III Kategorie 5",
+          "opening": "Umfasst Medizinprodukte (Aug 2027) und öffentliche Dienste (Aug 2026). Keine autonome Verweigerung von Leistungen oder Triage.",
+          "faq": [
+              { "q": "Wann ist die Frist für Medizinprodukte?", "a": "In Medizinprodukte eingebettete KI hat eine Verlängerung bis August 2027." }
+          ]
+        },
+        "law-enforcement": {
+          "title": "Strafverfolgung",
+          "badge": "Annex III Kategorie 6",
+          "opening": "Eingeschränkte Systeme zur Risikobewertung oder Beweissicherheit. Bewertung durch Dritte obligatorisch. Verbietet Aktionen, die ausschließlich auf Profiling basieren.",
+          "faq": [
+              { "q": "Ist Profiling für die Strafverfolgung erlaubt?", "a": "Streng begrenzt. Entscheidungen dürfen nicht ausschließlich auf automatisiertem Profiling basieren." }
+          ]
+        },
+        "migration-border-control": {
+          "title": "Migration & Grenzkontrolle",
+          "badge": "Annex III Kategorie 7",
+          "opening": "Visum-/Asyl-Risikobewertungen. Dritter obligatorisch. Hard-Block für autonome Asylergebnisse.",
+          "faq": [
+              { "q": "Kann KI über Visumanträge entscheiden?", "a": "Nein. Einwanderungsbeamte müssen alle folgenschweren Aktionen überprüfen und abzeichnen." }
+          ]
+        },
+        "justice-democracy": {
+          "title": "Justiz & Demokratie",
+          "badge": "Annex III Kategorie 8",
+          "opening": "KI für richterliche Sachverhaltsermittlung oder Wahleinflussnahme. Dritter obligatorisch. Alle Ausgaben müssen „nur zu Forschungszwecken“ erfolgen.",
+          "faq": [
+              { "q": "Kann KI bei der Strafzumessung helfen?", "a": "Ja, aber nur als unverbindliche Forschungshilfe mit expliziten Unsicherheitsmerkmalen." }
+          ]
+        }
+    }
+  },
   "compliance": {
     "hero": {
       "badge": "Enterprise Ready",

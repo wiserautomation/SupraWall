@@ -110,6 +110,133 @@
       "cta": "Implement AI Act Shield"
     }
   },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Plantillas de Cumplimiento Anexo III",
+        "title": "Una Importación.",
+        "emphasis": "Los 8 Sectores.",
+        "description": "Plantillas de seguridad deterministas para cada categoría de IA de alto riesgo. Cada plantilla preconfigura los 13 controles básicos obligatorios más la lógica específica del sector para el Anexo III de la Ley de IA de la UE.",
+        "cta": "Acceder a las Plantillas"
+      },
+      "grid": {
+        "title": "Plantillas Específicas del Sector",
+        "subtitle": "Seleccione su industria para ver los requisitos reglamentarios y la configuración técnica."
+      },
+      "buildVsBuy": {
+        "title": "Construir vs. Plantilla",
+        "subtitle": "El coste real de implementar el cumplimiento de la Ley de IA de la UE desde cero.",
+        "headers": {
+          "approach": "Enfoque",
+          "time": "Tiempo",
+          "cost": "Coste",
+          "maint": "Mantenimiento",
+          "evidence": "Evidencia",
+          "audit": "Listo para Auditoría"
+        },
+        "rows": {
+            "diy": {
+                "name": "Construir desde cero",
+                "time": "17–35 semanas",
+                "cost": "68k€–140k€",
+                "maint": "Ingeniería continua",
+                "evidence": "Recolección manual",
+                "audit": "Alto riesgo de auditoría"
+            },
+            "suprawall": {
+                "name": "Plantilla SupraWall",
+                "time": "15 minutos",
+                "cost": "Tier de Desarrollador",
+                "maint": "Actualizaciones automáticas",
+                "evidence": "PDF autogenerado",
+                "audit": "Evidencia Certificada"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Requisito",
+        "artHeader": "Artículo",
+        "complexityHeader": "Complejidad",
+        "templateHeader": "Plantilla SupraWall",
+        "buildHeader": "Cómo construirlo usted mismo",
+        "engineeringWeeks": "Semanas de ingeniería",
+        "costEstimate": "Estimación de costes",
+        "totalEstimate": "Estimación total de ingeniería",
+        "activationHeader": "Activación en una línea",
+        "cta": "Acceder a la Plantilla",
+        "preconfigured": "Preconfigurado",
+        "hitl": "Cola HITL",
+        "blocks": "Bloqueos Prohibidos",
+        "logs": "Audit Trails"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Cumplimiento de IA Biométrica",
+            "badge": "Anexo III Categoría 1",
+            "opening": "Los agentes de IA biométrica están estrictamente regulados. La identificación biométrica remota en espacios públicos está PROHIBIDA (Art. 5). Todos los demás sistemas biométricos requieren una evaluación de terceros. El cumplimiento es obligatorio para el 2 de agosto de 2026.",
+            "faq": [
+                { "q": "¿Está permitida la identificación biométrica remota en la UE?", "a": "Generalmente prohibida bajo el Art. 5, con excepciones muy estrechas para el cumplimiento de la ley." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Infraestructuras Críticas",
+            "badge": "Anexo III Categoría 2",
+            "opening": "La IA que gestiona infraestructuras de agua, energía o tráfico es de alto riesgo. Se solapa con los requisitos de NIS2. Alta prioridad de seguridad: cada acción física debe estar gadeada por HITL.",
+            "faq": [
+                { "q": "¿Cómo se solapa esto con NIS2?", "a": "El cumplimiento de la IA debe integrarse con los informes de incidentes y la gestión de riesgos de NIS2." }
+            ]
+        },
+        "education": {
+            "title": "Educación y Formación",
+            "badge": "Anexo III Categoría 3",
+            "opening": "La IA para admisiones, evaluaciones o supervisión de exámenes es de alto riesgo. Debe garantizar que no haya denegación autónoma de acceso a la educación.",
+            "faq": [
+                { "q": "¿Puede la IA calificar a los estudiantes de forma autónoma?", "a": "Sí, pero los resultados que impacten en el acceso a la educación deben tener supervisión humana." }
+            ]
+        },
+        "hr-employment": {
+            "title": "RRHH y Empleo",
+            "badge": "Anexo III Categoría 4",
+            "opening": "La IA para el cribado de CV, la contratación o el seguimiento del rendimiento es de alto riesgo. Activa una DPIA de RGPD. Sin decisiones autónomas de contratación/despido.",
+            "faq": [
+                { "q": "¿Puede la IA tomar decisiones finales de contratación?", "a": "No. La ley de la UE exige un decisor humano para acciones laborales consecuentes." }
+            ]
+        },
+        "healthcare": {
+          "title": "Sanidad y Servicios Esenciales",
+          "badge": "Anexo III Categoría 5",
+          "opening": "Abarca dispositivos médicos (agosto 2027) y servicios públicos (agosto 2026). Sin denegación autónoma de beneficios o triaje.",
+          "faq": [
+              { "q": "¿Cuál es la fecha límite para dispositivos médicos?", "a": "La IA integrada en dispositivos médicos tiene una extensión hasta agosto de 2027." }
+          ]
+        },
+        "law-enforcement": {
+          "title": "Cumplimiento de la Ley",
+          "badge": "Anexo III Categoría 6",
+          "opening": "Sistemas restringidos para la puntuación de riesgos o la fiabilidad de las pruebas. Evaluación de expertos obligatoria. Prohíbe acciones basadas únicamente en la elaboración de perfiles.",
+          "faq": [
+              { "q": "¿Está permitida la elaboración de perfiles para el cumplimiento de la ley?", "a": "Estrictamente limitado. Las decisiones no pueden basarse únicamente en la elaboración de perfiles automatizada." }
+          ]
+        },
+        "migration-border-control": {
+          "title": "Migración y Fronteras",
+          "badge": "Anexo III Categoría 7",
+          "opening": "Evaluaciones de riesgo para visados/asilo. Expertos obligatorio. Bloqueo estricto de resultados de asilo autónomos.",
+          "faq": [
+              { "q": "¿Puede la IA decidir sobre solicitudes de visado?", "a": "No. Los oficiales de inmigración deben revisar y firmar todas las acciones de alto impacto." }
+          ]
+        },
+        "justice-democracy": {
+          "title": "Justicia y Democracia",
+          "badge": "Anexo III Categoría 8",
+          "opening": "IA para el mapeo de hechos judiciales o influencia electoral. Expertos obligatorio. Toda la salida debe ser solo para investigación.",
+          "faq": [
+              { "q": "¿Puede la IA ayudar en la sentencia?", "a": "Sí, pero solo como una ayuda de investigación no vinculante con marcadores de incertidumbre explícitos." }
+          ]
+        }
+    }
+  },
   "compliance": {
     "hero": {
       "badge": "Enterprise Ready",
