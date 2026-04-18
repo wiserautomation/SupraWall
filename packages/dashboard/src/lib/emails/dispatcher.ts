@@ -30,7 +30,7 @@ export async function dispatchEmail(
   params: Record<string, any>,
   name?: string
 ) {
-  const templateConfig = phase1Templates.find(t => t.tag === tag);
+  const templateConfig = phase1Templates.find(t => t.id === tag);
   if (!templateConfig) {
     console.warn(`No template config found for tag: ${tag}`);
     return { success: false, error: "Missing template config" };
@@ -43,11 +43,11 @@ export async function dispatchEmail(
     : { name: 'SupraWall Team', email: process.env.EMAIL_SENDER_TEAM || 'team@supra-wall.com' };
 
   // Render HTML manually since MailerLite transactional uses HTML field
-  const baseTemplatePath = path.join(process.cwd(), 'packages/dashboard/src/lib/emails/templates/base.html');
+  const baseTemplatePath = path.join(process.cwd(), 'src/lib/emails/templates/base.html');
   let html = fs.readFileSync(baseTemplatePath, 'utf8');
 
   // Inject content into base template
-  html = html.replace('{{content}}', templateConfig.html);
+  html = html.replace('{{content}}', templateConfig.content);
 
   // Simple variable substitution
   Object.keys(params).forEach(key => {

@@ -18,8 +18,8 @@ import { phase1Templates } from './phase1';
 async function generatePreviews() {
     process.stdout.write("Starting MailerLite template preview generation...\n");
 
-    const baseTemplatePath = path.join(process.cwd(), 'packages/dashboard/src/lib/emails/templates/base.html');
-    const previewsDir = path.join(process.cwd(), 'packages/dashboard/src/lib/emails/previews');
+    const baseTemplatePath = path.join(process.cwd(), 'src/lib/emails/templates/base.html');
+    const previewsDir = path.join(process.cwd(), 'src/lib/emails/previews');
 
     if (!fs.existsSync(previewsDir)) {
         fs.mkdirSync(previewsDir, { recursive: true });
@@ -28,10 +28,10 @@ async function generatePreviews() {
     const baseTemplate = fs.readFileSync(baseTemplatePath, 'utf8');
 
     for (const template of phase1Templates) {
-        process.stdout.write(`Rendering ${template.tag}: ${template.name}...\n`);
+        process.stdout.write(`Rendering ${template.id}: ${template.name}...\n`);
 
-        const renderedHtml = baseTemplate.replace('{{content}}', template.html);
-        const fileName = `${template.tag}.html`;
+        const renderedHtml = baseTemplate.replace('{{content}}', template.content);
+        const fileName = `${template.id}.html`;
         fs.writeFileSync(path.join(previewsDir, fileName), renderedHtml);
     }
 
