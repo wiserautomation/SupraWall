@@ -15,6 +15,14 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ text }); // Return as is if missing data
         }
 
+        // H11: DoS Prevention - limit payload sizes
+        if (text.length > 100000) {
+            return NextResponse.json({ error: "Text payload too large" }, { status: 413 });
+        }
+        if (secretValues.length > 50) {
+            return NextResponse.json({ error: "Too many secrets provided" }, { status: 400 });
+        }
+
         let scrubbedText = text;
         for (const value of secretValues) {
             if (!value || typeof value !== 'string') continue;

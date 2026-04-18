@@ -22,7 +22,6 @@ jobs:
         run: npm install --legacy-peer-deps --ignore-scripts
       - name: npm audit
         run: npm audit --audit-level=high
-        continue-on-error: true
 
   build:
     name: Build & Test
