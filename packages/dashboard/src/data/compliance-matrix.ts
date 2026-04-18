@@ -6,6 +6,7 @@ export type SupraWallFeature = 'policy-engine' | 'audit-trail' | 'hitl' | 'incid
 
 export interface TemplateConfig {
   slug: string                    // 'hr-employment', 'biometrics', etc.
+  name: string                    // "HR & Employment", etc.
   annexIIICategory: number        // 1–8
   conformityAssessment: 
     | 'self-assessment' 
@@ -178,6 +179,7 @@ export const getActiveDeadlines = () =>
 export const sectorTemplates: TemplateConfig[] = [
   {
     slug: 'biometrics',
+    name: 'Biometric AI',
     annexIIICategory: 1,
     conformityAssessment: 'third-party-mandatory',
     diyEngineeringWeeks: { min: 19, max: 30 },
@@ -189,6 +191,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'critical-infrastructure',
+    name: 'Critical Infrastructure',
     annexIIICategory: 2,
     conformityAssessment: 'self-assessment',
     diyEngineeringWeeks: { min: 21, max: 33 },
@@ -200,6 +203,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'education',
+    name: 'Education & Training',
     annexIIICategory: 3,
     conformityAssessment: 'self-assessment',
     diyEngineeringWeeks: { min: 17, max: 27 },
@@ -211,6 +215,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'hr-employment',
+    name: 'HR & Employment',
     annexIIICategory: 4,
     conformityAssessment: 'self-assessment',
     diyEngineeringWeeks: { min: 21, max: 34 },
@@ -222,6 +227,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'healthcare',
+    name: 'Healthcare',
     annexIIICategory: 5,
     conformityAssessment: 'third-party-conditional',
     diyEngineeringWeeks: { min: 22, max: 36 },
@@ -233,6 +239,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'law-enforcement',
+    name: 'Law Enforcement',
     annexIIICategory: 6,
     conformityAssessment: 'third-party-mandatory',
     diyEngineeringWeeks: { min: 21, max: 35 },
@@ -244,6 +251,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'migration-border-control',
+    name: 'Migration & Border',
     annexIIICategory: 7,
     conformityAssessment: 'third-party-mandatory',
     diyEngineeringWeeks: { min: 21, max: 34 },
@@ -255,6 +263,7 @@ export const sectorTemplates: TemplateConfig[] = [
   },
   {
     slug: 'justice-democracy',
+    name: 'Justice & Democracy',
     annexIIICategory: 8,
     conformityAssessment: 'third-party-mandatory',
     diyEngineeringWeeks: { min: 21, max: 35 },
