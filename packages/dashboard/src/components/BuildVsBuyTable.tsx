@@ -10,7 +10,15 @@ interface BuildVsBuyTableProps {
 }
 
 export function BuildVsBuyTable({ config, dictionary }: BuildVsBuyTableProps) {
-    const hub = dictionary.complianceTemplates.hub.buildVsBuy;
+    const hub = dictionary?.complianceTemplates?.hub?.buildVsBuy || {
+        title: 'Build vs. Buy',
+        subtitle: 'The true cost of implementation',
+        headers: { approach: 'Approach', time: 'Time', cost: 'Cost', maint: 'Maintenance', evidence: 'Evidence', audit: 'Audit' },
+        rows: { 
+            diy: { name: 'DIY', maint: 'Ongoing', evidence: 'Manual', audit: 'Risk' },
+            suprawall: { name: 'SupraWall', cost: 'Developer Tier', maint: 'Automatic', evidence: 'Auto-PDF', audit: 'Certified' }
+        }
+    };
 
     return (
         <div className="build-vs-buy-table my-12 overflow-hidden rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-neutral-900 via-black to-blue-950/20 backdrop-blur-xl">

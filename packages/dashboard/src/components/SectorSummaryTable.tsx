@@ -10,17 +10,17 @@ interface SectorSummaryTableProps {
 }
 
 export function SectorSummaryTable({ entries, dictionary }: SectorSummaryTableProps) {
-    const common = dictionary.complianceTemplates.common;
+    const common = dictionary?.complianceTemplates?.common || {};
 
     return (
         <div className="sector-summary-table my-12 overflow-hidden rounded-3xl border border-white/5 bg-neutral-900/40 backdrop-blur-xl">
             <table className="w-full border-collapse text-left text-xs sm:text-sm">
                 <thead>
                     <tr className="border-b border-white/10 bg-white/5">
-                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500 w-[40%]">{common.reqHeader}</th>
-                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500">{common.artHeader}</th>
-                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500">{common.complexityHeader}</th>
-                        <th className="px-6 py-4 font-black uppercase tracking-widest text-emerald-500 text-right">{common.templateHeader}</th>
+                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500 w-[40%]">{common.reqHeader || 'Requirement'}</th>
+                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500">{common.artHeader || 'Article'}</th>
+                        <th className="px-6 py-4 font-black uppercase tracking-widest text-blue-500">{common.complexityHeader || 'Complexity'}</th>
+                        <th className="px-6 py-4 font-black uppercase tracking-widest text-emerald-500 text-right">{common.templateHeader || 'Template'}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 font-medium">

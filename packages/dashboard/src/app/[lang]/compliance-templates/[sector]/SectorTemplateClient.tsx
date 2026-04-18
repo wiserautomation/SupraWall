@@ -17,8 +17,19 @@ interface SectorTemplateClientProps {
 }
 
 export default function SectorTemplateClient({ template, dictionary, lang }: SectorTemplateClientProps) {
-    const localized = (dictionary as any).complianceTemplates?.sectors?.[template.slug] || {};
-    const common = (dictionary as any).complianceTemplates?.common || {};
+    const localized = (dictionary as any).complianceTemplates?.sectors?.[template.slug] || {
+        title: template.name,
+        badge: 'Technical Blueprint',
+        opening: 'This template provides deterministic safety controls for high-risk AI agents.',
+        faq: []
+    };
+    const common = (dictionary as any).complianceTemplates?.common || {
+        reqHeader: 'Requirement',
+        artHeader: 'Article',
+        complexityHeader: 'Complexity',
+        templateHeader: 'Template',
+        preconfigured: 'Pre-configured'
+    };
     
     // Filter the matrix for sector-specific requirements
     const sectorRequirements = getBySector(template.slug).filter(entry => 
