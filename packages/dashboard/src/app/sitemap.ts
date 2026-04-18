@@ -4,7 +4,7 @@ import path from 'path';
 import { i18n } from '../i18n/config';
 import { SLUG_MAP } from '../i18n/slug-map';
 import { newsArticles } from './[lang]/news/newsData';
-import { complianceTemplates } from '../data/compliance-matrix';
+import { sectorTemplates } from '../data/compliance-matrix';
 
 const BASE_URL = 'https://www.supra-wall.com';
 
@@ -87,8 +87,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const baseRoutes = getRoutes(appDir);
     
     // Explicitly add dynamic routes
-    const newsRoutes = newsArticles.filter(a => a.published).map(a => `/news/${a.slug}`);
-    const sectorRoutes = complianceTemplates.map(t => `/compliance-templates/${t.slug}`);
+    const newsRoutes = newsArticles.filter((a: any) => a.published).map((a: any) => `/news/${a.slug}`);
+    const sectorRoutes = sectorTemplates.map((t: any) => `/compliance-templates/${t.slug}`);
     
     const sitemapEntries: MetadataRoute.Sitemap = [];
 
