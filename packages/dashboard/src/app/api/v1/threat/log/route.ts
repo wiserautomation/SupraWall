@@ -16,7 +16,7 @@ const LogBodySchema = z.object({
     event: z.string().min(1).max(200),
     agentId: z.string().min(1).max(200),
     severity: z.enum(['low', 'medium', 'high', 'critical']),
-    metadata: z.record(z.unknown()).optional().default({}),
+    metadata: z.record(z.string(), z.unknown()).optional().default({}),
 });
 
 // ── In-memory rate limiter: 60 req / min per apiKey ──
