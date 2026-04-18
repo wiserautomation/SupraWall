@@ -14,8 +14,8 @@ interface TemplatesHubClientProps {
 }
 
 export default function TemplatesHubClient({ dictionary, lang }: TemplatesHubClientProps) {
-    const hub = dictionary.complianceTemplates.hub;
-    const sectorsDict = dictionary.complianceTemplates.sectors;
+    const hub = (dictionary as any).complianceTemplates?.hub || { hero: { badge: '', title: '', emphasis: '', description: '' }, grid: { title: '', subtitle: '' } };
+    const sectorsDict = (dictionary as any).complianceTemplates?.sectors || {};
 
     return (
         <main className="pb-24">

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     if (!template) return {};
 
     const dictionary = await getDictionary(lang as Locale);
-    const localized = dictionary.complianceTemplates.sectors[sector];
+    const localized = (dictionary as any).complianceTemplates?.sectors?.[sector];
     if (!localized) return {};
 
     const baseUrl = 'https://www.supra-wall.com';

@@ -17,8 +17,8 @@ interface SectorTemplateClientProps {
 }
 
 export default function SectorTemplateClient({ template, dictionary, lang }: SectorTemplateClientProps) {
-    const localized = dictionary.complianceTemplates.sectors[template.slug];
-    const common = dictionary.complianceTemplates.common;
+    const localized = (dictionary as any).complianceTemplates?.sectors?.[template.slug] || {};
+    const common = (dictionary as any).complianceTemplates?.common || {};
     
     // Filter the matrix for sector-specific requirements
     const sectorRequirements = getBySector(template.slug).filter(entry => 
