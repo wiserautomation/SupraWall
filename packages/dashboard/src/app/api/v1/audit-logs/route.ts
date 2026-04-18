@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool } from "@/lib/db_sql";
 import { verifyAuth, unauthorizedResponse } from '@/lib/api-auth';
 import { db as firestore } from '@/lib/firebase-admin';
+import { getEffectiveTenantId } from '@/lib/user';
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,8 @@ export async function GET(request: NextRequest) {
     if (!userId) return unauthorizedResponse();
 
     const { searchParams } = new URL(request.url);
+    const agentId = searchParams.get('agentId');
+    const limitParam = parseInt(searchParams.get('limit') || '50', 10);
     const tenantId = await getEffectiveTenantId(userId);
 
     // 1. Fetch from PostgreSQL (Source of Truth for new logs)
