@@ -18,11 +18,16 @@ export interface OAuthClient {
 const CLIENT_REGISTRY: Record<string, OAuthClient> = {
     "suprawall_cli": {
         clientId: "suprawall_cli",
-        clientSecret: process.env.MCP_CLI_CLIENT_SECRET || "cli_secret_placeholder_change_me",
+        clientSecret: (() => {
+            const secret = process.env.MCP_CLI_CLIENT_SECRET;
+            if (!secret && process.env.NODE_ENV === "production") {
+                throw new Error("CRITICAL SECURITY: MCP_CLI_CLIENT_SECRET is not set in production. OAuth token exchange is compromised.");
+            }
+            return secret || "cli_secret_dev_fallback";
+        })(),
         redirectUris: ["http://localhost:3000/callback", "https://www.supra-wall.com/api/mcp/auth/callback"],
         name: "SupraWall CLI"
     },
-    // Add other official integrations here
 };
 
 export function getOAuthClient(clientId: string): OAuthClient | null {

@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "unsupported_grant_type" }, { status: 400 });
     }
 
-    // ── C4: Client Verification ──
+    // ── C4: OAuth Hardening ──
     const client = getOAuthClient(client_id);
     if (!client) {
         return NextResponse.json({ error: "invalid_client", message: "Client not registered." }, { status: 401 });
@@ -30,8 +30,10 @@ export async function POST(req: NextRequest) {
     if (!verifyClientSecret(client, client_secret)) {
         return NextResponse.json({ error: "invalid_client", message: "Client authentication failed." }, { status: 401 });
     }
-    if (redirect_uri && !isValidRedirectUri(client, redirect_uri)) {
-        return NextResponse.json({ error: "invalid_grant", message: "Redirect URI mismatch." }, { status: 400 });
+
+    // RFC 6749: redirect_uri MUST match if provided at authorize time
+    if (!redirect_uri) {
+        return NextResponse.json({ error: "invalid_request", message: "redirect_uri is required." }, { status: 400 });
     }
 
     // Verify code in Firestore
@@ -41,6 +43,12 @@ export async function POST(req: NextRequest) {
     }
 
     const codeData = codeSnap.data()!;
+    
+    // Cross-reference redirect_uri (RFC 6749 § 4.1.3)
+    if (redirect_uri !== codeData.redirectUri) {
+        return NextResponse.json({ error: "invalid_grant", message: "Redirect URI mismatch." }, { status: 400 });
+    }
+
     if (Date.now() > codeData.expiresAt.toMillis()) {
         await db.collection('mcp_oauth_codes').doc(code).delete();
         return NextResponse.json({ error: "invalid_grant", message: "Code expired" }, { status: 400 });
