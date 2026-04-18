@@ -64,6 +64,17 @@ function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] 
     return routes;
 }
 
+/**
+ * Safe URL builder to prevent double slashes.
+ */
+function buildUrl(base: string, path: string): string {
+    const cleanBase = base.replace(/\/+$/, '');
+    const cleanPath = path.replace(/^\/+/, '');
+    return `${cleanBase}/${cleanPath}`;
+}
+
+const COMPLETE_LOCALES = ['en', 'de']; // Per implementation plan
+
 export default function sitemap(): MetadataRoute.Sitemap {
     const appDir = path.join(process.cwd(), 'src', 'app');
     
@@ -82,24 +93,32 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
         // Generate entries for all supported locales
         i18n.locales.forEach((locale) => {
+            // Only generate index entry for complete locales
+            if (!COMPLETE_LOCALES.includes(locale)) return;
+
             const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
             // Clean paths and ensure they start with /
             const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
             const finalPath = localizedPath || `/${locale}`;
-            const fullUrl = `${BASE_URL}${finalPath}`;
+            const fullUrl = buildUrl(BASE_URL, finalPath);
 
             // Build alternates for this URL
             const languages: Record<string, string> = {};
             i18n.locales.forEach((altLocale) => {
+                // Only include alternates for complete locales
+                if (!COMPLETE_LOCALES.includes(altLocale)) return;
+
                 const altPublicSlug = SLUG_MAP[internalSlug]?.[altLocale] || internalSlug;
                 const altLocalizedPath = `/${altLocale}/${altPublicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-                languages[altLocale] = `${BASE_URL}${altLocalizedPath || `/${altLocale}`}`;
+                const altFinalPath = altLocalizedPath || `/${altLocale}`;
+                languages[altLocale] = buildUrl(BASE_URL, altFinalPath);
             });
             
-            // Add x-default (usually English)
+            // Add x-default (pointing to English version)
             const defaultSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
             const defaultPath = `/en/${defaultSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-            languages['x-default'] = `${BASE_URL}${defaultPath || '/en'}`;
+            const xDefaultUrl = buildUrl(BASE_URL, defaultPath || '/en');
+            languages['x-default'] = xDefaultUrl;
 
             sitemapEntries.push({
                 url: fullUrl,

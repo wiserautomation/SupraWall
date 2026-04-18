@@ -115,12 +115,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  eslint: {
-    ignoreDuringBuilds: false,
-  },
-  typescript: {
-    ignoreBuildErrors: false,
-  },
   transpilePackages: [],
   webpack: (config, { isServer }) => {
     // For client bundles: stub out any Node.js-only modules that may be

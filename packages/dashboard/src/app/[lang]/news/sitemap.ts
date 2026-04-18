@@ -4,12 +4,23 @@
 import { MetadataRoute } from "next";
 import { newsArticles } from "./newsData";
 
+/**
+ * Safe URL builder to prevent double slashes.
+ */
+function buildUrl(base: string, path: string): string {
+    const cleanBase = base.replace(/\/+$/, '');
+    const cleanPath = path.replace(/^\/+/, '');
+    return `${cleanBase}/${cleanPath}`;
+}
+
+const BASE_URL = 'https://www.supra-wall.com';
+
 export default function newsSitemap({ params }: { params: { lang: string } }): MetadataRoute.Sitemap {
     const { lang } = params;
     return newsArticles
         .filter((a) => a.published)
         .map((article) => ({
-            url: `https://www.supra-wall.com/${lang}/news/${article.slug}`,
+            url: buildUrl(BASE_URL, `${lang}/news/${article.slug}`),
             lastModified: new Date(article.date),
             changeFrequency: "weekly" as const,
             priority: 0.7,
