@@ -3,11 +3,36 @@
 
 export const dynamic = 'force-dynamic';
 
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { GoogleGenAI } from "@google/genai";
+import { requireDashboardAuth } from "@/lib/api-guard";
 
-export async function POST(req: Request) {
+// Simple in-memory rate limit for the /generate endpoint (C6 remediation)
+const rateLimitMap = new Map<string, { count: number, resetAt: number }>();
+const MAX_REQUESTS_PER_HOUR = 30;
+
+export async function POST(req: NextRequest) {
+    // ── C6: Auth Guard ──
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
+
     try {
+        // ── C6: Rate Limiting ──
+        const now = Date.now();
+        const userLimit = rateLimitMap.get(userId);
+        if (userLimit && userLimit.resetAt > now) {
+            if (userLimit.count >= MAX_REQUESTS_PER_HOUR) {
+                return NextResponse.json(
+                    { error: "Rate limit exceeded for AI generation. Try again in an hour." },
+                    { status: 429 }
+                );
+            }
+            userLimit.count++;
+        } else {
+            rateLimitMap.set(userId, { count: 1, resetAt: now + 3600 * 1000 });
+        }
+
         const body = await req.json();
         const { prompt, toolName = "a generic tool" } = body;
         if (!prompt) {

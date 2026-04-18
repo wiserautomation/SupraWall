@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
+import { verifyMCPToken, MCPTokenData } from '@/lib/mcp-auth';
 
 /**
  * MCP SSE Transport Endpoint
@@ -13,15 +14,30 @@ import { db } from '@/lib/firebase-admin';
  * POST /api/mcp/sse?sessionId=... - Receives MCP messages
  */
 
-const connections = new Map<string, ReadableStreamDefaultController>();
+interface SSEConnection {
+    controller: ReadableStreamDefaultController;
+    tokenData: MCPTokenData;
+}
+
+const connections = new Map<string, SSEConnection>();
 
 export async function GET(req: NextRequest) {
+    // ── H5: Auth Guard ──
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+        return NextResponse.json({ error: "Unauthorized: Missing MCP access token" }, { status: 401 });
+    }
+    const tokenData = await verifyMCPToken(authHeader.split(' ')[1]);
+    if (!tokenData) {
+        return NextResponse.json({ error: "Invalid or expired MCP access token" }, { status: 401 });
+    }
+
     const sessionId = crypto.randomUUID();
     
     // Create actual SSE stream
     const stream = new ReadableStream({
         start(controller) {
-            connections.set(sessionId, controller);
+            connections.set(sessionId, { controller, tokenData });
             
             // Send initial endpoint URL for POSTing messages
             const baseUrl = new URL(req.url).origin;
@@ -59,24 +75,30 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
     const sessionId = req.nextUrl.searchParams.get('sessionId');
-    if (!sessionId || !connections.has(sessionId)) {
+    const session = sessionId ? connections.get(sessionId) : null;
+    
+    if (!session) {
         return NextResponse.json({ error: "Invalid or expired session" }, { status: 400 });
     }
 
     const message = await req.json();
-    const controller = connections.get(sessionId);
+    const { controller, tokenData } = session;
 
     // Handle MCP JSON-RPC
-    const response = await handleMcpMessage(message, req);
+    const response = await handleMcpMessage(message, req, tokenData);
 
     if (response && controller) {
-        controller.enqueue(`event: message\ndata: ${JSON.stringify(response)}\n\n`);
+        try {
+            controller.enqueue(`event: message\ndata: ${JSON.stringify(response)}\n\n`);
+        } catch {
+            connections.delete(sessionId);
+        }
     }
 
     return NextResponse.json({ status: "ok" });
 }
 
-async function handleMcpMessage(message: any, req: NextRequest) {
+async function handleMcpMessage(message: any, req: NextRequest, tokenData: MCPTokenData) {
     const { method, params, id } = message;
 
     switch (method) {
@@ -86,13 +108,8 @@ async function handleMcpMessage(message: any, req: NextRequest) {
                 id,
                 result: {
                     protocolVersion: "2024-11-05",
-                    capabilities: {
-                        tools: { listChanged: true }
-                    },
-                    serverInfo: {
-                        name: "SupraWall Hosted MCP",
-                        version: "1.0.0"
-                    }
+                    capabilities: { tools: { listChanged: true } },
+                    serverInfo: { name: "SupraWall Hosted MCP", version: "1.0.0" }
                 }
             };
 
@@ -108,23 +125,10 @@ async function handleMcpMessage(message: any, req: NextRequest) {
                             inputSchema: {
                                 type: "object",
                                 properties: {
-                                    agent_id: { type: "string" },
                                     tool_name: { type: "string" },
                                     parameters: { type: "object" }
                                 },
-                                required: ["agent_id", "tool_name"]
-                            }
-                        },
-                        {
-                            name: "request_approval",
-                            description: "Trigger a human oversight workflow for high-risk actions.",
-                            inputSchema: {
-                                type: "object",
-                                properties: {
-                                    agent_id: { type: "string" },
-                                    action_description: { type: "string" }
-                                },
-                                required: ["agent_id", "action_description"]
+                                required: ["tool_name"]
                             }
                         }
                     ]
@@ -133,14 +137,41 @@ async function handleMcpMessage(message: any, req: NextRequest) {
 
         case 'tools/call':
             const { name, arguments: args } = params;
-            // Internal call to evaluate logic
-            // Note: In a real hosted scenario, we'd resolve the user from OAuth token here
+            
+            // ── H5: Backdoor Removal ──
+            // Resolve actual API key for this user/agent to avoid bypass
+            let apiKey: string | null = null;
+            try {
+                if (tokenData.agentId) {
+                    const agentSnap = await db.collection("agents").doc(tokenData.agentId).get();
+                    apiKey = agentSnap.data()?.apiKey || null;
+                }
+                
+                if (!apiKey) {
+                    const platformSnap = await db.collection("platforms").where("userId", "==", tokenData.userId).limit(1).get();
+                    if (!platformSnap.empty) {
+                        const keysSnap = await db.collection("platforms").doc(platformSnap.docs[0].id).collection("keys").limit(1).get();
+                        apiKey = keysSnap.docs[0]?.id || null;
+                    }
+                }
+            } catch (err) {
+                console.error("[MCP SSE] Failed to resolve API key:", err);
+            }
+
+            if (!apiKey) {
+                return {
+                    jsonrpc: "2.0",
+                    id,
+                    error: { code: -32000, message: "No API key found for this MCP session. Verify your agent configuration." }
+                };
+            }
+
             const baseUrl = new URL(req.url).origin;
             const evalResponse = await fetch(`${baseUrl}/api/v1/evaluate`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    apiKey: "mcp_internal_bypass", // We'll need a way to trust the hosted server calls
+                    apiKey,
                     toolName: name,
                     args,
                 })
@@ -150,9 +181,7 @@ async function handleMcpMessage(message: any, req: NextRequest) {
             return {
                 jsonrpc: "2.0",
                 id,
-                result: {
-                    content: [{ type: "text", text: JSON.stringify(data) }]
-                }
+                result: { content: [{ type: "text", text: JSON.stringify(data) }] }
             };
 
         default:

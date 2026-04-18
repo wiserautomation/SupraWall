@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 const PROPERTY_ID = "525946717";
 const ADMIN_EMAILS_RAW = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
-const ADMIN_EMAILS = ADMIN_EMAILS_RAW.length > 0 ? ADMIN_EMAILS_RAW : ["peghin@gmail.com"];
+const ADMIN_EMAILS = ADMIN_EMAILS_RAW.length > 0 ? ADMIN_EMAILS_RAW : [];
 
 export async function GET(req: NextRequest) {
     try {

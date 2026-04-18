@@ -5,37 +5,32 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from "next/server";
 import { analyzeAgentCode } from "@/lib/audit/static-analyzer";
+import { requireDashboardAuth } from "@/lib/api-guard";
 
-// Simple in-memory rate limiter (resets on function cold start)
-// For production, use Redis or Firestore-backed rate limiting
+// Simple in-memory rate limiter per user (C6/H4 remediation)
 const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-
-function isRateLimited(ip: string): boolean {
-    const now = Date.now();
-    const window = rateLimitMap.get(ip);
-
-    if (!window || window.resetAt < now) {
-        rateLimitMap.set(ip, { count: 1, resetAt: now + 60 * 60 * 1000 });
-        return false;
-    }
-
-    if (window.count >= 5) return true;
-    window.count++;
-    return false;
-}
+const MAX_SCANS_PER_HOUR = 10;
 
 export async function POST(req: NextRequest) {
-    try {
-        const ip =
-            req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-            req.headers.get("x-real-ip") ||
-            "unknown";
+    // ── H4: Auth Guard ──
+    const guard = await requireDashboardAuth(req);
+    if (guard instanceof NextResponse) return guard;
+    const { userId } = guard;
 
-        if (isRateLimited(ip)) {
-            return NextResponse.json(
-                { error: "Rate limit exceeded. Maximum 5 deep scans per hour." },
-                { status: 429 }
-            );
+    try {
+        // ── H4: Rate Limiting ──
+        const now = Date.now();
+        const userLimit = rateLimitMap.get(userId);
+        if (userLimit && userLimit.resetAt > now) {
+            if (userLimit.count >= MAX_SCANS_PER_HOUR) {
+                return NextResponse.json(
+                    { error: "Rate limit exceeded for deep scans. Maximum 10 per hour." },
+                    { status: 429 }
+                );
+            }
+            userLimit.count++;
+        } else {
+            rateLimitMap.set(userId, { count: 1, resetAt: now + 3600 * 1000 });
         }
 
         const { code, framework } = await req.json();

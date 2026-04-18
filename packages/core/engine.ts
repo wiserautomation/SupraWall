@@ -1,5 +1,4 @@
 import { SupraWallPolicy, EvaluateRequest, EvaluateResponse, PolicyRule, RuleDecision } from "./types";
-import { crypto } from "node:crypto"; // Assuming node environment
 
 export class DeterministicEngine {
     private policies: SupraWallPolicy[] = [];
@@ -102,18 +101,30 @@ export class DeterministicEngine {
     }
 
     /**
-     * Prevents ReDoS by evaluating regex with a timeout.
+     * Prevents ReDoS by evaluating regex with a timeout. (H1 remediation)
      */
     private safeRegexMatch(input: string, pattern: string): boolean {
         try {
-            // Simple check: catastrophic backtracking regexes often take a long time.
+            // Priority: use Node.js 'vm' module if available to enforce real timeout
+            if (typeof process !== 'undefined' && process.versions && process.versions.node) {
+                try {
+                    // Dynamic require to avoid bundling issues in browsers
+                    const vm = require('node:vm');
+                    const script = new vm.Script(`new RegExp(pattern, 'i').test(input)`);
+                    const context = vm.createContext({ pattern, input });
+                    return script.runInContext(context, { timeout: this.REGEX_TIMEOUT_MS });
+                } catch (vmErr: any) {
+                    // If timeout occurred, it throws an error. We want to fail-closed (false).
+                    if (vmErr.code === 'ERR_SCRIPT_EXECUTION_TIMEOUT') {
+                        console.error(`[DeterministicEngine] ReDoS protection triggered for pattern: ${pattern}`);
+                        return false;
+                    }
+                    // Fallback to standard if vm is missing or failed for other reasons
+                }
+            }
+
+            // Fallback for browser/Edge environments or if vm failed
             const re = new RegExp(pattern, 'i');
-            
-            // In a real production environment with high security requirements, 
-            // you should use a proper ReDoS-safe library or a dedicated VM sandbox with timeout.
-            // For Layer 1 OSS, we implement a basic protection loop or assume re2 usage where possible.
-            // Here we use a standard test but note the audit recommendation for re2/safe-regex.
-            
             return re.test(input);
         } catch (e) {
             return false;

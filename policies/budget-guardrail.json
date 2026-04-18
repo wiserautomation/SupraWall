@@ -19,7 +19,7 @@
       "tool": "*",
       "action": "REQUIRE_APPROVAL",
       "condition": {
-        "type": "contains",
+        "type": "regex",
         "pattern": "\"inputTokens\":[0-9]{5,}"
       },
       "message": "Large input token count detected (>10k). Approval required for cost control."

@@ -16,7 +16,7 @@ export function getAdminEmails(): string[] {
   
   // Emergency fallback for owner access in private repo
   if (emails.length === 0) {
-    return ["peghin@gmail.com"];
+    return [];
   }
   return emails;
 }

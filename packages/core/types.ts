@@ -44,3 +44,28 @@ export interface EvaluateResponse {
     semanticScore?: number;
     threatType?: string;
 }
+
+export interface Agent {
+    id?: string;
+    userId: string;
+    name: string;
+    apiKey?: string;
+    scopes?: string[];
+    scopeLimits?: Record<string, number>;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface Adapter {
+    connect(connectionString: string): Promise<void>;
+    createAgent(agent: Agent): Promise<Agent>;
+    getAgent(id: string): Promise<Agent | null>;
+    updateAgent(id: string, updates: Partial<Agent>): Promise<void>;
+    deleteAgent(id: string): Promise<void>;
+    listAgents(filter?: { userId?: string }): Promise<Agent[]>;
+}
+
+export interface SupraWallConfig {
+    adapter: string;
+    connectionString?: string;
+}

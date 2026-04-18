@@ -59,7 +59,7 @@ SupraWall is built by security engineers for the AI community.
 
 *   **Website**: [https://www.supra-wall.com](https://www.supra-wall.com)
 *   **Docs**: [https://docs.supra-wall.com](https://docs.supra-wall.com)
-*   **GitHub**: [SupraWall-Private](https://github.com/wiserautomation/Supra-Wall-Private) (v1.0.0 Stable)
+*   **GitHub**: [SupraWall-Private](https://github.com/wiserautomation/SupraWall) (v1.0.0 Stable)
 
 ### 🚨 Stay Secure, Build Faster.
 Add SupraWall to your agent today and prevent the next "Prompt Injection" headline.

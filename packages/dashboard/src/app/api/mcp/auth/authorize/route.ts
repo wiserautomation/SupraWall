@@ -5,6 +5,7 @@ export const dynamic = 'force-dynamic';
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase-admin';
+import { getOAuthClient, isValidRedirectUri } from '@/lib/oauth-clients';
 
 /**
  * OAuth 2.0 Authorization Endpoint
@@ -21,7 +22,14 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Missing client_id or redirect_uri" }, { status: 400 });
     }
 
-    // In a real app, we'd verify the client_id here.
+    // ── C5: Client Verification ──
+    const client = getOAuthClient(clientId);
+    if (!client) {
+        return NextResponse.json({ error: "invalid_client", message: "Client not registered." }, { status: 400 });
+    }
+    if (!isValidRedirectUri(client, redirectUri)) {
+        return NextResponse.json({ error: "invalid_redirect_uri", message: "Redirect URI not registered for this client." }, { status: 400 });
+    }
     // For this distribution plan, we redirect to a consent page on the dashboard.
     const consentUrl = new URL('/mcp/consent', req.url);
     consentUrl.searchParams.set('client_id', clientId);

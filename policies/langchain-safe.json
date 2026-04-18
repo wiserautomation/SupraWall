@@ -28,7 +28,7 @@
       "name": "Block Unprotected SSH",
       "tool": "ssh:*",
       "action": "REQUIRE_APPROVAL",
-      "message": "SSH tool calls require humanitarian approval."
+      "message": "SSH tool calls require human approval."
     }
   ]
 }

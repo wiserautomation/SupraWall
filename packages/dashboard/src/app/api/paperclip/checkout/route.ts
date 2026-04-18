@@ -6,6 +6,7 @@ export const dynamic = "force-dynamic";
 import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe";
 import { pool } from "@/lib/db_sql";
+import { hashApiKey } from "@/lib/hash";
 
 // Plan → Stripe price IDs (base flat fee + metered overage component)
 const PLANS: Record<string, { basePriceId: string; meteredPriceId: string; tier: string; label: string }> = {
@@ -32,19 +33,47 @@ const PLANS: Record<string, { basePriceId: string; meteredPriceId: string; tier:
 /**
  * POST /api/paperclip/checkout
  * Creates a Stripe Checkout session for a Paperclip company.
- * No Firebase auth required — user arrives from the /activate page with their email.
+ * Requires a valid sw_temp_* activation token to prevent griefing. (C7 remediation)
  *
- * Body: { plan: "team"|"business", companyId: string, email: string }
+ * Body: { plan: "team"|"business", companyId: string, email: string, token: string }
  */
 export async function POST(req: NextRequest) {
-    let body: { plan?: string; companyId?: string; email?: string };
+    let body: { plan?: string; companyId?: string; email?: string; token?: string };
     try {
         body = await req.json();
     } catch {
         return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
     }
 
-    const { plan, companyId, email } = body;
+    const { plan, companyId, email, token } = body;
+
+    // ── C7: Token Validation ──
+    if (!token || !token.startsWith("sw_temp_")) {
+        return NextResponse.json({ error: "Missing or invalid activation token." }, { status: 401 });
+    }
+
+    try {
+        const tokenHash = hashApiKey(token);
+        const tokenResult = await pool.query(
+            "SELECT paperclip_company_id, expires_at FROM paperclip_tokens WHERE token = $1 LIMIT 1",
+            [tokenHash]
+        );
+
+        if (tokenResult.rows.length === 0) {
+            return NextResponse.json({ error: "Invalid activation token." }, { status: 404 });
+        }
+
+        const tokenRow = tokenResult.rows[0];
+        if (tokenRow.paperclip_company_id !== companyId) {
+            return NextResponse.json({ error: "Token mismatch for this company." }, { status: 403 });
+        }
+        if (new Date(tokenRow.expires_at) < new Date()) {
+            return NextResponse.json({ error: "Activation token expired." }, { status: 410 });
+        }
+    } catch (err) {
+        console.error("[Paperclip Checkout Auth] Error:", err);
+        return NextResponse.json({ error: "Internal security verification failure" }, { status: 500 });
+    }
 
     // Validate inputs
     if (!plan || !PLANS[plan]) {

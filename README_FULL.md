@@ -12,7 +12,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/suprawall?color=22c55e)](https://pypi.org/project/suprawall/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
-[![GitHub Stars](https://img.shields.io/github/stars/wiserautomation/Supra-Wall-Private?style=social)](https://github.com/wiserautomation/Supra-Wall-Private)
+[![GitHub Stars](https://img.shields.io/github/stars/wiserautomation/SupraWall?style=social)](https://github.com/wiserautomation/SupraWall)
 [![Status](https://img.shields.io/badge/status-private%20beta-orange)](https://www.supra-wall.com/beta)
 [![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
 [![One-Command Setup](https://img.shields.io/badge/Run-npx%20suprawall%20init-emerald.svg)](https://www.supra-wall.com/docs)
@@ -270,7 +270,7 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 |----------|----------|---------|
 | **AWS Marketplace** | **AI Agents & Tools > Guardrail** | [SaaS / Container](#) |
 | **Dify Plugin Hub** | Security / Guardrail | [Install](https://github.com/wiserautomation/suprawall-plugins) |
-| **Anthropic MCP Hub** | Developer Tools | [Configure](https://github.com/wiserautomation/Supra-Wall-Private/blob/main/MCP_SUBMISSION_README.md) |
+| **Anthropic MCP Hub** | Developer Tools | [Configure](https://github.com/wiserautomation/SupraWall/blob/main/MCP_SUBMISSION_README.md) |
 
 ### Databases
 
@@ -306,7 +306,7 @@ Suprawall is available as a pre-certified **Guardrail** tool on the AWS Marketpl
 Run SupraWall on your own infrastructure. Free forever under Apache 2.0.
 
 ```bash
-git clone https://github.com/wiserautomation/Supra-Wall-Private.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall/packages/server
 docker compose up -d
 ```
@@ -316,7 +316,7 @@ This starts the SupraWall server + PostgreSQL. Point your SDK at `http://localho
 ### Local Development
 
 ```bash
-git clone https://github.com/wiserautomation/Supra-Wall-Private.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall
 npm install
 npm run build
@@ -432,7 +432,7 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for guidelines and **[CODE_OF_CONDUCT
 ### Quick Contributing Steps
 
 ```bash
-git clone https://github.com/wiserautomation/Supra-Wall-Private.git
+git clone https://github.com/wiserautomation/SupraWall.git
 cd suprawall
 npm install
 npm run build
@@ -454,7 +454,7 @@ For managed hosting, compliance tools, and enterprise features, see **[SupraWall
 
 <div align="center">
 
-**If SupraWall helps secure your AI agents, [give us a star](https://github.com/wiserautomation/Supra-Wall-Private) — it helps more developers discover the project.**
+**If SupraWall helps secure your AI agents, [give us a star](https://github.com/wiserautomation/SupraWall) — it helps more developers discover the project.**
 
 [Website](https://www.supra-wall.com) · [Docs](https://www.supra-wall.com/docs) · [Discord](https://discord.gg/suprawall) · [Twitter](https://twitter.com/suprawall)
 
