@@ -4,6 +4,7 @@
 import { Metadata } from "next";
 import { i18n, Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/getDictionary";
+import { SLUG_MAP } from "@/i18n/slug-map";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import TemplatesHubClient from "./TemplatesHubClient";
