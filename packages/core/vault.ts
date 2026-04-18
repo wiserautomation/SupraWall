@@ -1,10 +1,7 @@
-interface QueryResult<T = Record<string, unknown>> {
-    rows: T[];
-}
+// Copyright 2026 SupraWall Contributors
+// SPDX-License-Identifier: Apache-2.0
 
-interface IDatabasePool {
-    query<T = Record<string, unknown>>(text: string, params?: unknown[]): Promise<QueryResult<T>>;
-}
+import { IDatabasePool } from "./types";
 
 // Typed row shapes for each DB query in this module
 interface VaultSecretRow {

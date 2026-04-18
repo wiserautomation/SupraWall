@@ -69,3 +69,11 @@ export interface SupraWallConfig {
     adapter: string;
     connectionString?: string;
 }
+
+export interface QueryResult<T = Record<string, unknown>> {
+    rows: T[];
+}
+
+export interface IDatabasePool {
+    query<T = Record<string, unknown>>(text: string, params?: unknown[]): Promise<QueryResult<T>>;
+}

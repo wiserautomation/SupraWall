@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { scrubPayload } from "./src/scrubber";
+import { IDatabasePool } from "./types";
 
 export interface SemanticAnalysisRequest {
     tenantId: string;
@@ -22,14 +23,6 @@ export interface SemanticAnalysisResult {
     reasoning: string;
     latencyMs: number;
     modelUsed: string;
-}
-
-interface QueryResult<T = Record<string, unknown>> {
-    rows: T[];
-}
-
-interface IDatabasePool {
-    query<T = Record<string, unknown>>(text: string, params?: unknown[]): Promise<QueryResult<T>>;
 }
 
 interface EnvInfo {
