@@ -5,23 +5,16 @@ import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import LearnHubClient from "./LearnHubClient";
 
-export const metadata: Metadata = {
-    title: "AI Agent Security Hub | SupraWall Learn",
-    description: "Comprehensive guides, tutorials, and best practices for securing AI agents in production. EU AI Act compliance, zero-trust guardrails, and more.",
-    keywords: [
-        "ai agent security guide",
-        "ai agent security resources",
-        "ai agent security knowledge base",
-        "ai agent security tutorials",
-        "LLM agent security",
-        "ai agent compliance guide",
-        "agentic security documentation",
-        "ai agent guardrails guide"
-    ],
-    alternates: {
-        canonical: "https://www.supra-wall.com/learn",
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        title: "AI Agent Security Hub | SupraWall Learn",
+        description: "Comprehensive guides, tutorials, and best practices for securing AI agents in production. EU AI Act compliance, zero-trust guardrails, and more.",
+        internalPath: "learn"
+    });
+}
 
 import { getDictionary } from "../../../i18n/getDictionary";
 import { Locale } from "@/i18n/config";

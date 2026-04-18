@@ -1,12 +1,10 @@
-// Copyright 2026 SupraWall Contributors
-// SPDX-License-Identifier: Apache-2.0
-
 import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
 import { i18n } from '../i18n/config';
 import { SLUG_MAP } from '../i18n/slug-map';
 import { newsArticles } from './[lang]/news/newsData';
+import { complianceTemplates } from '../data/compliance-matrix';
 
 const BASE_URL = 'https://www.supra-wall.com';
 
@@ -28,8 +26,6 @@ function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] 
         if (stats.isDirectory()) {
             // Special handling for [lang] root
             if (item === '[lang]' && !isLocaleRoot) {
-                // If we encounter [lang], we recurse into it but mark it as locale root
-                // to avoid skipping its children
                 routes.push(...getRoutes(itemPath, baseRoute, true));
                 continue;
             }
@@ -65,6 +61,15 @@ function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] 
 }
 
 /**
+ * Helper to localize a full path
+ */
+function getLocalizedPath(internalPath: string, locale: string): string {
+    const parts = internalPath.split('/').filter(Boolean);
+    const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
+    return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
+}
+
+/**
  * Safe URL builder to prevent double slashes.
  */
 function buildUrl(base: string, path: string): string {
@@ -73,58 +78,52 @@ function buildUrl(base: string, path: string): string {
     return `${cleanBase}/${cleanPath}`;
 }
 
-const COMPLETE_LOCALES = ['en', 'de']; // Per implementation plan
+const COMPLETE_LOCALES = ['en', 'de', 'fr', 'pl', 'es', 'nl', 'it'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const appDir = path.join(process.cwd(), 'src', 'app');
     
-    // Get base routes from app root (excluding [lang] for now)
+    // Get base routes
     const baseRoutes = getRoutes(appDir);
+    
+    // Explicitly add dynamic routes
+    const newsRoutes = newsArticles.filter(a => a.published).map(a => `/news/${a.slug}`);
+    const sectorRoutes = complianceTemplates.map(t => `/compliance-templates/${t.slug}`);
     
     const sitemapEntries: MetadataRoute.Sitemap = [];
 
     // Combine manual and discovered routes
-    const newsRoutes = newsArticles.filter(a => a.published).map(a => `/news/${a.slug}`);
-    const uniqueRoutes = Array.from(new Set(['/', ...baseRoutes, ...newsRoutes]));
+    const uniqueRoutes = Array.from(new Set(['', ...baseRoutes, ...newsRoutes, ...sectorRoutes]));
 
     uniqueRoutes.forEach((route) => {
         // Normalize the route path
-        const internalSlug = route.split('/').filter(Boolean).join('/');
+        const internalPath = route;
 
         // Generate entries for all supported locales
         i18n.locales.forEach((locale) => {
             // Only generate index entry for complete locales
             if (!COMPLETE_LOCALES.includes(locale)) return;
 
-            const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
-            // Clean paths and ensure they start with /
-            const localizedPath = `/${locale}/${publicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-            const finalPath = localizedPath || `/${locale}`;
-            const fullUrl = buildUrl(BASE_URL, finalPath);
+            const finalPath = getLocalizedPath(internalPath, locale);
+            const fullUrl = buildUrl(BASE_URL, finalPath || `/${locale}`);
 
             // Build alternates for this URL
             const languages: Record<string, string> = {};
             i18n.locales.forEach((altLocale) => {
-                // Only include alternates for complete locales
                 if (!COMPLETE_LOCALES.includes(altLocale)) return;
-
-                const altPublicSlug = SLUG_MAP[internalSlug]?.[altLocale] || internalSlug;
-                const altLocalizedPath = `/${altLocale}/${altPublicSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-                const altFinalPath = altLocalizedPath || `/${altLocale}`;
-                languages[altLocale] = buildUrl(BASE_URL, altFinalPath);
+                const altPath = getLocalizedPath(internalPath, altLocale);
+                languages[altLocale] = buildUrl(BASE_URL, altPath || `/${altLocale}`);
             });
             
             // Add x-default (pointing to English version)
-            const defaultSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-            const defaultPath = `/en/${defaultSlug}`.replace(/\/+/g, '/').replace(/\/$/, '');
-            const xDefaultUrl = buildUrl(BASE_URL, defaultPath || '/en');
-            languages['x-default'] = xDefaultUrl;
+            const xDefaultPath = getLocalizedPath(internalPath, 'en');
+            languages['x-default'] = buildUrl(BASE_URL, xDefaultPath || '/en');
 
             sitemapEntries.push({
                 url: fullUrl,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
-                priority: internalSlug === '' ? 1.0 : internalSlug.split('/').length > 1 ? 0.6 : 0.8,
+                priority: internalPath === '' ? 1.0 : internalPath.split('/').length > 2 ? 0.6 : 0.8,
                 // @ts-ignore
                 alternates: {
                     languages,

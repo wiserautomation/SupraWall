@@ -21,23 +21,27 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
-export const metadata: Metadata = {
-    title: "AI Agent Guardrails: What They Are & How to Enforce Them",
-    description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute.",
-    keywords: ["AI agent guardrails", "LLM security guardrails", "agentic guardrails", "output filters vs guardrails", "deterministic AI security", "runtime guardrails"],
-    alternates: {
-        canonical: "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails",
-    },
-    openGraph: {
-        title: "AI Agent Guardrails: What They Are & How to Enforce Them",
-        description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute.",
-        url: "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails",
-        siteName: "SupraWall",
-        type: "article",
-    },
-};
+import { i18n, Locale } from "@/i18n/config";
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function WhatAreAIAgentGuardrailsPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        title: "AI Agent Guardrails: What They Are & How to Enforce Them | SupraWall",
+        description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute in agentic swarms.",
+        internalPath: "learn/what-are-ai-agent-guardrails"
+    });
+}
+
+export default async function WhatAreAIAgentGuardrailsPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
@@ -60,6 +64,31 @@ export default function WhatAreAIAgentGuardrailsPage() {
             "AI agent guardrails, LLM guardrails, agentic AI security, runtime enforcement",
     };
 
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": `https://www.supra-wall.com/${lang}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Learn",
+                "item": `https://www.supra-wall.com/${lang}/learn`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "AI Agent Guardrails",
+                "item": `https://www.supra-wall.com/${lang}/learn/what-are-ai-agent-guardrails`
+            }
+        ]
+    };
+
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -67,7 +96,7 @@ export default function WhatAreAIAgentGuardrailsPage() {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".tldr-point"]
         },
-        "url": "https://www.supra-wall.com/learn/what-are-ai-agent-guardrails"
+        "url": `https://www.supra-wall.com/${lang}/learn/what-are-ai-agent-guardrails`
     };
 
     const faqSchema = {
@@ -135,7 +164,11 @@ export default function WhatAreAIAgentGuardrailsPage() {
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
-            <Navbar />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
+            <Navbar dictionary={dictionary} lang={lang} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-4xl mx-auto space-y-20">

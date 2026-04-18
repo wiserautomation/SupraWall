@@ -16,7 +16,7 @@ export async function generateLocalizedMetadata({
     title,
     description,
     keywords,
-    internalPath, // e.g. "learn/ai-agent-runaway-costs"
+    internalPath, // e.g. "learn/article-slug"
 }: {
     params: Promise<{ lang: string }>;
     title: string;
@@ -26,36 +26,46 @@ export async function generateLocalizedMetadata({
 }): Promise<Metadata> {
     const { lang } = await params;
     
-    // Normalize path components
-    const pathParts = internalPath.split('/').filter(Boolean);
-    const parentPaths = pathParts.slice(0, -1);
-    const internalSlug = pathParts[pathParts.length - 1];
+    // Helper to localize a full path
+    const getLocalizedPath = (locale: string) => {
+        const parts = internalPath.split('/').filter(Boolean);
+        const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
+        return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
+    };
 
     // Build alternates for hreflang
     const languages: Record<string, string> = {};
     i18n.locales.forEach((locale) => {
-        const publicSlug = SLUG_MAP[internalSlug]?.[locale] || internalSlug;
-        const localizedPath = `/${locale}/${[...parentPaths, publicSlug].join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
-        languages[locale] = `${BASE_URL}${localizedPath}`;
+        languages[locale] = `${BASE_URL}${getLocalizedPath(locale)}`;
     });
     
     // Add x-default (usually English)
-    const enSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-    const xDefaultPath = `/en/${[...parentPaths, enSlug].join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
-    languages['x-default'] = `${BASE_URL}${xDefaultPath}`;
+    languages['x-default'] = `${BASE_URL}${getLocalizedPath('en')}`;
 
-    // Current page's localized public path
-    const currentSlug = SLUG_MAP[internalSlug]?.[lang] || internalSlug;
-    const currentPath = `/${lang}/${[...parentPaths, currentSlug].join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
-    const canonical = `${BASE_URL}${currentPath}`;
+    // Current page's canonical URL
+    const canonical = `${BASE_URL}${getLocalizedPath(lang)}`;
 
     return {
         title,
         description,
-        keywords,
+        keywords: keywords || [
+            "AI security", "agent runtime", "suprawall",
+            "deterministic ai defense", "llm firewall", "zero trust agents"
+        ],
         alternates: {
             canonical,
             languages,
+        },
+        robots: {
+            index: true,
+            follow: true,
+            googleBot: {
+                index: true,
+                follow: true,
+                'max-video-preview': -1,
+                'max-image-preview': 'large',
+                'max-snippet': -1,
+            },
         },
         openGraph: {
             title,
@@ -63,6 +73,12 @@ export async function generateLocalizedMetadata({
             url: canonical,
             siteName: "SupraWall",
             type: "article",
+            images: ["/og-image.png"],
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
             images: ["/og-image.png"],
         }
     };

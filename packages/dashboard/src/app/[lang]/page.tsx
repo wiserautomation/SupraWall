@@ -3,25 +3,15 @@ import { i18n, Locale } from "../../i18n/config";
 import { getDictionary } from "../../i18n/getDictionary";
 import HomeWrapper from "./HomeWrapper";
 
-export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = 'https://www.supra-wall.com';
-    
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        languages[l] = `${baseUrl}/${l}`;
-    });
-    languages['x-default'] = `${baseUrl}/en`;
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 
-    return {
-        alternates: {
-            canonical: `${baseUrl}/${lang}`,
-            languages,
-        },
-        openGraph: {
-            url: `${baseUrl}/${lang}`,
-        }
-    };
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        title: "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
+        description: "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
+        internalPath: ""
+    });
 }
 
 export default async function Page({

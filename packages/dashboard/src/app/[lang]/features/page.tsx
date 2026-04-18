@@ -6,37 +6,15 @@ import { Navbar } from "@/components/Navbar";
 import { i18n, Locale } from "@/i18n/config";
 import FeaturesClient from "./FeaturesClient";
 
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = "https://www.supra-wall.com";
-    const isDefault = lang === i18n.defaultLocale;
-
-    // Build alternates for hreflang
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        languages[l] = `${baseUrl}/${l}/features`;
-    });
-    languages["x-default"] = `${baseUrl}/en/features`;
-
-    return {
+    return generateLocalizedMetadata({
+        params,
         title: "Enterprise AI Security Features | SupraWall Firewall",
         description: "Explore the security stack for autonomous agents. Prompt injection shields, deterministic PII redaction, and runtime tool enforcement.",
-        alternates: {
-            canonical: `${baseUrl}/${lang}/features`,
-            languages,
-        },
-        robots: {
-            index: true,
-            follow: true,
-        },
-        openGraph: {
-            title: "Enterprise AI Security Features | SupraWall Firewall",
-            description: "Explore the security stack for autonomous agents. Prompt injection shields, deterministic PII redaction, and runtime tool enforcement.",
-            url: `${baseUrl}/${lang}/features`,
-            siteName: "SupraWall",
-            type: "website",
-        },
-    };
+        internalPath: "features"
+    });
 }
 
 import { getDictionary } from "../../../i18n/getDictionary";

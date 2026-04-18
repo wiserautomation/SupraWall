@@ -31,11 +31,21 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
     const baseUrl = 'https://www.supra-wall.com';
     
+    // Build alternates for hreflang
+    const languages: Record<string, string> = {};
+    i18n.locales.forEach((l) => {
+        const publicSectorSlug = SLUG_MAP[sector]?.[l] || sector;
+        const publicHubSlug = SLUG_MAP['compliance-templates']?.[l] || 'compliance-templates';
+        languages[l] = `${baseUrl}/${l}/${publicHubSlug}/${publicSectorSlug}`;
+    });
+    languages['x-default'] = `${baseUrl}/en/compliance-templates/${sector}`;
+
     return {
         title: `${localized.title} | Annex III Compliance Blueprint`,
         description: localized.opening,
         alternates: {
             canonical: `${baseUrl}/${lang}/compliance-templates/${sector}`,
+            languages,
         },
         openGraph: {
             title: localized.title,
@@ -43,6 +53,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             url: `${baseUrl}/${lang}/compliance-templates/${sector}`,
             siteName: "SupraWall",
             type: "article",
+        },
+        robots: {
+            index: true,
+            follow: true,
         },
     };
 }
@@ -60,9 +74,62 @@ export default async function SectorTemplatePage({
     }
 
     const dictionary = await getDictionary(lang);
+    const localized = (dictionary as any).complianceTemplates?.sectors?.[sector];
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": `https://www.supra-wall.com/${lang}`
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": (dictionary as any).navbar?.solutions || "Compliance",
+                "item": `https://www.supra-wall.com/${lang}/compliance-templates`
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": localized?.title || sector,
+                "item": `https://www.supra-wall.com/${lang}/compliance-templates/${sector}`
+            }
+        ]
+    };
+
+    const techServiceSchema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": `SupraWall ${localized?.title} Compliance Template`,
+        "description": localized?.opening,
+        "provider": {
+            "@type": "Organization",
+            "name": "SupraWall"
+        },
+        "areaServed": "EU",
+        "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "EU AI Act Compliance Blueprints",
+            "itemListElement": [
+                {
+                    "@type": "Offer",
+                    "itemOffered": {
+                        "@type": "Service",
+                        "name": "Deterministic Risk Mitigation"
+                    }
+                }
+            ]
+        }
+    };
     
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(techServiceSchema) }} />
             <Navbar lang={lang} dictionary={dictionary} />
             <SectorTemplateClient 
                 template={template} 
