@@ -43,9 +43,18 @@ export const CreateAgentSchema = z.object({
 });
 
 export const UpdateTenantSchema = z.object({
-    name:              optionalStr(100),
-    slack_webhook_url: z.string().url().max(500).optional(),
-    tier:              z.enum(["open_source", "developer", "team", "business", "enterprise"]).optional(),
+    name:                 optionalStr(100),
+    master_api_key:       optionalStr(255),
+    db_type:              z.enum(["firebase", "postgres", "sqlite"]).optional(),
+    db_string:            optionalStr(1000),
+    webhook_url:          z.string().url().max(500).optional().or(z.literal("")),
+    webhook_secret:       optionalStr(255),
+    slack_webhook_url:    z.string().url().max(500).optional().or(z.literal("")),
+    notification_email:   z.string().email().max(255).optional().or(z.literal("")),
+    openrouter_app_url:   z.string().url().max(500).optional().or(z.literal("")),
+    openrouter_app_title: optionalStr(255),
+    openrouter_categories: optionalStr(1000),
+    tier:                 z.enum(["open_source", "developer", "team", "business", "enterprise"]).optional(),
 }).refine(obj => Object.keys(obj).length > 0, { message: "At least one field required" });
 
 export const CreateVaultSecretSchema = z.object({

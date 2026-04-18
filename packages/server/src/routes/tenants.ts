@@ -43,7 +43,12 @@ router.post("/:id", adminAuth, validate(UpdateTenantSchema), async (req: Request
         const body = req.body;
 
         // Whitelist allowed columns to prevent SQL injection
-        const ALLOWED_COLUMNS = ["name", "slack_webhook_url", "tier"];
+        const ALLOWED_COLUMNS = [
+            "name", "slack_webhook_url", "tier", "master_api_key", 
+            "db_type", "db_string", "webhook_url", "webhook_secret", 
+            "notification_email", "openrouter_app_url", "openrouter_app_title", 
+            "openrouter_categories"
+        ];
         const entries = Object.entries(body).filter(([key]) => ALLOWED_COLUMNS.includes(key));
 
         if (entries.length === 0) return res.status(400).json({ error: "No valid fields to update" });

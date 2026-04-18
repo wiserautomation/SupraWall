@@ -483,7 +483,15 @@ export const initDb = async () => {
             id VARCHAR(255) PRIMARY KEY,
             name VARCHAR(255),
             master_api_key VARCHAR(255),
+            db_type VARCHAR(50) DEFAULT 'firebase',
+            db_string TEXT,
+            webhook_url TEXT,
+            webhook_secret VARCHAR(255),
             slack_webhook_url TEXT,
+            notification_email VARCHAR(255),
+            openrouter_app_url TEXT,
+            openrouter_app_title VARCHAR(255),
+            openrouter_categories TEXT,
             tier VARCHAR(20) DEFAULT 'open_source',
             stripe_customer_id TEXT,
             stripe_subscription_id TEXT,
@@ -502,6 +510,33 @@ export const initDb = async () => {
             END IF;
             IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='billing_cycle_start') THEN
                 ALTER TABLE tenants ADD COLUMN billing_cycle_start TIMESTAMP DEFAULT NOW();
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='master_api_key') THEN
+                ALTER TABLE tenants ADD COLUMN master_api_key VARCHAR(255);
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='db_type') THEN
+                ALTER TABLE tenants ADD COLUMN db_type VARCHAR(50) DEFAULT 'firebase';
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='db_string') THEN
+                ALTER TABLE tenants ADD COLUMN db_string TEXT;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='webhook_url') THEN
+                ALTER TABLE tenants ADD COLUMN webhook_url TEXT;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='webhook_secret') THEN
+                ALTER TABLE tenants ADD COLUMN webhook_secret VARCHAR(255);
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='notification_email') THEN
+                ALTER TABLE tenants ADD COLUMN notification_email VARCHAR(255);
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='openrouter_app_url') THEN
+                ALTER TABLE tenants ADD COLUMN openrouter_app_url TEXT;
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='openrouter_app_title') THEN
+                ALTER TABLE tenants ADD COLUMN openrouter_app_title VARCHAR(255);
+            END IF;
+            IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='tenants' AND column_name='openrouter_categories') THEN
+                ALTER TABLE tenants ADD COLUMN openrouter_categories TEXT;
             END IF;
             -- Migrate legacy 'free' tier name to 'open_source' if present
             UPDATE tenants SET tier = 'open_source' WHERE tier = 'free';
