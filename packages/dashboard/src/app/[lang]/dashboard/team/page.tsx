@@ -44,7 +44,7 @@ export default function TeamPage() {
         if (!user) return;
         try {
             const idToken = await user.getIdToken();
-            const res = await fetch(`/v1/members?tenantId=${user.uid}`, {
+            const res = await fetch(`/api/v1/members?tenantId=${user.uid}`, {
                 headers: { 'Authorization': `Bearer ${idToken}` }
             });
             if (!res.ok) throw new Error("Failed to fetch members");
@@ -71,7 +71,7 @@ export default function TeamPage() {
 
         try {
             const idToken = await user.getIdToken();
-            const res = await fetch("/v1/members/invite", {
+            const res = await fetch("/api/v1/members/invite", {
                 method: "POST",
                 headers: { 
                     "Content-Type": "application/json",
@@ -113,7 +113,7 @@ export default function TeamPage() {
 
         try {
             const idToken = await user.getIdToken();
-            const res = await fetch(`/v1/members/${memberId}?tenantId=${user.uid}`, {
+            const res = await fetch(`/api/v1/members/${memberId}?tenantId=${user.uid}`, {
                 method: "DELETE",
                 headers: { 'Authorization': `Bearer ${idToken}` }
             });

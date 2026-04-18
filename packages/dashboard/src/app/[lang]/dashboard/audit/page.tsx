@@ -76,7 +76,10 @@ export default function ForensicAuditPage() {
             url.searchParams.set("userId", user.uid);
             url.searchParams.set("limit", "200");
             
-            const response = await fetch(url.toString());
+            const idToken = await user.getIdToken();
+            const response = await fetch(url.toString(), {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (response.ok) {
                 const data = await response.json();
                 const processedLogs = data.logs.map((l: any) => ({

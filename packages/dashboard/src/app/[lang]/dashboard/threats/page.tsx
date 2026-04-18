@@ -67,12 +67,14 @@ export default function ThreatIntelligencePage() {
         setLoading(true);
         try {
             const tenantId = user.uid;
+            const idToken = await user.getIdToken();
+            const authHeaders = { 'Authorization': `Bearer ${idToken}` };
 
             const [eventsRes, summaryRes, semanticRes, baselinesRes] = await Promise.all([
-                fetch(`${API_BASE}/v1/threat/events?tenantId=${tenantId}`),
-                fetch(`${API_BASE}/v1/threat/summary?tenantId=${tenantId}`),
-                fetch(`${API_BASE}/v1/threat/semantic?tenantId=${tenantId}`),
-                fetch(`${API_BASE}/v1/threat/baselines?tenantId=${tenantId}`),
+                fetch(`${API_BASE}/v1/threat/events?tenantId=${tenantId}`, { headers: authHeaders }),
+                fetch(`${API_BASE}/v1/threat/summary?tenantId=${tenantId}`, { headers: authHeaders }),
+                fetch(`${API_BASE}/v1/threat/semantic?tenantId=${tenantId}`, { headers: authHeaders }),
+                fetch(`${API_BASE}/v1/threat/baselines?tenantId=${tenantId}`, { headers: authHeaders }),
             ]);
 
             if (eventsRes.ok) setEvents(await eventsRes.json());
@@ -91,9 +93,13 @@ export default function ThreatIntelligencePage() {
         setAggregating(true);
         try {
             const tenantId = user.uid;
+            const idToken = await user.getIdToken();
             await fetch(`${API_BASE}/v1/threat/aggregate`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({ tenantId: tenantId })
             });
             await fetchData();

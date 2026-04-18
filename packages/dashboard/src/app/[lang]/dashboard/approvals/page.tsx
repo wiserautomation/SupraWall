@@ -55,7 +55,10 @@ export default function ApprovalsPage() {
     const fetchRequests = useCallback(async () => {
         if (!user) return;
         try {
-            const res = await fetch(`/api/v1/approvals?tenantId=${user.uid}`);
+            const idToken = await user.getIdToken();
+            const res = await fetch(`/api/v1/approvals?tenantId=${user.uid}`, {
+                headers: { 'Authorization': `Bearer ${idToken}` }
+            });
             if (res.ok) {
                 const data = await res.json();
                 const processed = data.map((d: any) => ({
@@ -101,9 +104,13 @@ export default function ApprovalsPage() {
     const handleAction = async (id: string, decision: "approved" | "denied") => {
         setProcessingId(id);
         try {
-            const res = await fetch(`/api/approvals/${id}/respond`, {
+            const idToken = await user!.getIdToken();
+            const res = await fetch(`/api/v1/approvals/${id}`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({
                     decision,
                     reviewNote: decision === "approved" ? "Approved via Security Dashboard" : "Denied via Security Dashboard",
@@ -115,6 +122,7 @@ export default function ApprovalsPage() {
                 const err = await res.json();
                 console.error("Action failed:", err.error);
             }
+            await fetchRequests();
         } catch (error) {
             console.error("Error updating approval status:", error);
         } finally {

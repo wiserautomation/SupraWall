@@ -57,7 +57,10 @@ export default function SettingsPage() {
 
         const fetchSettings = async () => {
             try {
-                const res = await fetch(`${API_BASE}/v1/tenants/${user.uid}`);
+                const idToken = await user.getIdToken();
+                const res = await fetch(`${API_BASE}/v1/tenants/${user.uid}`, {
+                    headers: { 'Authorization': `Bearer ${idToken}` }
+                });
                 if (res.ok) {
                     const data = await res.json();
                     setDbType(data.db_type || "firebase");
@@ -120,16 +123,25 @@ export default function SettingsPage() {
                 openrouterCategories: "openrouter_categories"
             };
             const dbField = fieldMap[field] || field;
+            const idToken = await user.getIdToken();
 
-            await fetch(`${API_BASE}/v1/tenants/${user.uid}`, {
+            const res = await fetch(`${API_BASE}/v1/tenants/${user.uid}`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${idToken}`
+                },
                 body: JSON.stringify({ [dbField]: value })
             });
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({ error: 'Save failed' }));
+                throw new Error(errData.error || `Save failed with status ${res.status}`);
+            }
             setStatus(true);
             setTimeout(() => setStatus(false), 2000);
         } catch (error) {
             console.error(`Error saving ${field}:`, error);
+            alert(`Failed to save ${field}. Please try again.`);
         } finally {
             setSaving(false);
         }
@@ -166,15 +178,20 @@ export default function SettingsPage() {
         // Save all three fields at once
         const save = async () => {
             try {
-                await fetch(`${API_BASE}/v1/tenants/${user?.uid}`, {
+                const idToken = await user!.getIdToken();
+                const res = await fetch(`${API_BASE}/v1/tenants/${user?.uid}`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${idToken}`
+                    },
                     body: JSON.stringify({
                         openrouter_app_url: openrouterAppUrl,
                         openrouter_app_title: openrouterAppTitle,
                         openrouter_categories: openrouterCategories
                     })
                 });
+                if (!res.ok) throw new Error('Failed to save OpenRouter settings');
                 setSavedOpenrouter(true);
                 setTimeout(() => setSavedOpenrouter(false), 2000);
             } catch (e) { console.error(e); }
