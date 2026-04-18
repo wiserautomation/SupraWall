@@ -135,18 +135,6 @@ export default function WhatAreAIAgentGuardrailsPage() {
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }}
-            />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-            />
             <Navbar />
 
             <main className="pt-40 pb-32 px-6">
@@ -332,7 +320,7 @@ export default function WhatAreAIAgentGuardrailsPage() {
                         </p>
                         <div className="bg-neutral-900 border border-white/5 rounded-[2.5rem] p-8 font-mono text-sm space-y-1 overflow-x-auto">
                             <p className="text-neutral-500"># Execution flow for every agent tool call</p>
-                            <p className="text-neutral-300">Agent → <span className="text-emerald-400">SupraWall.intercept(tool, args)</span></p>
+                            <p className="text-neutral-300">Agent -&gt; <span className="text-emerald-400">SupraWall.intercept(tool, args)</span></p>
                             <p className="text-neutral-500 pl-4">↓ policy lookup ({"<"}5ms)</p>
                             <p className="text-neutral-300 pl-4">evaluate(agent_id, tool, args, context)</p>
                             <p className="text-neutral-500 pl-8">↓</p>
@@ -514,12 +502,6 @@ export default function WhatAreAIAgentGuardrailsPage() {
     );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const Activity = ({ className }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-);
 
 const guardrailTypes = [
     {

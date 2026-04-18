@@ -14,17 +14,35 @@ function getFirebaseAdmin(): admin.app.App {
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
 
 
-
     if (projectId && clientEmail && privateKey) {
-        return admin.initializeApp({
-            credential: admin.credential.cert({
-                projectId,
-                clientEmail,
-                privateKey,
-            }),
-        });
-    } else {
+        try {
+            return admin.initializeApp({
+                credential: admin.credential.cert({
+                    projectId,
+                    clientEmail,
+                    privateKey,
+                }),
+            });
+        } catch (e) {
+            console.error("[FirebaseAdmin] Initialization failed with cert:", e);
+        }
+    } 
+    
+    const missing = [];
+    if (!projectId) missing.push("FIREBASE_PROJECT_ID");
+    if (!clientEmail) missing.push("FIREBASE_CLIENT_EMAIL");
+    if (!privateKey) missing.push("FIREBASE_PRIVATE_KEY");
+    if (missing.length > 0) {
+        console.warn(`[FirebaseAdmin] Missing or invalid environment variables: ${missing.join(", ")}`);
+    }
+
+    try {
         return admin.initializeApp({ projectId });
+    } catch (e) {
+        console.error("[FirebaseAdmin] Initialization failed with projectId fallback:", e);
+        if (admin.apps.length > 0) return admin.apps[0] as admin.app.App;
+        // Last resort — might still throw but we've logged.
+        return admin.initializeApp({ projectId: projectId || 'suprawall-fallback' }); 
     }
 }
 
