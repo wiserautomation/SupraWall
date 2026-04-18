@@ -8,29 +8,14 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc -w",
-    "test": "vitest run"
+    "build": "tsc"
   },
   "devDependencies": {
-    "@types/mongodb": "^4.0.6",
     "@types/node": "^20.0.0",
-    "@types/pg": "^8.20.0",
-    "typescript": "^5.0.0",
-    "vitest": "^1.6.0"
+    "typescript": "^5.0.0"
   },
   "author": "SupraWall",
   "license": "Apache-2.0",
-  "browser": "./dist/browser.js",
-  "exports": {
-    ".": {
-      "browser": "./dist/browser.js",
-      "default": "./dist/index.js"
-    },
-    "./templates": "./dist/templates/sector-templates.js",
-    "./types": "./dist/templates/types.js",
-    "./baseline": "./dist/templates/baseline-controls.js"
-  },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
     "firebase": "^12.9.0",

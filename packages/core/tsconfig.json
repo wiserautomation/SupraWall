@@ -7,17 +7,9 @@
         "declaration": true,
         "outDir": "./dist",
         "strict": false,
-        "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
         "types": ["node"]
     },
-    "include": [
-        "**/*.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "**/*.test.ts"
-    ]
+    "exclude": ["node_modules", "dist", "__tests__"]
 }
