@@ -35,7 +35,11 @@
         "PAPERCLIP_WEBHOOK_SECRET",
         "NPM_CONFIG_LEGACY_PEER_DEPS",
         "CRON_SECRET",
-        "SUPRAWALL_API_URL"
+        "SUPRAWALL_API_URL",
+        "TEST_VAR",
+        "FIREBASE_PROJECT_ID",
+        "FIREBASE_PROJECT_ID_2",
+        "FIREBASE_CLIENT_EMAIL"
       ]
     },
     "lint": {

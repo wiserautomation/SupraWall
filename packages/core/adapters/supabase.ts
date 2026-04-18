@@ -15,7 +15,7 @@ export class SupabaseAdapter implements Adapter {
             throw new Error("SupabaseAdapter: SUPABASE_URL and SUPABASE_KEY are required");
         }
         const { createClient } = require("@supabase/supabase-js");
-        this.supabase = createClient(supabaseUrl, supabaseKey) as unknown as SupabaseClient;
+        this.supabase = createClient(supabaseUrl, supabaseKey) as any;
     }
 
     private get db(): any {
