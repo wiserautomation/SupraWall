@@ -16,7 +16,7 @@ export interface SectorOverride {
   enforcement: "flag" | "logging" | "prompt" | "retention" | "disclosure" | "gate" | "alert" | "audit" | "display" | "check" | "dashboard" | "tracker" | "DENY" | "REQUIRE_APPROVAL";
 }
 
-export interface PolicyRule {
+export interface TemplatePolicyRule {
   toolname: string;
   ruletype: "ALLOW" | "DENY" | "REQUIRE_APPROVAL";
   condition?: string;
@@ -34,6 +34,6 @@ export interface SectorTemplate {
   version: string;                     // e.g., "1.0.0"
   baselineControls: BaselineControl[]; // Shared controls (always ON)
   sectorOverrides: SectorOverride[];   // Unique per template
-  policyRules: PolicyRule[];           // Auto-generated policy rules
+  policyRules: TemplatePolicyRule[];           // Auto-generated policy rules
   riskLevel: "high" | "critical";
 }
