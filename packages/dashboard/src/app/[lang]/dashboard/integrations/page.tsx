@@ -8,7 +8,8 @@ import {
     Grid, Power, ShieldCheck, Cpu, Zap, 
     Workflow, Box, Users, Database, 
     CreditCard, Globe, Layers, Brain,
-    ArrowRight
+    ArrowRight, Paperclip as PaperclipIcon,
+    Bot as OpenAIHost
 } from "lucide-react";
 import Link from "next/link";
 
@@ -55,6 +56,15 @@ export default function IntegrationsDashboardPage() {
 }
 
 const frameworks = [
+    {
+        name: "Paperclip",
+        desc: "Secure credential vault and role-based policies for autonomous agent fleets.",
+        icon: PaperclipIcon,
+        color: "bg-emerald-500",
+        textColor: "text-emerald-400",
+        href: "/integrations/paperclip",
+        badge: "Official"
+    },
     {
         name: "SupraWall Connect",
         desc: "Universal sub-key generator for secure, one-click framework integration.",
@@ -162,5 +172,14 @@ const frameworks = [
         textColor: "text-purple-300",
         href: "/integrations/openclaw",
         badge: "Browser"
+    },
+    {
+        name: "OpenAI Agents",
+        desc: "Secure tool calls and prevents unauthorized actions in the OpenAI Agents SDK.",
+        icon: OpenAIHost,
+        color: "bg-emerald-500",
+        textColor: "text-emerald-400",
+        href: "/integrations/openai-agents",
+        badge: "Infrastructure"
     }
 ];

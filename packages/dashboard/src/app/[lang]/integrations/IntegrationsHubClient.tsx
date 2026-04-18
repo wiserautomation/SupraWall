@@ -5,8 +5,8 @@
 
 import { motion } from "framer-motion";
 import { 
-    Cpu, ArrowRight, Zap, Layers, Globe, 
-    Share2, Workflow, Box, ShieldCheck, Database
+    Share2, Workflow, Box, ShieldCheck, Database,
+    Paperclip, Layers as LayersIcon, Zap as ZapIcon, ArrowRight, Bot
 } from "lucide-react";
 import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
@@ -81,6 +81,34 @@ const INTEGRATION_CARDS = [
         desc: "The native runtime for OpenClaw agents in search and social automation.",
         pill: "Native",
         color: "purple"
+    },
+    {
+        title: "Paperclip",
+        href: "/integrations/paperclip",
+        desc: "Secure credential vault and role-based policies for Paperclip AI agent fleets.",
+        pill: "Multi-Agent",
+        color: "emerald"
+    },
+    {
+        title: "MCP",
+        href: "/integrations/mcp",
+        desc: "Model Context Protocol security for standardized tool execution.",
+        pill: "Protocol",
+        color: "indigo"
+    },
+    {
+        title: "Connect",
+        href: "/dashboard/integrations/connect",
+        desc: "Universal sub-key generator for secure, one-click framework integration.",
+        pill: "One-Click",
+        color: "emerald"
+    },
+    {
+        title: "OpenAI Agents",
+        href: "/integrations/openai-agents",
+        desc: "Secure tool calls and prevent unauthorized actions in the OpenAI Agents SDK.",
+        pill: "Infrastructure",
+        color: "emerald"
     }
 ];
 
@@ -154,7 +182,7 @@ export default function IntegrationsHubClient() {
              <section className="py-40 px-6 bg-black relative border-y border-white/5 overflow-hidden">
                 <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-20 relative z-10 text-center">
                     <div className="space-y-4">
-                        <div className="text-6xl font-black italic uppercase tracking-tighter text-purple-500">12+</div>
+                        <div className="text-6xl font-black italic uppercase tracking-tighter text-purple-500">14+</div>
                         <div className="text-sm font-black uppercase tracking-[0.4em] text-neutral-500 italic">Major Frameworks</div>
                     </div>
                     <div className="space-y-4">
