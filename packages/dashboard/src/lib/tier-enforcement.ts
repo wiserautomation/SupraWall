@@ -33,7 +33,7 @@ const LIMITS: Record<Tier, TierLimits> = {
         pdfReports: false,
     },
     developer: {
-        maxAgents: 5,
+        maxAgents: 3,
         maxVaultSecrets: 15,
         maxEvaluationsPerMonth: 25_000,
         maxSeats: 1,
