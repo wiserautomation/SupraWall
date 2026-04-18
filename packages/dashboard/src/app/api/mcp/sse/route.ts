@@ -97,7 +97,7 @@ export async function POST(req: NextRequest) {
         try {
             controller.enqueue(`event: message\ndata: ${JSON.stringify(response)}\n\n`);
         } catch {
-            connections.delete(sessionId);
+            if (sessionId) connections.delete(sessionId);
         }
     }
 
