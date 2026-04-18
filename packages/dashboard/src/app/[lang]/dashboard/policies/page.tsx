@@ -394,7 +394,6 @@ export default function PoliciesPage() {
                                     </div>
                                 </motion.div>
                             );
-                            );
                         })}
                     </div>
                 </CardContent>
