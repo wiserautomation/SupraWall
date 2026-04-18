@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool, ensureSchema } from "@/lib/db_sql";
 import { apiError } from '@/lib/api-errors';
 import { requireDashboardAuth } from '@/lib/api-guard';
+import { getEffectiveTenantId } from '@/lib/user';
 
 export async function POST(request: NextRequest) {
   const guard = await requireDashboardAuth(request);
@@ -29,17 +30,7 @@ export async function POST(request: NextRequest) {
     const weights: Record<string, number> = { low: 1, medium: 5, high: 20, critical: 100 };
 
     // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
-    let effectiveTenantId = tenantId;
-    try {
-        const { getAdminDb } = require('@/lib/firebase-admin');
-        const db = getAdminDb();
-        const userDoc = await db.collection("users").doc(tenantId).get();
-        if (userDoc.exists && userDoc.data()?.tenantId) {
-            effectiveTenantId = userDoc.data().tenantId;
-        }
-    } catch (e) {
-        // Fallback to the provided tenantId (UID)
-    }
+    const effectiveTenantId = await getEffectiveTenantId(tenantId);
 
     console.log(`[ThreatAggregate] Processing for tenant: ${tenantId} / ${effectiveTenantId}`);
 

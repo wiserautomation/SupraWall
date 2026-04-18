@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { pool, ensureSchema } from "@/lib/db_sql";
 import { apiError } from '@/lib/api-errors';
 import { requireDashboardAuth } from '@/lib/api-guard';
+import { getEffectiveTenantId } from '@/lib/user';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -27,18 +28,7 @@ export async function GET(request: NextRequest) {
     if (tenantId !== userId) return apiError.forbidden();
 
     // Resolve Effective Tenant ID (Dashboard UID -> mapped Tenant ID)
-    let effectiveTenantId = tenantId;
-    try {
-        const { getAdminDb } = require('@/lib/firebase-admin');
-        const db = getAdminDb();
-        const userDoc = await db.collection("users").doc(tenantId).get().catch(() => null);
-        const data = userDoc?.data();
-        if (userDoc && userDoc.exists && data && data.tenantId) {
-            effectiveTenantId = data.tenantId;
-        }
-    } catch (e) {
-        console.warn("[IdentityMapping] Firebase lookup failed for threat events:", e);
-    }
+    const effectiveTenantId = await getEffectiveTenantId(tenantId);
 
     await ensureSchema();
 

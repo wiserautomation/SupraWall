@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
         const approvalsResult = await pool.query(`
             SELECT COUNT(*) FROM approval_requests
-            WHERE (tenantid = $1 OR tenantid = $2) AND status = 'pending'
+            WHERE (tenantid = $1 OR tenantid = $2) AND status ILIKE 'pending'
         `, [userId, effectiveTenantId]);
         const pendingApprovalsCount = parseInt(approvalsResult.rows[0].count || "0", 10);
 
