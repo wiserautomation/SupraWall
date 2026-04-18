@@ -1,6 +1,6 @@
 {
     "compilerOptions": {
-        "target": "ES6",
+        "target": "ES2022",
         "module": "CommonJS",
         "declaration": true,
         "outDir": "./dist",
@@ -8,11 +8,12 @@
         "esModuleInterop": true,
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
-        "lib": ["es2022", "dom"],
+        "moduleResolution": "node",
+        "lib": ["ES2022"],
         "types": ["node"]
     },
     "include": [
-        "./**/*.ts"
+        "**/*.ts"
     ],
     "exclude": [
         "node_modules",

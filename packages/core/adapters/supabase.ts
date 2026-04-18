@@ -3,19 +3,8 @@
 
 import { Adapter, Agent } from "../types";
 
-type SupabaseClient = {
-    from: (table: string) => {
-        insert: (data: Record<string, unknown>) => { select: () => { single: () => Promise<{ data: Record<string, unknown> | null; error: Error | null }> } };
-        select: (cols?: string) => {
-            eq: (col: string, val: string) => { single: () => Promise<{ data: Record<string, unknown> | null; error: Error | null }> };
-        } & { then: Promise<{ data: Record<string, unknown>[]; error: Error | null }>["then"] };
-        update: (data: Record<string, unknown>) => { eq: (col: string, val: string) => { select: () => { single: () => Promise<{ data: Record<string, unknown> | null; error: Error | null }> } } };
-        delete: () => { eq: (col: string, val: string) => Promise<{ error: Error | null; count: number }> };
-    };
-};
-
 export class SupabaseAdapter implements Adapter {
-    private supabase: SupabaseClient | null = null;
+    private supabase: any = null;
 
     async connect(connectionString: string): Promise<void> {
         // Requires optional peer dependency: npm install @supabase/supabase-js
@@ -29,7 +18,7 @@ export class SupabaseAdapter implements Adapter {
         this.supabase = createClient(supabaseUrl, supabaseKey) as unknown as SupabaseClient;
     }
 
-    private get db(): SupabaseClient {
+    private get db(): any {
         if (!this.supabase) throw new Error("SupabaseAdapter: call connect() before using the adapter");
         return this.supabase;
     }
