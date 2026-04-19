@@ -78,7 +78,6 @@ function buildUrl(base: string, path: string): string {
     return `${cleanBase}/${cleanPath}`;
 }
 
-const COMPLETE_LOCALES = ['en', 'de', 'fr', 'pl', 'es', 'nl', 'it'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const appDir = path.join(process.cwd(), 'src', 'app');
@@ -101,16 +100,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
         // Generate entries for all supported locales
         i18n.locales.forEach((locale) => {
-            // Only generate index entry for complete locales
-            if (!COMPLETE_LOCALES.includes(locale)) return;
-
             const finalPath = getLocalizedPath(internalPath, locale);
             const fullUrl = buildUrl(BASE_URL, finalPath || `/${locale}`);
 
             // Build alternates for this URL
             const languages: Record<string, string> = {};
             i18n.locales.forEach((altLocale) => {
-                if (!COMPLETE_LOCALES.includes(altLocale)) return;
                 const altPath = getLocalizedPath(internalPath, altLocale);
                 languages[altLocale] = buildUrl(BASE_URL, altPath || `/${altLocale}`);
             });

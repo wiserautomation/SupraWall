@@ -4,6 +4,22 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { i18n } from './i18n/config';
+import { SLUG_MAP } from './i18n/slug-map';
+
+/**
+ * Reverse SLUG_MAP for reverse lookup.
+ * Structure: { locale: { localizedSlug: internalPath } }
+ */
+const REVERSE_SLUG_MAP: Record<string, Record<string, string>> = {};
+
+// Build REVERSE_SLUG_MAP once on initialization
+Object.keys(SLUG_MAP).forEach(internalPath => {
+  const translations = SLUG_MAP[internalPath];
+  Object.keys(translations).forEach(locale => {
+    if (!REVERSE_SLUG_MAP[locale]) REVERSE_SLUG_MAP[locale] = {};
+    REVERSE_SLUG_MAP[locale][translations[locale]] = internalPath;
+  });
+});
 
 /**
  * Get the locale from request headers.
@@ -28,18 +44,41 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Check if there is any supported locale in the pathname
-  const pathnameHasLocale = i18n.locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
+  const locale = i18n.locales.find(
+    (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
   );
 
-  if (pathnameHasLocale) return;
+  if (locale) {
+    // RESOLVE LOCALIZED SLUGS
+    // Example: /de/funktionen -> /de/features
+    const parts = pathname.split('/').filter(Boolean); // [de, funktionen]
+    const currentLocale = parts[0];
+    const pathSegments = parts.slice(1); // [funktionen]
+
+    let hasUpdate = false;
+    const resolvedSegments = pathSegments.map(segment => {
+       const internal = REVERSE_SLUG_MAP[currentLocale]?.[segment];
+       if (internal) {
+         hasUpdate = true;
+         return internal;
+       }
+       return segment;
+    });
+
+    if (hasUpdate) {
+      const resolvedPath = `/${currentLocale}/${resolvedSegments.join('/')}`;
+      return NextResponse.rewrite(new URL(resolvedPath, request.url));
+    }
+
+    return;
+  }
 
   // Redirect if there is no locale
-  const locale = getLocale(request);
+  const detectedLocale = getLocale(request);
   
   // Create a new URL for the redirect
   const url = new URL(request.url);
-  url.pathname = `/${locale}${pathname === '/' ? '' : pathname}`;
+  url.pathname = `/${detectedLocale}${pathname === '/' ? '' : pathname}`;
   
   return NextResponse.redirect(url, 307);
 }
