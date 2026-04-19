@@ -772,16 +772,21 @@ router.post(
                     [agentId, tenantId, agentName, agentKeyHash, isPostgres ? allowedCredentials : JSON.stringify(allowedCredentials)]
                 );
 
+                const shadowModeRoles = ['researcher', 'scout', 'analyst', 'observer', 'scallion', 'research'];
+                const isShadowMode = shadowModeRoles.includes((agent.role || "").toLowerCase());
+
                 for (const credential of allowedCredentials) {
                     await client.query(
-                        `INSERT INTO policies (tenantid, agentid, name, toolname, ruletype, description)
-                         VALUES ($1, $2, $3, $4, $5, $6)
-                         ON CONFLICT (tenantid, agentid, toolname) WHERE agentid IS NOT NULL DO NOTHING`,
+                        `INSERT INTO policies (tenantid, agentid, name, toolname, ruletype, description, isdryrun)
+                         VALUES ($1, $2, $3, $4, $5, $6, $7)
+                         ON CONFLICT (tenantid, agentid, toolname) WHERE agentid IS NOT NULL 
+                         DO UPDATE SET isdryrun = EXCLUDED.isdryrun`,
                         [
                             tenantId, agentId,
                             `Paperclip: ${credential} for ${agentName}`,
                             credential, "ALLOW",
-                            `Auto-created by agent.hired webhook for role: ${agent.role}`
+                            `Auto-created by agent.hired webhook for role: ${agent.role} (${isShadowMode ? 'SHADOW' : 'ACTIVE'} MODE)`,
+                            isShadowMode
                         ]
                     );
                 }

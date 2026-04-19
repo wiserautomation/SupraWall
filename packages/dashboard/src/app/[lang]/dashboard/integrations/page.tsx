@@ -62,7 +62,7 @@ const frameworks = [
         icon: PaperclipIcon,
         color: "bg-emerald-500",
         textColor: "text-emerald-400",
-        href: "/integrations/paperclip",
+        href: "/dashboard/integrations/paperclip",
         badge: "Official"
     },
     {
