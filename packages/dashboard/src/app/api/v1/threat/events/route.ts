@@ -38,7 +38,17 @@ export async function GET(request: NextRequest) {
         [tenantId, effectiveTenantId, limit, offset]
     );
 
-    return NextResponse.json(result.rows);
+    const globalCountRes = await pool.query("SELECT COUNT(*) FROM threat_events");
+    const globalCount = parseInt(globalCountRes.rows[0].count, 10);
+
+    return NextResponse.json({
+        events: result.rows,
+        debug: {
+            tenantId,
+            effectiveTenantId,
+            globalCount
+        }
+    });
 
   } catch (err: any) {
     console.error("[API Threat Events GET] Error:", err);

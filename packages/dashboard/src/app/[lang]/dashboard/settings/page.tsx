@@ -390,7 +390,7 @@ export default function SettingsPage() {
                             )}
 
                             <div className="flex justify-end pt-4 border-t border-white/5">
-                                <Button
+                                <button
                                     type="submit"
                                     disabled={passwordUpdating}
                                     className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${passwordSaved ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
@@ -399,7 +399,7 @@ export default function SettingsPage() {
                                      passwordSaved ? <CheckCircle2 className="w-4 h-4 mr-2" /> : 
                                      <Save className="w-4 h-4 mr-2" />}
                                     {passwordUpdating ? "Updating..." : passwordSaved ? "Updated" : "Update Password"}
-                                </Button>
+                                </button>
                             </div>
                         </form>
                     </motion.div>
@@ -465,21 +465,20 @@ export default function SettingsPage() {
                                     />
                                     {masterKey && <ShieldCheck className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-600 opacity-50" />}
                                 </div>
-                                <Button
+                                <button
                                     onClick={handleGenerateMasterKey}
-                                    variant="outline"
                                     className="bg-neutral-800 border-white/10 text-white hover:bg-neutral-700 h-auto py-3 px-5 rounded-xl shadow-lg transition-all"
                                 >
                                     <RefreshCcw className="w-4 h-4 mr-2" /> {masterKey ? "Regenerate" : "Generate"}
-                                </Button>
+                                </button>
                                 {masterKey && (
-                                    <Button
+                                    <button
                                         onClick={handleSaveMasterKey}
                                         className={`h-auto py-3 px-6 rounded-xl transition-all shadow-lg ${savedMaster ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-blue-600 hover:bg-blue-500 text-white"}`}
                                     >
                                         {savedMaster ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                         {savedMaster ? "Saved" : "Save Key"}
-                                    </Button>
+                                    </button>
                                 )}
                             </div>
                         </div>
@@ -534,13 +533,13 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="flex justify-end pt-4 border-t border-white/5">
-                            <Button
+                            <button
                                 type="submit"
                                 className={`h-auto py-2.5 px-6 rounded-xl transition-all shadow-md font-bold ${savedSlack ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-[#4A154B] hover:bg-[#611f69] text-white"}`}
                             >
                                 {savedSlack ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                 {savedSlack ? "Saved" : "Connect Slack"}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 </motion.div>
@@ -578,26 +577,25 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="flex justify-end pt-4 border-t border-white/5 gap-3">
-                            <Button
+                            <button
                                 type="button"
                                 onClick={() => {
                                     setEmailTestSent(true);
                                     setTimeout(() => setEmailTestSent(false), 3000);
                                 }}
                                 disabled={!notificationEmail}
-                                variant="outline"
                                 className={`py-2.5 px-6 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50`}
                             >
                                 {emailTestSent ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
                                 {emailTestSent ? "Sent" : "Test Email"}
-                            </Button>
-                            <Button
+                            </button>
+                            <button
                                 type="submit"
                                 className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedEmail ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-blue-600 hover:bg-blue-500 text-white"}`}
                             >
                                 {savedEmail ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                 {savedEmail ? "Saved" : "Save Email"}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 </motion.div>
@@ -697,23 +695,22 @@ export default function SettingsPage() {
                         </div>
 
                         <div className="pt-6 border-t border-white/5 flex justify-end gap-3">
-                            <Button
+                            <button
                                 type="button"
                                 onClick={handleTestWebhook}
                                 disabled={!webhookUrl}
-                                variant="outline"
                                 className={`py-2.5 px-6 rounded-xl border border-white/10 text-neutral-400 hover:text-white hover:bg-white/5 disabled:opacity-50`}
                             >
                                 {testSent ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
                                 {testSent ? "Test Sent" : "Test Hook"}
-                            </Button>
-                            <Button
+                            </button>
+                            <button
                                 type="submit"
                                 className={`py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedWebhook ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-emerald-600 hover:bg-emerald-500 text-white"}`}
                             >
                                 {savedWebhook ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                 {savedWebhook ? "Active" : "Save Webhook"}
-                            </Button>
+                            </button>
                         </div>
                     </form>
                 </motion.div>
@@ -809,13 +806,13 @@ suprawall.init(
                             </div>
 
                             <div className="flex justify-end pt-4">
-                                <Button
+                                <button
                                     type="submit"
                                     className={`h-auto py-2.5 px-8 rounded-xl transition-all shadow-md font-bold ${savedOpenrouter ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-violet-600 hover:bg-violet-500 text-white"}`}
                                 >
                                     {savedOpenrouter ? <CheckCircle2 className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
                                     {savedOpenrouter ? "Saved" : "Save Attribution"}
-                                </Button>
+                                </button>
                             </div>
                         </div>
                     </form>
