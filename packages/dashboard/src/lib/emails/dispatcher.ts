@@ -43,8 +43,22 @@ export async function dispatchEmail(
     : { name: 'SupraWall Team', email: process.env.EMAIL_SENDER_TEAM || 'team@supra-wall.com' };
 
   // Render HTML manually since MailerLite transactional uses HTML field
-  const baseTemplatePath = path.join(process.cwd(), 'src/lib/emails/templates/base.html');
-  let html = fs.readFileSync(baseTemplatePath, 'utf8');
+  const baseTemplatePath = path.join(process.cwd(), 'packages/dashboard/src/lib/emails/templates/base.html');
+  const fallbackPath = path.join(process.cwd(), 'src/lib/emails/templates/base.html');
+  
+  let html: string;
+  try {
+    if (fs.existsSync(baseTemplatePath)) {
+      html = fs.readFileSync(baseTemplatePath, 'utf8');
+    } else if (fs.existsSync(fallbackPath)) {
+      html = fs.readFileSync(fallbackPath, 'utf8');
+    } else {
+      throw new Error(`Base template not found at ${baseTemplatePath} or ${fallbackPath}`);
+    }
+  } catch (err) {
+    console.error(`[Email Dispatcher] Path Error: ${err}`);
+    return { success: false, error: "Template read error" };
+  }
 
   // Inject content into base template
   html = html.replace('{{content}}', templateConfig.content);
@@ -55,6 +69,8 @@ export async function dispatchEmail(
     const regex = new RegExp(`{{${key}}}`, 'g');
     html = html.replace(regex, value);
   });
+
+  console.info(`[Email Dispatcher] Dispatching ${tag} to ${to}...`);
 
   return await sendTransactionalEmail({
     to: { email: to, name },
