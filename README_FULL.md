@@ -255,8 +255,8 @@ SupraWall implements the three core technical requirements for high-risk AI syst
 
 | Language | Package | Status |
 |----------|---------|--------|
-| Python | `pip install suprawall` | Stable |
-| TypeScript | `npm install @suprawall/sdk-ts` | Stable |
+| Python | `pip install suprawall-sdk` | Stable |
+| TypeScript | `npm install @suprawall/sdk` | Stable |
 | Go | `go get github.com/suprawall/suprawall-go` | Stable |
 | Ruby | `gem install suprawall` | Beta |
 | PHP | `composer require suprawall/suprawall` | Beta |
