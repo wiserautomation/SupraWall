@@ -31,7 +31,6 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import Link from "next/link";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -254,7 +253,12 @@ export default function PaperclipDashboardPage() {
                                             </span>
                                             <span className="text-neutral-500">{tool.usage_count} calls</span>
                                         </div>
-                                        <Progress value={Math.min(100, (parseInt(tool.usage_count, 10) / 100) * 100)} className="h-1 bg-white/5" />
+                                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                                            <div 
+                                                className="h-full bg-emerald-500 rounded-full transition-all duration-1000" 
+                                                style={{ width: `${Math.min(100, (parseInt(tool.usage_count, 10) / 100) * 100)}%` }} 
+                                            />
+                                        </div>
                                     </div>
                                 ))}
                                 {(!status.toolDistribution || status.toolDistribution.length === 0) && (
