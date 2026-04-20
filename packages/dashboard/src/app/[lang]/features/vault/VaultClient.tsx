@@ -112,7 +112,7 @@ const FAQS = [
     },
 ];
 
-const CODE_SNIPPET = `import { secure_agent, vault } from "suprawall";
+const CODE_SNIPPET = `import { secure_agent, vault } from "@suprawall/sdk";
 
 // Store secret once (via CLI or dashboard):
 // suprawall vault set stripe_key "sk_live_4eC39..."
@@ -459,7 +459,7 @@ export default function VaultClient() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                         {[
-                            { label: "Installation", value: "pip install suprawall" },
+                            { label: "Installation", value: "pip install suprawall-sdk" },
                             { label: "Lines to add", value: "2 lines" },
                             { label: "Time to secure", value: "< 5 min" },
                         ].map((s) => (

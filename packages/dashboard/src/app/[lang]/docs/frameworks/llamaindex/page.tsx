@@ -49,7 +49,7 @@ agent.chat("Please drop the users database table")`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="pip install suprawall llama-index" language="bash" />
+                <CodeBlock code="pip install suprawall-sdk llama-index" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">

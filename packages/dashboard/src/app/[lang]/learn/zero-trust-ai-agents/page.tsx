@@ -474,7 +474,7 @@ sw.configure_scopes(agent_scopes)`}</pre>
                 {
                   step: "01",
                   title: "Install & Initialize",
-                  desc: "pip install suprawall. Initialize the client with your API key and set default_policy='DENY' to activate deny-by-default immediately.",
+                  desc: "pip install suprawall-sdk. Initialize the client with your API key and set default_policy='DENY' to activate deny-by-default immediately.",
                 },
                 {
                   step: "02",

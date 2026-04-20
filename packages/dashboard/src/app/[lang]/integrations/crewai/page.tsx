@@ -31,7 +31,7 @@ export default function CrewAIIntegrationPage() {
         "@type": "HowTo",
         "name": "How to secure CrewAI agents",
         "step": [
-            { "@type": "HowToStep", "name": "Install SDK", "text": "pip install suprawall" },
+            { "@type": "HowToStep", "name": "Install SDK", "text": "pip install suprawall-sdk" },
             { "@type": "HowToStep", "name": "Wrap Crew", "text": "Wrap your Crew object with the SupraWall protector." }
         ]
     };

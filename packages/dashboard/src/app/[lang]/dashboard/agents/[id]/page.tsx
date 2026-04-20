@@ -656,7 +656,7 @@ Environment Data:
 - API Key: \`${agent.apiKey}\`
 - Framework: ${promptFramework.replace('-', ' ')}
 
-1. **Install SDK:** Run \`pip install suprawall\` (Python) or \`npm install suprawall\` (Node).
+1. **Install SDK:** Run \`pip install suprawall-sdk\` (Python) or \`npm install @suprawall/sdk\` (Node).
 2. **Initialization:** Use this boilerplate for \`suprawall_client.py\`:
    \`\`\`python
    from suprawall import Client, secure_agent

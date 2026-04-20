@@ -51,7 +51,7 @@ export default function AIAssistantGuide() {
                         <div className="text-sm text-neutral-300 font-mono leading-relaxed space-y-4">
                             <p>Act as a Senior AI Integration Engineer. Your task is to install and configure SupraWall to secure my AI agent.</p>
                             
-                            <p>1. **Install SDK:** Run `pip install suprawall` (Python) or `npm install suprawall` (Node).</p>
+                            <p>1. **Install SDK:** Run `pip install suprawall-sdk` (Python) or `npm install @suprawall/sdk` (Node).</p>
                             
                             <p>2. **Environment:** Load `SUPRAWALL_API_KEY` from environment variables.</p>
                             

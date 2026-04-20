@@ -173,10 +173,10 @@ export default function PaperclipDashboardPage() {
             {/* Pro Metrics Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                 {[
-                    { label: "Active Agents", value: status.agentCount, icon: Users, color: "text-emerald-400", bg: "bg-emerald-500/10", border: 'border-emerald-500/20' },
-                    { label: "Live Run Tokens", value: status.activeTokens, icon: Zap, color: "text-blue-400", bg: "bg-blue-500/10", border: 'border-blue-500/20' },
-                    { label: "Vault Endpoint", value: "Active", icon: Lock, color: "text-purple-400", bg: "bg-purple-500/10", border: 'border-purple-500/20' },
-                    { label: "Shadow Mode", value: status.shadowCount, icon: Activity, color: "text-amber-400", bg: "bg-amber-500/10", border: 'border-amber-500/20' }
+                    { label: "Active Agents", value: status.agentCount, icon: Users, sub: "Total synced fleet", color: "text-emerald-400", bg: "bg-emerald-500/10", border: 'border-emerald-500/20' },
+                    { label: "Live Run Tokens", value: status.activeTokens, icon: Zap, sub: "Authenticating now", color: "text-blue-400", bg: "bg-blue-500/10", border: 'border-blue-500/20' },
+                    { label: "Vault Endpoint", value: "Active", icon: Lock, sub: "Zero-trust active", color: "text-purple-400", bg: "bg-purple-500/10", border: 'border-purple-500/20' },
+                    { label: "Shadow Mode", value: status.shadowCount, icon: Activity, sub: "Observation-only", color: "text-amber-400", bg: "bg-amber-500/10", border: 'border-amber-500/20' }
                 ].map((stat, i) => (
                     <motion.div
                         key={i}

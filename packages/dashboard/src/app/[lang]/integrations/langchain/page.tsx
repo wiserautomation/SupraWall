@@ -56,7 +56,7 @@ export default function LangChainIntegrationPage() {
     const howToSteps = [
         {
             name: "Install the SDK",
-            text: "Run 'pip install suprawall' for Python or 'npm install @suprawall/sdk' for Node.js."
+            text: "Run 'pip install suprawall-sdk' for Python or 'npm install @suprawall/sdk' for Node.js."
         },
         {
             name: "Initialize the protector",

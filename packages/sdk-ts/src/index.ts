@@ -1041,3 +1041,9 @@ export class SupraWallAdmin {
         return (await response.json()) as any[];
     }
 }
+
+/**
+ * Convenience alias to match the Python SDK 'secure_agent' terminology
+ * and provide a cleaner entry point for the standard wrapper.
+ */
+export { protect as secureAgent };

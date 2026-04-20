@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "suprawall"
+name = "suprawall-sdk"
 version = "0.1.0"
 description = "The open-source core for AI agent security and compliance"
 readme = "README.md"

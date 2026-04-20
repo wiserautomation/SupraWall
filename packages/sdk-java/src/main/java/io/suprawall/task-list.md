@@ -97,8 +97,8 @@ Add a component on the homepage showing all install methods:
 
 ```tsx
 <Tabs>
-  <Tab label="npm">npm install suprawall</Tab>
-  <Tab label="pip">pip install suprawall</Tab>
+  <Tab label="npm">npm install @suprawall/sdk</Tab>
+  <Tab label="pip">pip install suprawall-sdk</Tab>
   <Tab label="gem">gem install suprawall</Tab>
   <Tab label="go">go get github.com/.../suprawall-go</Tab>
   <Tab label="Docker">docker pull suprawall/server</Tab>

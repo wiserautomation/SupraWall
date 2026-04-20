@@ -7,7 +7,7 @@ users and AI agents — in one line of code.
 ## Install
 
 ```bash
-npm install suprawall-sdk
+npm install @suprawall/sdk
 ```
 
 ## Quickstart
@@ -15,9 +15,9 @@ npm install suprawall-sdk
 Get your free API key at https://www.supra-wall.com/
 
 ```typescript
-import { withSupraWall } from "suprawall-sdk";
+import { secureAgent } from "@suprawall/sdk";
 
-const secured = withSupraWall(myAgent, {
+const secured = secureAgent(myAgent, {
   apiKey: "ag_your_key_here",
 });
 
@@ -28,7 +28,7 @@ await secured.executeTool("delete_file", { path: "/etc/passwd" });
 ## MCP middleware
 
 ```typescript
-import { createSupraWallMiddleware } from "suprawall";
+import { createSupraWallMiddleware } from "@suprawall/sdk";
 
 const gate = createSupraWallMiddleware({ apiKey: "ag_your_key_here" });
 

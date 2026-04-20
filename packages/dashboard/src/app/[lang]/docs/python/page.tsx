@@ -60,7 +60,7 @@ export default function PythonDocsPage() {
                 <CodeBlock 
                     id="install"
                     language="bash"
-                    code="pip install suprawall"
+                    code="pip install suprawall-sdk"
                 />
             </section>
 

@@ -170,22 +170,22 @@ export default function QuickstartPage() {
                             description="Native packages available for all major environments."
                         >
                             {activeTab === "TypeScript" && (
-                                <CodeBlock code="npm install suprawall" language="bash" />
+                                <CodeBlock code="npm install @suprawall/sdk" language="bash" />
                             )}
                             {activeTab === "Python" && (
                                 <div className="space-y-4">
-                                    <CodeBlock code="pip install suprawall" language="bash" />
+                                    <CodeBlock code="pip install suprawall-sdk" language="bash" />
                                     <div className="p-4 border-l-2 border-emerald-500/30 bg-emerald-500/5 rounded-r-xl">
                                         <p className="text-xs font-bold text-emerald-400 mb-2 uppercase tracking-wide">Framework Extras</p>
                                         <CodeBlock
-                                            code={`pip install "suprawall[langchain]"   # LangChain\npip install "suprawall[crewai]"      # CrewAI Agents\npip install "suprawall[all]"         # Full SDK`}
+                                            code={`pip install "suprawall-sdk[langchain]"   # LangChain\npip install "suprawall-sdk[crewai]"      # CrewAI Agents\npip install "suprawall-sdk[all]"         # Full SDK`}
                                             language="bash"
                                         />
                                     </div>
                                 </div>
                             )}
                             {activeTab === "MCP Server" && (
-                                <CodeBlock code="npm install suprawall" language="bash" />
+                                <CodeBlock code="npm install @suprawall/sdk" language="bash" />
                             )}
                         </Step>
 
@@ -198,7 +198,7 @@ export default function QuickstartPage() {
                             {activeTab === "TypeScript" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { Client } from "suprawall";
+                                    code={`import { Client } from "@suprawall/sdk";
             
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
@@ -222,7 +222,7 @@ client = Client(
                             {activeTab === "MCP Server" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { Client } from "suprawall";
+                                    code={`import { Client } from "@suprawall/sdk";
 
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
@@ -241,7 +241,7 @@ const client = new Client({
                             {activeTab === "TypeScript" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { protect } from "suprawall";
+                                    code={`import { protect } from "@suprawall/sdk";
             
 // Wrap your existing agent (LangChain, Vercel AI, etc.)
 const secured = protect(myAgent, { client });

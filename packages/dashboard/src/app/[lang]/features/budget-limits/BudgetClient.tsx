@@ -283,7 +283,7 @@ const FAQS = [
     { q: "Can budget limits help with EU AI Act compliance?", a: "Yes. Budget enforcement is part of your risk management system (Article 9). SupraWall logs every budget decision for audit export, demonstrating you have systematic controls over AI agent resource consumption." },
 ];
 
-const CODE = `import { secure_agent } from "suprawall";
+const CODE = `import { secure_agent } from "@suprawall/sdk";
 
 const secured = secure_agent(myAgent, {
   budget: {

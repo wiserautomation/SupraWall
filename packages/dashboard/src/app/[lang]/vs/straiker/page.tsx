@@ -51,7 +51,7 @@ export default function vsStraikerPage() {
                 name: "Which is easier to get started with?",
                 acceptedAnswer: {
                     "@type": "Answer",
-                    text: "SupraWall: pip install suprawall, wrap your agent, start enforcing policies in under 5 minutes. Straiker requires a sales conversation before you can test it.",
+                    text: "SupraWall: pip install suprawall-sdk, wrap your agent, start enforcing policies in under 5 minutes. Straiker requires a sales conversation before you can test it.",
                 },
             },
         ],
@@ -68,7 +68,7 @@ export default function vsStraikerPage() {
             feature: "One-Line Integration",
             suprawall: true,
             straiker: false,
-            note: "SupraWall: pip install suprawall + protect(agent). Straiker requires custom instrumentation.",
+            note: "SupraWall: pip install suprawall-sdk + protect(agent). Straiker requires custom instrumentation.",
         },
         {
             feature: "Framework-Native SDKs",

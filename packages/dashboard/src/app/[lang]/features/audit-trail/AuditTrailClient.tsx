@@ -237,7 +237,7 @@ export default function AuditTrailClient() {
                             <Code className="w-4 h-4" /> COMPLIANCE_SETUP.TS
                         </div>
                         <pre className="text-blue-100/90 leading-loose">
-                            {`import { secure_agent } from "suprawall";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic Compliance Logging\n  compliance: {\n    auto_log_tool_calls: true,\n    sign_logs_locally: true,\n    map_to_articles: [9, 11, 12, 14], // EU AI Act support\n    retention_days: 365\n  }\n});\n\n// Decision logs are now signed and stored in your SupraWall Node.`}
+                            {`import { secure_agent } from "@suprawall/sdk";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic Compliance Logging\n  compliance: {\n    auto_log_tool_calls: true,\n    sign_logs_locally: true,\n    map_to_articles: [9, 11, 12, 14], // EU AI Act support\n    retention_days: 365\n  }\n});\n\n// Decision logs are now signed and stored in your SupraWall Node.`}
                         </pre>
                     </div>
                 </div>

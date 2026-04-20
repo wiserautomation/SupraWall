@@ -19,7 +19,7 @@ export default function StraikerClient() {
         },
         {
             q: "Which is easier to get started with?",
-            a: "SupraWall: pip install suprawall, wrap your agent, start enforcing policies in under 5 minutes. Straiker requires a sales conversation before you can test it.",
+            a: "SupraWall: pip install suprawall-sdk, wrap your agent, start enforcing policies in under 5 minutes. Straiker requires a sales conversation before you can test it.",
         },
     ];
 
@@ -63,7 +63,7 @@ export default function StraikerClient() {
                     </div>
                     <div className="space-y-4 font-mono text-[10px] text-neutral-300">
                         <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-center text-emerald-400 font-bold">
-                            pip install suprawall
+                            pip install suprawall-sdk
                         </div>
                         <div className="text-center italic text-emerald-900 leading-none">One command...</div>
                         <div className="p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/20 text-center text-emerald-400 font-bold">

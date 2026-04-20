@@ -94,7 +94,7 @@ export default function ProtectApiKeysFromAIAgentsPage() {
         name: "What's the fastest way to add credential protection to an existing LangChain agent?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "pip install suprawall, then wrap your AgentExecutor: from suprawall.langchain import protect; agent = protect(your_executor, vault={...}). Takes about 5 minutes.",
+          text: "pip install suprawall-sdk, then wrap your AgentExecutor: from suprawall.langchain import protect; agent = protect(your_executor, vault={...}). Takes about 5 minutes.",
         },
       },
       {
@@ -588,7 +588,7 @@ def test_agent_never_sees_raw_credential():
               {[
                 {
                   q: "What's the fastest way to add credential protection to an existing LangChain agent?",
-                  a: "pip install suprawall, then wrap your AgentExecutor: from suprawall.langchain import protect; agent = protect(your_executor, vault={...}). Takes about 5 minutes.",
+                  a: "pip install suprawall-sdk, then wrap your AgentExecutor: from suprawall.langchain import protect; agent = protect(your_executor, vault={...}). Takes about 5 minutes.",
                 },
                 {
                   q: "Do I need to change my agent's prompts or tools?",

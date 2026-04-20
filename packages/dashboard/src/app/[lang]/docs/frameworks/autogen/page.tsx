@@ -26,7 +26,7 @@ export default function AutoGenDocs() {
             <div className="space-y-8">
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                    <CodeBlock code="pip install suprawall pyautogen" language="bash" />
+                    <CodeBlock code="pip install suprawall-sdk pyautogen" language="bash" />
                 </section>
 
                 <section className="space-y-4">

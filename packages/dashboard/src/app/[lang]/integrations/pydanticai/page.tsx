@@ -112,7 +112,7 @@ export default function PydanticAIIntegrationPage() {
                             </h2>
                             <div className="bg-neutral-900 rounded-[2.5rem] p-10 border border-white/5 font-mono text-emerald-400 shadow-2xl">
                                 <p className="mb-4 text-neutral-500"># Install the official integration package</p>
-                                <p className="text-white font-bold mb-6">pip install suprawall-python</p>
+                                <p className="text-white font-bold mb-6">pip install suprawall-sdk-python</p>
                                 <p className="text-neutral-500"># Secure your agent executor</p>
                                 <p className="text-emerald-300">from <span className="text-white">pydantic_ai</span> import <span className="text-white">Agent</span></p>
                                 <p className="text-emerald-300">from <span className="text-white">suprawall.pydantic_ai</span> import <span className="text-white">Guard</span></p>

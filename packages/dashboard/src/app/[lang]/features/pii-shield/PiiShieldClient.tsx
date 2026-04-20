@@ -220,7 +220,7 @@ export default function PiiShieldClient() {
                             <Code className="w-4 h-4" /> SECURE_AGENT.TS
                         </div>
                         <pre className="text-purple-100/90 leading-loose">
-                            {`import { secure_agent } from "suprawall";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic PII Protection\n  pii: {\n    scrub_outbound: true,\n    patterns: ["email", "ssn", "cc_number"],\n    redact_tokens: true, // Replaces with [REDACTED_TYPE]\n    log_redactions: true // Creates Art. 12 evidence\n  }\n});\n\n// Agent outputs PII -> SupraWall redacts before external calls`}
+                            {`import { secure_agent } from "@suprawall/sdk";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic PII Protection\n  pii: {\n    scrub_outbound: true,\n    patterns: ["email", "ssn", "cc_number"],\n    redact_tokens: true, // Replaces with [REDACTED_TYPE]\n    log_redactions: true // Creates Art. 12 evidence\n  }\n});\n\n// Agent outputs PII -> SupraWall redacts before external calls`}
                         </pre>
                     </div>
                 </div>

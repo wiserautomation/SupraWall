@@ -293,7 +293,7 @@ export default function PolicyEngineClient() {
                             <Code className="w-4 h-4" /> SECURE_POLICY.JS
                         </div>
                         <pre className="text-emerald-100/90 leading-loose">
-                            {`import { secure_agent } from "suprawall";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Deterministic Governance\n  policies: [\n    { tool: "db.*", action: "DENY", reason: "Direct DB access forbidden" },\n    { tool: "email.send_to_customers", action: "REQUIRE_APPROVAL" },\n    { tool: "search.web", action: "ALLOW" }\n  ]\n});\n\n// Agent attempts a tool call -> SupraWall intercepts & evaluates`}
+                            {`import { secure_agent } from "@suprawall/sdk";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Deterministic Governance\n  policies: [\n    { tool: "db.*", action: "DENY", reason: "Direct DB access forbidden" },\n    { tool: "email.send_to_customers", action: "REQUIRE_APPROVAL" },\n    { tool: "search.web", action: "ALLOW" }\n  ]\n});\n\n// Agent attempts a tool call -> SupraWall intercepts & evaluates`}
                         </pre>
                     </div>
 

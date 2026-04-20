@@ -552,7 +552,7 @@ result = secured_agent.invoke({"input": "Summarize the last 10 support tickets"}
                 {
                   step: "01",
                   title: "Install the SDK",
-                  desc: "pip install suprawall. Supports Python 3.10+. Native integrations for LangChain, LlamaIndex, AutoGen, CrewAI, and raw OpenAI function-calling agents. TypeScript/Node.js SDK available separately.",
+                  desc: "pip install suprawall-sdk. Supports Python 3.10+. Native integrations for LangChain, LlamaIndex, AutoGen, CrewAI, and raw OpenAI function-calling agents. TypeScript/Node.js SDK available separately.",
                 },
                 {
                   step: "02",

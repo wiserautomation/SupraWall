@@ -1,5 +1,5 @@
 {
-  "name": "suprawall-vault",
+  "name": "@suprawall/plugin-paperclip",
   "version": "1.0.0",
   "description": "SupraWall credential vault and security layer for Paperclip AI companies. Every agent gets only the credentials it's authorized to use, for only as long as it needs them.",
   "main": "dist/index.js",
