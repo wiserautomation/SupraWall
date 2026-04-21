@@ -1,0 +1,47 @@
+# SupraWall — One-command self-hosted deployment
+# Usage: docker compose up -d
+# Starts: SupraWall Server + PostgreSQL
+#
+# After starting:
+#   - Server API:  http://localhost:3000
+#   - Dashboard:   http://localhost:3001
+#   - PostgreSQL:  localhost:5432
+#
+# Configuration:
+#   Copy .env.example to .env and set your values before starting.
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: suprawall
+      POSTGRES_USER: suprawall
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-suprawall_dev}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U suprawall"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  server:
+    build:
+      context: ./packages/server
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://suprawall:${POSTGRES_PASSWORD:-suprawall_dev}@postgres:5432/suprawall
+      VAULT_ENCRYPTION_KEY: ${VAULT_ENCRYPTION_KEY:-generate-a-secure-key-for-production}
+      NODE_ENV: ${NODE_ENV:-production}
+      PORT: 3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata:

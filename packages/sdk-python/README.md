@@ -1,0 +1,115 @@
+# suprawall
+
+The security gateway for AI agents.
+Enforce authentication, rate limiting, and policy controls
+between users and AI agents — in one line of code.
+
+## Install
+
+```bash
+pip install suprawall
+```
+
+With LangChain:
+```bash
+pip install "suprawall[langchain]"
+```
+
+With OpenAI Agents SDK:
+```bash
+pip install "suprawall[openai]"
+```
+
+Everything:
+```bash
+pip install "suprawall[all]"
+```
+
+## Quickstart
+
+Get your free API key at https://www.supra-wall.com/
+
+### Any agent (generic)
+```python
+from suprawall import with_suprawall, SupraWallOptions
+
+secured = with_suprawall(my_agent, SupraWallOptions(
+    api_key="ag_your_key_here"
+))
+result = secured.run("delete_file", {"path": "/etc/passwd"})
+```
+
+### LangChain
+```python
+from suprawall import SupraWallLangChainCallback, SupraWallOptions
+from langchain.agents import AgentExecutor
+
+callback = SupraWallLangChainCallback(
+    SupraWallOptions(api_key="ag_your_key_here")
+)
+agent_executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    callbacks=[callback],
+)
+```
+
+### OpenAI Agents SDK
+```python
+from suprawall import wrap_openai_agent, SupraWallOptions
+from agents import Agent, Runner
+
+secured = wrap_openai_agent(agent, SupraWallOptions(
+    api_key="ag_your_key_here"
+))
+result = await Runner.run(secured, "Send email to all users")
+```
+
+### smolagents
+```python
+from suprawall import wrap_smolagents, SupraWallOptions
+from smolagents import CodeAgent
+
+secured = wrap_smolagents(agent, SupraWallOptions(
+    api_key="ag_your_key_here"
+))
+result = secured.run("Search for sensitive files")
+```
+
+### MCP middleware
+```python
+from suprawall import SupraWallMiddleware, SupraWallOptions
+
+gate = SupraWallMiddleware(SupraWallOptions(api_key="ag_your_key_here"))
+
+# Inline check
+result = gate.check("send_email", args, lambda: send_email(args))
+
+# As a decorator
+@gate.guard()
+def delete_user(user_id: str):
+    ...
+```
+
+## Fail-open vs Fail-closed
+```python
+# Development (default)
+SupraWallOptions(api_key="ag_xxx", on_network_error="fail-open")
+
+# Production (recommended)
+SupraWallOptions(api_key="ag_xxx", on_network_error="fail-closed")
+```
+
+## Policy decisions
+
+| Decision | Behaviour |
+| -------- | --------- |
+| ALLOW    | Tool executes normally |
+| DENY     | Tool blocked, error string returned |
+| REQUIRE_APPROVAL | Tool paused, human approves in dashboard |
+
+## Links
+
+Dashboard: https://www.supra-wall.com/
+GitHub: https://github.com/wiserautomation/suprawall
+Issues: https://github.com/wiserautomation/suprawall/issues

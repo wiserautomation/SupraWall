@@ -1,0 +1,13 @@
+# Dependencies
+node_modules/
+dist/
+.turbo/
+
+# Secrets
+.mcpregistry_github_token
+.mcpregistry_registry_token
+server.json
+
+# Debug
+mcp-publisher
+test_init/

@@ -1,0 +1,39 @@
+{
+  "name": "@suprawall/cli",
+  "license": "Apache-2.0",
+  "version": "0.1.0-beta.1",
+  "description": "Powerful developer CLI for suprawall",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/bin.js",
+  "bin": {
+    "suprawall": "./dist/bin.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "tag": "beta"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bin.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "js-yaml": "^4.1.0",
+    "json-colorizer": "^2.2.2",
+    "sqlite3": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/node": "^20.0.0",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.0.0"
+  }
+}

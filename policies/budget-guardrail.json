@@ -1,0 +1,28 @@
+{
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "name": "Budget Guardrail",
+  "version": "1.0.0",
+  "description": "Deterministic cost circuit-breaker for high-token agent sessions",
+  "rules": [
+    {
+      "name": "Limit High-Cost Models",
+      "tool": "*",
+      "action": "REQUIRE_APPROVAL",
+      "condition": {
+        "type": "regex",
+        "pattern": "gpt-4|claude-3-opus|o1-preview"
+      },
+      "message": "Usage of high-cost models requires explicit team lead approval."
+    },
+    {
+      "name": "Approve Large Token Requests",
+      "tool": "*",
+      "action": "REQUIRE_APPROVAL",
+      "condition": {
+        "type": "regex",
+        "pattern": "\"inputTokens\":[0-9]{5,}"
+      },
+      "message": "Large input token count detected (>10k). Approval required for cost control."
+    }
+  ]
+}

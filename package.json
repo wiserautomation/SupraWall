@@ -1,0 +1,36 @@
+{
+  "name": "suprawall-monorepo",
+  "private": true,
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "workspaces": [
+    "packages/*",
+    "plugins/*",
+    "examples/*",
+    "docs"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "lint:root": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "turbo run test"
+  },
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "turbo": "latest",
+    "@eslint/js": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.0.0"
+  },
+  "overrides": {
+    "undici": "^6.19.2",
+    "protobufjs": "^7.5.3"
+  }
+}

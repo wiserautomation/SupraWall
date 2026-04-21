@@ -1,0 +1,113 @@
+# Dependencies
+node_modules/
+venv/
+__pycache__/
+*.pyc
+
+# Build output
+dist/
+build/
+.next/
+*.egg-info/
+.turbo/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Local development
+.vercel/
+.vercel
+
+# IDE & AI tools
+.DS_Store
+.!*!.DS_Store
+**/.DS_Store
+*.swp
+*~
+.idea/
+.vscode/
+.claude/
+.cursor/
+.gemini/
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+
+# Keys and certificates
+*.pem
+*.key
+serviceAccountKey*.json
+
+# OS
+Thumbs.db
+
+# Test artifacts
+coverage/
+.pytest_cache/
+
+# Internal / Documentation
+Marketing/
+PR_DRAFTS/
+Blog/
+agent-skills/
+agent-outputs/
+agent-plan/
+scratch/
+tmp/
+/admin/
+/content/
+/governance/
+/Implementation Plan/
+/mcp-publisher
+/supra-wall.plugin
+*.docx
+test.txt
+test-mcp*.json
+SEO_*.md
+GSC_*.md
+SUBMISSION_*.md
+QUICK_SUBMIT.md
+MCP_SUBMISSION_README.md
+IMPLEMENTATION_PLAN_*.txt
+TIER_SYSTEM_FIXES_SUMMARY.md
+TESTING_CHECKLIST.md
+github-outreach-report-*.md
+blog-post-*.md
+dev-prompt-compliance-features.md
+agent-automation-tasks.md
+build_pricing_explanation.js
+VAULT-IMPLEMENTATION-PLAN.md
+server*.json
+submit-to-mcp-registry.sh
+
+# Debug / scratch scripts
+check_*.js
+debug_*.js
+debug_*.ts
+SKILL.md
+Task List.md
+
+# Deployment configs (keep private)
+vercel_env.json
+
+# Proprietary (keep separate)
+suprawall-cloud/
+cloudflare-edge/
+claude-plugins-official/
+.env*.local
+
+# SupraWall: Never commit token files (audit finding 1.1)
+*.token
+.mcpregistry_*
+
+# SupraWall: Diagnostic and debug scripts must not ship
+**/debug_db.*
+**/diagnose_*.js
+**/check_stuff.js
+**/find_key_owner.js
+cleanup_domains.js
+.npmrc

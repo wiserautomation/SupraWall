@@ -1,0 +1,659 @@
+openapi: "3.1.0"
+
+info:
+  title: "Suprawall API"
+  description: |
+    Suprawall is an AI Agent Guardrail and Security Layer.
+
+    It enforces deterministic security policies, detects prompt injection and
+    threat patterns, manages agent secrets via an encrypted vault, and provides
+    real-time approval workflows — all as a runtime middleware between your agents
+    and the tools they call.
+
+    **Core use cases:**
+    - Prompt injection and SQL injection defense for LLM agents
+    - Deterministic policy enforcement (ALLOW / DENY / REQUIRE_APPROVAL)
+    - Encrypted secret injection via the Vault (no secrets in agent context)
+    - Multi-agent delegation chain validation (A2A security)
+    - EU AI Act / GDPR compliance audit logs
+
+    **Authentication:** All endpoints require an agent API key passed as
+    `X-API-Key` header or `apiKey` body field.
+
+    **MCP compatible:** The `/v1/evaluate` endpoint is compatible with the
+    Model Context Protocol (MCP) tool call interface and can be used as a
+    middleware layer in any MCP-based agent runtime.
+
+    **AWS Marketplace:** This API is listed in the AWS Marketplace AI Agents &
+    Tools > Guardrail category. Subscriptions are managed via AWS Marketplace;
+    feature access is governed by your subscription tier.
+  version: "1.0.0"
+  contact:
+    name: "Suprawall Support"
+    url: "https://www.supra-wall.com"
+    email: "support@supra-wall.com"
+  license:
+    name: "Apache 2.0"
+    url: "https://www.apache.org/licenses/LICENSE-2.0"
+  x-aws-marketplace:
+    productCode: "${AWS_MARKETPLACE_PRODUCT_CODE}"
+    fulfillmentType: "saas"
+    toolType: "Guardrail"
+    mcpCompatible: true
+
+servers:
+  - url: "https://api.supra-wall.com"
+    description: "Suprawall Cloud (SaaS)"
+  - url: "http://localhost:3000"
+    description: "Self-hosted (Docker)"
+
+security:
+  - ApiKeyHeader: []
+
+tags:
+  - name: "Guardrail"
+    description: "Core policy evaluation and threat detection"
+  - name: "Vault"
+    description: "Encrypted secret management for agents"
+  - name: "Agents"
+    description: "Agent registration and management"
+  - name: "Approvals"
+    description: "Human-in-the-loop approval workflows"
+  - name: "Compliance"
+    description: "Audit logs and compliance reporting"
+  - name: "Health"
+    description: "Service availability"
+
+paths:
+
+  /health:
+    get:
+      operationId: "checkHealth"
+      summary: "Check API health"
+      description: "Returns service status and database connectivity. Use to verify the Suprawall server is reachable before sending evaluate requests."
+      tags: ["Health"]
+      security: []
+      responses:
+        "200":
+          description: "Service is healthy"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, database]
+                properties:
+                  status:
+                    type: string
+                    enum: [ok, degraded]
+                  database:
+                    type: string
+                    enum: [connected, disconnected]
+              example:
+                status: "ok"
+                database: "connected"
+        "503":
+          description: "Service degraded"
+
+  /v1/evaluate:
+    post:
+      operationId: "evaluateAgentAction"
+      summary: "Evaluate an agent action against security policies"
+      description: |
+        The primary guardrail endpoint. Call this before allowing an AI agent to
+        execute any tool or action.
+
+        Suprawall evaluates the request against:
+        1. **Threat engine** — blocks prompt injection, SQL injection, XSS, path traversal
+        2. **Policy engine** — checks tenant-defined ALLOW / DENY / REQUIRE_APPROVAL rules
+        3. **Vault** — resolves `$SUPRAWALL_VAULT_*` tokens into secrets without leaking values to the agent context
+        4. **AI semantic analysis** — behavioral anomaly detection (Team+ tiers)
+        5. **Delegation chain** — validates multi-agent A2A permission chains
+
+        Returns a decision of `ALLOW`, `DENY`, or `REQUIRE_APPROVAL`.
+
+        **MCP compatible:** The `toolName` and `arguments` fields map directly to an
+        MCP `tool_call` payload, making this endpoint a drop-in middleware layer.
+      tags: ["Guardrail"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluateRequest"
+            examples:
+              simple:
+                summary: "Basic tool call evaluation"
+                value:
+                  agentId: "agent-uuid-here"
+                  toolName: "database:query"
+                  arguments:
+                    query: "SELECT * FROM users WHERE id = 42"
+              with_vault:
+                summary: "Tool call with vault secret injection"
+                value:
+                  agentId: "agent-uuid-here"
+                  toolName: "send_email"
+                  arguments:
+                    to: "user@example.com"
+                    apiKey: "$SUPRAWALL_VAULT_SENDGRID_KEY"
+              multi_agent:
+                summary: "Multi-agent delegation chain"
+                value:
+                  agentId: "child-agent-uuid"
+                  toolName: "write_file"
+                  arguments:
+                    path: "/reports/q1.csv"
+                  delegationChain: ["orchestrator-agent-uuid", "child-agent-uuid"]
+      responses:
+        "200":
+          description: "Evaluation complete"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluateResponse"
+        "400":
+          description: "Missing required fields"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: "Invalid or missing API key"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DenyResponse"
+        "402":
+          description: "Monthly evaluation limit reached — upgrade your plan"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DenyResponse"
+        "403":
+          description: "Threat detected or policy denied the request"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DenyResponse"
+
+  /v1/evaluateAction:
+    post:
+      operationId: "evaluateAgentActionMcp"
+      summary: "Evaluate an agent action (MCP alias)"
+      description: "Alias of `/v1/evaluate` for MCP (Model Context Protocol) compatibility. Identical behavior and schema."
+      tags: ["Guardrail"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EvaluateRequest"
+      responses:
+        "200":
+          description: "Evaluation complete"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EvaluateResponse"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+
+  /v1/scrub:
+    post:
+      operationId: "scrubToolResponse"
+      summary: "Scrub secrets from a tool response before returning to agent"
+      description: |
+        After a tool executes, pass its raw response through `/v1/scrub` to replace
+        any injected secret values with redaction markers. Prevents secrets from
+        appearing in the agent's context window or audit logs.
+      tags: ["Guardrail"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [tenantId, secretNames, toolResponse]
+              properties:
+                tenantId:
+                  type: string
+                  description: "Tenant identifier"
+                secretNames:
+                  type: array
+                  items:
+                    type: string
+                  description: "Names of vault secrets that were injected into this tool call"
+                toolResponse:
+                  type: string
+                  description: "Raw string response from the tool to be scrubbed"
+      responses:
+        "200":
+          description: "Scrubbed response"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [scrubbedResponse]
+                properties:
+                  scrubbedResponse:
+                    type: string
+
+  /v1/scan:
+    post:
+      operationId: "scanProjectFiles"
+      summary: "Scan source files for security issues"
+      description: |
+        CI/CD integration endpoint. Accepts file contents and returns a list of security
+        violations including hardcoded secrets, unprotected AI agents, and dangerous
+        code patterns. Integrate with the `suprawall-scan` GitHub Action.
+      tags: ["Guardrail"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [files]
+              properties:
+                files:
+                  type: array
+                  items:
+                    type: object
+                    required: [path, content]
+                    properties:
+                      path:
+                        type: string
+                        description: "Relative file path"
+                      content:
+                        type: string
+                        description: "File content to scan"
+      responses:
+        "200":
+          description: "Scan complete"
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status, violations]
+                properties:
+                  status:
+                    type: string
+                    enum: [clean, violations_found]
+                  violations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        severity:
+                          type: string
+                          enum: [critical, high, medium, low]
+                        message:
+                          type: string
+                        file:
+                          type: string
+                        line:
+                          type: integer
+
+  /v1/vault:
+    post:
+      operationId: "storeSecret"
+      summary: "Store an encrypted secret"
+      description: "Saves a secret to the encrypted vault. The secret can then be referenced in agent tool arguments as `$SUPRAWALL_VAULT_<NAME>` without ever exposing the actual value to the agent."
+      tags: ["Vault"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [secretName, secretValue]
+              properties:
+                secretName:
+                  type: string
+                  pattern: "^[A-Z][A-Z0-9_]+$"
+                  description: "Uppercase identifier for the secret (e.g. SENDGRID_KEY)"
+                secretValue:
+                  type: string
+                  description: "The plaintext secret value to encrypt and store"
+                description:
+                  type: string
+                  description: "Optional human-readable label"
+      responses:
+        "201":
+          description: "Secret stored"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  vaultToken:
+                    type: string
+                    description: "The token to use in agent arguments (e.g. $SUPRAWALL_VAULT_SENDGRID_KEY)"
+
+  /v1/agents:
+    get:
+      operationId: "listAgents"
+      summary: "List all agents for the tenant"
+      description: "Returns all registered agents. Requires admin (master API key) authentication."
+      tags: ["Agents"]
+      responses:
+        "200":
+          description: "List of agents"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Agent"
+    post:
+      operationId: "createAgent"
+      summary: "Register a new agent"
+      description: |
+        Creates a new agent and returns its API key. The returned key is shown only
+        once — store it securely. Use it in the `X-API-Key` header for all evaluate calls.
+      tags: ["Agents"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAgentRequest"
+      responses:
+        "201":
+          description: "Agent created"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateAgentResponse"
+        "403":
+          description: "Agent limit reached for current tier"
+
+  /v1/approvals:
+    get:
+      operationId: "listApprovals"
+      summary: "List pending approval requests"
+      description: "Returns all PENDING approval requests for the tenant. Used for building human-in-the-loop dashboards."
+      tags: ["Approvals"]
+      responses:
+        "200":
+          description: "List of approval requests"
+
+  /v1/approvals/{id}:
+    patch:
+      operationId: "resolveApproval"
+      summary: "Approve or reject a pending tool call"
+      description: "Resolves a PENDING approval request. The calling agent must poll `/v1/approvals/{id}` after receiving REQUIRE_APPROVAL to know when the human has decided."
+      tags: ["Approvals"]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [APPROVED, REJECTED]
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: "Approval resolved"
+
+  /v1/compliance/report:
+    get:
+      operationId: "getComplianceReport"
+      summary: "Generate a compliance report"
+      description: "Returns an EU AI Act / SOC 2 compliance summary for the tenant. PDF export available on Team+ tiers."
+      tags: ["Compliance"]
+      parameters:
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [json, pdf]
+          description: "Response format (pdf requires Team+ tier)"
+      responses:
+        "200":
+          description: "Compliance report"
+
+  /v1/audit-logs:
+    get:
+      operationId: "getAuditLogs"
+      summary: "Retrieve audit logs"
+      description: "Returns paginated audit logs for all agent actions evaluated by Suprawall. Retention period is tier-dependent."
+      tags: ["Compliance"]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: "Paginated audit log entries"
+
+components:
+
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: "Agent API key (format: ag_xxxxx). Obtain from the Suprawall dashboard."
+
+  schemas:
+
+    EvaluateRequest:
+      type: object
+      required: [agentId, toolName, arguments]
+      properties:
+        agentId:
+          type: string
+          description: "UUID of the calling agent"
+        toolName:
+          type: string
+          description: "Name of the tool being called (e.g. database:query, send_email)"
+          examples:
+            - "database:query"
+            - "send_email"
+            - "read_file"
+        arguments:
+          type: object
+          description: "Tool arguments. May include $SUPRAWALL_VAULT_* tokens for secret injection."
+          additionalProperties: true
+        delegationChain:
+          type: array
+          items:
+            type: string
+          description: "Ordered list of agent UUIDs in a multi-agent delegation chain. All agents in the chain must have scope to call toolName."
+        model:
+          type: string
+          description: "LLM model name for cost estimation (e.g. gpt-4o, claude-sonnet)"
+        inputTokens:
+          type: integer
+          description: "Input token count for cost metering"
+        outputTokens:
+          type: integer
+          description: "Output token count for cost metering"
+
+    EvaluateResponse:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [ALLOW, DENY, REQUIRE_APPROVAL]
+        reason:
+          type: string
+          description: "Human-readable explanation of the decision"
+        approvalId:
+          type: string
+          format: uuid
+          description: "Present when decision=REQUIRE_APPROVAL. Poll /v1/approvals/{approvalId} for resolution."
+        resolvedArguments:
+          type: object
+          description: "Present when vault tokens were resolved. Contains the tool arguments with secrets injected."
+          additionalProperties: true
+        vaultInjected:
+          type: boolean
+          description: "True if vault secrets were resolved and injected"
+        injectedSecrets:
+          type: array
+          items:
+            type: string
+          description: "Names of vault secrets that were injected (values are never returned)"
+        semanticScore:
+          type: number
+          format: float
+          description: "AI semantic risk score (0.0–1.0). Present on Team+ tiers."
+        semanticFlag:
+          type: boolean
+          description: "True if semantic analysis flagged the request but did not override ALLOW"
+        threatType:
+          type: string
+          description: "Present on DENY due to threat detection (e.g. prompt_injection, sql_injection)"
+
+    DenyResponse:
+      type: object
+      required: [decision, reason]
+      properties:
+        decision:
+          type: string
+          enum: [DENY]
+        reason:
+          type: string
+        upgradeUrl:
+          type: string
+          format: uri
+          description: "Present when the denial is due to a tier limit"
+        code:
+          type: string
+          enum: [TIER_LIMIT_EXCEEDED, FRAMEWORK_NOT_SUPPORTED]
+          description: "Machine-readable denial code for programmatic handling"
+
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        scopes:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [active, suspended]
+        max_cost_usd:
+          type: number
+          format: float
+        max_iterations:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+
+    CreateAgentRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 128
+        scopes:
+          type: array
+          items:
+            type: string
+          description: "Tool scopes this agent is permitted to call. Use ['*:*'] for all tools."
+          default: ["*:*"]
+        guardrails:
+          type: object
+          properties:
+            budget:
+              type: object
+              properties:
+                limitUsd:
+                  type: number
+                  format: float
+                  description: "Maximum cumulative spend in USD before the agent is blocked"
+            max_iterations:
+              type: integer
+              description: "Maximum tool calls before the agent run is terminated"
+            blockedTools:
+              type: array
+              items:
+                type: string
+              description: "Tool names that are always denied for this agent"
+            policies:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  toolName:
+                    type: string
+                  ruleType:
+                    type: string
+                    enum: [ALLOW, DENY, REQUIRE_APPROVAL]
+                  description:
+                    type: string
+
+    CreateAgentResponse:
+      type: object
+      required: [id, apiKey, name, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        apiKey:
+          type: string
+          description: "Agent API key. Shown only once — store it securely."
+        name:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+
+  responses:
+    Unauthorized:
+      description: "Invalid or missing API key"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DenyResponse"
+    Forbidden:
+      description: "Policy or threat engine denied the request"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DenyResponse"

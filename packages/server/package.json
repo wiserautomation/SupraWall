@@ -1,0 +1,72 @@
+{
+  "name": "@suprawall/server",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "migrate:aws": "psql $DATABASE_URL -f scripts/migrate_aws_marketplace.sql",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:vault": "jest --testPathPattern=tests/vault/"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testTimeout": 30000,
+    "projects": [
+      {
+        "displayName": "unit",
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testTimeout": 30000,
+        "testPathPattern": "tests/(agents|tier|vault)",
+        "setupFilesAfterEnv": [
+          "<rootDir>/tests/setup.ts"
+        ]
+      }
+    ]
+  },
+  "author": "SupraWall",
+  "dependencies": {
+    "@langchain/core": "1.1.36",
+    "@suprawall/core": "file:../core",
+    "@types/pdfkit": "0.17.5",
+    "ai": "6.0.138",
+    "cors": "2.8.6",
+    "dotenv": "17.3.1",
+    "express": "5.2.1",
+    "font-awesome": "4.7.0",
+    "handlebars": "4.7.9",
+    "helmet": "8.1.0",
+    "next": "16.2.3",
+    "pdfkit": "0.17.2",
+    "pg": "8.18.0",
+    "posthog-node": "4.0.0",
+    "puppeteer": "24.40.0",
+    "re2": "^1.24.0",
+    "sqlite3": "6.0.1",
+    "undici": "7.24.4",
+    "zod": "4.3.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/handlebars": "^4.0.40",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^25.3.0",
+    "@types/pg": "^8.18.0",
+    "@types/puppeteer": "^5.4.7",
+    "@types/supertest": "^6.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
+  }
+}

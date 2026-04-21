@@ -1,0 +1,29 @@
+{
+  "name": "suprawall",
+  "version": "1.1.0",
+  "description": "Official TypeScript SDK for SupraWall AI security and compliance",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "suprawall": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc -w",
+    "test": "jest --passWithNoTests"
+  },
+  "author": "SupraWall",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "chalk": "^4.1.2",
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.11",
+    "@types/node": "^20.10.3",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.3.2"
+  }
+}
