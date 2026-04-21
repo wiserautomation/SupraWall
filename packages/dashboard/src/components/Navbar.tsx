@@ -75,15 +75,15 @@ export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?
                 <Link 
                     href={prefix("/")} 
                     onClick={() => sendGAEvent('event', 'nav_logo_click')}
-                    className="flex items-center gap-3 group"
+                    className="flex items-center gap-3 group flex-shrink-0"
                 >
                     <div className="p-1.5 bg-emerald-600 rounded-lg shadow-[0_0_20px_rgba(5,150,105,0.4)] group-hover:scale-110 transition-transform duration-500">
                         <Shield className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-white font-black text-2xl tracking-[-0.05em] uppercase italic">SupraWall</span>
+                    <span className="text-white font-black text-xl xl:text-2xl tracking-[-0.05em] uppercase italic">SupraWall</span>
                 </Link>
 
-                <div className="hidden md:flex items-center gap-10 text-[11px] font-black uppercase tracking-widest text-glow">
+                <div className="hidden lg:flex items-center gap-x-3 xl:gap-x-8 text-[9px] xl:text-[11px] font-black uppercase tracking-widest text-glow">
                     <Dropdown 
                         label={navbar.platform} 
                         isOpen={openMenu === "platform"} 
@@ -132,11 +132,11 @@ export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?
                         {navbar.pricing}
                     </Link>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2 xl:gap-3 ml-2">
                         <Link
                             href={prefix("/login")}
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'deploy_cloud' })}
-                            className="px-5 py-2.5 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 flex items-center gap-2"
+                            className="px-3 xl:px-5 py-2.5 bg-white text-black font-black rounded-xl hover:bg-neutral-200 transition-all shadow-[0_4px_20px_rgba(255,255,255,0.15)] active:scale-95 flex items-center gap-2 whitespace-nowrap"
                         >
                             {common.deployOnCloud} <ArrowRight className="w-3 h-3" />
                         </Link>
@@ -146,7 +146,7 @@ export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?
                             prefetch={false}
                             rel="noopener noreferrer"
                             onClick={() => sendGAEvent('event', 'nav_cta_click', { type: 'self_host' })}
-                            className="hidden sm:flex px-5 py-2.5 border border-white/10 text-white font-black rounded-xl hover:bg-white/5 transition-all items-center gap-2"
+                            className="hidden 2xl:flex px-5 py-2.5 border border-white/10 text-white font-black rounded-xl hover:bg-white/5 transition-all items-center gap-2 whitespace-nowrap"
                         >
                             <Github className="w-4 h-4" /> {common.selfHost}
                         </Link>
