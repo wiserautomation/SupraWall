@@ -118,7 +118,7 @@ export default function vsAzureAI() {
                             SupraWall fuels <strong className="text-blue-500">Azure Security Center</strong> with deterministic tool-call data. Most enterprises use Azure for infrastructure and SupraWall for the specialized AI Act compliance layer that Microsoft's general-purpose tools don't cover.
                         </p>
                         <div className="pt-4 flex justify-center">
-                            <Link href="/beta" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
+                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
                             </Link>
                         </div>

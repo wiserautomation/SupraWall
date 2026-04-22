@@ -296,7 +296,7 @@ export default function NewsArticlePage({ params }: Props) {
                         </p>
                         <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Link
-                                href="/beta"
+                                href="/login"
                                 className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase text-xs tracking-widest rounded-xl transition-colors"
                             >
                                 Start Free <ArrowRight className="w-3 h-3" />

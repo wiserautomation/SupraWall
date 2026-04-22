@@ -46,7 +46,7 @@ export default function QuickstartDocs() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">TypeScript / Node.js</p>
-                            <CodeBlock code="npm install @suprawall/sdk" language="bash" />
+                            <CodeBlock code="npm install suprawall" language="bash" />
                         </div>
                         <div className="space-y-2">
                             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">Python</p>
@@ -69,7 +69,7 @@ export default function QuickstartDocs() {
                             <p className="text-xs font-bold text-neutral-500 uppercase tracking-widest">TypeScript (SDK)</p>
                             <CodeBlock 
                                 language="typescript" 
-                                code={`import { protect } from "@suprawall/sdk";
+                                code={`import { protect } from "suprawall";
 
 const agent = createMyAgent();
 const secured = protect(agent, {

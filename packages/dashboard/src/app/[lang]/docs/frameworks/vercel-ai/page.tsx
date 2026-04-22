@@ -9,7 +9,7 @@ import { Terminal, Shield, Zap, Server, Code, CheckCircle2, ArrowRight } from "l
 import Link from "next/link";
 
 export default function VercelAIDocs() {
-    const starterCode = `import { Client, secure_tools } from "@suprawall/sdk";
+    const starterCode = `import { Client, secure_tools } from "suprawall";
 import { generateText } from "ai";
 
 // 1. Initialize SupraWall with Deny-by-default
@@ -54,7 +54,7 @@ const { text } = await generateText({
             <div className="space-y-8">
                 <section className="space-y-4">
                     <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                    <CodeBlock code="npm install @suprawall/sdk ai zod" language="bash" />
+                    <CodeBlock code="npm install suprawall ai zod" language="bash" />
                 </section>
 
                 <section className="space-y-4">

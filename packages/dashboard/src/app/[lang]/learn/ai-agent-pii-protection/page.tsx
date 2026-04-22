@@ -638,7 +638,7 @@ def test_passport_number_blocks_tool_call():
                 Explore Vault
               </Link>
               <Link
-                href="/beta"
+                href="/login"
                 className="px-10 py-4 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all"
               >
                 Start Free

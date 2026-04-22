@@ -154,7 +154,7 @@ export default function LandingPage() {
                             <div className="flex flex-col sm:flex-row items-center gap-6 pt-6">
                                 <Link
                                     id="cta-deploy-cloud"
-                                    href="/beta"
+                                    href="/login"
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
                                     className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] flex items-center gap-3"
                                 >
@@ -432,7 +432,7 @@ export default function LandingPage() {
                                     </li>
                                 ))}
                             </ul>
-                            <Link href="/beta" className="inline-flex items-center gap-3 text-emerald-500 font-black uppercase tracking-widest text-sm hover:text-emerald-400 transition-colors pt-4">
+                            <Link href="/login" className="inline-flex items-center gap-3 text-emerald-500 font-black uppercase tracking-widest text-sm hover:text-emerald-400 transition-colors pt-4">
                                 See Audit Trail Features <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -499,7 +499,7 @@ export default function LandingPage() {
 
                                 <div className="pt-8 border-t border-white/5 space-y-6">
                                     <Link
-                                        href="/beta"
+                                        href="/login"
                                         className="w-full py-6 bg-emerald-600 text-white text-center font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 transition-all block"
                                     >
                                         Calculate Your ROI →
@@ -511,7 +511,7 @@ export default function LandingPage() {
                                             <p className="text-white font-black uppercase italic text-lg leading-none">Operational Layer</p>
                                             <p className="text-neutral-500 text-[10px] mt-2 font-bold uppercase tracking-widest">SSO • SLA • Self-Hosted • support</p>
                                         </div>
-                                        <Link href="/beta" className="p-4 bg-blue-500/10 rounded-xl text-blue-500 hover:scale-110 transition-transform">
+                                        <Link href="/login" className="p-4 bg-blue-500/10 rounded-xl text-blue-500 hover:scale-110 transition-transform">
                                             <ArrowRight className="w-6 h-6" />
                                         </Link>
                                     </div>
@@ -535,7 +535,7 @@ export default function LandingPage() {
                         </p>
                         <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
                             <Link 
-                                href="/beta" 
+                                href="/login" 
                                 onClick={() => sendGAEvent('event', 'final_cta_click', { type: 'unlock_api_key' })}
                                 className="px-16 py-8 bg-emerald-600 text-white font-black text-3xl rounded-[2.5rem] hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] animate-pulse tracking-tighter flex items-center gap-4 group"
                             >

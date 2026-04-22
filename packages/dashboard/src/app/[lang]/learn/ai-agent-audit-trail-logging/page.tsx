@@ -628,7 +628,7 @@ print(f"Last checkpoint: {result.blockchain_anchor}")`}</pre>
             </p>
             <div className="flex justify-center gap-4 flex-wrap">
               <Link
-                href="/beta"
+                href="/login"
                 className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all"
               >
                 Start Free

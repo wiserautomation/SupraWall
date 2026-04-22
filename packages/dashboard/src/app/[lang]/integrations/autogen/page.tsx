@@ -130,7 +130,7 @@ user_proxy.initiate_chat(assistant, message="Analyze this shell script...")`}</p
                          <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-[0.85] group-hover:scale-105 transition-transform duration-700">
                               Secure Your <br />Conversations.
                          </h2>
-                         <Link href="/beta" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all">
+                         <Link href="/login" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all">
                               Start Building for Free
                          </Link>
                          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-transparent opacity-0 group-hover:opacity-20 transition-opacity" />

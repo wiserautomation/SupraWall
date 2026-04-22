@@ -56,7 +56,7 @@ export default function LangChainIntegrationPage() {
     const howToSteps = [
         {
             name: "Install the SDK",
-            text: "Run 'pip install suprawall-sdk' for Python or 'npm install @suprawall/sdk' for Node.js."
+            text: "Run 'pip install suprawall-sdk' for Python or 'npm install suprawall' for Node.js."
         },
         {
             name: "Initialize the protector",
@@ -148,7 +148,7 @@ export default function LangChainIntegrationPage() {
                         </div>
 
                         <div className="flex justify-center gap-6 pt-8">
-                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-200 transition-all flex items-center gap-2">
                                 Secure My Agent <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -255,7 +255,7 @@ export default function LangChainIntegrationPage() {
                             Ready to secure <br />your swarm?
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
                                 Start Building for Free
                             </Link>
                         </div>

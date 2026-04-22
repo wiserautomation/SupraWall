@@ -110,7 +110,7 @@ export default function NewsIndexClient() {
                             Regulation updates, threat intel, and framework news — curated for teams shipping autonomous AI agents.
                         </p>
                         <Link
-                            href="/beta"
+                            href="/login"
                             className="inline-flex items-center gap-2 px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white font-black uppercase text-sm tracking-widest rounded-xl transition-colors"
                         >
                             Join Beta <ArrowRight className="w-4 h-4" />

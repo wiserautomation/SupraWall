@@ -7,7 +7,7 @@ import Link from "next/link";
 import { ArrowRight, Github, ExternalLink, Zap } from "lucide-react";
 
 export default function LangchainGuide() {
-    const starterCode = `import { SupraWallLangChainCallback, SupraWallOptions } from "@suprawall/sdk";
+    const starterCode = `import { SupraWallLangChainCallback, SupraWallOptions } from "suprawall";
 import { AgentExecutor } from "langchain/agents";
 
 // 1. Setup your secure callback
@@ -52,7 +52,7 @@ await agentExecutor.invoke({ input: "List all files in the secret folder" });`;
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">1. Installation</h2>
-                <CodeBlock code="npm install @suprawall/sdk langchain @langchain/core" language="bash" />
+                <CodeBlock code="npm install suprawall langchain @langchain/core" language="bash" />
             </div>
 
             <div className="space-y-6 pt-4">
@@ -100,8 +100,8 @@ except Exception as e:
 
             <div className="space-y-6 pt-4">
                 <h2 className="text-2xl font-bold text-white tracking-wide border-b border-white/10 pb-2">TypeScript Implementation</h2>
-                <p className="text-neutral-400 text-sm">Use the `@suprawall/sdk` for Node.js environments.</p>
-                <CodeBlock language="typescript" code={`import { Client, secure_agent } from "@suprawall/sdk";
+                <p className="text-neutral-400 text-sm">Use the `suprawall` for Node.js environments.</p>
+                <CodeBlock language="typescript" code={`import { Client, secure_agent } from "suprawall";
 import { AgentExecutor } from "langchain/agents";
 
 const sw = new Client({ 

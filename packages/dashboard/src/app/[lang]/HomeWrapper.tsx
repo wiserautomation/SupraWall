@@ -73,7 +73,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                             <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                                 <Link
                                     id="cta-deploy-cloud"
-                                    href={`/${lang}/beta`}
+                                    href={`/${lang}/login`}
                                     onClick={() => sendGAEvent('event', 'hero_cta_click', { type: 'deploy_cloud' })}
                                     className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.15)] group flex items-center gap-3"
                                 >

@@ -298,7 +298,7 @@ export default function AgentDetailPage() {
 
     const snippetCode = {
         python: `import suprawall\n\nagent = suprawall.Agent(\n  identity="${agentUri}",\n  api_key="${agent.apiKey}"\n)\n\nagent.start()`,
-        ts: `import { SupraWall } from '@suprawall/sdk';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "${agent.apiKey}"\n});\n\nawait agent.connect();`,
+        ts: `import { SupraWall } from 'suprawall';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "${agent.apiKey}"\n});\n\nawait agent.connect();`,
         go: `import "github.com/suprawall/sdk-go"\n\nagent := suprawall.NewAgent(&suprawall.Config{\n    Identity: "${agentUri}",\n    APIKey:   "${agent.apiKey}",\n})\nagent.Run()`
     };
 
@@ -656,7 +656,7 @@ Environment Data:
 - API Key: \`${agent.apiKey}\`
 - Framework: ${promptFramework.replace('-', ' ')}
 
-1. **Install SDK:** Run \`pip install suprawall-sdk\` (Python) or \`npm install @suprawall/sdk\` (Node).
+1. **Install SDK:** Run \`pip install suprawall-sdk\` (Python) or \`npm install suprawall\` (Node).
 2. **Initialization:** Use this boilerplate for \`suprawall_client.py\`:
    \`\`\`python
    from suprawall import Client, secure_agent

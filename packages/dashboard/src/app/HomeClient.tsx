@@ -73,7 +73,7 @@ export function TechTabs() {
     const techExamples: Record<string, any> = {
         "TypeScript": {
             before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
-            after: `import { secure_agent } from "@suprawall/sdk";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "sw_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
+            after: `import { secure_agent } from "suprawall";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "sw_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
         },
         "Python": {
             before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
@@ -81,11 +81,11 @@ export function TechTabs() {
         },
         "MCP": {
             before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
-            after: `import { secure_mcp } from "@suprawall/sdk";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secure_mcp(server);\n\n// ✅ Tool calls governed via SupraWall\nawait secured.start();`
+            after: `import { secure_mcp } from "suprawall";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secure_mcp(server);\n\n// ✅ Tool calls governed via SupraWall\nawait secured.start();`
         },
         "Vercel AI": {
             before: `const { text } = await generateText({...});\n// ⚠️ No pre-execution check\n# System at mercy of LLM 💀`,
-            after: `import { secure } from "@suprawall/sdk";\n\n// 🛡️ Middleware protection\nconst { text } = await secure(generateText)({\n  ...config\n});\n\n// ✅ Fail-safe security layer`
+            after: `import { secure } from "suprawall";\n\n// 🛡️ Middleware protection\nconst { text } = await secure(generateText)({\n  ...config\n});\n\n// ✅ Fail-safe security layer`
         }
     };
 

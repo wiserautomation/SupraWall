@@ -170,7 +170,7 @@ export default function QuickstartPage() {
                             description="Native packages available for all major environments."
                         >
                             {activeTab === "TypeScript" && (
-                                <CodeBlock code="npm install @suprawall/sdk" language="bash" />
+                                <CodeBlock code="npm install suprawall" language="bash" />
                             )}
                             {activeTab === "Python" && (
                                 <div className="space-y-4">
@@ -185,7 +185,7 @@ export default function QuickstartPage() {
                                 </div>
                             )}
                             {activeTab === "MCP Server" && (
-                                <CodeBlock code="npm install @suprawall/sdk" language="bash" />
+                                <CodeBlock code="npm install suprawall" language="bash" />
                             )}
                         </Step>
 
@@ -198,7 +198,7 @@ export default function QuickstartPage() {
                             {activeTab === "TypeScript" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { Client } from "@suprawall/sdk";
+                                    code={`import { Client } from "suprawall";
             
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
@@ -222,7 +222,7 @@ client = Client(
                             {activeTab === "MCP Server" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { Client } from "@suprawall/sdk";
+                                    code={`import { Client } from "suprawall";
 
 const client = new Client({
   apiKey: process.env.SUPRAWALL_API_KEY,
@@ -241,7 +241,7 @@ const client = new Client({
                             {activeTab === "TypeScript" && (
                                 <CodeBlock
                                     language="typescript"
-                                    code={`import { protect } from "@suprawall/sdk";
+                                    code={`import { protect } from "suprawall";
             
 // Wrap your existing agent (LangChain, Vercel AI, etc.)
 const secured = protect(myAgent, { client });

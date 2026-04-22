@@ -246,7 +246,7 @@ export default function PricingClient({ dictionary }: { dictionary: any }) {
 
     React.useEffect(() => {
         // Stealth launch redirect
-        router.push('/beta');
+        router.push('/login');
     }, [router]);
 
     const [loadingCheckout, setLoadingCheckout] = useState(false);

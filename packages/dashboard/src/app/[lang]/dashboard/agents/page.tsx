@@ -1242,7 +1242,7 @@ AGENT_ID=${agent.id}`;
 
                         const snippetCode = {
                             python: `import suprawall\n\nagent = suprawall.Agent(\n  identity="${agentUri}",\n  api_key="ag_xxxxxxxxxxx"\n)\n\nagent.start()`,
-                            ts: `import { SupraWall } from '@suprawall/sdk';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "ag_xxxxxxxxxxx"\n});\n\nawait agent.connect();`,
+                            ts: `import { SupraWall } from 'suprawall';\n\nconst agent = new SupraWall({\n  identity: "${agentUri}",\n  apiKey: "ag_xxxxxxxxxxx"\n});\n\nawait agent.connect();`,
                             go: `import "github.com/suprawall/sdk-go"\n\nagent := suprawall.NewAgent(&suprawall.Config{\n    Identity: "${agentUri}",\n    APIKey:   "ag_xxxxxxxxxxx",\n})\nagent.Run()`
                         };
 

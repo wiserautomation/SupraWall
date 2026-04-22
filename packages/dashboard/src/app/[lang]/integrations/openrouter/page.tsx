@@ -51,7 +51,7 @@ export default function OpenRouterIntegrationPage() {
                         </div>
 
                         <div className="flex justify-center gap-6 pt-10">
-                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all flex items-center gap-2 shadow-2xl">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all flex items-center gap-2 shadow-2xl">
                                 Secure & Rank My Agent <ArrowRight className="w-4 h-4" />
                             </Link>
                         </div>
@@ -135,7 +135,7 @@ suprawall.init(
                             Govern Your <br />Router-Based Agents.
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all">
                                 Secure My App
                             </Link>
                         </div>

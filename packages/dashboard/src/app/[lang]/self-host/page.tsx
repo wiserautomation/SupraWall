@@ -19,7 +19,7 @@ export default function SelfHostPage() {
 
     useEffect(() => {
         // Stealth launch redirect
-        router.push('/beta');
+        router.push('/login');
     }, [router]);
 
     return (

@@ -60,7 +60,7 @@ export default function TypeScriptDocsPage() {
                 <CodeBlock 
                     id="install"
                     language="bash"
-                    code="npm install @suprawall/sdk"
+                    code="npm install suprawall"
                 />
             </section>
 
@@ -74,7 +74,7 @@ export default function TypeScriptDocsPage() {
                 </p>
                 <CodeBlock 
                     id="quickstart"
-                    code={`import { SupraWall } from "@suprawall/sdk";
+                    code={`import { SupraWall } from "suprawall";
 
 // 1. Initialize with your API Key
 const supra = new SupraWall({
@@ -108,7 +108,7 @@ const result = await protectedTool.run({ amount: 500, target: "account_A" });`}
                             id="vercel"
                             code={`import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
-import { SupraWall } from "@suprawall/sdk";
+import { SupraWall } from "suprawall";
 
 const supra = new SupraWall({ apiKey: "ag_..." });
 
@@ -132,7 +132,7 @@ const { text } = await generateText({
                         </p>
                         <CodeBlock 
                             id="langchain"
-                            code={`import { SupraWall } from "@suprawall/sdk";
+                            code={`import { SupraWall } from "suprawall";
 import { ChatOpenAI } from "@langchain/openai";
 
 const supra = new SupraWall({ apiKey: "ag_..." });

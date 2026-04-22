@@ -9,7 +9,7 @@
 **A deterministic security perimeter for AI agents. One line of code. Open source.**
 
 [![PyPI](https://img.shields.io/pypi/v/suprawall-sdk?label=pypi&color=B8FF00)](https://pypi.org/project/suprawall-sdk/)
-[![npm](https://img.shields.io/npm/v/@suprawall/sdk?label=npm&color=B8FF00)](https://www.npmjs.com/package/@suprawall/sdk)
+[![npm](https://img.shields.io/npm/v/suprawall?label=npm&color=B8FF00)](https://www.npmjs.com/package/suprawall)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Stars](https://img.shields.io/github/stars/wiserautomation/SupraWall?style=social)](https://github.com/wiserautomation/SupraWall)
 [![AWS Marketplace](https://img.shields.io/badge/AWS%20Marketplace-Guardrail-232f3e.svg?logo=amazon-aws&logoColor=white)](https://aws.amazon.com/marketplace/pp/prodview-suprawall)
@@ -63,11 +63,11 @@ agent.invoke("DROP TABLE users")
 ### TypeScript / Node
 
 ```bash
-npm install @suprawall/sdk
+npm install suprawall
 ```
 
 ```typescript
-import { secureAgent } from "@suprawall/sdk";
+import { secureAgent } from "suprawall";
 import { agent } from "./my-agent";
 
 const safe = secureAgent(agent, { policy: "./policies/langchain-safe.json" });

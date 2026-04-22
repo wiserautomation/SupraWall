@@ -119,7 +119,7 @@ protected_client.beta.assistants.create(
                          <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-[0.85] group-hover:scale-105 transition-transform duration-700">
                               Secure Your <br />OpenAI Agents.
                          </h2>
-                         <Link href="/beta" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all">
+                         <Link href="/login" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all">
                               Start Building for Free
                          </Link>
                     </div>

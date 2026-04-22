@@ -53,7 +53,7 @@ export default function AuditTrailClient() {
                     </div>
 
                     <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                        <Link href={`/${lang}/beta`} className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-blue-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)] group flex items-center gap-3">
+                        <Link href={`/${lang}/login`} className="px-14 py-6 bg-white text-black font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-blue-500 hover:text-white transition-all transform hover:scale-105 shadow-[0_20px_40px_rgba(255,255,255,0.1)] group flex items-center gap-3">
                              Start Building <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
                         </Link>
                         <Link href="/docs/audit" className="px-14 py-6 border-2 border-white/10 text-white font-black uppercase tracking-tighter text-2xl rounded-2xl hover:bg-white/5 transition-all underline decoration-white/10 underline-offset-8">
@@ -237,7 +237,7 @@ export default function AuditTrailClient() {
                             <Code className="w-4 h-4" /> COMPLIANCE_SETUP.TS
                         </div>
                         <pre className="text-blue-100/90 leading-loose">
-                            {`import { secure_agent } from "@suprawall/sdk";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic Compliance Logging\n  compliance: {\n    auto_log_tool_calls: true,\n    sign_logs_locally: true,\n    map_to_articles: [9, 11, 12, 14], // EU AI Act support\n    retention_days: 365\n  }\n});\n\n// Decision logs are now signed and stored in your SupraWall Node.`}
+                            {`import { secure_agent } from "suprawall";\n\nconst agent = secure_agent(my_base_agent, {\n  api_key: "ag_...",\n\n  // 🛡️ Automatic Compliance Logging\n  compliance: {\n    auto_log_tool_calls: true,\n    sign_logs_locally: true,\n    map_to_articles: [9, 11, 12, 14], // EU AI Act support\n    retention_days: 365\n  }\n});\n\n// Decision logs are now signed and stored in your SupraWall Node.`}
                         </pre>
                     </div>
                 </div>
@@ -256,7 +256,7 @@ export default function AuditTrailClient() {
                          Don&apos;t build a compliance team. Enable SupraWall Audit Trail and get back to building the product. 
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href={`/${lang}/beta`} className="px-16 py-8 bg-blue-600 text-white font-black text-3xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(59,130,246,0.3)] tracking-tighter flex items-center gap-4 group">
+                        <Link href={`/${lang}/login`} className="px-16 py-8 bg-blue-600 text-white font-black text-3xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(59,130,246,0.3)] tracking-tighter flex items-center gap-4 group">
                              Get Your Node API Key <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

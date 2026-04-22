@@ -194,7 +194,7 @@ export default function Article14Page() {
                             </p>
                         </div>
                         <Link 
-                            href="/beta" 
+                            href="/login" 
                             className="px-8 py-4 bg-white text-black font-black uppercase tracking-tighter rounded-xl hover:scale-105 transition-transform flex items-center gap-2 relative z-10"
                         >
                             Get Started <ArrowRight className="w-5 h-5" />

@@ -129,7 +129,7 @@ crew.kickoff()`}</pre>
                          <h2 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic text-white leading-[0.85] group-hover:scale-105 transition-transform duration-700">
                              Secure Your <br />Swarm Today.
                          </h2>
-                         <Link href="/beta" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
+                         <Link href="/login" className="inline-flex px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                              Start Building for Free
                          </Link>
                     </div>

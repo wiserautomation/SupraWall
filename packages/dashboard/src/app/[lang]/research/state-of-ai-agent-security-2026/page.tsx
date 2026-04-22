@@ -187,7 +187,7 @@ export default async function ResearchReportPage({
                             Secure your autonomous <br />
                             <span className="text-emerald-500 italic uppercase italic underline decoration-white/10">fleet today.</span>
                         </h2>
-                        <Link href="/beta" className="inline-flex items-center gap-4 px-12 py-6 bg-emerald-600 text-white font-black uppercase text-xl rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_40px_80px_rgba(16,185,129,0.2)]">
+                        <Link href="/login" className="inline-flex items-center gap-4 px-12 py-6 bg-emerald-600 text-white font-black uppercase text-xl rounded-2xl hover:bg-emerald-500 transition-all shadow-[0_40px_80px_rgba(16,185,129,0.2)]">
                             Implement the standard <ArrowRight className="w-6 h-6" />
                         </Link>
                     </div>

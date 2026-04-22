@@ -222,7 +222,7 @@ export default function PromptInjectionPage() {
                                 Vaccine for <br />Your Agents
                             </h2>
                             <div className="flex justify-center gap-6">
-                                <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                                <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
                                     Protect My Swarm
                                 </Link>
                                 <Link href="/learn/what-is-agent-runtime-security" className="px-12 py-5 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all">

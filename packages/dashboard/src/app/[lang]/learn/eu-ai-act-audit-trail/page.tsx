@@ -165,7 +165,7 @@ export default function EuAiActAuditTrailPage() {
                         </p>
                         <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
                             <Link
-                                href="/beta"
+                                href="/login"
                                 className="inline-flex items-center justify-center gap-2 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-3xl hover:bg-neutral-100 transition-all shadow-2xl"
                             >
                                 Start Compliance Audit <ArrowRight className="w-4 h-4" />

@@ -212,7 +212,7 @@ export default function vsStraikerPage() {
                                 </p>
                                 <div className="pt-6">
                                     <Link
-                                        href="/beta"
+                                        href="/login"
                                         className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit"
                                     >
                                         Start Free in 5 Minutes <ArrowRight className="w-4 h-4" />

@@ -109,7 +109,7 @@ export default function OWASPLLM01Page() {
                         <p className="text-neutral-400 font-medium italic max-w-xl mx-auto">
                             Don't leave your agent security to chance. Implement the deterministic firewall that satisfies OWASP and enterprise security bars.
                         </p>
-                        <Link href="/beta" className="inline-flex items-center gap-4 px-12 py-6 bg-rose-600 text-white font-black text-2xl rounded-3xl hover:bg-rose-500 transition-all shadow-[0_0_80px_rgba(225,29,72,0.3)] tracking-tighter group italic uppercase italic">
+                        <Link href="/login" className="inline-flex items-center gap-4 px-12 py-6 bg-rose-600 text-white font-black text-2xl rounded-3xl hover:bg-rose-500 transition-all shadow-[0_0_80px_rgba(225,29,72,0.3)] tracking-tighter group italic uppercase italic">
                             Join the Private Beta <ArrowRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

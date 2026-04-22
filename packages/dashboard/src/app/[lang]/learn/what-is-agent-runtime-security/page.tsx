@@ -223,7 +223,7 @@ export default function AgentRuntimeSecurityPage() {
                             Stop Rogue <br />AI Agents
                         </h2>
                         <div className="flex justify-center gap-6">
-                            <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                            <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
                                 Get Started Free
                             </Link>
                             <Link href="/integrations/langchain" className="px-12 py-5 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all">

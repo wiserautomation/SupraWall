@@ -27,7 +27,7 @@ export const phase1Templates: EmailTemplateSpec[] = [
       
       <h3>3-Step Quickstart</h3>
       <ol>
-        <li><strong>Install the SDK:</strong> <br><code>npm install @suprawall/sdk</code></li>
+        <li><strong>Install the SDK:</strong> <br><code>npm install suprawall</code></li>
         <li><strong>Wrap your Agent:</strong> Use our <code>secureAgent</code> wrapper on your LangChain, CrewAI, or AutoGen agent.</li>
         <li><strong>See Interception:</strong> Run your agent and watch the dashboard light up.</li>
       </ol>

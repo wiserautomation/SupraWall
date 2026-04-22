@@ -10,8 +10,8 @@ export interface InjectionResult {
     error?: string;
 }
 
-const SUPRAWALL_IMPORT = `import { protect } from '@suprawall/sdk';`;
-const SUPRAWALL_IMPORT_DQ = `import { protect } from "@suprawall/sdk";`;
+const SUPRAWALL_IMPORT = `import { protect } from 'suprawall';`;
+const SUPRAWALL_IMPORT_DQ = `import { protect } from "suprawall";`;
 
 const KEY_SOURCE_CLOUD = `process.env.SUPRAWALL_API_KEY!`;
 const KEY_SOURCE_SELF = `process.env.SUPRAWALL_API_KEY || 'sw_local'`;
@@ -23,8 +23,8 @@ function isAlreadyWrapped(content: string): boolean {
     return (
         content.includes("from 'suprawall'") ||
         content.includes('from "suprawall"') ||
-        content.includes("from '@suprawall/sdk'") ||
-        content.includes('from "@suprawall/sdk"') ||
+        content.includes("from 'suprawall'") ||
+        content.includes('from "suprawall"') ||
         content.includes('protect(') ||
         content.includes('withSupraWall(') ||
         content.includes('secure_agent(')

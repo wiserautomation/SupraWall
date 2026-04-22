@@ -194,7 +194,7 @@ export default function EUAIActLoggingPage() {
                         Don&apos;t build your own logging infrastructure. SupraWall provides the &quot;Box&quot; (Flight Recorder) for all your AI agents, exportable in regulator-ready formats with one click.
                       </p>
                    </div>
-                   <Link href="/beta" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-xl whitespace-nowrap">
+                   <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-xl whitespace-nowrap">
                       Activate Compliance <ArrowRight className="w-4 h-4" />
                    </Link>
                 </div>

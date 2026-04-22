@@ -12,7 +12,7 @@ interface TemplateActivationSnippetProps {
 export function TemplateActivationSnippet({ slug, dictionary }: TemplateActivationSnippetProps) {
     const common = dictionary?.complianceTemplates?.common || { activationHeader: 'One-Line Activation' };
     
-    const code = `import { useCompliance } from '@suprawall/sdk';
+    const code = `import { useCompliance } from 'suprawall';
 
 // One-line activation for Annex III ${slug} compliance
 const agent = useCompliance({ 

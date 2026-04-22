@@ -112,7 +112,7 @@ const FAQS = [
     },
 ];
 
-const CODE_SNIPPET = `import { secure_agent, vault } from "@suprawall/sdk";
+const CODE_SNIPPET = `import { secure_agent, vault } from "suprawall";
 
 // Store secret once (via CLI or dashboard):
 // suprawall vault set stripe_key "sk_live_4eC39..."
@@ -186,7 +186,7 @@ export default function VaultClient() {
                     </p>
 
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-                        <Link href={`/${lang}/beta`} className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-sm">
+                        <Link href={`/${lang}/login`} className="inline-flex items-center gap-2 px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-[0_0_40px_rgba(255,255,255,0.1)] text-sm">
                             Protect Your Secrets <ArrowRight className="w-4 h-4" />
                         </Link>
                         <a href="#attack-demo" className="inline-flex items-center gap-2 px-10 py-5 bg-transparent text-white border-2 border-emerald-500/40 font-black uppercase tracking-widest rounded-2xl hover:border-emerald-500 hover:bg-emerald-500/5 transition-all text-sm">
@@ -554,7 +554,7 @@ export default function VaultClient() {
                                 Free tier includes 10,000 operations. No credit card required.
                             </p>
                             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                                <Link href={`/${lang}/beta`} className="inline-flex items-center gap-2 px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
+                                <Link href={`/${lang}/login`} className="inline-flex items-center gap-2 px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all shadow-2xl">
                                     Request Vault Access <ArrowRight className="w-4 h-4" />
                                 </Link>
                                 <Link href={`/${lang}/docs`} className="inline-flex items-center gap-2 px-12 py-5 bg-black/20 text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:bg-black/40 transition-all">

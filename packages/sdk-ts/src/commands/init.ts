@@ -148,7 +148,7 @@ function writeEnvFile(filePath: string, updates: Record<string, string>): void {
 // ─── Install helpers ──────────────────────────────────────────────────────────
 
 function installNodeSdk(packageManager: string, projectRoot: string): boolean {
-    const cmd = getInstallCommand(packageManager, '@suprawall/sdk');
+    const cmd = getInstallCommand(packageManager, 'suprawall');
     printStep(`Installing SDK (${cmd})`);
     try {
         execSync(cmd, { cwd: projectRoot, stdio: 'pipe' });
@@ -273,7 +273,7 @@ export async function runInit(projectRoot: string): Promise<void> {
         successItems.push({ label: 'SDK installed (suprawall-sdk)' });
     } else {
         installNodeSdk(packageManager, projectRoot);
-        successItems.push({ label: 'SDK installed (@suprawall/sdk)' });
+        successItems.push({ label: 'SDK installed (suprawall)' });
     }
 
     // ── Step 6: Write .env ────────────────────────────────────────────────────
@@ -319,7 +319,7 @@ export async function runInit(projectRoot: string): Promise<void> {
             successItems.push({ label: `${targetAgentFile.relativePath} wrapped with protect()` });
         } else {
             process.stdout.write(' ' + chalk.yellow(`(could not auto-inject: ${result.error})`) + '\n');
-            printInfo(`Add manually:\n    import { protect } from '@suprawall/sdk';\n    const secured = protect(yourAgent, { apiKey: process.env.SUPRAWALL_API_KEY! });`);
+            printInfo(`Add manually:\n    import { protect } from 'suprawall';\n    const secured = protect(yourAgent, { apiKey: process.env.SUPRAWALL_API_KEY! });`);
         }
     }
 

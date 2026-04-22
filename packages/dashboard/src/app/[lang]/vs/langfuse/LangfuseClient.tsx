@@ -166,7 +166,7 @@ secured_agent.invoke({"input": "..."})`}</pre>
                         </div>
                     </div>
                     <div>
-                         <a href="/beta" className="inline-flex px-12 py-5 bg-blue-600 text-black font-black uppercase tracking-widest rounded-3xl hover:bg-blue-500 transition-all text-sm group-hover:scale-110 duration-500">
+                         <a href="/login" className="inline-flex px-12 py-5 bg-blue-600 text-black font-black uppercase tracking-widest rounded-3xl hover:bg-blue-500 transition-all text-sm group-hover:scale-110 duration-500">
                              Secure Your Agent <Zap className="ml-2 w-4 h-4 fill-black" />
                          </a>
                     </div>

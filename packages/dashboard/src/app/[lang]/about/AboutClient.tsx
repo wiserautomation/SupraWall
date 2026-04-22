@@ -106,7 +106,7 @@ export default function AboutClient({ dictionary }: { dictionary: any }) {
                         {t.footer.description}
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href="/beta" className="px-16 py-8 bg-neutral-800 text-white font-black text-3xl rounded-3xl hover:bg-neutral-700 transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] tracking-tighter flex items-center gap-4 group">
+                        <Link href="/login" className="px-16 py-8 bg-neutral-800 text-white font-black text-3xl rounded-3xl hover:bg-neutral-700 transition-all shadow-[0_0_100px_rgba(255,255,255,0.05)] tracking-tighter flex items-center gap-4 group">
                              {t.footer.cta} <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

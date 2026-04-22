@@ -114,7 +114,7 @@ export default function AIAgentVsTraditionalSecurityPage() {
                         <p className="text-neutral-400 font-medium italic max-w-xl mx-auto">
                             The security stack for AI agents is being built today. Secure your autonomous systems with SupraWall's deterministic runtime firewall.
                         </p>
-                        <Link href="/beta" className="inline-flex items-center gap-4 px-12 py-6 bg-blue-600 text-white font-black text-2xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(37,99,235,0.3)] tracking-tighter group italic uppercase italic">
+                        <Link href="/login" className="inline-flex items-center gap-4 px-12 py-6 bg-blue-600 text-white font-black text-2xl rounded-3xl hover:bg-blue-500 transition-all shadow-[0_0_100px_rgba(37,99,235,0.3)] tracking-tighter group italic uppercase italic">
                             Join the Private Beta <ArrowRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

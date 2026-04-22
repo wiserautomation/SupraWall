@@ -123,7 +123,7 @@ export default function HowToSecureAIAgentsPage() {
                         <p className="text-neutral-400 font-medium italic max-w-xl mx-auto">
                             SupraWall is the deterministic choice for enterprise AI security. Join the teams building the future of autonomous agents safely.
                         </p>
-                        <Link href="/beta" className="inline-flex items-center gap-4 px-12 py-6 bg-emerald-600 text-white font-black text-2xl rounded-3xl hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] tracking-tighter group italic uppercase italic">
+                        <Link href="/login" className="inline-flex items-center gap-4 px-12 py-6 bg-emerald-600 text-white font-black text-2xl rounded-3xl hover:bg-emerald-500 transition-all shadow-[0_0_100px_rgba(16,185,129,0.3)] tracking-tighter group italic uppercase italic">
                             Deploy SupraWall in 5m <ArrowRight className="w-8 h-8 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>

@@ -282,7 +282,7 @@ secured_agent.invoke({"input": "Perform audit report and email it."})`}
                   Secure your <br />agents today.
                 </h2>
                 <div className="flex justify-center gap-6">
-                  <Link href="/beta" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
+                  <Link href="/login" className="px-12 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all transform hover:-translate-y-1">
                     Start Protection for Free
                   </Link>
                 </div>

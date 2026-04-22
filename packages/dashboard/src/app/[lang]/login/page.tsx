@@ -33,25 +33,10 @@ export default function LoginPage() {
         setIsLoading(true);
         try {
             if (isRegistering) {
-                if (authMode === "stealth" && !isAdminEmail(email)) {
-                    setError("Public registration is currently closed. Please join our beta waitlist.");
-                    setIsLoading(false);
-                    setTimeout(() => router.push(`/${lang}/beta`), 2000);
-                    return;
-                }
                 await createUserWithEmailAndPassword(auth, email, password);
                 sendGAEvent('event', 'sign_up', { method: 'email' });
             } else {
-                const userCredential = await signInWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                if (authMode === "stealth" && !isAdminEmail(user.email)) {
-                    await auth.signOut();
-                    setError("Authorized personnel only. Redirecting to beta...");
-                    setTimeout(() => router.push(`/${lang}/beta`), 2000);
-                    return;
-                }
-
+                await signInWithEmailAndPassword(auth, email, password);
                 sendGAEvent('event', 'login', { method: 'email' });
             }
             router.push(`/${lang}/dashboard`);
@@ -105,12 +90,10 @@ export default function LoginPage() {
                     <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
 
                     <h2 className="text-2xl font-black text-white italic uppercase tracking-tight mb-2">
-                        {isRegistering ? "Create Account" : (authMode === "stealth" ? "Operator Login" : "Sign In")}
+                        {isRegistering ? "Create Account" : "Sign In"}
                     </h2>
                     <p className="text-[9px] font-black uppercase tracking-[0.2em] text-emerald-500/60 mb-8 italic">
-                        {authMode === "stealth"
-                            ? "Stealth Launch Active \u2022 Authorized Admins Only"
-                            : isRegistering ? "Self-Hosted Instance \u2022 Create Your Account" : "Self-Hosted Instance \u2022 Sign In to Continue"}
+                        {isRegistering ? "SupraWall Cloud \u2022 Create Your Account" : "SupraWall Cloud \u2022 Sign In to Continue"}
                     </p>
 
                     <form onSubmit={handleAuth} className="space-y-6">
@@ -184,28 +167,13 @@ export default function LoginPage() {
                     </form>
 
                     <div className="mt-10 text-center">
-                        {authMode === "open" ? (
-                            <button
-                                type="button"
-                                onClick={() => { setIsRegistering(!isRegistering); setError(""); }}
-                                className="text-[10px] font-black uppercase tracking-[0.1em] text-emerald-500/60 italic hover:text-emerald-400 transition-colors"
-                            >
-                                {isRegistering ? "Already have an account? Sign in" : "Don\u2019t have an account? Create one"}
-                            </button>
-                        ) : (
-                            // QA-003: In stealth mode show a link to the beta waitlist instead of a dead end
-                            <div className="space-y-2">
-                                <p className="text-[10px] font-black uppercase tracking-[0.1em] text-neutral-600 italic">
-                                    Authorized Access Only &bull; System Locked
-                                </p>
-                                <Link
-                                    href={`/${lang}/beta`}
-                                    className="text-[10px] font-black uppercase tracking-[0.1em] text-emerald-500/50 italic hover:text-emerald-400 transition-colors"
-                                >
-                                    Request beta access &rarr;
-                                </Link>
-                            </div>
-                        )}
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegistering(!isRegistering); setError(""); }}
+                            className="text-[10px] font-black uppercase tracking-[0.1em] text-emerald-500/60 italic hover:text-emerald-400 transition-colors"
+                        >
+                            {isRegistering ? "Already have an account? Sign in" : "Don\u2019t have an account? Create one"}
+                        </button>
                     </div>
                 </div>
 

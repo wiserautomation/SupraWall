@@ -172,7 +172,7 @@ export default function AIAuditTrailPage() {
                      SupraWall automatically generates the technical evidence needed to comply with enterprise security reviews and EU AI Act Article 12 mandates. Stop building manual log pipelines — activate SupraWall Audit in 30 seconds.
                    </p>
                    <div className="flex flex-col sm:flex-row gap-4">
-                      <Link href="/beta" className="px-12 py-5 bg-emerald-500 text-black font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all flex items-center justify-center gap-2">
+                      <Link href="/login" className="px-12 py-5 bg-emerald-500 text-black font-black uppercase tracking-widest rounded-2xl hover:bg-emerald-400 transition-all flex items-center justify-center gap-2">
                         Get Started <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link href="/docs" className="px-12 py-5 bg-transparent text-white border-2 border-white/20 font-black uppercase tracking-widest rounded-2xl hover:border-white/40 transition-all flex items-center justify-center">
