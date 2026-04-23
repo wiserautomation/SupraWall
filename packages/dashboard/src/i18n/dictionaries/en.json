@@ -20,7 +20,9 @@
     "pricing": "Pricing",
     "frameworks": "Frameworks",
     "platforms": "Platforms & Models",
-    "awsMarketplace": "AWS Marketplace"
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "By Role",
+    "industries": "By Industry"
   },
   "home": {
     "hero": {
@@ -907,6 +909,268 @@
       "solutionTitle": "Automating Compliance",
       "solutionP": "SupraWall's SDK acts as the Article 12 compliance engine by automatically intercepting tool calls at the runtime boundary and streaming them to an immutable audit ledger. This ensures that every \"reasoned\" action by an agent is traceable back to a source instruction in the event of a regulatory audit.",
       "guideLink": "View Article 12 detailed mapping"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Annex III Category 4 · GDPR Article 22",
+        "urgency": "August 2, 2026 — EU AI Act enforcement deadline",
+        "title": "Your Recruiters Are Using ChatGPT for CVs.",
+        "emphasis": "Here's What EU Law Now Requires.",
+        "description": "Most HR teams in Europe are already using AI for candidate screening. Almost none of them know that doing it without safeguards became a legal violation on August 2, 2026."
+      },
+      "story": {
+        "label": "A scenario playing out across European companies today",
+        "quote": "A recruiter opens ChatGPT, pastes a candidate's full CV, and types: \"Is this person a good fit for the role?\" The LLM responds with a score and a summary. The recruiter moves on. No audit trail. No bias check. No human sign-off. As of August 2, 2026, this is a compliance violation with potential fines of €35 million or 7% of global revenue."
+      },
+      "behaviors": {
+        "title": "What Your HR Team Is Doing Right Now",
+        "subtitle": "These are the specific behaviors that trigger Annex III and GDPR exposure.",
+        "items": [
+          { "icon": "upload", "title": "CV uploads to public LLMs", "desc": "Candidates' full CVs — containing names, addresses, education, and employment history — are being pasted directly into ChatGPT, Gemini, or Claude. This data is processed by external servers." },
+          { "icon": "filter", "title": "AI-generated shortlisting", "desc": "Recruiters are asking LLMs to rank or filter candidates. When an AI recommendation influences who gets interviewed, it triggers GDPR Article 22: the right not to be subject to automated decisions." },
+          { "icon": "missing-trail", "title": "No audit trail exists", "desc": "EU AI Act Article 12 requires a logged record of every high-risk AI decision. ChatGPT conversations are ephemeral. There is no evidence trail if a candidate claims unlawful discrimination." },
+          { "icon": "bias", "title": "No bias documentation", "desc": "High-risk AI systems must demonstrate they do not systematically discriminate by gender, age, or nationality. Off-the-shelf LLMs have no built-in bias audit. Using them for hiring with no documentation is non-compliant by default." }
+        ]
+      },
+      "exposure": {
+        "title": "The Specific Legal Exposure",
+        "subtitle": "Three rules, all triggered at once.",
+        "items": [
+          { "tag": "EU AI Act — Annex III Cat. 4", "title": "Your AI is classified as \"High-Risk\"", "desc": "Any AI used in CV screening, shortlisting, or performance monitoring of employees is explicitly classified as a High-Risk AI System under Annex III Category 4. This classification triggers a mandatory compliance framework — not optional guidelines." },
+          { "tag": "GDPR — Article 22", "title": "Candidates have the right to a human decision", "desc": "Automated processing that \"significantly affects\" a person — including hiring decisions — requires either explicit candidate consent, or a human decision-maker as the final authority. Using an LLM shortlist as the primary filter without documented human override violates this directly." },
+          { "tag": "EU AI Act — Article 12", "title": "You must have an audit trail", "desc": "Every action taken by a high-risk AI system must be automatically logged. Since August 2, 2026, absence of this logging is itself a violation — independent of whether discrimination occurred." }
+        ]
+      },
+      "compliantPath": {
+        "title": "What a Compliant HR AI Process Looks Like",
+        "subtitle": "You don't have to ban AI. You have to govern it.",
+        "steps": [
+          { "step": "01", "title": "Classify your AI tools", "desc": "If any tool touches candidate data, it is Annex III Category 4 by default. Start with a complete inventory of which tools your HR team uses." },
+          { "step": "02", "title": "Implement a DPIA", "desc": "A Data Protection Impact Assessment is legally required before deploying any high-risk AI in HR contexts. This documents the risks and the mitigations." },
+          { "step": "03", "title": "Enforce audit trails", "desc": "Every AI-assisted decision must be logged. The log must be immutable. SupraWall's SDK intercepts tool calls at the runtime boundary and writes signed audit entries automatically." },
+          { "step": "04", "title": "Gate final decisions with human sign-off", "desc": "AI can assist. Humans must decide. SupraWall's Human-in-the-Loop (HITL) queue routes all candidate ranking outputs to a nominated HR manager before any action proceeds." },
+          { "step": "05", "title": "Activate the HR Compliance Template", "desc": "SupraWall's pre-configured HR template implements all four steps above in one import. It is specifically calibrated for Annex III Category 4 + GDPR Article 22 requirements." }
+        ]
+      },
+      "faq": [
+        { "q": "Can we still use AI tools in HR?", "a": "Yes — but you need a compliant infrastructure. AI can assist recruiters. It cannot be the sole decision-maker, and every recommendation must be logged and human-reviewed." },
+        { "q": "Do we need to notify candidates we use AI?", "a": "Yes. GDPR Article 13/14 requires disclosure when automated processing is used. Your privacy notice must be updated." },
+        { "q": "What if we only use AI for initial screening, not final decisions?", "a": "Initial screening that reduces the candidate pool is still a decision that 'significantly affects' candidates under Article 22. The threshold is low." },
+        { "q": "How fast can we become compliant?", "a": "With SupraWall's HR template, the technical compliance layer is active in under 15 minutes. DPIA documentation and policy updates take longer — start immediately." }
+      ],
+      "ctaDev": { "label": "Activate HR Template", "href": "/compliance-templates/hr-employment", "sublabel": "One import. Annex III + GDPR Article 22 configured." },
+      "ctaBusiness": { "label": "Book a Compliance Call", "href": "mailto:enterprise@supra-wall.com", "sublabel": "For CHROs and HR Directors. 30-minute assessment." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · EU AI Act Annex III · MiFID II",
+        "urgency": "DORA active now. EU AI Act enforcement August 2, 2026.",
+        "title": "Your Bank Banned LLMs.",
+        "emphasis": "Here's How to Safely Bring AI Back.",
+        "description": "Most European banks issued a company-wide ban on public LLMs the moment employees started uploading client documents to ChatGPT. The ban was the right call. Now your staff are slower than competitors who found a compliant path forward."
+      },
+      "story": {
+        "label": "The sequence that triggered every bank's AI ban",
+        "quote": "An analyst pastes a confidential credit memo into ChatGPT to help draft a summary. Another employee uploads a client onboarding form. IT discovers this via outbound traffic analysis. The CISO issues a blanket LLM ban within 24 hours. Now, six months later, those same employees are using personal devices on their phones to avoid the ban — creating a worse security posture than before."
+      },
+      "behaviors": {
+        "title": "Why the Ban Doesn't Work",
+        "subtitle": "Banning LLMs doesn't stop usage. It moves it underground.",
+        "items": [
+          { "icon": "bypass", "title": "Staff bypass corporate controls", "desc": "Employees use personal phones, home networks, or browser profiles to access ChatGPT when corporate tools are locked. You have less visibility, not more." },
+          { "icon": "competitive", "title": "Competitive disadvantage", "desc": "Compliance teams at institutions with governed AI use are processing documents 3–5x faster. Analyst onboarding, credit memos, and regulatory filings are all AI-assisted." },
+          { "icon": "scope", "title": "The scope of the ban is wrong", "desc": "The risk is not \"employees using LLMs.\" The risk is \"client data leaving your control.\" These are solvable independently. A policy engine, not a ban, is the correct solution." }
+        ]
+      },
+      "exposure": {
+        "title": "The Actual Compliance Requirements",
+        "subtitle": "Four overlapping frameworks. One infrastructure answer.",
+        "items": [
+          { "tag": "DORA — Article 8", "title": "ICT risk management obligations", "desc": "The Digital Operational Resilience Act requires documented risk assessment for all third-party ICT tools. Using public LLMs without a governed access layer violates DORA's ICT risk management framework." },
+          { "tag": "EU AI Act — Annex III", "title": "Credit scoring and risk assessment", "desc": "Any AI used in credit decisions, fraud detection, or customer risk scoring is High-Risk under Annex III. This requires audit trails, human oversight, and documented risk management." },
+          { "tag": "GDPR", "title": "Client data cannot leave the EU perimeter", "desc": "Client financial data processed by US-based LLM providers without a valid transfer mechanism violates GDPR Chapter V. EU data residency is not optional for regulated entities." },
+          { "tag": "MiFID II", "title": "Record-keeping for advisory AI", "desc": "If AI assists in investment advice or suitability assessments, MiFID II's record-keeping obligations apply. ChatGPT conversations are not MiFID-compliant records." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Lift the Ban. Keep the Control.",
+        "subtitle": "A compliant AI environment for financial services.",
+        "steps": [
+          { "step": "01", "title": "Define which use cases are permitted", "desc": "Internal document summarization, non-client research, regulatory filing drafts — these carry lower risk than credit decisions. Classify before you permit." },
+          { "step": "02", "title": "Deploy a policy engine", "desc": "A deterministic policy engine — not a prompt — decides what data can flow to which AI tool. Client account numbers cannot go to external APIs. Internal research summaries can." },
+          { "step": "03", "title": "Enforce EU data residency", "desc": "All AI processing of client data must stay within EU infrastructure. SupraWall's gateway routes all flagged payloads to EU-region endpoints and blocks outbound transfers to non-compliant regions." },
+          { "step": "04", "title": "Create DORA-compliant audit trails", "desc": "Every AI tool call — query, input, output, policy decision — is logged immutably. This record serves as your DORA ICT incident documentation and MiFID II record." },
+          { "step": "05", "title": "Activate the Banking Compliance Template", "desc": "SupraWall's banking template pre-configures DORA + EU AI Act Annex III requirements. Credit scoring logic is HITL-gated. Client data scrubbing is automatic." }
+        ]
+      },
+      "faq": [
+        { "q": "Does DORA apply to all banks?", "a": "DORA applies to all financial entities regulated in the EU: banks, investment firms, insurance companies, crypto-asset service providers, and their critical ICT providers." },
+        { "q": "Can we use OpenAI's enterprise contract to become compliant?", "a": "An enterprise contract addresses data processing agreements but does not resolve the DORA ICT risk assessment requirement or EU AI Act audit trail obligations. Contractual coverage ≠ compliance." },
+        { "q": "What about Microsoft Copilot inside Azure?", "a": "Azure residency helps with data sovereignty but does not automatically satisfy EU AI Act audit trail, HITL, or risk management requirements. The enforcement layer must be at the application level." }
+      ],
+      "ctaDev": { "label": "Activate Banking Template", "href": "/compliance-templates/critical-infrastructure", "sublabel": "DORA + EU AI Act Annex III pre-configured." },
+      "ctaBusiness": { "label": "Book a Banking Compliance Call", "href": "mailto:enterprise@supra-wall.com", "sublabel": "For CISOs and Heads of Digital Risk. 30-minute assessment." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "Annex III Category 5 · GDPR Article 9 (Special Category Data)",
+        "urgency": "August 2, 2026 for health services AI. August 2027 for embedded medical devices.",
+        "title": "Clinical Staff Are Using AI on Patient Data.",
+        "emphasis": "Here's the Annex III Exposure.",
+        "description": "Patient data is not ordinary data. Under GDPR, it is Special Category. An AI system that processes it is High-Risk under EU AI Act Annex III. Most clinical teams using ChatGPT for administrative or clinical tasks know neither of these things."
+      },
+      "story": {
+        "label": "A scenario occurring in European hospitals today",
+        "quote": "A nurse types a patient's symptoms — including psychiatric history — into ChatGPT to help draft a clinical note more quickly. The response helps. The note is filed. No one logs that the patient's mental health data was processed by an external US server. No consent was obtained for this automated processing. No audit trail exists. This is a GDPR Article 9 violation and an EU AI Act compliance failure — on the same tool call."
+      },
+      "behaviors": {
+        "title": "AI Use Cases Creating Legal Exposure in Healthcare",
+        "subtitle": "These behaviors are common. Most clinical and administrative teams do not know they are regulated.",
+        "items": [
+          { "icon": "notes", "title": "AI-assisted clinical note drafting", "desc": "Using LLMs to draft or summarize clinical notes involving diagnoses, medications, or psychiatric history processes Special Category data under GDPR Article 9." },
+          { "icon": "triage", "title": "AI triage or symptom guidance", "desc": "Any AI system that influences or recommends patient triage priority is High-Risk under Annex III Category 5. No autonomous triage decision can stand without human sign-off." },
+          { "icon": "records", "title": "Patient record summarization", "desc": "Uploading or pasting patient records into a public LLM for summarization means Special Category data is processed by a third party without a valid data processing agreement or consent." },
+          { "icon": "admin", "title": "Benefits and care eligibility AI", "desc": "AI that influences access to healthcare benefits or essential services is explicitly covered by Annex III. Denying or delaying care based on AI output without human review is prohibited." }
+        ]
+      },
+      "exposure": {
+        "title": "Two Frameworks. One Tool Call.",
+        "subtitle": "GDPR Article 9 and EU AI Act Annex III activate simultaneously.",
+        "items": [
+          { "tag": "GDPR — Article 9", "title": "Patient data is Special Category", "desc": "Health data, mental health history, and genetic data are Special Category under GDPR. Processing requires explicit consent or a legal basis under Article 9(2). Informal ChatGPT usage by clinical staff almost never satisfies this." },
+          { "tag": "EU AI Act — Annex III Cat. 5", "title": "Health AI is explicitly High-Risk", "desc": "AI used in medical diagnosis support, patient triage, or management of essential health services is explicitly listed in Annex III Category 5. This mandates audit trails, human oversight, and documented risk management." },
+          { "tag": "Medical Device Extension", "title": "Embedded AI gets until 2027", "desc": "If your AI is embedded in a medical device (as defined by MDR 2017/745), you have until August 2, 2027 for full EU AI Act compliance. However, GDPR Article 9 obligations apply NOW, regardless of device classification." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Compliant Clinical AI",
+        "subtitle": "AI can accelerate care. It cannot replace accountability.",
+        "steps": [
+          { "step": "01", "title": "Classify your AI tools by category", "desc": "Clinical note assistance, triage support, and benefits eligibility AI are all Annex III Category 5. Administrative scheduling or general information retrieval may fall outside High-Risk. Classify before deploying." },
+          { "step": "02", "title": "Implement a DPIA for all health AI", "desc": "A GDPR Data Protection Impact Assessment is required before processing Special Category data at scale. This includes a description of the AI system, the risks, and the mitigations." },
+          { "step": "03", "title": "Deploy PII scrubbing at the boundary", "desc": "Patient identifiers must never leave your network unprotected. SupraWall's PII Shield automatically redacts names, NHS numbers, dates of birth, and medical record identifiers before any external API call." },
+          { "step": "04", "title": "Gate consequential decisions with HITL", "desc": "Any AI output that influences patient care — triage priority, benefit eligibility, diagnostic suggestions — must route through a Human-in-the-Loop approval step before action." },
+          { "step": "05", "title": "Activate the Healthcare Compliance Template", "desc": "SupraWall's healthcare template implements Annex III Category 5 controls: automatic PII scrubbing, HITL gating on consequential decisions, and immutable audit logging of all clinical AI tool calls." }
+        ]
+      },
+      "faq": [
+        { "q": "Does the August 2027 extension mean we have more time?", "a": "Only for AI embedded in medical devices under MDR. AI used in general healthcare service management — triage, benefits, administrative AI — is subject to August 2026 enforcement." },
+        { "q": "Can we use an AI tool if it doesn't make final clinical decisions?", "a": "The question is whether it 'influences' a decision that significantly affects a patient. AI that surfaces a triage priority, even as a suggestion, is still High-Risk under Annex III." },
+        { "q": "What is the fine exposure for GDPR Article 9 violations?", "a": "GDPR Article 9 violations can attract fines up to €20 million or 4% of global annual turnover. EU AI Act violations add up to €35 million or 7% of global revenue. These are separate fines." }
+      ],
+      "ctaDev": { "label": "Activate Healthcare Template", "href": "/compliance-templates/healthcare", "sublabel": "Annex III Category 5 + GDPR Article 9 controls." },
+      "ctaBusiness": { "label": "Book a Healthcare Compliance Call", "href": "mailto:enterprise@supra-wall.com", "sublabel": "For CMOs, Hospital Administrators, and Data Protection Officers." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Legal Professional Privilege · GDPR · EU AI Act",
+        "urgency": "GDPR active now. EU AI Act enforcement August 2, 2026.",
+        "title": "Law Firms Are Uploading Client Files to ChatGPT.",
+        "emphasis": "Here's the Professional Liability.",
+        "description": "Legal professional privilege is one of the most fundamental protections in the attorney-client relationship. Uploading client documents to a public LLM may waive it. Most law firms have no governance framework for how their associates use AI."
+      },
+      "story": {
+        "label": "The breach scenario playing out at European law firms",
+        "quote": "A partner asks an associate to summarize a client's M&A agreement quickly. The associate uploads the full 200-page document to ChatGPT. The client is a listed company. The document contains material non-public information. OpenAI's terms allow training on inputs without enterprise agreements. The summary is delivered in 40 seconds. No one knows the breach occurred."
+      },
+      "behaviors": {
+        "title": "The AI Behaviors Creating Exposure",
+        "subtitle": "Four common workflows. Four distinct liability vectors.",
+        "items": [
+          { "icon": "upload-doc", "title": "Document upload to public LLMs", "desc": "Client contracts, court filings, M&A documents, and due diligence reports are uploaded to ChatGPT, Gemini, or Claude for summarization or analysis. This transfers privileged data to third-party servers." },
+          { "icon": "draft", "title": "AI-drafted legal opinions", "desc": "Using a public LLM to draft legal opinions or advice without a documented review process creates an uncontrolled chain of attribution. If the advice is wrong, the trail leads nowhere." },
+          { "icon": "research", "title": "LLM legal research without validation", "desc": "LLMs hallucinate case citations. Attorneys using AI-generated legal research without systematic verification face professional liability and potential bar sanctions." },
+          { "icon": "discovery", "title": "AI-assisted document discovery", "desc": "Running client documents through AI for discovery without documented consent and an audit trail may violate court rules in multiple jurisdictions now requiring AI disclosure in proceedings." }
+        ]
+      },
+      "exposure": {
+        "title": "Three Liability Layers",
+        "subtitle": "Professional, regulatory, and criminal exposure can overlap.",
+        "items": [
+          { "tag": "Professional Privilege", "title": "Voluntary disclosure may waive privilege", "desc": "Legal professional privilege can be waived when confidential information is voluntarily disclosed to a third party without necessity. In several EU jurisdictions, uploading client documents to a third-party AI service without specific contractual protections may constitute such disclosure." },
+          { "tag": "GDPR — Article 5(1)(b)", "title": "Purpose limitation is violated", "desc": "Client data is collected for the purpose of legal representation. Processing it through an external LLM for efficiency gains is a secondary purpose not covered by the original legal basis. This violates GDPR's purpose limitation principle." },
+          { "tag": "EU AI Act", "title": "AI-assisted legal research is regulated", "desc": "AI systems used in legal proceedings for research, fact-mapping, or document analysis that 'significantly affects' case outcomes may fall under EU AI Act oversight requirements. Record-keeping obligations apply to how AI is used in legal processes." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Client-Safe AI for Law Firms",
+        "subtitle": "AI can make your lawyers faster. Client data must never leave your perimeter.",
+        "steps": [
+          { "step": "01", "title": "Assess your current AI usage", "desc": "Survey partners and associates on which AI tools they currently use and for what tasks. Most firms underestimate the scope significantly." },
+          { "step": "02", "title": "Classify client data explicitly", "desc": "All client documents, communications, and case files are privileged by default. Establish explicit policy: no client data uploads to public LLM services, ever." },
+          { "step": "03", "title": "Deploy a vault for document AI", "desc": "SupraWall's Vault allows client documents to be processed by AI without the raw content leaving your controlled infrastructure. The document is sent to a private EU-hosted model; sensitive identifiers are redacted before any external call." },
+          { "step": "04", "title": "Create a disclosure protocol", "desc": "For any AI-assisted work product, document which AI tools were used, what inputs were provided, and how the output was reviewed. This protects against professional liability and satisfies growing court disclosure requirements." },
+          { "step": "05", "title": "Activate the Legal Compliance Template", "desc": "SupraWall's legal template implements a privilege-safe AI layer: all document processing uses PII Shield, all outputs are logged with immutable audit trails, and no client data flows to uncontrolled third-party endpoints." }
+        ]
+      },
+      "faq": [
+        { "q": "Do enterprise ChatGPT agreements solve the privilege problem?", "a": "Enterprise agreements prevent OpenAI from training on your data. They do not restore privilege once voluntarily disclosed, and they do not satisfy GDPR purpose limitation or the EU AI Act audit trail requirements." },
+        { "q": "Are courts requiring AI disclosure yet?", "a": "Yes. Multiple EU and UK courts have issued practice directions requiring disclosure of AI use in proceedings. US federal courts have similar requirements. This trend is accelerating rapidly." },
+        { "q": "What about using Microsoft Copilot inside the firm's M365 environment?", "a": "M365 Copilot within a configured tenant provides better data boundaries than public ChatGPT, but it does not automatically provide immutable audit trails or satisfy EU AI Act record-keeping obligations for regulated AI use in legal contexts." }
+      ],
+      "ctaDev": { "label": "Activate Legal Template", "href": "/compliance-templates/justice-democracy", "sublabel": "Privilege-safe AI with client data vault and audit trail." },
+      "ctaBusiness": { "label": "Book a Legal Sector Call", "href": "mailto:enterprise@supra-wall.com", "sublabel": "For Managing Partners and General Counsel. 30-minute assessment." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "Board-Level AI Governance",
+        "urgency": "EU AI Act enforcement begins August 2, 2026.",
+        "title": "Your Company Is Using AI.",
+        "emphasis": "Your Board Will Ask About Compliance in 90 Days.",
+        "description": "EU AI Act fines reach €35 million or 7% of global annual revenue. Boards are now asking the compliance question. The question is whether you have an answer."
+      },
+      "story": {
+        "label": "The board conversation happening at Fortune 500 and Series B companies now",
+        "quote": "\"We've seen the EU AI Act headlines. We use AI across HR, finance, and operations. Are we compliant? If not, what's the exposure? Who is accountable?\" This question is now appearing on audit committee agendas across Europe. The CEOs who can answer it are the ones who started six months ago."
+      },
+      "boardQuestions": {
+        "title": "The Five Questions Your Board Will Ask",
+        "subtitle": "Prepare your answers before they ask.",
+        "items": [
+          { "q": "Are we EU AI Act compliant?", "a": "This requires knowing which AI tools you use, which are High-Risk under Annex III, and whether each one has: a DPIA, an audit trail, a human oversight mechanism, and documented risk management." },
+          { "q": "What is our maximum fine exposure?", "a": "€35 million or 7% of global revenue — whichever is higher — for prohibited AI use. €15 million or 3% for other violations. Both can apply simultaneously with GDPR fines." },
+          { "q": "Who is personally accountable?", "a": "The DPO is accountable for GDPR. The EU AI Act creates a \"provider\" and \"deployer\" liability structure. If you deploy a third-party AI tool for a High-Risk use case, you are responsible for compliance — not the AI vendor." },
+          { "q": "Do we have an AI risk register?", "a": "EU AI Act Article 9 requires a documented risk management system for the full lifecycle of any High-Risk AI. Without a register, you cannot demonstrate compliance." },
+          { "q": "What happens if an employee uses AI incorrectly?", "a": "The deployer organization — your company — is liable for how its employees use AI in professional contexts. Informal ChatGPT use by HR or clinical staff is your compliance exposure, not the employee's." }
+        ]
+      },
+      "riskMap": {
+        "title": "Department-by-Department Risk Map",
+        "subtitle": "Your exposure by function.",
+        "items": [
+          { "dept": "HR", "regulation": "EU AI Act Annex III Cat. 4 + GDPR Art. 22", "risk": "CV screening, performance monitoring, hiring AI", "urgency": "critical" },
+          { "dept": "Finance", "regulation": "DORA Art. 8 + EU AI Act Annex III", "risk": "Credit decisions, fraud detection, trading AI", "urgency": "critical" },
+          { "dept": "Healthcare", "regulation": "EU AI Act Annex III Cat. 5 + GDPR Art. 9", "risk": "Clinical AI, triage, patient benefits", "urgency": "critical" },
+          { "dept": "Legal", "regulation": "Professional privilege + GDPR Art. 5(1)(b)", "risk": "Document AI, LLM research, discovery AI", "urgency": "high" },
+          { "dept": "Operations", "regulation": "EU AI Act Annex III Cat. 2 (if critical infrastructure)", "risk": "Logistics AI, infrastructure management AI", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "The 30-Day Executive Action Plan",
+        "subtitle": "Concrete steps. Measurable outputs.",
+        "steps": [
+          { "step": "Week 1", "title": "AI Inventory", "desc": "Identify every AI tool in use across all departments. Include informal ChatGPT usage. This is your baseline." },
+          { "step": "Week 1", "title": "Risk Classification", "desc": "For each tool, determine whether it triggers Annex III. Use the EU AI Act Annex III Category list as the classification framework." },
+          { "step": "Week 2", "title": "DPIA for High-Risk Tools", "desc": "Commission a Data Protection Impact Assessment for every High-Risk AI system identified. This is a legal requirement, not optional." },
+          { "step": "Week 2", "title": "Policy Engine Deployment", "desc": "Enforce which AI tools can process which categories of data via a technical policy layer — not just an acceptable use policy. Policy documents do not satisfy Article 9 requirements." },
+          { "step": "Week 3", "title": "Audit Trail Activation", "desc": "Implement immutable logging of all High-Risk AI decisions. SupraWall's SDK provides signed, tamper-proof audit records at the tool call boundary." },
+          { "step": "Week 4", "title": "Board Compliance Report", "desc": "Produce the first AI Compliance Evidence Kit: the inventory, risk classification, DPIA status, and audit trail architecture. This is your answer to the board question." }
+        ]
+      },
+      "ctaDev": { "label": "See the Compliance Evidence Kit", "href": "/compliance-templates", "sublabel": "Technical templates for your engineering team." },
+      "ctaBusiness": { "label": "Book an Executive Briefing", "href": "mailto:enterprise@supra-wall.com", "sublabel": "30-minute board-ready AI compliance assessment." }
+    },
+    "shared": {
+      "urgencyBadge": "August 2, 2026",
+      "faqTitle": "Common Questions",
+      "backToLearn": "Continue Learning",
+      "relatedTemplates": "Related Compliance Templates",
+      "sdkPath": "Technical Path (Developers)",
+      "businessPath": "Business Path (C-Suite)",
+      "dualCtaTitle": "Two Ways to Solve This",
+      "dualCtaSubtitle": "Whether you want to implement it yourself or speak to an expert."
     }
   }
 }

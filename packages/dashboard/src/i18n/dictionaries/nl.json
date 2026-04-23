@@ -20,7 +20,9 @@
     "pricing": "Prijzen",
     "frameworks": "Frameworks",
     "platforms": "Platforms & Models",
-    "awsMarketplace": "AWS Marketplace"
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "Per Rol",
+    "industries": "Per Branche"
   },
   "home": {
     "hero": {
@@ -1184,6 +1186,258 @@
       "solutionTitle": "Compliance automatiseren",
       "solutionP": "De SDK van SupraWall fungeert als de compliance-engine voor Artikel 12 door tool-aanroepen aan de runtime-grens automatisch te onderscheppen en naar een onveranderlijk auditregister te streamen. Dit zorgt ervoor dat elke \"gemotiveerde\" actie van een agent traceerbaar is naar een broninstructie in het geval van een audit door toezichthouders.",
       "guideLink": "Bekijk de gedetailleerde Artikel 12 mapping"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Bijlage III Categorie 4 · AVG Artikel 22",
+        "urgency": "2 augustus 2026 — Deadline EU AI-verordening",
+        "title": "Je recruiters gebruiken ChatGPT voor cv's.",
+        "emphasis": "Dit is wat de EU-wetgeving nu eist.",
+        "description": "De meeste HR-teams in Europa gebruiken al AI voor de screening van kandidaten. Bijna niemand weet dat dit zonder waarborgen sinds 2 augustus 2026 een overtreding van de wet is."
+      },
+      "story": {
+        "label": "Een scenario dat zich vandaag de dag in veel bedrijven afspeelt",
+        "quote": "Een recruiter opent ChatGPT, plakt het volledige cv van een kandidaat en typt: 'Past deze persoon in het profiel?' De LLM antwoordt met een score en een samenvatting. De recruiter gaat verder. Geen audit trail. Geen controle op bias. Geen menselijke validatie. Vanaf 2 augustus 2026 is dit een nalevingsschending die kan worden bestraft met maximaal 35 miljoen euro of 7% van de wereldwijde omzet."
+      },
+      "behaviors": {
+        "title": "Wat je HR-team op dit moment doet",
+        "subtitle": "Dit zijn de specifieke gedragingen die leiden tot blootstelling aan Bijlage III en de AVG.",
+        "items": [
+          { "icon": "upload", "title": "Cv's uploaden naar publieke LLM's", "desc": "Volledige cv's met namen, adressen en arbeidsverleden worden in ChatGPT of Gemini geplakt. Deze gegevens gaan naar externe servers." },
+          { "icon": "filter", "title": "AI-gestuurde screening", "desc": "Zodra AI helpt bepalen wie op gesprek komt, wordt Artikel 22 van de AVG geactiveerd: het recht om niet te worden onderworpen aan geautomatiseerde besluitvorming." },
+          { "icon": "missing-trail", "title": "Geen audit trail", "desc": "Artikel 12 vereist een gedocumenteerde registratie van elke risicovolle AI-beslissing. Chatgeschiedenissen verdwijnen." },
+          { "icon": "bias", "title": "Geen documentatie van bias", "desc": "De AI-verordening vereist dat risicovolle systemen aantonen dat ze niet discrimineren. Standaard LLM's hebben geen ingebouwde bias-audit." }
+        ]
+      },
+      "exposure": {
+        "title": "De specifieke juridische risico's",
+        "subtitle": "Drie regels tegelijkertijd overtreden.",
+        "items": [
+          { "tag": "EU AI Act — Bijlage III Cat. 4", "title": "Hoog Risico classificatie", "desc": "AI voor cv-screening en prestatie-evaluatie is direct hoog risico." },
+          { "tag": "AVG — Artikel 22", "title": "Recht op menselijke beslissing", "desc": "Geautomatiseerde besluitvorming met significante impact vereist een menselijke autoriteit." },
+          { "tag": "EU AI Act — Artikel 12", "title": "Audit trail is verplicht", "desc": "Elke AI-operatie met een hoog risico moet automatisch worden gelogd." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Hoe een conform AI-HR-proces eruitziet",
+        "subtitle": "Je moet AI niet verbieden. Je moet het reguleren.",
+        "steps": [
+          { "step": "01", "title": "Classificeer tools", "desc": "Weet welke tools kandidaatgegevens aanraken." },
+          { "step": "02", "title": "Voer een DPIA uit", "desc": "Data Protection Impact Assessment is verplicht." },
+          { "step": "03", "title": "Verplichte audit trails", "desc": "SupraWall onderschept interacties en logt cryptografisch." },
+          { "step": "04", "title": "Menselijke controle", "desc": "HITL (Human in The Loop) integratie." },
+          { "step": "05", "title": "Installeer de HR-template", "desc": "Gebruik onze SDK om compliance direct op te lossen." }
+        ]
+      },
+      "faq": [
+        { "q": "Mogen we AI nog gebruiken in HR?", "a": "Ja, mits streng en gedetermineerd gereguleerd binnen de wetgeving." },
+        { "q": "Moeten we kandidaten informeren?", "a": "Ja. Conform AVG-artikelen 13/14 over automatisering." }
+      ],
+      "ctaDev": { "label": "Activeer HR Template", "href": "/compliance-templates/hr-employment", "sublabel": "Een klik, geregeld." },
+      "ctaBusiness": { "label": "Compliance Call Boeken", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Voor HR-directeuren." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · AI Act Bijlage III · MiFID II",
+        "urgency": "DORA actief. AI Act: Augustus 2026.",
+        "title": "Je bank heeft LLM's verboden.",
+        "emphasis": "Zo breng je ze veilig terug.",
+        "description": "ChatGPT blokkeren was goed voor dataprotectie. Maar het remt innovatie en leidt tot shadow-IT via privételefoons."
+      },
+      "story": {
+        "label": "Wat leidde tot de ban",
+        "quote": "Kredietinformatie gedeeld met externe servers veroorzaakte een lockdown. Nu werken analisten langzamer en onveiliger dan concurrenten."
+      },
+      "behaviors": {
+        "title": "Waarom verbieden faalt",
+        "subtitle": "Verborgen gebruik leidt tot grotere risico's.",
+        "items": [
+          { "icon": "bypass", "title": "Omzeiling van beveiliging", "desc": "Personeel gebruikt eigen netwerken." },
+          { "icon": "competitive", "title": "Concurrentienadeel", "desc": "Andere banken met een gateway-beleid zijn 5x sneller." },
+          { "icon": "scope", "title": "Foute aanpak", "desc": "Het risico is datalek, niet AI. Dit is controleerbaar." }
+        ]
+      },
+      "exposure": {
+        "title": "De Echte Compliance Eisen",
+        "subtitle": "Meerdere frameworks overlappen.",
+        "items": [
+          { "tag": "DORA", "title": "ICT-Risico", "desc": "Vereist strenge externe monitoring." },
+          { "tag": "Bijlage III", "title": "Kredietbeoordelingen", "desc": "Extreme logging verplichting voor AI in krediet." },
+          { "tag": "AVG", "title": "Data Locatie", "desc": "Financiële gegevens mogen de EU niet uit zonder waarborgen." },
+          { "tag": "MiFID II", "title": "Archivering", "desc": "Harde eisen over financiële adviesdata." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Gecontroleerd hergebruik.",
+        "subtitle": "AI voor financiële instellingen.",
+        "steps": [
+          { "step": "01", "title": "Beleid", "desc": "Interne vs externe data-flows definiëren." },
+          { "step": "02", "title": "Policy Engine", "desc": "Filter en routeer datapakketten veilig." },
+          { "step": "03", "title": "Netwerk Beperking", "desc": "Geen data meer buiten de EU door SupraWall gateway." },
+          { "step": "04", "title": "Audits voor DORA", "desc": "Automatisch gegenereerde security logs." },
+          { "step": "05", "title": "Bancaire Template", "desc": "Configureer AI-modellen voor banken." }
+        ]
+      },
+      "faq": [
+        { "q": "OpenAI Enterprise voldoende?", "a": "Voor privacy ja, maar onvoldoende voor de strenge DORA-audit logs." }
+      ],
+      "ctaDev": { "label": "Implementeer Kritieke Infrastructuur", "href": "/compliance-templates/critical-infrastructure", "sublabel": "DORA/MiFID Proof." },
+      "ctaBusiness": { "label": "Compliance Team", "href": "mailto:enterprise@supra-wall.com", "sublabel": "CISO en IT Beheerders." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "Bijlage III Cat. 5 · AVG Artikel 9",
+        "urgency": "2 augustus 2026",
+        "title": "Medische gegevens in AI-modellen.",
+        "emphasis": "Het Bijlage III risico ontleed.",
+        "description": "Speciale gegevenscategorieën (zoals medische data) in AI verwerkt, maken je tool tot een Hoog Risico-systeem (Bijlage III AI Act) met drastische plichten."
+      },
+      "story": {
+        "label": "Scenario: Ziekenhuisafdeling",
+        "quote": "Een arts gebruikt GPT om patiëntnotities uit te schrijven. Makkelijk, maar zonder cryptografische log files is dit een enorme AVG Art 9 + AI Act inbreuk."
+      },
+      "behaviors": {
+        "title": "Kritieke Fouten in de Kliniek",
+        "subtitle": "Praktijken die patiëntprivacy schenden.",
+        "items": [
+          { "icon": "notes", "title": "Klinische AI Transcripties", "desc": "Stemopnames delen met niet-conforme public clouds." },
+          { "icon": "triage", "title": "AI Triage", "desc": "Patiënten voorrang geven met AI zonder menselijke goedkeuring is hoog risico." },
+          { "icon": "records", "title": "Patiëntgeschiedenis", "desc": "Data zonder bescherming in prompts gieten." },
+          { "icon": "admin", "title": "Toegang tot Zorg", "desc": "Verzekeringsclaims via AI afwijzen of filteren is verboden zonder checks." }
+        ]
+      },
+      "exposure": {
+        "title": "Grote gevolgen.",
+        "subtitle": "Mogelijke acties van inspecteurs.",
+        "items": [
+          { "tag": "AVG Art 9", "title": "Medische Data Exfiltratie", "desc": "Dit levert zeer zware sancties op." },
+          { "tag": "AI Act All. III", "title": "Ongerichte classificatie", "desc": "Gebrek aan toezicht op hoog-risico systemen." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Hoe gebruik je AI Klinisch veilig?",
+        "subtitle": "Bewaak de privacy aan de poort.",
+        "steps": [
+          { "step": "01", "title": "DPIA Zorg", "desc": "Doe een volledige impact analyse via de GDPR." },
+          { "step": "02", "title": "PII Shield Aanzetten", "desc": "SupraWall anonimiseert BSN en patiëntgegevens lokaal." },
+          { "step": "03", "title": "Logs vastleggen", "desc": "Log wanneer AI hielp en wanneer het de behandelend arts was." },
+          { "step": "04", "title": "HITL Zorgplicht", "desc": "De arts moet als laatste zegen geven." },
+          { "step": "05", "title": "Zorgmodel", "desc": "In één muisklik." }
+        ]
+      },
+      "faq": [
+        { "q": "Geldt dit ook voor medische apparaten (MDR)?", "a": "MDR-systemen hebben extra uitzonderingen of vertragingen tot 2027, maar administratieve AI in ziekenhuizen moet in 2026 in orde zijn." }
+      ],
+      "ctaDev": { "label": "Bekijk Zorg-SDK", "href": "/compliance-templates/healthcare", "sublabel": "Veilig klinisch ontwikkelen." },
+      "ctaBusiness": { "label": "Bel het Salesteam Zorg", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Ziekenhuisdirecties." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Beroepsgeheim · AVG · AI Act",
+        "urgency": "Direct risico op schrapping balie.",
+        "title": "Advocatenkantoren die geheimen lekken.",
+        "emphasis": "Omdat ze AI gebruiken voor dossiers.",
+        "description": "Een samenvatting van een M&A deal gemaakt door een onbeveiligde AI kan je cliënt duur komen te staan en je beroepsgeheim verpulveren."
+      },
+      "story": {
+        "label": "Het lek van een Junior",
+        "quote": "Honderden pagina's processtuk in de prompt van een AI. Het antwoord was fantastisch. De schade aan de data is onomkeerbaar: de informatie is in handen van de LLM provider (in de VS)."
+      },
+      "behaviors": {
+        "title": "Gevaarlijke Legal Praktijken",
+        "subtitle": "Snelheid boven vertrouwelijkheid.",
+        "items": [
+          { "icon": "upload-doc", "title": "Data Opgave", "desc": "Publiek maken van processtukken zonder toestemming cliënt." },
+          { "icon": "draft", "title": "Allucinaties", "desc": "Verzonnen wetten gebruiken wegens niet fact-checken." },
+          { "icon": "research", "title": "Juridische verantwoordelijkheid", "desc": "Je tekent als advocaat, niet de AI." },
+          { "icon": "discovery", "title": "Discovery Procedures", "desc": "Een rechter kan inzage eisen in hoe u de pleitnota gemaakt heeft via audit." }
+        ]
+      },
+      "exposure": {
+        "title": "Schade.",
+        "subtitle": "Einde carrière niveau.",
+        "items": [
+          { "tag": "Geheimhouding", "title": "Verlies van Privilege", "desc": "Verlies van het verschoningsrecht en NDA geschillen." },
+          { "tag": "AI Act All. III", "title": "Juridische AI risico's", "desc": "Bij beïnvloeding van uitspraken (Cat 8)." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Veilige Legal Tech",
+        "subtitle": "Het kan wél legaal.",
+        "steps": [
+          { "step": "01", "title": "Intern Beleid", "desc": "Geen publieke of web-gebseerde tools." },
+          { "step": "02", "title": "On-premise / Vaults", "desc": "Datakluizen met SupraWall." },
+          { "step": "03", "title": "Filteren", "desc": "Volledige databewerking voor anonimisering." },
+          { "step": "04", "title": "Audit & Registratie", "desc": "Toon de orde van advocaten lokaal AI beleid." },
+          { "step": "05", "title": "Integratie", "desc": "Met Justice/Democracy compliance template." }
+        ]
+      },
+      "faq": [
+        { "q": "Mag je in contracten nog wel melden dat AI gebruikt is?", "a": "Soms is dit verplicht onder de AVG en voor algemene eerlijkheidsvereisten." }
+      ],
+      "ctaDev": { "label": "Implementeer Legal SDK", "href": "/compliance-templates/justice-democracy", "sublabel": "Ontworpen voor advocatuur." },
+      "ctaBusiness": { "label": "Vraag Partnerschap", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Voor Managing Partners." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "Risk-Compliance voor C-suite",
+        "urgency": "Augustus 2026. Handhaving.",
+        "title": "Je bedrijf ademt AI.",
+        "emphasis": "Heeft je directie een audit readiness plan in de lade?",
+        "description": "Boetes op de AI Act reiken tot 7% omzet of 35 miljoen. Binnen 90 dagen zal een investeerder of board member je deze kritische veiligheidsvragen stellen."
+      },
+      "story": {
+        "label": "Kamervragen in de Boardroom",
+        "quote": "Geweldige winsten omdat we HR en Sales automatiseerden via LLM's. 'Prachtig', zei de accountant 'laad me de onveranderlijke IA Act logs van de afgelopen beslissingen en DPIA zien'. Daar viel de CTO compleet stil."
+      },
+      "boardQuestions": {
+        "title": "De 5 Belangrijkste Vragen",
+        "subtitle": "Moet je kunnen beantwoorden.",
+        "items": [
+          { "q": "Zijn we in overtreding AI Act EU?", "a": "Onzeker zonder crypto-registratie. Overtreding betekent onmiddellijk boete." },
+          { "q": "Wat is onze maximale risicoblootstelling?", "a": "Samen met AVG kan dit desastreus zijn bij datalekken. Tot wel 7% globale winst." },
+          { "q": "Wie is de verantwoordelijke partij?", "a": "Als deployer van systemen zoals ChatGPT ben *jij* het slachtoffer en de aansprakelijke." },
+          { "q": "Werkt shadow IT ongemerkt verder?", "a": "Niet verhinderen is ook stimuleren in de ogen van de overheid." },
+          { "q": "Wat zijn onze volgende acties?", "a": "Determinitisch loggen met middleware als SupraWall." }
+        ]
+      },
+      "riskMap": {
+        "title": "Risicokaart Directie",
+        "subtitle": "Kijk per domein.",
+        "items": [
+          { "dept": "HR & Werving", "regulation": "Bijlage 3 Cat 4 + AVG", "risk": "AI cv filtering en algoritmebias.", "urgency": "critical" },
+          { "dept": "Financiën", "regulation": "DORA + AI Act", "risk": "Krediet checks of voorspellingen.", "urgency": "critical" },
+          { "dept": "Medisch", "regulation": "AVG Art 9 / Bijlage", "risk": "Patiëntdata diagnostiek of tekst.", "urgency": "critical" },
+          { "dept": "Corporate Legal", "regulation": "Contractenrecht", "risk": "Geheimen en contractbreuk door data delen.", "urgency": "high" },
+          { "dept": "Operaties/IT", "regulation": "Lage prioriteit", "risk": "Automatisering van code.", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "C-Level 30-Dagen Plan",
+        "subtitle": "Na te streven stappen.",
+        "steps": [
+          { "step": "Week 1", "title": "AI-inventaris", "desc": "Zoek alle gebruikte AI-tools." },
+          { "step": "Week 1", "title": "Risicobeoordeling", "desc": "Scheid hoog- van laag-risico workflows." },
+          { "step": "Week 2", "title": "Start DPIA's", "desc": "Beoordeel privacyrisico's officieel." },
+          { "step": "Week 2", "title": "Implementeer Gateways (SupraWall)", "desc": "Vervang naakte API-calls door SDK beveiligde filters." },
+          { "step": "Week 3", "title": "Zet audit trail aan", "desc": "Alle tool-calls gelogd volgens Art 12." },
+          { "step": "Week 4", "title": "Board Review", "desc": "Toon zekerheid aan investeerders/auditeurs." }
+        ]
+      },
+      "ctaDev": { "label": "Technische Hub", "href": "/compliance-templates", "sublabel": "Beveiligde code klaar." },
+      "ctaBusiness": { "label": "Enterprise Briefing", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Zekerheid voor het management." }
+    },
+    "shared": {
+      "urgencyBadge": "Handhaving Augustus 2026",
+      "faqTitle": "Algemene FAQ",
+      "backToLearn": "Terug",
+      "relatedTemplates": "Gerelateerd per Branch",
+      "sdkPath": "Voor Ontwikkeling / IT",
+      "businessPath": "Voor Directie (C-suite)",
+      "dualCtaTitle": "Oplossen:",
+      "dualCtaSubtitle": "Twee snelle manieren om compliance in te dekken."
     }
   }
 }

@@ -20,7 +20,9 @@
     "pricing": "Tarifs",
     "frameworks": "Frameworks",
     "platforms": "Platforms & Models",
-    "awsMarketplace": "AWS Marketplace"
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "Par Rôle",
+    "industries": "Par Secteur"
   },
   "home": {
     "hero": {
@@ -1182,6 +1184,261 @@
       "solutionTitle": "Automatisation de la conformité",
       "solutionP": "Le SDK de SupraWall agit comme le moteur de conformité de l'article 12 en interceptant automatiquement les appels d'outils à la limite de l'exécution et en les diffusant vers un registre d'audit immuable. Cela garantit que chaque action « raisonnée » d'un agent est traçable jusqu'à une instruction source en cas d'audit réglementaire.",
       "guideLink": "Voir le mappage détaillé de l'article 12"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Annexe III Catégorie 4 · RGPD Article 22",
+        "urgency": "2 août 2026 — Date limite d'application de l'IA Act de l'UE",
+        "title": "Vos recruteurs utilisent ChatGPT pour les CV.",
+        "emphasis": "Voici ce que la loi européenne exige désormais.",
+        "description": "La plupart des équipes RH en Europe utilisent déjà l'IA pour la présélection des candidats. Presque aucune d'entre elles ne sait que le faire sans garde-fous est devenu une violation de la loi depuis le 2 août 2026."
+      },
+      "story": {
+        "label": "Un scénario qui se déroule aujourd'hui dans de nombreuses entreprises",
+        "quote": "Un recruteur ouvre ChatGPT, colle le CV complet d'un candidat et tape : « Cette personne correspond-elle au profil recherché ? » Le LLM répond avec une note et un résumé. Le recruteur passe au suivant. Aucune piste d'audit. Aucun contrôle des biais. Aucune validation humaine. À compter du 2 août 2026, il s'agit d'une violation de conformité passible de sanctions pouvant atteindre 35 millions d'euros ou 7 % du chiffre d'affaires mondial."
+      },
+      "behaviors": {
+        "title": "Ce que fait votre équipe RH en ce moment",
+        "subtitle": "Ce sont les comportements spécifiques qui déclenchent l'exposition à l'Annexe III et au RGPD.",
+        "items": [
+          { "icon": "upload", "title": "Téléchargement de CV sur des LLMs publics", "desc": "Les CV complets des candidats — contenant des noms, des adresses, des diplômes et des antécédents professionnels — sont directement copiés dans ChatGPT, Gemini ou Claude. Ces données sont traitées par des serveurs externes." },
+          { "icon": "filter", "title": "Présélection générée par l'IA", "desc": "Les recruteurs demandent aux LLMs de classer ou de filtrer les candidats. Lorsqu'une recommandation de l'IA influence qui passe un entretien, cela déclenche l'article 22 du RGPD : le droit de ne pas faire l'objet d'une prise de décision automatisée." },
+          { "icon": "missing-trail", "title": "Pas de piste d'audit", "desc": "L'article 12 de l'IA Act de l'UE exige un enregistrement documenté de chaque décision d'IA à haut risque. Les conversations ChatGPT sont éphémères." },
+          { "icon": "bias", "title": "Aucune documentation sur les biais", "desc": "L'IA Act exige que les systèmes d'IA à haut risque démontrent qu'ils ne discriminent pas. Les LLM standards n'ont pas d'audit de biais intégré." }
+        ]
+      },
+      "exposure": {
+        "title": "L'exposition juridique spécifique",
+        "subtitle": "Trois règles, toutes déclenchées en même temps.",
+        "items": [
+          { "tag": "IA Act de l'UE — Annexe III Cat. 4", "title": "Votre IA est classée « Haut Risque »", "desc": "Toute IA utilisée pour la sélection de CV ou l'évaluation des performances est explicitement classée comme IA à haut risque. Cela déclenche un cadre de conformité obligatoire." },
+          { "tag": "RGPD — Article 22", "title": "Droit à une décision humaine", "desc": "Le traitement automatisé qui « affecte de manière significative » une personne exige une décision humaine comme autorité finale." },
+          { "tag": "IA Act de l'UE — Article 12", "title": "Vous devez avoir une piste d'audit", "desc": "Chaque action d'une IA à haut risque doit être automatiquement consignée." }
+        ]
+      },
+      "compliantPath": {
+        "title": "À quoi ressemble un processus RH IA conforme",
+        "subtitle": "Vous ne devez pas interdire l'IA. Vous devez la gouverner.",
+        "steps": [
+          { "step": "01", "title": "Classifiez vos outils", "desc": "Si un outil touche aux données des candidats, il est Annexe III Catégorie 4 par défaut. Commencez par un inventaire." },
+          { "step": "02", "title": "Réaliser une AIPD", "desc": "Une Analyse d'Impact sur la Protection des Données est exigée par la loi avant le déploiement." },
+          { "step": "03", "title": "Exiger des pistes d'audit", "desc": "Le SDK de SupraWall intercepte les appels d'outils et écrit automatiquement des audits signés." },
+          { "step": "04", "title": "Validation humaine (HITL)", "desc": "L'IA peut assister, l'humain doit décider. SupraWall achemine toutes les sorties RH vers un responsable." },
+          { "step": "05", "title": "Activer le modèle de conformité RH", "desc": "Le modèle RH de SupraWall implémente ces contrôles en une seule importation." }
+        ]
+      },
+      "faq": [
+        { "q": "Pouvons-nous encore utiliser l'IA en RH ?", "a": "Oui — mais avec une infrastructure conforme. L'IA ne peut être le seul décideur." },
+        { "q": "Devons-nous en informer les candidats ?", "a": "Oui. L'article 13/14 du RGPD exige la transparence sur les décisions automatisées." },
+        { "q": "Et si on utilise l'IA juste pour le premier tri ?", "a": "Diminuer un pool de candidats reste une décision couverte par l'article 22 du RGPD." }
+      ],
+      "ctaDev": { "label": "Activer le modèle RH", "href": "/compliance-templates/hr-employment", "sublabel": "Une importation. Annexe III + RGPD Article 22 configurés." },
+      "ctaBusiness": { "label": "Réserver un appel de conformité", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Pour les DRH et Directeurs des Ressources Humaines. Évaluation de 30 minutes." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · IA Act de l'UE Annexe III · MiFID II",
+        "urgency": "DORA actif maintenant. IA Act de l'UE : 2 août 2026.",
+        "title": "Votre banque a interdit les LLM.",
+        "emphasis": "Voici comment réintroduire l'IA en toute sécurité.",
+        "description": "La plupart des banques européennes ont interdit ChatGPT pour protéger les données clients. C'était la bonne décision. Aujourd'hui, vos équipes sont plus lentes que vos concurrents qui ont trouvé une solution."
+      },
+      "story": {
+        "label": "La séquence qui a déclenché l'interdiction de l'IA",
+        "quote": "Un analyste colle un mémo de crédit confidentiel, un autre télécharge les documents d'intégration d'un client. Le RSSI bloque l'accès aux LLM publics en moins de 24h. Six mois plus tard, les mêmes collaborateurs utilisent leurs téléphones personnels, créant un risque de sécurité supérieur."
+      },
+      "behaviors": {
+        "title": "Pourquoi l'interdiction ne fonctionne pas",
+        "subtitle": "Interdire l'IA ne l'arrête pas, cela la pousse dans la clandestinité.",
+        "items": [
+          { "icon": "bypass", "title": "Contournement des contrôles", "desc": "Les employés utilisent le réseau personnel, diminuant votre visibilité." },
+          { "icon": "competitive", "title": "Désavantage concurrentiel", "desc": "Les équipes de vos concurrents avec une IA gouvernée sont 3 à 5 fois plus rapides." },
+          { "icon": "scope", "title": "La portée de l'interdiction est erronée", "desc": "Le risque n'est pas « l'IA », c'est « la fuite des données clients ». Un moteur de politique, pas une interdiction, résout cela." }
+        ]
+      },
+      "exposure": {
+        "title": "Les vraies exigences de conformité",
+        "subtitle": "Quatre cadres réglementaires. Une solution d'infrastructure.",
+        "items": [
+          { "tag": "DORA — Article 8", "title": "Risque lié aux TIC", "desc": "DORA exige une évaluation des risques informatiques." },
+          { "tag": "IA Act de l'UE — Annexe III", "title": "Score de crédit", "desc": "Les décisions de crédit via IA sont à Haut Risque." },
+          { "tag": "RGPD", "title": "Résidence des données", "desc": "Les données financières ne peuvent quitter le périmètre de l'UE sans mécanismes valides." },
+          { "tag": "MiFID II", "title": "Tenue de registres", "desc": "L'IA aidant au conseil en investissement est soumise aux obligations d'enregistrement de la MiFID II." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Levez l'interdiction. Gardez le contrôle.",
+        "subtitle": "Une IA conforme pour les services financiers.",
+        "steps": [
+          { "step": "01", "title": "Définir les cas d'usage", "desc": "Résumés internes contre décisions de crédit." },
+          { "step": "02", "title": "Moteur de politique", "desc": "Décider quelles données peuvent aller à quel outil." },
+          { "step": "03", "title": "Résidence EU", "desc": "Sécuriser les flux sur des serveurs européens." },
+          { "step": "04", "title": "Audit DORA", "desc": "Générer la documentation des incidents TIC." },
+          { "step": "05", "title": "Activer le modèle bancaire", "desc": "Modèle DORA + IA Act de SupraWall." }
+        ]
+      },
+      "faq": [
+        { "q": "DORA s'applique-t-il à toutes les banques ?", "a": "Oui, ainsi qu'aux assureurs et fournisseurs de services de crypto-actifs de l'UE." },
+        { "q": "Un contrat Entreprise avec OpenAI suffit-il ?", "a": "Il couvre les données, pas l'évaluation des risques DORA ni les audits de l'IA Act." }
+      ],
+      "ctaDev": { "label": "Activer le modèle Bancaire", "href": "/compliance-templates/critical-infrastructure", "sublabel": "DORA + Annexe III préconfigurés." },
+      "ctaBusiness": { "label": "Appel Conformité Bancaire", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Pour RSSI et Directeurs du Risque Numérique." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "Annexe III Catégorie 5 · RGPD Article 9",
+        "urgency": "2 août 2026 pour les services. Août 2027 pour l'IA embarquée.",
+        "title": "Vos équipes cliniques utilisent l'IA.",
+        "emphasis": "Voici le risque de l'Annexe III.",
+        "description": "Les données médicales sont des données de catégorie particulière (RGPD). Traitées par une IA, cela déclenche le statut 'Haut Risque' de l'IA Act (Annexe III)."
+      },
+      "story": {
+        "label": "Un scénario en cours dans les hôpitaux français",
+        "quote": "Une infirmière utilise ChatGPT pour résumer le dossier psychiatrique d'un patient. Aucun audit. Aucune protection des données PII. C'est à la fois une violation de l'article 9 du RGPD et un manquement de l'IA Act."
+      },
+      "behaviors": {
+        "title": "Pratiques générant un risque juridique",
+        "subtitle": "Ces pratiques courantes contournent l'équipe de conformité.",
+        "items": [
+          { "icon": "notes", "title": "Notes cliniques via IA", "desc": "L'utilisation de LLMs extérieurs." },
+          { "icon": "triage", "title": "Triage assisté par l'IA", "desc": "Influencer la priorité d'urgences via IA est à Haut Risque." },
+          { "icon": "records", "title": "Résumés", "desc": "Absence de contrôles." },
+          { "icon": "admin", "title": "Gestion", "desc": "Risques associés." }
+        ]
+      },
+      "exposure": {
+        "title": "Deux cadres, un appel",
+        "subtitle": "RGPD et IA Act se rejoignent.",
+        "items": [
+          { "tag": "RGPD", "title": "Art 9", "desc": "Données sensibles de santé." },
+          { "tag": "IA Act", "title": "Annexe III", "desc": "Santé = Haut Risque." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Rejoindre la conformité IA Clinique",
+        "subtitle": "Avec SupraWall.",
+        "steps": [
+          { "step": "01", "title": "Classification", "desc": "Inventaire." },
+          { "step": "02", "title": "AIPD", "desc": "DPIA obligatoire." },
+          { "step": "03", "title": "Nettoyage PII", "desc": "Masquage." },
+          { "step": "04", "title": "HITL", "desc": "Validation." },
+          { "step": "05", "title": "Activer le modèle", "desc": "Installation." }
+        ]
+      },
+      "faq": [
+        { "q": "Avons-nous jusqu'en 2027 ?", "a": "Seulement pour les dispositifs médicaux intégrés. Pour la gestion administrative, c'est 2026." }
+      ],
+      "ctaDev": { "label": "Modèle Santé", "href": "/compliance-templates/healthcare", "sublabel": "IA Act + RGPD." },
+      "ctaBusiness": { "label": "Réserver avec SupraWall", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Directions d'hôpitaux." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Secret Professionnel · RGPD · IA Act",
+        "urgency": "Risque direct pour la profession d'avocat.",
+        "title": "Des cabinets exposent leurs dossiers via l'IA.",
+        "emphasis": "Voici le risque de responsabilité civile.",
+        "description": "Le secret professionnel est vital. L'envoi de documents à de très grands modèles d'IA sans garde-fous l'efface."
+      },
+      "story": {
+        "label": "Fuite de confidentialité",
+        "quote": "Un jeune collaborateur résume une acquisition via ChatGPT."
+      },
+      "behaviors": {
+        "title": "Pourquoi vos avocats trichent",
+        "subtitle": "Rapidité l'emporte souvent.",
+        "items": [
+          { "icon": "upload-doc", "title": "Upload public", "desc": "Bris de confidentialité." },
+          { "icon": "draft", "title": "Recherche", "desc": "Hallucinations." },
+          { "icon": "research", "title": "Avis", "desc": "Sans vérification." },
+          { "icon": "discovery", "title": "Audits", "desc": "Sans audit trail." }
+        ]
+      },
+      "exposure": {
+        "title": "Problèmes",
+        "subtitle": "Gros problèmes.",
+        "items": [
+          { "tag": "Secret pro", "title": "Perte de privilège", "desc": "Dommages." },
+          { "tag": "RGPD", "title": "Fin non prévue", "desc": "Mettre l'IA au travail est illégal." },
+          { "tag": "IA Act", "title": "Recherche influençable", "desc": "Recherche trompeuse." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Le chemin de la sécurité",
+        "subtitle": "Conformité en 5 étapes.",
+        "steps": [
+          { "step": "01", "title": "Évaluer", "desc": "Ce qui se passe." },
+          { "step": "02", "title": "Gérer", "desc": "Politiques." },
+          { "step": "03", "title": "Installer le Vault", "desc": "Rétention des données." },
+          { "step": "04", "title": "Divulgation", "desc": "Aux assurances/client." },
+          { "step": "05", "title": "Activer le SDK", "desc": "Via le modèle Justice/Démocratie." }
+        ]
+      },
+      "faq": [
+        { "q": "Mon abonnement Microsoft Copilot M365 est-il conforme à l'IA Act?", "a": "Il offre de meilleures frontières de sécurité que ChatGPT public, mais il ne fournit pas automatiquement les pistes d'audit immuables exigées par l'IA Act de l'UE pour l'IA à haut risque." }
+      ],
+      "ctaDev": { "label": "Activer Modèle Légal", "href": "/compliance-templates/justice-democracy", "sublabel": "PII et Audit." },
+      "ctaBusiness": { "label": "Appel d'Évaluation", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Avocats associés." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "Gouvernance de l'IA pour le Conseil",
+        "urgency": "L'IA Act s'applique en août 2026.",
+        "title": "Votre entreprise utilise l'IA.",
+        "emphasis": "Votre CA posera ces questions dans 90 jours.",
+        "description": "Les pénalités de l'IA Act de l'UE vont jusqu'à 35 millions d'euros ou 7 % du chiffre d'affaires. Préparez vos réponses."
+      },
+      "story": {
+        "label": "La question du COMEX aujourd'hui",
+        "quote": "« Nous utilisons l'IA partout. Sommes-nous en règle ? Qui est pénalement responsable ? » Les administrateurs indépendants posent déjà la question."
+      },
+      "boardQuestions": {
+        "title": "Les 5 questions clés",
+        "subtitle": "Soyez prêt.",
+        "items": [
+          { "q": "En règle avec l'IA Act ?", "a": "Demande un inventaire des outils Annexe III, DPID, etc." },
+          { "q": "Amende max ?", "a": "Jusqu'à 7 % du CA mondial (supérieur au RGPD)." },
+          { "q": "Responsable ?", "a": "Le « déployeur » (votre entreprise) est responsable, pas OpenAI." },
+          { "q": "Registre de risques ?", "a": "L'article 9 l'exige." },
+          { "q": "Employé frauduleux ?", "a": "L'entreprise employeuse reste responsable de l'accès aux comptes professionnels." }
+        ]
+      },
+      "riskMap": {
+        "title": "Risques par équipe",
+        "subtitle": "Examinez.",
+        "items": [
+          { "dept": "RH", "regulation": "Annexe 3 Cat 4 + RGPD 22", "risk": "Recrutement/tri de CV par l'IA", "urgency": "critical" },
+          { "dept": "Finance", "regulation": "DORA + Annexe 3", "risk": "Décisions de crédit automatisées", "urgency": "critical" },
+          { "dept": "Santé", "regulation": "RGPD 9 + Annexe 3 Cat 5", "risk": "Prise de notes cliniques assistée", "urgency": "critical" },
+          { "dept": "Légal", "regulation": "RGPD 5 + Secret pro", "risk": "Téléchargements de documents vers LLMs publics", "urgency": "high" },
+          { "dept": "Opérations", "regulation": "Annexe 3 Cat 2", "risk": "Gestion de l'infrastructure via l'IA", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "Plan d'action de 30 jours",
+        "subtitle": "Pour agir.",
+        "steps": [
+          { "step": "Semaine 1", "title": "Inventaire de l'IA", "desc": "Identifier tous les outils d'IA utilisés." },
+          { "step": "Semaine 1", "title": "Classification des risques", "desc": "Vérifier si ces outils sont de l'Annexe III." },
+          { "step": "Semaine 2", "title": "AIPD pour le haut risque", "desc": "Lancer les analyses d'impact." },
+          { "step": "Semaine 2", "title": "Déploiement du moteur de stratégie", "desc": "Définir les règles d'accès de manière déterministe." },
+          { "step": "Semaine 3", "title": "Activation de la piste d'audit", "desc": "S'assurer de l'enregistrement de toutes les décisions." },
+          { "step": "Semaine 4", "title": "Rapport du CA", "desc": "Présenter le kit de preuves." }
+        ]
+      },
+      "ctaDev": { "label": "Kit de preuves", "href": "/compliance-templates", "sublabel": "Côté tech/ingé." },
+      "ctaBusiness": { "label": "Briefing", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Direction." }
+    },
+    "shared": {
+      "urgencyBadge": "2 août 2026",
+      "faqTitle": "Questions Fréquentes",
+      "backToLearn": "Retour",
+      "relatedTemplates": "Modèles Liés",
+      "sdkPath": "Voie Technologique",
+      "businessPath": "Voie C-Suite",
+      "dualCtaTitle": "Deux façons",
+      "dualCtaSubtitle": "Pour gérer cela."
     }
   }
 }

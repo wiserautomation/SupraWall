@@ -20,7 +20,9 @@
     "pricing": "Prezzi",
     "frameworks": "Frameworks",
     "platforms": "Platforms & Models",
-    "awsMarketplace": "AWS Marketplace"
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "Per Ruolo",
+    "industries": "Per Settore"
   },
   "home": {
     "hero": {
@@ -1184,6 +1186,257 @@
       "solutionTitle": "Automazione della conformità",
       "solutionP": "L'SDK di SupraWall funge da motore di conformità per l'Articolo 12 intercettando automaticamente le chiamate ai tool al limite del runtime e trasmettendole a un registro di audit immutabile. Ciò garantisce che ogni azione \"ragionata\" da un agente sia tracciabile fino a un'istruzione sorgente in caso di audit normativo.",
       "guideLink": "Visualizza la mappatura dettagliata dell'Articolo 12"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Allegato III Categoria 4 · GDPR Articolo 22",
+        "urgency": "2 agosto 2026 — Scadenza AI Act",
+        "title": "I tuoi recruiter usano ChatGPT per i CV.",
+        "emphasis": "Ecco cosa richiede ora la legge UE.",
+        "description": "La maggior parte dei team HR in Europa usa già l'IA per lo screening. Quasi nessuno sa che farlo senza protezioni viola la legge dal 2 agosto 2026."
+      },
+      "story": {
+        "label": "Una scena comune oggi in azienda",
+        "quote": "Un recruiter apre ChatGPT, incolla un CV e chiede: 'Questa persona è adatta?'. Il LLM risponde. Nessuna traccia di audit. Nessun controllo bias. Nessuna validazione umana. Dal 2 agosto 2026 questa è una violazione punibile fino a 35M€ o il 7% del fatturato mondiale."
+      },
+      "behaviors": {
+        "title": "Cosa sta facendo il tuo team HR ora",
+        "subtitle": "Comportamenti che attivano i controlli Allegato III e GDPR.",
+        "items": [
+          { "icon": "upload", "title": "Caricamento CV su LLM pubblici", "desc": "CV completi copiati direttamente su server esterni." },
+          { "icon": "filter", "title": "Screening generato da IA", "desc": "Chiedere all'IA di filtrare attiva l'art. 22 GDPR (decisioni automatizzate)." },
+          { "icon": "missing-trail", "title": "Nessun audit", "desc": "L'art. 12 dell'AI Act richiede la registrazione di ogni decisione. Le chat svaniscono." },
+          { "icon": "bias", "title": "Nessuna documentazione bias", "desc": "Sistemi LLM standard non hanno audit di pregiudizio." }
+        ]
+      },
+      "exposure": {
+        "title": "L'Esposizione Legale",
+        "subtitle": "Tre regole violate insieme.",
+        "items": [
+          { "tag": "AI Act — All. III", "title": "IA ad Alto Rischio", "desc": "Valutare CV tramite IA è classificato ad Alto Rischio. Obbligo di adeguamento." },
+          { "tag": "GDPR — Art 22", "title": "Decisione Umana", "desc": "Servono processi dove un umano decide finalmene." },
+          { "tag": "AI Act — Art 12", "title": "Audit obbligatorio", "desc": "Registrazione di tutte le azioni dell'IA." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Un Processo HR IA Conforme",
+        "subtitle": "Non vietare l'IA. Governala.",
+        "steps": [
+          { "step": "01", "title": "Classifica gli strumenti", "desc": "Inventario delle IA usate per i CV." },
+          { "step": "02", "title": "DPIA", "desc": "Valutazione Impatto Privacy obbligatoria." },
+          { "step": "03", "title": "Inserire gli Audit", "desc": "Il SDK SupraWall registra automaticamente ogni check in modo firmato." },
+          { "step": "04", "title": "Umano nel loop", "desc": "Instradare l'azione per ok umano." },
+          { "step": "05", "title": "Template Compliance HR", "desc": "Installa tutto con un solo modello." }
+        ]
+      },
+      "faq": [
+        { "q": "Possiamo usare l'IA per le HR?", "a": "Sì, se usata come supporto con audit e non per le decisioni vincolanti." }
+      ],
+      "ctaDev": { "label": "Attiva Modello HR", "href": "/compliance-templates/hr-employment", "sublabel": "Allegato III + GDPR conformità rapida." },
+      "ctaBusiness": { "label": "Prenota Consulenza HR", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Per i direttori del Personale." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · AI Act All. III · MiFID II",
+        "urgency": "DORA: Ora. AI Act: Agosto 2026.",
+        "title": "La tua banca vieta gli LLM?",
+        "emphasis": "Come reinserirli in sicurezza.",
+        "description": "Molte banche hanno giustamente bloccato ChatGPT. Ma ora i dipendenti sono rallentati e usano i telefoni per aggirarlo."
+      },
+      "story": {
+        "label": "Shadow IT in Banca",
+        "quote": "Bloccare gli LLM pubblici ha solo spinto le azioni sui cellulari personali per analizzare prospetti e report creditizi, creando un rischio anche maggiore e violando DORA in silenzio."
+      },
+      "behaviors": {
+        "title": "Il fallimento del ban",
+        "subtitle": "Vietare senza un'alternativa sicura genera Shadow IA.",
+        "items": [
+          { "icon": "bypass", "title": "Aggiramento controlli", "desc": "Uso su rete privata." },
+          { "icon": "competitive", "title": "Svantaggio Competitivo", "desc": "I concorrenti analizzano documenti più velocemente." },
+          { "icon": "scope", "title": "Soluzione sbagliata", "desc": "Il problema non è vietare il LLM, ma gestire i dati al gateway." }
+        ]
+      },
+      "exposure": {
+        "title": "Quadri Normativi",
+        "subtitle": "4 ostacoli da gestire.",
+        "items": [
+          { "tag": "DORA", "title": "Rischio IT", "desc": "I modelli pubblici falliscono le verifiche DORA." },
+          { "tag": "All. III", "title": "Alto Rischio", "desc": "Credito + IA = Molti obblighi di logging." },
+          { "tag": "GDPR", "title": "Dati", "desc": "Dati finanziari su server esteri fuori controllo." },
+          { "tag": "MiFID II", "title": "Advisory", "desc": "Requisiti di archiviazione stringenti sui report." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Rimuovi il Ban. Ferma i Dati.",
+        "subtitle": "Con SupraWall.",
+        "steps": [
+          { "step": "01", "title": "Policies", "desc": "Fissa le regole per casi d'uso." },
+          { "step": "02", "title": "Il Gateway", "desc": "Verifica le richieste ad Azure/LLM privati in UE." },
+          { "step": "03", "title": "Residenza Dati", "desc": "Blocca PII verso l'estero." },
+          { "step": "04", "title": "Report DORA", "desc": "Pronto all'esportazione automatica." },
+          { "step": "05", "title": "Iniziate", "desc": "Usa il template Banca per le policies di base." }
+        ]
+      },
+      "faq": [
+        { "q": "L'Enterprise OpenAI ci salva?", "a": "Migliora la privacy ma non fa audit di alto rischio in tempo reale (Art 12 AI ACT)." }
+      ],
+      "ctaDev": { "label": "Usa Template Infrastrutture Critiche", "href": "/compliance-templates/critical-infrastructure", "sublabel": "Policy DORA + AI Act Attive." },
+      "ctaBusiness": { "label": "Parla con Sicurezza", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Per uffici CISO." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "All. III Categoria 5 · GDPR Art 9",
+        "urgency": "2 agosto 2026 (Generale).",
+        "title": "Dati Pazienti inviati all'IA.",
+        "emphasis": "Il rischio 'Dati Speciali'.",
+        "description": "I dati clinici sono Articolo 9 del GDPR (Categorici). Elaborarli con AI significa Alto Rischio (All. III AI Act). Serve una soluzione architetturale immediata."
+      },
+      "story": {
+        "label": "In Ospedale",
+        "quote": "Sintomi psichiatrici incollati rapidamente in un LLM per riassumere i risultati al primario. La privacy del paziente è appena uscita fuori rete ospedaliera."
+      },
+      "behaviors": {
+        "title": "Il problema Clinico",
+        "subtitle": "Pratiche quotidiane a rischio.",
+        "items": [
+          { "icon": "notes", "title": "Riassunti", "desc": "Inviare referti esternamente." },
+          { "icon": "triage", "title": "Triage AI", "desc": "Altissimo Rischio, sanzionabile." },
+          { "icon": "records", "title": "Storico Pazienti", "desc": "Esposizione involontaria massiva." },
+          { "icon": "admin", "title": "Negazione cure", "desc": "Gestito da IA senza controllo umano." }
+        ]
+      },
+      "exposure": {
+        "title": "L'Esposizione in numeri.",
+        "subtitle": "Sanzioni massime.",
+        "items": [
+          { "tag": "GDPR Art 9", "title": "Categorie Particolari", "desc": "Protezioni speciali aggirate dall'uso di LLM esterni." },
+          { "tag": "AI Act", "title": "All. III Sanità", "desc": "Impone DPIA, audit log, e certificazioni di conformità precise." }
+        ]
+      },
+      "compliantPath": {
+        "title": "IA Clinica Conforme",
+        "subtitle": "Soluzioni immediate.",
+        "steps": [
+          { "step": "01", "title": "Dati PII Criptati", "desc": "Anonimizzazione totale." },
+          { "step": "02", "title": "DPIA Medica", "desc": "Impostazione di policy specifiche." },
+          { "step": "03", "title": "Uso Shield SupraWall", "desc": "Rimuovi Nomi, N.ro Sicurezza Sociale in automatico al gateway." },
+          { "step": "04", "title": "Human/Medico In The Loop", "desc": "L'IA suggerisce, ostruiamo la sua 'decisione autonoma' tecnica." },
+          { "step": "05", "title": "Modello Helathcare", "desc": "Carica il framework per strutture sanitarie." }
+        ]
+      },
+      "faq": [
+        { "q": "Usiamo server on-prem per l'IA, siamo a posto?", "a": "Risolve GDPR, ma NON l'obbligo degli audit di Alto Rischio in AI Act." }
+      ],
+      "ctaDev": { "label": "Soluzione Healthcare", "href": "/compliance-templates/healthcare", "sublabel": "Sano. Protetto e Pronto." },
+      "ctaBusiness": { "label": "Contatta Team Medico IA", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Amministratori Ospedalieri." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Segreto Professionale · GDPR · AI Act",
+        "urgency": "Violazione del Codice Etico",
+        "title": "Studi legali inviano sommarie all'IA.",
+        "emphasis": "Esposizioni da contenzioso.",
+        "description": "Esporre contratti M&A o sentenze non in giudicato sull'IA fa decadere la segretezza professionale e apre vie a cause per danni enormi."
+      },
+      "story": {
+        "label": "Pratica errata via LLM",
+        "quote": "I praticanti o gli junior inviano atti legali di centinaia di pagine ai provider LLM pubblici, cedendo documenti che annullano il Segreto Giudiziario all'istante (mancanza d'accordo privacy di non-training)."
+      },
+      "behaviors": {
+        "title": "Violazioni",
+        "subtitle": "Le 4 negligenze.",
+        "items": [
+          { "icon": "upload-doc", "title": "Upload Pubblici", "desc": "Condivisione dati confidenziali." },
+          { "icon": "draft", "title": "Allucinazioni", "desc": "Lettere redatte da LLM che inventano sentenze." },
+          { "icon": "research", "title": "Responsabilità Deontologica", "desc": "Gli avvocati firmano per l'IA." },
+          { "icon": "discovery", "title": "Scoperta / Discovery", "desc": "Un Giudice può ordinare prove di chi ha redatto le memorie difensive." }
+        ]
+      },
+      "exposure": {
+        "title": "Responsabilità del Partner",
+        "subtitle": "Danni enormi.",
+        "items": [
+          { "tag": "Privacy/Segreto", "title": "Rinuncia", "desc": "Usare IA esterne fa perdere la protezione Cliente-Avvocato." },
+          { "tag": "AI Act All. III", "title": "Diritto (Alto rischio limitato)", "desc": "A seconda dell'uso può classificarsi in sistemi giustiziali a rischio (Cat 8)." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Legal Tech Controllato",
+        "subtitle": "Con SupraWall.",
+        "steps": [
+          { "step": "01", "title": "Policy Scritta", "desc": "Imponi l'USO di proxy schermati per i LLM." },
+          { "step": "02", "title": "SupraWall Vault", "desc": "I documenti non escono in chiaro." },
+          { "step": "03", "title": "Clausole Cliente", "desc": "Avvisare il cliente dell'uso interno e controllato dell'IA." },
+          { "step": "04", "title": "Audit log", "desc": "Traccia incancellabile di cosa usa l'avvocato per l'Ordine." },
+          { "step": "05", "title": "Legal Template", "desc": "Configuralo ora." }
+        ]
+      },
+      "faq": [
+        { "q": "Copilot e M365 garantisce tutto?", "a": "È ottimo ma non dispone dei registri crittografici legali per la parte Audit della normativa AI se integrato da codice." }
+      ],
+      "ctaDev": { "label": "Usa Template Law & Justice", "href": "/compliance-templates/justice-democracy", "sublabel": "Livello di Sicurezza Massimo." },
+      "ctaBusiness": { "label": "Chiamata Soci Ordinari", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Senior Partners Studio Legale." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "IA per il Board e Dirigenza",
+        "urgency": "Ago 2026, ma gli investitori chiedono ora.",
+        "title": "La Tua Azienda Respira IA.",
+        "emphasis": "Il Board farà queste domande entro 90 giorni.",
+        "description": "Con multe fino al 7% dei ricavi mondiali o 35 milioni, dovrai rispondere se la tua implementazione IA è 'A norma', 'Legale', e 'Auditable'."
+      },
+      "story": {
+        "label": "Una riunione del CdA",
+        "quote": "Siamo veloci grazie all'AI! Ottimo, ma il consulente legale indipendente chiede: 'Siamo conformi all'AI Act per le assunzioni via HR e l'uso nei dati dei clienti di vendita?'. Silenzio totale e panico dal CTO."
+      },
+      "boardQuestions": {
+        "title": "Le 5 Domande Chiave",
+        "subtitle": "A cui prepararsi.",
+        "items": [
+          { "q": "Conformi UE AI Act?", "a": "Il board necessita del report con log immutabili, non promesse." },
+          { "q": "Rischio multa Massima?", "a": "7% Globale sulle vendite, impatto azionario drastico." },
+          { "q": "Di chi è la colpa?", "a": "La responsabilità cade sull'azienda impiegante, non si può delegare il torto al LLM provider." },
+          { "q": "Dati Privati", "a": "Si unisce al RGPD europeo art. 22." },
+          { "q": "Possiamo bloccarla?", "a": "Non serve vietare l'IA, serve il guardrail al Gateway come SupraWall per filtrare ed esigere validazione umana dove richiesto." }
+        ]
+      },
+      "riskMap": {
+        "title": "Mappa dei Dipartimenti",
+        "subtitle": "Rischi Interni.",
+        "items": [
+          { "dept": "Risorse Umane", "regulation": "All. 3 (Cat 4) + GDPR", "risk": "Filtraggio massivo CV dei candidati.", "urgency": "critical" },
+          { "dept": "CFO/Fintech", "regulation": "DORA + AI Act", "risk": "Dichiarazioni, analisi mutui cliente.", "urgency": "critical" },
+          { "dept": "Medico", "regulation": "All. 3 + RGPD 9", "risk": "Trattare sintomi per velocizzare diagnosi.", "urgency": "critical" },
+          { "dept": "Legale Corporate", "regulation": "Segreto / Privacy", "risk": "LLMs usati per NDA e brevetti non chiusi.", "urgency": "high" },
+          { "dept": "IT Prod", "regulation": "All. 3 (Cat 2)", "risk": "Agente dev.ops malconfigurato.", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "Il piano del CEO/CTO in 30 Giorni",
+        "subtitle": "Per non trovarsi spiazzati.",
+        "steps": [
+          { "step": "Prima Settimana", "title": "Fare Inventario", "desc": "Scoprire chi e cosa usano in IA." },
+          { "step": "Idem", "title": "Cat. All. III", "desc": "Individuare se tocchiamo punti di 'Alto Rischio'." },
+          { "step": "Sec. Settimana", "title": "Valutazione Impatto (DPIA)", "desc": "Con il DPO aziendale." },
+          { "step": "Terza Settimana", "title": "Gateway Dev e Sicurezza", "desc": "Scrivere 3 code lines di SupraWall proxy (Inibisce dati illegali)." },
+          { "step": "Quarta Settimana", "title": "Attiva gli Audit Log", "desc": "Crea il report in PDF finale del Mese chiuso." },
+          { "step": "Quarta Settimana", "title": "Relazione Dirigenza", "desc": "Portare Audit al Consiglio d'Amministrazione (CdA)." }
+        ]
+      },
+      "ctaDev": { "label": "Scopri Template per Developers", "href": "/compliance-templates", "sublabel": "Scegli il settore." },
+      "ctaBusiness": { "label": "Pianifica un Briefing Esecutivo", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Consulenza per CEO / Dirigenti e Board." }
+    },
+    "shared": {
+      "urgencyBadge": "Agosto 2026",
+      "faqTitle": "Questioni Frequenti C-Level",
+      "backToLearn": "Torna Su",
+      "relatedTemplates": "Modelli Correlati per Settore",
+      "sdkPath": "Soluzione per Team Tecnico (SDK)",
+      "businessPath": "Parla con Esperti Enterprise (Direct)",
+      "dualCtaTitle": "Agire Ora:",
+      "dualCtaSubtitle": "Due modalità d'intervento disponibili oggi."
     }
   }
 }

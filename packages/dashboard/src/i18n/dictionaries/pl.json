@@ -20,7 +20,9 @@
     "pricing": "Cennik",
     "frameworks": "Frameworks",
     "platforms": "Platforms & Models",
-    "awsMarketplace": "AWS Marketplace"
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "Według Roli",
+    "industries": "Według Branży"
   },
   "home": {
     "hero": {
@@ -1182,6 +1184,256 @@
       "solutionTitle": "Automatyzacja zgodności",
       "solutionP": "SDK SupraWall działa jako silnik zgodności z Artykułem 12, automatycznie przechwytując wywołania narzędzi na granicy środowiska wykonawczego i przesyłając je do niezmiennego rejestru audytowego. Gwarantuje to, że każde „uzasadnione” działanie agenta jest możliwe do prześledzenia aż do instrukcji źródłowej w przypadku audytu regulacyjnego.",
       "guideLink": "Zobacz szczegółowe mapowanie Artykułu 12"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Załącznik III Kategoria 4 · RODO Artykuł 22",
+        "urgency": "2 sierpnia 2026 — Limit czasowy Aktu o AI UE",
+        "title": "Twoi rekruterzy używają ChatGPT do CV.",
+        "emphasis": "Oto czego wymaga teraz UE.",
+        "description": "Większość zespołów HR w Europie już używa sztucznej inteligencji do sprawdzania kandydatów. Prawie nikt nie wie, że robienie tego bez zabezpieczeń łamie prawo od 2 sierpnia 2026 roku."
+      },
+      "story": {
+        "label": "Scenariusz występujący dzisiaj w wielu firmach",
+        "quote": "Rekruter otwiera ChatGPT, wkleja pełne CV kandydata i pyta: „Czy ta osoba pasuje do wymagań?”. Model odpowiada wynikiem i podsumowaniem. Rekruter przechodzi dalej. Brak ścieżki audytu. Brak kontroli stronniczości. Brak weryfikacji ludzkiej. To naruszenie, za które grozi kara do 35 mln euro lub 7% globalnych obrotów."
+      },
+      "behaviors": {
+        "title": "Co Twój zespół HR robi w tej chwili",
+        "subtitle": "Te konkretne zachowania wyzwalają ryzyko związane z Załącznikiem III i RODO.",
+        "items": [
+          { "icon": "upload", "title": "Przesyłanie CV do publicznych modeli językowych", "desc": "CV pełne nazwisk, adresów i historii zatrudnienia trafiają na amerykańskie serwery (OpenAI, Anthropic)." },
+          { "icon": "filter", "title": "Wstępna selekcja", "desc": "Klasyfikacja kandydatów za pomocą AI natychmiast uruchamia Art. 22 RODO (zakaz zautomatyzowanego podejmowania ważnych decyzji)." },
+          { "icon": "missing-trail", "title": "Brak ścieżki audytu", "desc": "Art. 12 Aktu o AI wymaga logowania działań AI. W przypadku HR logowanie nie istnieje." },
+          { "icon": "bias", "title": "Brak dokumentacji o stronniczości", "desc": "Systemy te muszą dowodzić braku dyskryminacji rasowej/wiekowej. Sam LLM tego nie robi." }
+        ]
+      },
+      "exposure": {
+        "title": "Konkretne Ryzyko Prawne",
+        "subtitle": "Trzy naruszenia jednocześnie.",
+        "items": [
+          { "tag": "Akt o AI UE — Załącznik III Kat. 4", "title": "AI Wysokiego Ryzyka", "desc": "Filtrowanie kandydatów to zawsze Wysokie Ryzyko w prawie UE." },
+          { "tag": "RODO — Artykuł 22", "title": "Prawo do weryfikacji", "desc": "Potrzebujesz procedury udziału człowieka (Human in the loop)." },
+          { "tag": "Akt o AI UE — Art. 12", "title": "Wymagane Audyty", "desc": "Brak historii to brak zgodności." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Jak wygląda legalny proces AI w HR",
+        "subtitle": "Zastosuj te kontrole.",
+        "steps": [
+          { "step": "01", "title": "Identyfikuj Systemy", "desc": "Sprawdź, kto używa jakiego bota." },
+          { "step": "02", "title": "Rozpocznij DPIA", "desc": "Ocena skutków dla ochrony danych (ODO)." },
+          { "step": "03", "title": "Blokada PII", "desc": "Nasza sieć PII Shield usuwa prywatne dane przed wysyłką do LLM." },
+          { "step": "04", "title": "Ludzkie potwierdzenie", "desc": "Automatyczne wymuszanie akceptu kierownika nad oceną AI." },
+          { "step": "05", "title": "Wdrażaj Szablon HR", "desc": "Aktywny jednym kliknięciem." }
+        ]
+      },
+      "faq": [
+        { "q": "Czy możemy zgłosić kandydatom użycie bota i to wystarczy?", "a": "Nie. Sama zgoda według RODO nie omija twardych barier bezpieczeństwa narzucanych przez AI Act Załącznik 3." }
+      ],
+      "ctaDev": { "label": "Aktywuj Pakiet HR", "href": "/compliance-templates/hr-employment", "sublabel": "Zaufana platforma Ochrony Danych." },
+      "ctaBusiness": { "label": "Konsultacja Compliance", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Dla dyrektorów HR." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · AI Act Zał. III",
+        "urgency": "DORA już działa.",
+        "title": "Masz zakaz korzystania z LLM?",
+        "emphasis": "Oto jak go bezpiecznie cofnąć.",
+        "description": "Zablokowanie dostępu do ChatGPT na sieciach bankowych chroni dane, ale pracownicy szukają dróg na skróty. Wdróż AI w kontrolowany sposób."
+      },
+      "story": {
+        "label": "Efekt zakazu w finansach",
+        "quote": "Zabraniając używania chmur analitycznych, analitycy używają swoich prywatnych telefonów aby wyliczyć stres testy rynkowe, łamiąc jednocześnie DORA i przepisy powiernicze."
+      },
+      "behaviors": {
+        "title": "Dlaczego zakaz to zły pomysł",
+        "subtitle": "Koszty ukrytego IT.",
+        "items": [
+          { "icon": "bypass", "title": "Omijanie zapór", "desc": "Ryzyko Shadow AI." },
+          { "icon": "competitive", "title": "Zastój", "desc": "Inne firmy robią raporty 400% szybciej dzięki legalnemu modelowi." },
+          { "icon": "scope", "title": "Kontrola dostępu", "desc": "Polityki na poziomie bramy API to jedyna odpowiedź." }
+        ]
+      },
+      "exposure": {
+        "title": "Normy Nadzorcze",
+        "subtitle": "Pełna gama zgodności finansowej.",
+        "items": [
+          { "tag": "DORA", "title": "Testy Odporności", "desc": "DORA wymaga od banków wglądu w środowisko IT trzeciej strony." },
+          { "tag": "Załącznik III", "title": "Ryzyko Kredytowe", "desc": "Modele oceny zdolności są systemami Wysokiego Ryzyka." },
+          { "tag": "RODO/MiFID", "title": "Rejestr Klientów", "desc": "Profilowanie i przechowywanie rekomendacji." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Odblokuj. Kontroluj.",
+        "subtitle": "Z bramą SupraWall.",
+        "steps": [
+          { "step": "01", "title": "Definicja ram", "desc": "Zasady obsługi klienta vs research." },
+          { "step": "02", "title": "Wizualizacja", "desc": "Panel zarządzania dostępem SupraWall." },
+          { "step": "03", "title": "Rejestr na terenie UE", "desc": "Blokada opuszczenia Strefy UE." },
+          { "step": "04", "title": "Gotowość audytowa (DORA)", "desc": "Dedykowana dokumentacja zdarzeń." },
+          { "step": "05", "title": "Moduł Bankowy", "desc": "Załaduj nasze predefiniowane reguły." }
+        ]
+      },
+      "faq": [
+        { "q": "Czy używając lokalnego LLM LLaMa rozwiązujemy sprawę?", "a": "Prywatnie tak (brak przesyłu danych), ale AI Act wymaga nadal tworzenia dzienników logów wysokiego ryzyka Art 12." }
+      ],
+      "ctaDev": { "label": "Instaluj Kod Finansowy", "href": "/compliance-templates/critical-infrastructure", "sublabel": "Scentralizowana konfiguracja." },
+      "ctaBusiness": { "label": "Rozmowa z Ekspertem", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Zarządcy bezpieczeństwa." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "Kategoria 5 (Zdrowie) · RODO Art 9",
+        "urgency": "2 sierpnia 2026. Zmiany w opiece zdrowotnej.",
+        "title": "Zespoły kliniczne udostępniają dane.",
+        "emphasis": "Oto wymóg Kategorii 5 Aktu o AI.",
+        "description": "Dane dotyczące zdrowia podlegają zaostrzonym zasadom RODO. Wysłanie ich do weryfikacji lub zapisu przez systemy GenAI powoduje uruchomienie ścisłych wymogów bezpieczeństwa."
+      },
+      "story": {
+        "label": "Nagły wypadek na dyżurze",
+        "quote": "Zabrakło personelu medycznego. Pielęgniarka zapisuje obserwacje pacjenta (z historią chorób psychicznych) do notatnika AI, gdzie chmura robi transkrypcję. Wyciek informacji tego rzędu do serwerów deweloperskich to katastrofa."
+      },
+      "behaviors": {
+        "title": "Zaburzenia procesów szpitalnych",
+        "subtitle": "Co się dzieje bez integracji bezpieczeństwa.",
+        "items": [
+          { "icon": "notes", "title": "Dyktowanie uwag do LLM", "desc": "Wyciek." },
+          { "icon": "triage", "title": "Wspomaganie decyzji", "desc": "AI, decydując o kolejności ratunkowej (Triage), jest wysoce krytyczne i narażone na ogromne kary bez weryfikacji i certyfikacji." },
+          { "icon": "records", "title": "Brak PII Guard", "desc": "Domyślna AI nie usuwa PESEL-u pacjenta." },
+          { "icon": "admin", "title": "Odrzucanie Świadczeń", "desc": "Decyzja wsparta systemem sztucznym bez ścieżki ludzkiej (HITL)." }
+        ]
+      },
+      "exposure": {
+        "title": "Dwa Prawa. Jedna Kara.",
+        "subtitle": "Przepisy nakładają się na siebie.",
+        "items": [
+          { "tag": "RODO Art 9", "title": "Dane Szczególnie Chronione", "desc": "Ograniczenie przetwarzania informacji o zdrowiu." },
+          { "tag": "AI Kat. 5", "title": "AI w Zdrowiu", "desc": "Wysokie wymagania oceny zgodności, testowania przed wejściem na rynek oraz rejestracji." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Ścieżka Zgodna dla Lekarzy",
+        "subtitle": "Nie blokuj dostępu pacjentów, a jedynie chroń ich logi.",
+        "steps": [
+          { "step": "01", "title": "Identyfikuj", "desc": "Jakie usługi zdrowotne to Cat 5." },
+          { "step": "02", "title": "Anonimizacja przed przetworzeniem", "desc": "Zastosuj Redakcję Danych SupraWall." },
+          { "step": "03", "title": "Ocena oddziaływania", "desc": "Pełne środowisko RODO." },
+          { "step": "04", "title": "Decyzja lekarza (HITL)", "desc": "Diagnostyka tylko w modelu hybrydowym z włączeniem pracownika medycznego." },
+          { "step": "05", "title": "Moduł Medyczny", "desc": "Użyj certyfikowanych wzorców (Template)." }
+        ]
+      },
+      "faq": [
+        { "q": "Kogo to dotyczy?", "a": "Ośrodków medycznych, ubezpieczycieli zdrowotnych oraz start-upów Health-Tech." }
+      ],
+      "ctaDev": { "label": "Rozwiązanie dla Klinik", "href": "/compliance-templates/healthcare", "sublabel": "Narzędzie deweloperskie." },
+      "ctaBusiness": { "label": "Porozmawiaj o Zgodności Szpitala", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Sektor Medyczny." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Tajemnica Adwokacka",
+        "urgency": "Złamanie Konstytucji Ochrony Klienta.",
+        "title": "Kancelarie prawnicze gubią akta.",
+        "emphasis": "Oto cena braku zabezpieczeń w GenAI.",
+        "description": "Jedną z najszybszych dróg do odpowiedzialności cywilnej jest wrzucenie dokumentów procesowych klienta bez jego wiedzy do narzędzi AI."
+      },
+      "story": {
+        "label": "Weryfikacja Kontraktu",
+        "quote": "Brakujący czas skłania młodszego asystenta prawnego do wrzucenia wrażliwego, fuzji i przejęć dokumentu M&A do zwykłego bota, prosząc o sumaryzację zagrożeń. Dane wyciekły prawnie poza UE w tymże momencie."
+      },
+      "behaviors": {
+        "title": "Jak tracisz uprawnienia obronne",
+        "subtitle": "Codzienne naruszenia w biurze prawniczym.",
+        "items": [
+          { "icon": "upload-doc", "title": "Publiczny przekaz bazy", "desc": "Tajemnica przestała istnieć." },
+          { "icon": "draft", "title": "Zjawisko Konfabulacji Prawa", "desc": "LLMy kłamią powołując fikcyjne sprawy sądowe (tzw. Hallucynacje)." },
+          { "icon": "research", "title": "Dowód Winny Prawnika", "desc": "Kary ze strony rady adwokackiej (Bar Association) dla nadzorujących partnerów." },
+          { "icon": "discovery", "title": "Proces dowodowy (Discovery/Audyt)", "desc": "Twój klient musi być wyraźnie i udokumentowanie powiadomiony, jeśli stosujesz AI na jego plikach." }
+        ]
+      },
+      "exposure": {
+        "title": "Luki Kancelarii",
+        "subtitle": "Możesz stracić wizerunek i firmę.",
+        "items": [
+          { "tag": "Prawo UE", "title": "Wykorzystywanie Niewiadomego Źródła", "desc": "Brak wyłączności serwera łamie obowiązek tajemnicy." },
+          { "tag": "Szybki Wyciek PII", "title": "Brak PII Redact (Ochrona Nazwisk)", "desc": "Spółki ulegną deanonimizacji podczas audytu RODO." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Praktykowanie Prawa poprzez LegalTech w Pełni Audytowane",
+        "subtitle": "Kancelarie w roku 2026 muszą mieć certyfikaty logujące.",
+        "steps": [
+          { "step": "01", "title": "Nieużywanie Publicznego GenAI", "desc": "Zablokuj strony do LLM dla prawników bez zatwierdzonych kont." },
+          { "step": "02", "title": "Technologia Vault SupraWall", "desc": "Prawnik wrzuca zapytanie w chroniony system, z anonimowymi wartościami, na serwer EU." },
+          { "step": "03", "title": "Dedykowana klauzula umowy ze zleceniodawcą", "desc": "O użyciu AI." },
+          { "step": "04", "title": "Obowiązek weryfikatora adwokackiego (HITL)", "desc": "Zawsze pod ścisłą kontrolą manualną." },
+          { "step": "05", "title": "Pobranie Szablonu Law & Order", "desc": "Bezpośrednia pomoc w gotowych algorytmach chroniących (Compliance Template)." }
+        ]
+      },
+      "faq": [
+        { "q": "Copilot For Word chroni nas w stopniu wystarczającym?", "a": "Systemy zamknięte gwarantują tylko prywatność danych, nadal brakuje rygorystycznego systemu logowania poleceń inwalidowanego w sieci typu blockchain (Dora/AiAct)." }
+      ],
+      "ctaDev": { "label": "Implementuj Prawo i Demokrację", "href": "/compliance-templates/justice-democracy", "sublabel": "Instalacja lokalna / na serwerze." },
+      "ctaBusiness": { "label": "Wyślij Zapytanie Partnerskie", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Specyficzny kanał Kancelarii." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "IA Para CEOs. Riesgo Directivo.",
+        "urgency": "Agosto 2026",
+        "title": "Twoja Firma Oparta jest Dziś o Sztuczną Inteligencję.",
+        "emphasis": "Twój Zarząd i Akcjonariusze Złożą Te Pytania Za 90 Dni. Masz Odpowiedzi?",
+        "description": "Gorsze na horyzoncie. Kary rosną do poziomu wyższego niż RODO (35 Mn. EUR, 7% całościowego globalnego przychodu organizacji). Niewiedza nie zwalnia zarządzających C-Level od kar i audytów operacyjnych na terenie EU."
+      },
+      "story": {
+        "label": "Główny Problem Spotkania Udziałowców (Shareholder Board):",
+        "quote": "CTO podaje raport imponującego wzrostu oszczędności dzięki wdrożeniu setek asystentów LLM w firmie (Customer Service, Finanse i HR). Pytanie Audytorów: 'Proszę okazać Rejestr Operacji Systemów Wysokiego Ryzyka (AI Act Art. 12 i DPIA) lub ryzykujemy naruszenie na pełną skalę!'. Raportu brak. Budżet na ryzyko jest ogromny."
+      },
+      "boardQuestions": {
+        "title": "5 Kluczowych Zapytań Ryzyka C-Level",
+        "subtitle": "Przygotuj Się Od Dziś.",
+        "items": [
+          { "q": "Czy Mamy Mapę Narzędzi Naruszających Załączniki (Annex) Prawa EU?", "a": "Należy zbudować spójny rejestr aplikacji typu AI wspierających zatrudnienie i finanse. Każdy użytek wymaga wnikliwej procedury i audytora w zespole ludzkim." },
+          { "q": "Ryzyko Zwrotów Operacyjnych w Stosunku Do Kar", "a": "Siedem % to górna dopuszczalna nakładana forma wyjęcia zysku przez Europejskie Biura Innowacji za rażące łamanie prywatności lub błędnych decyzji AI na szkodę pracownika (Załącznik II, III)." },
+          { "q": "Status 'Głównego Deployera'", "a": "Firmy stają się 'narzędziowcami / używającymi', których odpowiedzialność jest uwarunkowana we wdrożeniach (Używasz LLM? Twoja jest wina za to co wykona algorytm u pracownika)." },
+          { "q": "Zagrożenie Kadrowe", "a": "Kto ukróci 'Samowolkę' w strukturach zespołów sprzedażowych przesyłających excele do Gemini-Google Web UI zamiast w bezpieczny panel integracji firmowej." },
+          { "q": "Czy Reakcje Muszą Oznaczać BANA i Zakaz?", "a": "Wyłączenie AI cofa rozwój. Należy zbudować twarde granice do systemu jak w platformie SDK 'SupraWall' z autoryzacji systemowej (Gateways), które rozwiązują wyznaczanie sztywnych policy-driven ram czasowych dla agencji LLM." }
+        ]
+      },
+      "riskMap": {
+        "title": "Departamenty Będące W Strefie Celownika Ustaw. EU:",
+        "subtitle": "Kto Wymaga Audytu Natychmiast",
+        "items": [
+          { "dept": "Dział Kadrowych Zasobów HR", "regulation": "Załącznik (Annex) III (4) +  Rozpoznanie Biasu (Błędów Prawa Pracy) · RODO 22", "risk": "Sortowanie list na podstawie płci ukrytych przez roboty.", "urgency": "critical" },
+          { "dept": "Rynek Ubezpieczeń/Kredyty CFO", "regulation": "Dyrektywa DORA + AI Act (Annex)", "risk": "Algorytm przyznający (Udzielenia Zysków) podnoszący marżę klientom niewłaściwie.", "urgency": "critical" },
+          { "dept": "Rynek Leków i Zdrowia Medycznego.", "regulation": "RODO 9 (Wysoka Kategoria) / Z. III (5)", "risk": "Klasyfikator PII ulegająca zawałom zabezpieczającym.", "urgency": "critical" },
+          { "dept": "Zarząd i Główni Prawnicy (Corp)", "regulation": "RODO + Przywilej Obrońcy Prawnego", "risk": "Ustawiczna wada wycieków projektów poufnych do wczesnego publicznego internetu open.ai", "urgency": "high" },
+          { "dept": "Obsługa Serwerów/IT OPs", "regulation": "AI Act (Cat 2)", "risk": "Niefortunne przekazanie uprawnień nad skryptami root i modyfikatorów Bazy Danych maszynowym LLMom.", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "Twoja Akcja - Miesięczny Sprint Dyrektora ds. Technologii i Bezpieczeństwa:",
+        "subtitle": "Odpieranie Ryzyk Przez Narzędzia C-Suite.",
+        "steps": [
+          { "step": "Etap Pierwszy (Dzień 1-7)", "title": "Budowa Klasyfikacji inwentaryzującej (Świat AI). Gdzie w Miejscach jest aplikowane środowisko i używane do jakiego przetwarzania.", "desc": "Szukanie słabych punktów i powiązań z systemem wewnętrznym HR." },
+          { "step": "Identyczny Termin.", "title": "Raport Zespołu z Kat.", "desc": "Zestawienie ich cech z Rejestrami Unii (Kto narusza rygor Wysokich Napięć?)" },
+          { "step": "Etap Drugi (Dzień 14-21)", "title": "Test Impactu (Zgodności ODO / PIA)", "desc": "Każde ryzykowniejsze połączenie wymaga przeprowadzenia odpowiedniego procesu i zgłoszenia go lokalnemu organowi regulacji, jeśli to ubytek." },
+          { "step": "Ten Sam Okres", "title": "Bariery Bezpieczeństwa (Security Firewall)", "desc": "Przebudowanie interfejsów (API). Integracja modułu ochronnego SupraWall między pracownika a Chat. Kod ten redukuje zanieczyszczone żądania." },
+          { "step": "Trzy Tygn.", "title": "Automatyzacja Artykułu Dwunastego (Logi)", "desc": "Tworzy bezpieczne podesty. Serwer logów nie zapisuje prywatnych wejść. Czysta krystalizująca historia działania dla inspekcji." },
+          { "step": "Zakończenie Miesiąca", "title": "Pakiet Do Rąk Konsultacyjnych.", "desc": "Akcjonariusze widzą wdrożenie na dashboardzie chroniącym organizację. Certyfikat PDF wydrukowany dla Boardu (Ready to sign)." }
+        ]
+      },
+      "ctaDev": { "label": "Zapoznaj Się z Pakietami Audytującym i Zabezpieczeń w Repozytorium (Templates)", "href": "/compliance-templates", "sublabel": "Szybkie, gotowe zestawy instruktażowe SDK." },
+      "ctaBusiness": { "label": "Zamów U Nas Ewaluację Systemową C-Suite (Audyt Biznesowy)", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Odpowiedź na problemy dla Kadry i Głównych Konsultantów." }
+    },
+    "shared": {
+      "urgencyBadge": "Wdrażaj Czasu 2026",
+      "faqTitle": "Najczęstsze Pytania / FAQ",
+      "backToLearn": "Wróć Wyżej",
+      "relatedTemplates": "Podobne Scenariusze i Pakiet",
+      "sdkPath": "Dla Programistów - Link (SDK/Hub)",
+      "businessPath": "Oferty Firm, Negocjacje C-level B2B",
+      "dualCtaTitle": "Masz dwa wyjścia, wybierz najwłaściwszą.",
+      "dualCtaSubtitle": "Pobierasz Pakiet dla inżyniera dzisiaj i zrealizujesz sprawę bezpieczeństw, lub umówisz biznes w sprawie oceny audytu całości firmy."
     }
   }
 }
