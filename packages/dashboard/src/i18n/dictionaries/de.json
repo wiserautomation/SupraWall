@@ -137,108 +137,138 @@
           "audit": "Audit-bereit"
         },
         "rows": {
-            "diy": {
-                "name": "Selbst bauen",
-                "time": "17–35 Wochen",
-                "cost": "70k€–140k€",
-                "maint": "Laufende Entwicklung",
-                "evidence": "Manuelle Sammlung",
-                "audit": "Hohes Audit-Risiko"
-            },
-            "suprawall": {
-                "name": "SupraWall Vorlage",
-                "time": "15 Minuten",
-                "cost": "Developer Tier",
-                "maint": "Automatische Updates",
-                "evidence": "Auto-generierte PDF",
-                "audit": "Zertifizierte Nachweise"
-            }
+          "diy": {
+            "name": "Selbst bauen",
+            "time": "17–35 Wochen",
+            "cost": "70k€–140k€",
+            "maint": "Laufende Entwicklung",
+            "evidence": "Manuelle Sammlung",
+            "audit": "Hohes Audit-Risiko"
+          },
+          "suprawall": {
+            "name": "SupraWall Vorlage",
+            "time": "15 Minuten",
+            "cost": "Developer Tier",
+            "maint": "Automatische Updates",
+            "evidence": "Auto-generierte PDF",
+            "audit": "Zertifizierte Nachweise"
+          }
         }
       }
     },
     "common": {
-        "reqHeader": "Anforderung",
-        "artHeader": "Artikel",
-        "complexityHeader": "Komplexität",
-        "templateHeader": "SupraWall Vorlage",
-        "buildHeader": "Wie Sie es selbst bauen",
-        "engineeringWeeks": "Entwicklungswochen",
-        "costEstimate": "Kostenschätzung",
-        "totalEstimate": "Gesamte Kostenschätzung",
-        "activationHeader": "Ein-Zeilen-Aktivierung",
-        "cta": "Vorlage aufrufen",
-        "preconfigured": "Vorkonfiguriert",
-        "hitl": "HITL-Warteschlange",
-        "blocks": "Verbotene Blöcke",
-        "logs": "Audit-Trails"
+      "reqHeader": "Anforderung",
+      "artHeader": "Artikel",
+      "complexityHeader": "Komplexität",
+      "templateHeader": "SupraWall Vorlage",
+      "buildHeader": "Wie Sie es selbst bauen",
+      "engineeringWeeks": "Entwicklungswochen",
+      "costEstimate": "Kostenschätzung",
+      "totalEstimate": "Gesamte Kostenschätzung",
+      "activationHeader": "Ein-Zeilen-Aktivierung",
+      "cta": "Vorlage aufrufen",
+      "preconfigured": "Vorkonfiguriert",
+      "hitl": "HITL-Warteschlange",
+      "blocks": "Verbotene Blöcke",
+      "logs": "Audit-Trails"
     },
     "sectors": {
-        "biometrics": {
-            "title": "Biometrische KI-Compliance",
-            "badge": "Annex III Kategorie 1",
-            "opening": "Biometrische KI-Agenten sind streng reguliert. Fernidentifizierung in öffentlichen Räumen ist VERBOTEN (Art. 5). Alle anderen biometrischen Systeme erfordern eine Bewertung durch Dritte. Compliance ist bis zum 2. August 2026 erforderlich.",
-            "faq": [
-                { "q": "Ist biometrische Fernidentifizierung in der EU erlaubt?", "a": "Generell verboten gemäß Art. 5, mit sehr engen Ausnahmen für die Strafverfolgung." },
-                { "q": "Benötigt Emotionserkennungs-KI Compliance?", "a": "Ja, wenn sie in Bildungs- oder Arbeitsplatzumgebungen eingesetzt wird, ist sie laut Annex III ein Hochrisiko-System." }
-            ]
-        },
-        "critical-infrastructure": {
-            "title": "Kritische Infrastruktur",
-            "badge": "Annex III Kategorie 2",
-            "opening": "KI zur Verwaltung von Wasser-, Energie- oder Verkehrsinfrastruktur ist hochriskant. Überschneidungen mit NIS2-Anforderungen. Hohe Sicherheitspriorität: Jede physische Aktion muss HITL-gesteuert sein.",
-            "faq": [
-                { "q": "Wie überschneidet sich dies mit NIS2?", "a": "Die KI-Compliance muss in das NIS2-Incident-Reporting und Risikomanagement integriert werden." }
-            ]
-        },
-        "education": {
-            "title": "Bildung & Ausbildung",
-            "badge": "Annex III Kategorie 3",
-            "opening": "KI für Zulassungen, Bewertungen oder Prüfungsaufsicht ist hochriskant. Es muss sichergestellt werden, dass der Zugang zu Bildung nicht autonom verweigert wird.",
-            "faq": [
-                { "q": "Kann KI Studenten autonom bewerten?", "a": "Ja, aber Ergebnisse, die den Zugang zur Bildung beeinflussen, müssen menschlich überwacht werden." }
-            ]
-        },
-        "hr-employment": {
-            "title": "Personal & Beschäftigung",
-            "badge": "Annex III Kategorie 4",
-            "opening": "KI für Lebenslauf-Screening, Einstellung oder Leistungsüberwachung ist hochriskant. Löst eine DSGVO-DPIA aus. Keine autonomen Einstellungs-/Entlassungsentscheidungen.",
-            "faq": [
-                { "q": "Kann KI endgültige Einstellungsentscheidungen treffen?", "a": "Nein. Das EU-Recht erfordert einen menschlichen Entscheidungsträger für folgenschwere Beschäftigungsaktionen." },
-                { "q": "Benötige ich eine DSGVO-DPIA für HR-KI?", "a": "Ziemlich sicher. SupraWall automatisiert die technischen Daten für die Bewertung." }
-            ]
-        },
-        "healthcare": {
-          "title": "Gesundheitswesen & soziale Dienste",
-          "badge": "Annex III Kategorie 5",
-          "opening": "Umfasst Medizinprodukte (Aug 2027) und öffentliche Dienste (Aug 2026). Keine autonome Verweigerung von Leistungen oder Triage.",
-          "faq": [
-              { "q": "Wann ist die Frist für Medizinprodukte?", "a": "In Medizinprodukte eingebettete KI hat eine Verlängerung bis August 2027." }
-          ]
-        },
-        "law-enforcement": {
-          "title": "Strafverfolgung",
-          "badge": "Annex III Kategorie 6",
-          "opening": "Eingeschränkte Systeme zur Risikobewertung oder Beweissicherheit. Bewertung durch Dritte obligatorisch. Verbietet Aktionen, die ausschließlich auf Profiling basieren.",
-          "faq": [
-              { "q": "Ist Profiling für die Strafverfolgung erlaubt?", "a": "Streng begrenzt. Entscheidungen dürfen nicht ausschließlich auf automatisiertem Profiling basieren." }
-          ]
-        },
-        "migration-border-control": {
-          "title": "Migration & Grenzkontrolle",
-          "badge": "Annex III Kategorie 7",
-          "opening": "Visum-/Asyl-Risikobewertungen. Dritter obligatorisch. Hard-Block für autonome Asylergebnisse.",
-          "faq": [
-              { "q": "Kann KI über Visumanträge entscheiden?", "a": "Nein. Einwanderungsbeamte müssen alle folgenschweren Aktionen überprüfen und abzeichnen." }
-          ]
-        },
-        "justice-democracy": {
-          "title": "Justiz & Demokratie",
-          "badge": "Annex III Kategorie 8",
-          "opening": "KI für richterliche Sachverhaltsermittlung oder Wahleinflussnahme. Dritter obligatorisch. Alle Ausgaben müssen „nur zu Forschungszwecken“ erfolgen.",
-          "faq": [
-              { "q": "Kann KI bei der Strafzumessung helfen?", "a": "Ja, aber nur als unverbindliche Forschungshilfe mit expliziten Unsicherheitsmerkmalen." }
-          ]
-        }
+      "biometrics": {
+        "title": "Biometrische KI-Compliance",
+        "badge": "Annex III Kategorie 1",
+        "opening": "Biometrische KI-Agenten sind streng reguliert. Fernidentifizierung in öffentlichen Räumen ist VERBOTEN (Art. 5). Alle anderen biometrischen Systeme erfordern eine Bewertung durch Dritte. Compliance ist bis zum 2. August 2026 erforderlich.",
+        "faq": [
+          {
+            "q": "Ist biometrische Fernidentifizierung in der EU erlaubt?",
+            "a": "Generell verboten gemäß Art. 5, mit sehr engen Ausnahmen für die Strafverfolgung."
+          },
+          {
+            "q": "Benötigt Emotionserkennungs-KI Compliance?",
+            "a": "Ja, wenn sie in Bildungs- oder Arbeitsplatzumgebungen eingesetzt wird, ist sie laut Annex III ein Hochrisiko-System."
+          }
+        ]
+      },
+      "critical-infrastructure": {
+        "title": "Kritische Infrastruktur",
+        "badge": "Annex III Kategorie 2",
+        "opening": "KI zur Verwaltung von Wasser-, Energie- oder Verkehrsinfrastruktur ist hochriskant. Überschneidungen mit NIS2-Anforderungen. Hohe Sicherheitspriorität: Jede physische Aktion muss HITL-gesteuert sein.",
+        "faq": [
+          {
+            "q": "Wie überschneidet sich dies mit NIS2?",
+            "a": "Die KI-Compliance muss in das NIS2-Incident-Reporting und Risikomanagement integriert werden."
+          }
+        ]
+      },
+      "education": {
+        "title": "Bildung & Ausbildung",
+        "badge": "Annex III Kategorie 3",
+        "opening": "KI für Zulassungen, Bewertungen oder Prüfungsaufsicht ist hochriskant. Es muss sichergestellt werden, dass der Zugang zu Bildung nicht autonom verweigert wird.",
+        "faq": [
+          {
+            "q": "Kann KI Studenten autonom bewerten?",
+            "a": "Ja, aber Ergebnisse, die den Zugang zur Bildung beeinflussen, müssen menschlich überwacht werden."
+          }
+        ]
+      },
+      "hr-employment": {
+        "title": "Personal & Beschäftigung",
+        "badge": "Annex III Kategorie 4",
+        "opening": "KI für Lebenslauf-Screening, Einstellung oder Leistungsüberwachung ist hochriskant. Löst eine DSGVO-DPIA aus. Keine autonomen Einstellungs-/Entlassungsentscheidungen.",
+        "faq": [
+          {
+            "q": "Kann KI endgültige Einstellungsentscheidungen treffen?",
+            "a": "Nein. Das EU-Recht erfordert einen menschlichen Entscheidungsträger für folgenschwere Beschäftigungsaktionen."
+          },
+          {
+            "q": "Benötige ich eine DSGVO-DPIA für HR-KI?",
+            "a": "Ziemlich sicher. SupraWall automatisiert die technischen Daten für die Bewertung."
+          }
+        ]
+      },
+      "healthcare": {
+        "title": "Gesundheitswesen & soziale Dienste",
+        "badge": "Annex III Kategorie 5",
+        "opening": "Umfasst Medizinprodukte (Aug 2027) und öffentliche Dienste (Aug 2026). Keine autonome Verweigerung von Leistungen oder Triage.",
+        "faq": [
+          {
+            "q": "Wann ist die Frist für Medizinprodukte?",
+            "a": "In Medizinprodukte eingebettete KI hat eine Verlängerung bis August 2027."
+          }
+        ]
+      },
+      "law-enforcement": {
+        "title": "Strafverfolgung",
+        "badge": "Annex III Kategorie 6",
+        "opening": "Eingeschränkte Systeme zur Risikobewertung oder Beweissicherheit. Bewertung durch Dritte obligatorisch. Verbietet Aktionen, die ausschließlich auf Profiling basieren.",
+        "faq": [
+          {
+            "q": "Ist Profiling für die Strafverfolgung erlaubt?",
+            "a": "Streng begrenzt. Entscheidungen dürfen nicht ausschließlich auf automatisiertem Profiling basieren."
+          }
+        ]
+      },
+      "migration-border-control": {
+        "title": "Migration & Grenzkontrolle",
+        "badge": "Annex III Kategorie 7",
+        "opening": "Visum-/Asyl-Risikobewertungen. Dritter obligatorisch. Hard-Block für autonome Asylergebnisse.",
+        "faq": [
+          {
+            "q": "Kann KI über Visumanträge entscheiden?",
+            "a": "Nein. Einwanderungsbeamte müssen alle folgenschweren Aktionen überprüfen und abzeichnen."
+          }
+        ]
+      },
+      "justice-democracy": {
+        "title": "Justiz & Demokratie",
+        "badge": "Annex III Kategorie 8",
+        "opening": "KI für richterliche Sachverhaltsermittlung oder Wahleinflussnahme. Dritter obligatorisch. Alle Ausgaben müssen „nur zu Forschungszwecken“ erfolgen.",
+        "faq": [
+          {
+            "q": "Kann KI bei der Strafzumessung helfen?",
+            "a": "Ja, aber nur als unverbindliche Forschungshilfe mit expliziten Unsicherheitsmerkmalen."
+          }
+        ]
+      }
     }
   },
   "compliance": {
@@ -1205,40 +1235,108 @@
         "title": "Was Ihr HR-Team gerade tut",
         "subtitle": "Dies sind die konkreten Verhaltensweisen, die Anhang III und DSGVO-Haftung auslösen.",
         "items": [
-          { "icon": "upload", "title": "Lebenslauf-Uploads in öffentliche LLMs", "desc": "Vollständige Lebensläufe von Bewerbern — mit Namen, Adressen, Ausbildung und Berufsverlauf — werden direkt in ChatGPT, Gemini oder Claude eingefügt. Diese Daten werden auf externen Servern verarbeitet." },
-          { "icon": "filter", "title": "KI-generierte Vorauswahl", "desc": "Recruiter bitten LLMs, Kandidaten zu bewerten oder zu filtern. Wenn eine KI-Empfehlung beeinflusst, wer zum Vorstellungsgespräch eingeladen wird, greift DSGVO Artikel 22: das Recht, nicht automatisierten Entscheidungen unterworfen zu werden." },
-          { "icon": "missing-trail", "title": "Kein Prüfpfad vorhanden", "desc": "EU-KI-Gesetz Artikel 12 verlangt ein protokolliertes Aufzeichnung jeder Hochrisiko-KI-Entscheidung. ChatGPT-Gespräche sind flüchtig. Es gibt keine Beweisspur, wenn ein Bewerber rechtswidrige Diskriminierung geltend macht." },
-          { "icon": "bias", "title": "Keine Bias-Dokumentation", "desc": "Hochrisiko-KI-Systeme müssen nachweisen, dass sie nicht systematisch nach Geschlecht, Alter oder Nationalität diskriminieren. Handelsübliche LLMs haben kein eingebautes Bias-Audit." }
+          {
+            "icon": "upload",
+            "title": "Lebenslauf-Uploads in öffentliche LLMs",
+            "desc": "Vollständige Lebensläufe von Bewerbern — mit Namen, Adressen, Ausbildung und Berufsverlauf — werden direkt in ChatGPT, Gemini oder Claude eingefügt. Diese Daten werden auf externen Servern verarbeitet."
+          },
+          {
+            "icon": "filter",
+            "title": "KI-generierte Vorauswahl",
+            "desc": "Recruiter bitten LLMs, Kandidaten zu bewerten oder zu filtern. Wenn eine KI-Empfehlung beeinflusst, wer zum Vorstellungsgespräch eingeladen wird, greift DSGVO Artikel 22: das Recht, nicht automatisierten Entscheidungen unterworfen zu werden."
+          },
+          {
+            "icon": "missing-trail",
+            "title": "Kein Prüfpfad vorhanden",
+            "desc": "EU-KI-Gesetz Artikel 12 verlangt ein protokolliertes Aufzeichnung jeder Hochrisiko-KI-Entscheidung. ChatGPT-Gespräche sind flüchtig. Es gibt keine Beweisspur, wenn ein Bewerber rechtswidrige Diskriminierung geltend macht."
+          },
+          {
+            "icon": "bias",
+            "title": "Keine Bias-Dokumentation",
+            "desc": "Hochrisiko-KI-Systeme müssen nachweisen, dass sie nicht systematisch nach Geschlecht, Alter oder Nationalität diskriminieren. Handelsübliche LLMs haben kein eingebautes Bias-Audit."
+          }
         ]
       },
       "exposure": {
         "title": "Die konkrete Rechtshaftung",
         "subtitle": "Drei Regeln, alle gleichzeitig ausgelöst.",
         "items": [
-          { "tag": "EU-KI-Gesetz — Anhang III Kat. 4", "title": "Ihre KI gilt als \"Hochrisiko\"", "desc": "Jede KI, die für die Lebenslauf-Sichtung, Vorauswahl oder Leistungsüberwachung von Mitarbeitern eingesetzt wird, wird unter Anhang III Kategorie 4 ausdrücklich als Hochrisiko-KI-System eingestuft. Diese Einstufung löst einen verbindlichen Compliance-Rahmen aus." },
-          { "tag": "DSGVO — Artikel 22", "title": "Bewerber haben das Recht auf eine menschliche Entscheidung", "desc": "Automatisierte Verarbeitung, die eine Person 'wesentlich beeinträchtigt' — einschließlich Einstellungsentscheidungen — erfordert entweder die ausdrückliche Einwilligung des Bewerbers oder einen menschlichen Entscheidungsträger als letzte Instanz." },
-          { "tag": "EU-KI-Gesetz — Artikel 12", "title": "Sie benötigen einen Prüfpfad", "desc": "Jede Maßnahme eines Hochrisiko-KI-Systems muss automatisch protokolliert werden. Ab dem 2. August 2026 ist das Fehlen dieser Protokollierung selbst ein Verstoß." }
+          {
+            "tag": "EU-KI-Gesetz — Anhang III Kat. 4",
+            "title": "Ihre KI gilt als \"Hochrisiko\"",
+            "desc": "Jede KI, die für die Lebenslauf-Sichtung, Vorauswahl oder Leistungsüberwachung von Mitarbeitern eingesetzt wird, wird unter Anhang III Kategorie 4 ausdrücklich als Hochrisiko-KI-System eingestuft. Diese Einstufung löst einen verbindlichen Compliance-Rahmen aus."
+          },
+          {
+            "tag": "DSGVO — Artikel 22",
+            "title": "Bewerber haben das Recht auf eine menschliche Entscheidung",
+            "desc": "Automatisierte Verarbeitung, die eine Person 'wesentlich beeinträchtigt' — einschließlich Einstellungsentscheidungen — erfordert entweder die ausdrückliche Einwilligung des Bewerbers oder einen menschlichen Entscheidungsträger als letzte Instanz."
+          },
+          {
+            "tag": "EU-KI-Gesetz — Artikel 12",
+            "title": "Sie benötigen einen Prüfpfad",
+            "desc": "Jede Maßnahme eines Hochrisiko-KI-Systems muss automatisch protokolliert werden. Ab dem 2. August 2026 ist das Fehlen dieser Protokollierung selbst ein Verstoß."
+          }
         ]
       },
       "compliantPath": {
         "title": "Wie ein rechtskonformer HR-KI-Prozess aussieht",
         "subtitle": "Sie müssen KI nicht verbieten. Sie müssen sie steuern.",
         "steps": [
-          { "step": "01", "title": "Ihre KI-Tools klassifizieren", "desc": "Wenn ein Tool Bewerberdaten berührt, gilt es standardmäßig als Anhang III Kategorie 4. Beginnen Sie mit einer vollständigen Bestandsaufnahme." },
-          { "step": "02", "title": "DSFA durchführen", "desc": "Eine Datenschutz-Folgenabschätzung ist gesetzlich vorgeschrieben, bevor Hochrisiko-KI im HR-Kontext eingesetzt wird." },
-          { "step": "03", "title": "Prüfpfade erzwingen", "desc": "Jede KI-gestützte Entscheidung muss unveränderlich protokolliert werden. SupraWalls SDK fängt Tool-Aufrufe an der Laufzeitgrenze ab und schreibt automatisch signierte Prüfeinträge." },
-          { "step": "04", "title": "Endentscheidungen mit menschlicher Freigabe absichern", "desc": "KI kann unterstützen. Menschen müssen entscheiden. SupraWalls Human-in-the-Loop (HITL)-Warteschlange leitet alle Kandidaten-Rankingausgaben an einen Personalleiter weiter." },
-          { "step": "05", "title": "HR-Compliance-Template aktivieren", "desc": "SupraWalls vorkonfiguriertes HR-Template implementiert alle vier Schritte in einem Import. Es ist speziell für Anhang III Kategorie 4 + DSGVO Artikel 22 kalibriert." }
+          {
+            "step": "01",
+            "title": "Ihre KI-Tools klassifizieren",
+            "desc": "Wenn ein Tool Bewerberdaten berührt, gilt es standardmäßig als Anhang III Kategorie 4. Beginnen Sie mit einer vollständigen Bestandsaufnahme."
+          },
+          {
+            "step": "02",
+            "title": "DSFA durchführen",
+            "desc": "Eine Datenschutz-Folgenabschätzung ist gesetzlich vorgeschrieben, bevor Hochrisiko-KI im HR-Kontext eingesetzt wird."
+          },
+          {
+            "step": "03",
+            "title": "Prüfpfade erzwingen",
+            "desc": "Jede KI-gestützte Entscheidung muss unveränderlich protokolliert werden. SupraWalls SDK fängt Tool-Aufrufe an der Laufzeitgrenze ab und schreibt automatisch signierte Prüfeinträge."
+          },
+          {
+            "step": "04",
+            "title": "Endentscheidungen mit menschlicher Freigabe absichern",
+            "desc": "KI kann unterstützen. Menschen müssen entscheiden. SupraWalls Human-in-the-Loop (HITL)-Warteschlange leitet alle Kandidaten-Rankingausgaben an einen Personalleiter weiter."
+          },
+          {
+            "step": "05",
+            "title": "HR-Compliance-Template aktivieren",
+            "desc": "SupraWalls vorkonfiguriertes HR-Template implementiert alle vier Schritte in einem Import. Es ist speziell für Anhang III Kategorie 4 + DSGVO Artikel 22 kalibriert."
+          }
         ]
       },
       "faq": [
-        { "q": "Dürfen wir KI-Tools im HR noch verwenden?", "a": "Ja — aber Sie brauchen eine konforme Infrastruktur. KI kann Recruiter unterstützen. Sie darf nicht der alleinige Entscheidungsträger sein, und jede Empfehlung muss protokolliert und menschlich überprüft werden." },
-        { "q": "Müssen wir Bewerber über KI-Nutzung informieren?", "a": "Ja. DSGVO Artikel 13/14 verlangt eine Offenlegung, wenn automatisierte Verarbeitung stattfindet. Ihre Datenschutzerklärung muss aktualisiert werden." },
-        { "q": "Was, wenn wir KI nur für die Erstsichtung nutzen?", "a": "Auch die Erstsichtung, die den Bewerberpool einschränkt, ist eine Entscheidung, die Bewerber nach Artikel 22 'wesentlich beeinträchtigt'. Die Schwelle ist niedrig." },
-        { "q": "Wie schnell können wir konform werden?", "a": "Mit SupraWalls HR-Template ist die technische Compliance-Schicht in unter 15 Minuten aktiv. DSFA-Dokumentation und Richtlinienaktualisierungen dauern länger — beginnen Sie sofort." }
+        {
+          "q": "Dürfen wir KI-Tools im HR noch verwenden?",
+          "a": "Ja — aber Sie brauchen eine konforme Infrastruktur. KI kann Recruiter unterstützen. Sie darf nicht der alleinige Entscheidungsträger sein, und jede Empfehlung muss protokolliert und menschlich überprüft werden."
+        },
+        {
+          "q": "Müssen wir Bewerber über KI-Nutzung informieren?",
+          "a": "Ja. DSGVO Artikel 13/14 verlangt eine Offenlegung, wenn automatisierte Verarbeitung stattfindet. Ihre Datenschutzerklärung muss aktualisiert werden."
+        },
+        {
+          "q": "Was, wenn wir KI nur für die Erstsichtung nutzen?",
+          "a": "Auch die Erstsichtung, die den Bewerberpool einschränkt, ist eine Entscheidung, die Bewerber nach Artikel 22 'wesentlich beeinträchtigt'. Die Schwelle ist niedrig."
+        },
+        {
+          "q": "Wie schnell können wir konform werden?",
+          "a": "Mit SupraWalls HR-Template ist die technische Compliance-Schicht in unter 15 Minuten aktiv. DSFA-Dokumentation und Richtlinienaktualisierungen dauern länger — beginnen Sie sofort."
+        }
       ],
-      "ctaDev": { "label": "HR-Template aktivieren", "href": "/compliance-templates/hr-employment", "sublabel": "Ein Import. Anhang III + DSGVO Artikel 22 konfiguriert." },
-      "ctaBusiness": { "label": "Compliance-Gespräch buchen", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Für CHROs und HR-Direktoren. 30-Minuten-Bewertung." }
+      "ctaDev": {
+        "label": "HR-Template aktivieren",
+        "href": "/compliance-templates/hr-employment",
+        "sublabel": "Ein Import. Anhang III + DSGVO Artikel 22 konfiguriert."
+      },
+      "ctaBusiness": {
+        "label": "Compliance-Gespräch buchen",
+        "href": "mailto:enterprise@supra-wall.com",
+        "sublabel": "Für CHROs und HR-Direktoren. 30-Minuten-Bewertung."
+      }
     },
     "banking": {
       "hero": {
@@ -1256,39 +1354,104 @@
         "title": "Warum das Verbot nicht funktioniert",
         "subtitle": "Ein LLM-Verbot stoppt die Nutzung nicht. Es treibt sie in den Untergrund.",
         "items": [
-          { "icon": "bypass", "title": "Mitarbeiter umgehen Unternehmenskontrollen", "desc": "Mitarbeiter nutzen private Geräte, Heimnetzwerke oder Browser-Profile, um auf ChatGPT zuzugreifen. Sie haben weniger Einblick, nicht mehr." },
-          { "icon": "competitive", "title": "Wettbewerbsnachteil", "desc": "Compliance-Teams bei Instituten mit gesteuerter KI-Nutzung verarbeiten Dokumente 3–5x schneller." },
-          { "icon": "scope", "title": "Das Verbot trifft das falsche Ziel", "desc": "Das Risiko ist nicht 'Mitarbeiter nutzen LLMs'. Das Risiko ist 'Kundendaten verlassen Ihre Kontrolle'. Diese Probleme sind unabhängig lösbar. Eine Policy-Engine, nicht ein Verbot, ist die richtige Lösung." }
+          {
+            "icon": "bypass",
+            "title": "Mitarbeiter umgehen Unternehmenskontrollen",
+            "desc": "Mitarbeiter nutzen private Geräte, Heimnetzwerke oder Browser-Profile, um auf ChatGPT zuzugreifen. Sie haben weniger Einblick, nicht mehr."
+          },
+          {
+            "icon": "competitive",
+            "title": "Wettbewerbsnachteil",
+            "desc": "Compliance-Teams bei Instituten mit gesteuerter KI-Nutzung verarbeiten Dokumente 3–5x schneller."
+          },
+          {
+            "icon": "scope",
+            "title": "Das Verbot trifft das falsche Ziel",
+            "desc": "Das Risiko ist nicht 'Mitarbeiter nutzen LLMs'. Das Risiko ist 'Kundendaten verlassen Ihre Kontrolle'. Diese Probleme sind unabhängig lösbar. Eine Policy-Engine, nicht ein Verbot, ist die richtige Lösung."
+          }
         ]
       },
       "exposure": {
         "title": "Die tatsächlichen Compliance-Anforderungen",
         "subtitle": "Vier überlappende Rahmenwerke. Eine Infrastrukturantwort.",
         "items": [
-          { "tag": "DORA — Artikel 8", "title": "IKT-Risikomanagementpflichten", "desc": "DORA verlangt eine dokumentierte Risikobewertung für alle IKT-Drittanbieter-Tools. Die Nutzung öffentlicher LLMs ohne eine geregelte Zugriffsebene verstößt gegen DORAs IKT-Risikomanagement-Rahmen." },
-          { "tag": "EU-KI-Gesetz — Anhang III", "title": "Kreditscoring und Risikobewertung", "desc": "Jede KI für Kreditentscheidungen, Betrugserkennung oder Kundenrisikobewertung ist nach Anhang III hochriskant. Dies erfordert Prüfpfade, menschliche Aufsicht und dokumentiertes Risikomanagement." },
-          { "tag": "DSGVO", "title": "Kundendaten dürfen den EU-Perimeter nicht verlassen", "desc": "Kundendaten, die von US-amerikanischen LLM-Anbietern ohne gültigen Übertragungsmechanismus verarbeitet werden, verstoßen gegen DSGVO Kapitel V." },
-          { "tag": "MiFID II", "title": "Aufzeichnungspflichten für Beratungs-KI", "desc": "Wenn KI bei der Anlageberatung oder Eignungsbewertung unterstützt, gelten MiFID II-Aufzeichnungspflichten. ChatGPT-Gespräche sind keine MiFID-konformen Aufzeichnungen." }
+          {
+            "tag": "DORA — Artikel 8",
+            "title": "IKT-Risikomanagementpflichten",
+            "desc": "DORA verlangt eine dokumentierte Risikobewertung für alle IKT-Drittanbieter-Tools. Die Nutzung öffentlicher LLMs ohne eine geregelte Zugriffsebene verstößt gegen DORAs IKT-Risikomanagement-Rahmen."
+          },
+          {
+            "tag": "EU-KI-Gesetz — Anhang III",
+            "title": "Kreditscoring und Risikobewertung",
+            "desc": "Jede KI für Kreditentscheidungen, Betrugserkennung oder Kundenrisikobewertung ist nach Anhang III hochriskant. Dies erfordert Prüfpfade, menschliche Aufsicht und dokumentiertes Risikomanagement."
+          },
+          {
+            "tag": "DSGVO",
+            "title": "Kundendaten dürfen den EU-Perimeter nicht verlassen",
+            "desc": "Kundendaten, die von US-amerikanischen LLM-Anbietern ohne gültigen Übertragungsmechanismus verarbeitet werden, verstoßen gegen DSGVO Kapitel V."
+          },
+          {
+            "tag": "MiFID II",
+            "title": "Aufzeichnungspflichten für Beratungs-KI",
+            "desc": "Wenn KI bei der Anlageberatung oder Eignungsbewertung unterstützt, gelten MiFID II-Aufzeichnungspflichten. ChatGPT-Gespräche sind keine MiFID-konformen Aufzeichnungen."
+          }
         ]
       },
       "compliantPath": {
         "title": "Das Verbot aufheben. Die Kontrolle behalten.",
         "subtitle": "Eine konforme KI-Umgebung für Finanzdienstleister.",
         "steps": [
-          { "step": "01", "title": "Erlaubte Anwendungsfälle definieren", "desc": "Interne Dokumentenzusammenfassung, nicht-kundenbezogene Recherche, Entwürfe für Regulierungsanträge — diese tragen ein geringeres Risiko als Kreditentscheidungen." },
-          { "step": "02", "title": "Policy-Engine einsetzen", "desc": "Eine deterministische Policy-Engine — kein Prompt — entscheidet, welche Daten zu welchem KI-Tool fließen dürfen." },
-          { "step": "03", "title": "EU-Datenresidenz erzwingen", "desc": "Alle KI-Verarbeitungen von Kundendaten müssen innerhalb der EU-Infrastruktur bleiben." },
-          { "step": "04", "title": "DORA-konforme Prüfpfade erstellen", "desc": "Jeder KI-Tool-Aufruf wird unveränderlich protokolliert. Dieser Datensatz dient als DORA-IKT-Vorfallsdokumentation und MiFID II-Aufzeichnung." },
-          { "step": "05", "title": "Banking-Compliance-Template aktivieren", "desc": "SupraWalls Banking-Template konfiguriert DORA + EU-KI-Gesetz Anhang III-Anforderungen vor." }
+          {
+            "step": "01",
+            "title": "Erlaubte Anwendungsfälle definieren",
+            "desc": "Interne Dokumentenzusammenfassung, nicht-kundenbezogene Recherche, Entwürfe für Regulierungsanträge — diese tragen ein geringeres Risiko als Kreditentscheidungen."
+          },
+          {
+            "step": "02",
+            "title": "Policy-Engine einsetzen",
+            "desc": "Eine deterministische Policy-Engine — kein Prompt — entscheidet, welche Daten zu welchem KI-Tool fließen dürfen."
+          },
+          {
+            "step": "03",
+            "title": "EU-Datenresidenz erzwingen",
+            "desc": "Alle KI-Verarbeitungen von Kundendaten müssen innerhalb der EU-Infrastruktur bleiben."
+          },
+          {
+            "step": "04",
+            "title": "DORA-konforme Prüfpfade erstellen",
+            "desc": "Jeder KI-Tool-Aufruf wird unveränderlich protokolliert. Dieser Datensatz dient als DORA-IKT-Vorfallsdokumentation und MiFID II-Aufzeichnung."
+          },
+          {
+            "step": "05",
+            "title": "Banking-Compliance-Template aktivieren",
+            "desc": "SupraWalls Banking-Template konfiguriert DORA + EU-KI-Gesetz Anhang III-Anforderungen vor."
+          }
         ]
       },
       "faq": [
-        { "q": "Gilt DORA für alle Banken?", "a": "DORA gilt für alle in der EU regulierten Finanzinstitute: Banken, Wertpapierfirmen, Versicherungen, Krypto-Asset-Dienstleister und ihre kritischen IKT-Anbieter." },
-        { "q": "Können wir mit OpenAIs Unternehmensvertrag konform werden?", "a": "Ein Unternehmensvertrag regelt Datenverarbeitungsvereinbarungen, löst aber nicht die DORA IKT-Risikobewertungspflicht oder EU-KI-Gesetz Prüfpfad-Ereignisse." },
-        { "q": "Was ist mit Microsoft Copilot in Azure?", "a": "Azure-Residenz hilft bei der Datensouveränität, erfüllt aber nicht automatisch EU-KI-Gesetz Prüfpfad-, HITL- oder Risikomanagementanforderungen." }
+        {
+          "q": "Gilt DORA für alle Banken?",
+          "a": "DORA gilt für alle in der EU regulierten Finanzinstitute: Banken, Wertpapierfirmen, Versicherungen, Krypto-Asset-Dienstleister und ihre kritischen IKT-Anbieter."
+        },
+        {
+          "q": "Können wir mit OpenAIs Unternehmensvertrag konform werden?",
+          "a": "Ein Unternehmensvertrag regelt Datenverarbeitungsvereinbarungen, löst aber nicht die DORA IKT-Risikobewertungspflicht oder EU-KI-Gesetz Prüfpfad-Ereignisse."
+        },
+        {
+          "q": "Was ist mit Microsoft Copilot in Azure?",
+          "a": "Azure-Residenz hilft bei der Datensouveränität, erfüllt aber nicht automatisch EU-KI-Gesetz Prüfpfad-, HITL- oder Risikomanagementanforderungen."
+        }
       ],
-      "ctaDev": { "label": "Banking-Template aktivieren", "href": "/compliance-templates/critical-infrastructure", "sublabel": "DORA + EU-KI-Gesetz Anhang III vorkonfiguriert." },
-      "ctaBusiness": { "label": "Banking-Compliance-Gespräch buchen", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Für CISOs und Leiter des digitalen Risikos. 30-Minuten-Bewertung." }
+      "ctaDev": {
+        "label": "Banking-Template aktivieren",
+        "href": "/compliance-templates/critical-infrastructure",
+        "sublabel": "DORA + EU-KI-Gesetz Anhang III vorkonfiguriert."
+      },
+      "ctaBusiness": {
+        "label": "Banking-Compliance-Gespräch buchen",
+        "href": "mailto:enterprise@supra-wall.com",
+        "sublabel": "Für CISOs und Leiter des digitalen Risikos. 30-Minuten-Bewertung."
+      }
     },
     "healthcare": {
       "hero": {
@@ -1306,39 +1469,104 @@
         "title": "KI-Anwendungen, die Rechtshaftung im Gesundheitswesen erzeugen",
         "subtitle": "Diese Verhaltensweisen sind üblich. Die meisten klinischen Teams wissen nicht, dass sie reguliert sind.",
         "items": [
-          { "icon": "notes", "title": "KI-gestützte klinische Notizen", "desc": "Die Nutzung von LLMs für klinische Notizen mit Diagnosen, Medikamenten oder psychiatrischer Vorgeschichte verarbeitet besondere Kategorie-Daten nach DSGVO Artikel 9." },
-          { "icon": "triage", "title": "KI-Triage oder Symptomberatung", "desc": "Jedes KI-System, das Triage-Prioritäten beeinflusst, gilt nach Anhang III Kategorie 5 als hochriskant. Keine autonome Triage-Entscheidung darf ohne menschliche Freigabe stehen." },
-          { "icon": "records", "title": "Zusammenfassung von Patientenakten", "desc": "Das Hochladen von Patientenakten in ein öffentliches LLM bedeutet, dass Daten der besonderen Kategorie ohne gültige Datenverarbeitungsvereinbarung von Dritten verarbeitet werden." },
-          { "icon": "admin", "title": "KI für Leistungs- und Pflegeberechtigung", "desc": "KI, die den Zugang zu Gesundheitsleistungen beeinflusst, wird ausdrücklich durch Anhang III abgedeckt." }
+          {
+            "icon": "notes",
+            "title": "KI-gestützte klinische Notizen",
+            "desc": "Die Nutzung von LLMs für klinische Notizen mit Diagnosen, Medikamenten oder psychiatrischer Vorgeschichte verarbeitet besondere Kategorie-Daten nach DSGVO Artikel 9."
+          },
+          {
+            "icon": "triage",
+            "title": "KI-Triage oder Symptomberatung",
+            "desc": "Jedes KI-System, das Triage-Prioritäten beeinflusst, gilt nach Anhang III Kategorie 5 als hochriskant. Keine autonome Triage-Entscheidung darf ohne menschliche Freigabe stehen."
+          },
+          {
+            "icon": "records",
+            "title": "Zusammenfassung von Patientenakten",
+            "desc": "Das Hochladen von Patientenakten in ein öffentliches LLM bedeutet, dass Daten der besonderen Kategorie ohne gültige Datenverarbeitungsvereinbarung von Dritten verarbeitet werden."
+          },
+          {
+            "icon": "admin",
+            "title": "KI für Leistungs- und Pflegeberechtigung",
+            "desc": "KI, die den Zugang zu Gesundheitsleistungen beeinflusst, wird ausdrücklich durch Anhang III abgedeckt."
+          }
         ]
       },
       "exposure": {
         "title": "Zwei Rahmenwerke. Ein Tool-Aufruf.",
         "subtitle": "DSGVO Artikel 9 und EU-KI-Gesetz Anhang III werden gleichzeitig ausgelöst.",
         "items": [
-          { "tag": "DSGVO — Artikel 9", "title": "Patientendaten sind besondere Kategorie", "desc": "Gesundheitsdaten, psychiatrische Vorgeschichte und genetische Daten sind besondere Kategorie nach DSGVO. Die Verarbeitung erfordert ausdrückliche Einwilligung oder eine Rechtsgrundlage nach Artikel 9(2)." },
-          { "tag": "EU-KI-Gesetz — Anhang III Kat. 5", "title": "Gesundheits-KI ist ausdrücklich hochriskant", "desc": "KI für medizinische Diagnoseunterstützung, Patienten-Triage oder das Management wesentlicher Gesundheitsdienste ist in Anhang III Kategorie 5 ausdrücklich aufgeführt." },
-          { "tag": "Medizinprodukte-Verlängerung", "title": "Integrierte KI erhält bis 2027 Zeit", "desc": "Wenn Ihre KI in ein Medizinprodukt integriert ist, haben Sie bis zum 2. August 2027 für volle EU-KI-Gesetz-Compliance. DSGVO-Artikel-9-Pflichten gelten jedoch JETZT." }
+          {
+            "tag": "DSGVO — Artikel 9",
+            "title": "Patientendaten sind besondere Kategorie",
+            "desc": "Gesundheitsdaten, psychiatrische Vorgeschichte und genetische Daten sind besondere Kategorie nach DSGVO. Die Verarbeitung erfordert ausdrückliche Einwilligung oder eine Rechtsgrundlage nach Artikel 9(2)."
+          },
+          {
+            "tag": "EU-KI-Gesetz — Anhang III Kat. 5",
+            "title": "Gesundheits-KI ist ausdrücklich hochriskant",
+            "desc": "KI für medizinische Diagnoseunterstützung, Patienten-Triage oder das Management wesentlicher Gesundheitsdienste ist in Anhang III Kategorie 5 ausdrücklich aufgeführt."
+          },
+          {
+            "tag": "Medizinprodukte-Verlängerung",
+            "title": "Integrierte KI erhält bis 2027 Zeit",
+            "desc": "Wenn Ihre KI in ein Medizinprodukt integriert ist, haben Sie bis zum 2. August 2027 für volle EU-KI-Gesetz-Compliance. DSGVO-Artikel-9-Pflichten gelten jedoch JETZT."
+          }
         ]
       },
       "compliantPath": {
         "title": "Konforme klinische KI",
         "subtitle": "KI kann die Versorgung beschleunigen. Sie kann Verantwortlichkeit nicht ersetzen.",
         "steps": [
-          { "step": "01", "title": "KI-Tools nach Kategorie klassifizieren", "desc": "Klinische Notizunterstützung, Triage-Unterstützung und KI für Pflegeberechtigung sind alle Anhang III Kategorie 5." },
-          { "step": "02", "title": "DSFA für alle Gesundheits-KI", "desc": "Eine DSGVO Datenschutz-Folgenabschätzung ist erforderlich, bevor besondere Kategorie-Daten im großen Maßstab verarbeitet werden." },
-          { "step": "03", "title": "PII-Scrubbing an der Grenze einsetzen", "desc": "Patientenidentifikatoren dürfen Ihr Netzwerk niemals ungeschützt verlassen. SupraWalls PII-Schutzschild redigiert automatisch Namen, Krankenkassennummern und Geburtsdaten." },
-          { "step": "04", "title": "Folgenreiche Entscheidungen mit HITL absichern", "desc": "Jede KI-Ausgabe, die die Patientenversorgung beeinflusst, muss durch einen Human-in-the-Loop-Genehmigungsschritt geleitet werden." },
-          { "step": "05", "title": "Healthcare-Compliance-Template aktivieren", "desc": "SupraWalls Healthcare-Template implementiert Anhang III Kategorie 5-Kontrollen: automatisches PII-Scrubbing, HITL-Gating und unveränderliche Audit-Protokollierung." }
+          {
+            "step": "01",
+            "title": "KI-Tools nach Kategorie klassifizieren",
+            "desc": "Klinische Notizunterstützung, Triage-Unterstützung und KI für Pflegeberechtigung sind alle Anhang III Kategorie 5."
+          },
+          {
+            "step": "02",
+            "title": "DSFA für alle Gesundheits-KI",
+            "desc": "Eine DSGVO Datenschutz-Folgenabschätzung ist erforderlich, bevor besondere Kategorie-Daten im großen Maßstab verarbeitet werden."
+          },
+          {
+            "step": "03",
+            "title": "PII-Scrubbing an der Grenze einsetzen",
+            "desc": "Patientenidentifikatoren dürfen Ihr Netzwerk niemals ungeschützt verlassen. SupraWalls PII-Schutzschild redigiert automatisch Namen, Krankenkassennummern und Geburtsdaten."
+          },
+          {
+            "step": "04",
+            "title": "Folgenreiche Entscheidungen mit HITL absichern",
+            "desc": "Jede KI-Ausgabe, die die Patientenversorgung beeinflusst, muss durch einen Human-in-the-Loop-Genehmigungsschritt geleitet werden."
+          },
+          {
+            "step": "05",
+            "title": "Healthcare-Compliance-Template aktivieren",
+            "desc": "SupraWalls Healthcare-Template implementiert Anhang III Kategorie 5-Kontrollen: automatisches PII-Scrubbing, HITL-Gating und unveränderliche Audit-Protokollierung."
+          }
         ]
       },
       "faq": [
-        { "q": "Bedeutet die Verlängerung bis 2027, dass wir mehr Zeit haben?", "a": "Nur für KI in Medizinprodukten nach MDR. KI im allgemeinen Gesundheitsdienstleistungsmanagement unterliegt der Durchsetzung ab August 2026." },
-        { "q": "Können wir ein KI-Tool verwenden, wenn es keine endgültigen klinischen Entscheidungen trifft?", "a": "Die Frage ist, ob es eine Entscheidung 'beeinflusst', die einen Patienten wesentlich beeinträchtigt." },
-        { "q": "Wie hoch ist die Geldstrafenexponierung für DSGVO-Artikel-9-Verstöße?", "a": "DSGVO-Artikel-9-Verstöße können Strafen bis zu 20 Millionen Euro oder 4 % des weltweiten Jahresumsatzes nach sich ziehen. EU-KI-Gesetz-Verstöße können bis zu 35 Millionen Euro oder 7 % des weltweiten Umsatzes betragen. Beide sind separate Strafen." }
+        {
+          "q": "Bedeutet die Verlängerung bis 2027, dass wir mehr Zeit haben?",
+          "a": "Nur für KI in Medizinprodukten nach MDR. KI im allgemeinen Gesundheitsdienstleistungsmanagement unterliegt der Durchsetzung ab August 2026."
+        },
+        {
+          "q": "Können wir ein KI-Tool verwenden, wenn es keine endgültigen klinischen Entscheidungen trifft?",
+          "a": "Die Frage ist, ob es eine Entscheidung 'beeinflusst', die einen Patienten wesentlich beeinträchtigt."
+        },
+        {
+          "q": "Wie hoch ist die Geldstrafenexponierung für DSGVO-Artikel-9-Verstöße?",
+          "a": "DSGVO-Artikel-9-Verstöße können Strafen bis zu 20 Millionen Euro oder 4 % des weltweiten Jahresumsatzes nach sich ziehen. EU-KI-Gesetz-Verstöße können bis zu 35 Millionen Euro oder 7 % des weltweiten Umsatzes betragen. Beide sind separate Strafen."
+        }
       ],
-      "ctaDev": { "label": "Healthcare-Template aktivieren", "href": "/compliance-templates/healthcare", "sublabel": "Anhang III Kategorie 5 + DSGVO Artikel 9 Kontrollen." },
-      "ctaBusiness": { "label": "Healthcare-Compliance-Gespräch buchen", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Für ärztliche Direktoren, Krankenhausadministratoren und Datenschutzbeauftragte." }
+      "ctaDev": {
+        "label": "Healthcare-Template aktivieren",
+        "href": "/compliance-templates/healthcare",
+        "sublabel": "Anhang III Kategorie 5 + DSGVO Artikel 9 Kontrollen."
+      },
+      "ctaBusiness": {
+        "label": "Healthcare-Compliance-Gespräch buchen",
+        "href": "mailto:enterprise@supra-wall.com",
+        "sublabel": "Für ärztliche Direktoren, Krankenhausadministratoren und Datenschutzbeauftragte."
+      }
     },
     "legal": {
       "hero": {
@@ -1356,30 +1584,78 @@
         "title": "Die KI-Verhaltensweisen, die Haftung erzeugen",
         "subtitle": "Vier gängige Arbeitsabläufe. Vier unterschiedliche Haftungsvektoren.",
         "items": [
-          { "icon": "upload-doc", "title": "Dokumenten-Upload in öffentliche LLMs", "desc": "Mandantenverträge, Gerichtsschriftsätze, M&A-Dokumente und Due-Diligence-Berichte werden für Zusammenfassungen in ChatGPT hochgeladen. Dies überträgt vertrauliche Daten auf Server Dritter." },
-          { "icon": "draft", "title": "KI-erstellte Rechtsgutachten", "desc": "Die Nutzung eines öffentlichen LLM für Rechtsberatung ohne einen dokumentierten Überprüfungsprozess schafft eine unkontrollierte Nachverfolgbarkeit." },
-          { "icon": "research", "title": "LLM-Rechtsrecherche ohne Validierung", "desc": "LLMs halluzinieren Fallzitate. Anwälte, die KI-generierte Rechtsrecherche ohne systematische Überprüfung verwenden, riskieren Berufshaftung." },
-          { "icon": "discovery", "title": "KI-gestützte Dokumentenentdeckung", "desc": "Die Verarbeitung von Mandantendokumenten durch KI für die Entdeckung ohne dokumentierte Einwilligung kann gegen Gerichtsregeln verstoßen." }
+          {
+            "icon": "upload-doc",
+            "title": "Dokumenten-Upload in öffentliche LLMs",
+            "desc": "Mandantenverträge, Gerichtsschriftsätze, M&A-Dokumente und Due-Diligence-Berichte werden für Zusammenfassungen in ChatGPT hochgeladen. Dies überträgt vertrauliche Daten auf Server Dritter."
+          },
+          {
+            "icon": "draft",
+            "title": "KI-erstellte Rechtsgutachten",
+            "desc": "Die Nutzung eines öffentlichen LLM für Rechtsberatung ohne einen dokumentierten Überprüfungsprozess schafft eine unkontrollierte Nachverfolgbarkeit."
+          },
+          {
+            "icon": "research",
+            "title": "LLM-Rechtsrecherche ohne Validierung",
+            "desc": "LLMs halluzinieren Fallzitate. Anwälte, die KI-generierte Rechtsrecherche ohne systematische Überprüfung verwenden, riskieren Berufshaftung."
+          },
+          {
+            "icon": "discovery",
+            "title": "KI-gestützte Dokumentenentdeckung",
+            "desc": "Die Verarbeitung von Mandantendokumenten durch KI für die Entdeckung ohne dokumentierte Einwilligung kann gegen Gerichtsregeln verstoßen."
+          }
         ]
       },
       "exposure": {
         "title": "Drei Haftungsebenen",
         "subtitle": "Berufsrechtliche, regulatorische und strafrechtliche Exposition können sich überschneiden.",
         "items": [
-          { "tag": "Berufsgeheimnis", "title": "Freiwillige Offenlegung kann das Privileg aufheben", "desc": "Das anwaltliche Berufsgeheimnis kann aufgehoben werden, wenn vertrauliche Informationen ohne Notwendigkeit freiwillig an Dritte weitergegeben werden." },
-          { "tag": "DSGVO — Artikel 5(1)(b)", "title": "Zweckbindung wird verletzt", "desc": "Mandantendaten werden für Rechtsvertretungszwecke erhoben. Die Verarbeitung über ein externes LLM für Effizienzgewinne ist ein sekundärer Zweck, der nicht durch die ursprüngliche Rechtsgrundlage gedeckt ist." },
-          { "tag": "EU-KI-Gesetz", "title": "KI-gestützte Rechtsrecherche ist reguliert", "desc": "KI-Systeme in Gerichtsverfahren, die die Ergebnisse wesentlich beeinflussen, können unter EU-KI-Gesetz-Aufsichtspflichten fallen." }
+          {
+            "tag": "Berufsgeheimnis",
+            "title": "Freiwillige Offenlegung kann das Privileg aufheben",
+            "desc": "Das anwaltliche Berufsgeheimnis kann aufgehoben werden, wenn vertrauliche Informationen ohne Notwendigkeit freiwillig an Dritte weitergegeben werden."
+          },
+          {
+            "tag": "DSGVO — Artikel 5(1)(b)",
+            "title": "Zweckbindung wird verletzt",
+            "desc": "Mandantendaten werden für Rechtsvertretungszwecke erhoben. Die Verarbeitung über ein externes LLM für Effizienzgewinne ist ein sekundärer Zweck, der nicht durch die ursprüngliche Rechtsgrundlage gedeckt ist."
+          },
+          {
+            "tag": "EU-KI-Gesetz",
+            "title": "KI-gestützte Rechtsrecherche ist reguliert",
+            "desc": "KI-Systeme in Gerichtsverfahren, die die Ergebnisse wesentlich beeinflussen, können unter EU-KI-Gesetz-Aufsichtspflichten fallen."
+          }
         ]
       },
       "compliantPath": {
         "title": "Mandantensichere KI für Kanzleien",
         "subtitle": "KI kann Ihre Anwälte schneller machen. Mandantendaten dürfen niemals Ihren Perimeter verlassen.",
         "steps": [
-          { "step": "01", "title": "Aktuelle KI-Nutzung bewerten", "desc": "Befragen Sie Partner und Anwälte, welche KI-Tools sie für welche Aufgaben verwenden." },
-          { "step": "02", "title": "Mandantendaten explizit klassifizieren", "desc": "Alle Mandantendokumente, Kommunikation und Falldaten sind standardmäßig vertraulich. Klare Richtlinie: keine Mandantendaten-Uploads in öffentliche LLM-Dienste." },
-          { "step": "03", "title": "Vault für Dokument-KI einsetzen", "desc": "SupraWalls Vault ermöglicht die KI-Verarbeitung von Mandantendokumenten ohne das Verlassen Ihrer kontrollierten Infrastruktur." },
-          { "step": "04", "title": "Offenlegungsprotokoll erstellen", "desc": "Für jedes KI-gestützte Arbeitsergebnis dokumentieren, welche KI-Tools verwendet wurden und wie die Ausgabe überprüft wurde." },
-          { "step": "05", "title": "Legal-Compliance-Template aktivieren", "desc": "SupraWalls Legal-Template implementiert eine berufsgeheimnissichere KI-Schicht mit PII-Schutzschild, unveränderlichen Prüfpfaden und ohne Mandantendaten zu unkontrollierten Drittanbietern." }
+          {
+            "step": "01",
+            "title": "Aktuelle KI-Nutzung bewerten",
+            "desc": "Befragen Sie Partner und Anwälte, welche KI-Tools sie für welche Aufgaben verwenden."
+          },
+          {
+            "step": "02",
+            "title": "Mandantendaten explizit klassifizieren",
+            "desc": "Alle Mandantendokumente, Kommunikation und Falldaten sind standardmäßig vertraulich. Klare Richtlinie: keine Mandantendaten-Uploads in öffentliche LLM-Dienste."
+          },
+          {
+            "step": "03",
+            "title": "Vault für Dokument-KI einsetzen",
+            "desc": "SupraWalls Vault ermöglicht die KI-Verarbeitung von Mandantendokumenten ohne das Verlassen Ihrer kontrollierten Infrastruktur."
+          },
+          {
+            "step": "04",
+            "title": "Offenlegungsprotokoll erstellen",
+            "desc": "Für jedes KI-gestützte Arbeitsergebnis dokumentieren, welche KI-Tools verwendet wurden und wie die Ausgabe überprüft wurde."
+          },
+          {
+            "step": "05",
+            "title": "Legal-Compliance-Template aktivieren",
+            "desc": "SupraWalls Legal-Template implementiert eine berufsgeheimnissichere KI-Schicht mit PII-Schutzschild, unveränderlichen Prüfpfaden und ohne Mandantendaten zu unkontrollierten Drittanbietern."
+          }
         ]
       }
     },
@@ -1399,48 +1675,120 @@
         "title": "Die fünf Fragen, die Ihr Vorstand stellen wird",
         "subtitle": "Bereiten Sie Ihre Antworten vor, bevor er fragt.",
         "items": [
-          { "q": "Sind wir EU-KI-Gesetz-konform?", "a": "Dies erfordert zu wissen, welche KI-Tools Sie verwenden, welche nach Anhang III hochriskant sind und ob jedes eine DSFA, einen Prüfpfad, einen menschlichen Aufsichtsmechanismus und dokumentiertes Risikomanagement hat." },
-          { "q": "Was ist unsere maximale Strafexponierung?", "a": "35 Millionen Euro oder 7 % des weltweiten Umsatzes — was auch immer höher ist — für verbotene KI-Nutzung. Beide können gleichzeitig mit DSGVO-Strafen anfallen." },
-          { "q": "Wer ist persönlich verantwortlich?", "a": "Das EU-KI-Gesetz schafft eine 'Anbieter'- und 'Einsetzer'-Haftungsstruktur. Wenn Sie ein Drittanbieter-KI-Tool für eine hochriskante Nutzung einsetzen, sind Sie für die Compliance verantwortlich — nicht der KI-Anbieter." },
-          { "q": "Haben wir ein KI-Risikoregister?", "a": "EU-KI-Gesetz Artikel 9 verlangt ein dokumentiertes Risikomanagementsystem für den gesamten Lebenszyklus jeder hochriskanten KI. Ohne ein Register können Sie Compliance nicht nachweisen." },
-          { "q": "Was passiert, wenn ein Mitarbeiter KI falsch einsetzt?", "a": "Die einsetzende Organisation — Ihr Unternehmen — haftet dafür, wie Mitarbeiter KI im beruflichen Kontext nutzen." }
+          {
+            "q": "Sind wir EU-KI-Gesetz-konform?",
+            "a": "Dies erfordert zu wissen, welche KI-Tools Sie verwenden, welche nach Anhang III hochriskant sind und ob jedes eine DSFA, einen Prüfpfad, einen menschlichen Aufsichtsmechanismus und dokumentiertes Risikomanagement hat."
+          },
+          {
+            "q": "Was ist unsere maximale Strafexponierung?",
+            "a": "35 Millionen Euro oder 7 % des weltweiten Umsatzes — was auch immer höher ist — für verbotene KI-Nutzung. Beide können gleichzeitig mit DSGVO-Strafen anfallen."
+          },
+          {
+            "q": "Wer ist persönlich verantwortlich?",
+            "a": "Das EU-KI-Gesetz schafft eine 'Anbieter'- und 'Einsetzer'-Haftungsstruktur. Wenn Sie ein Drittanbieter-KI-Tool für eine hochriskante Nutzung einsetzen, sind Sie für die Compliance verantwortlich — nicht der KI-Anbieter."
+          },
+          {
+            "q": "Haben wir ein KI-Risikoregister?",
+            "a": "EU-KI-Gesetz Artikel 9 verlangt ein dokumentiertes Risikomanagementsystem für den gesamten Lebenszyklus jeder hochriskanten KI. Ohne ein Register können Sie Compliance nicht nachweisen."
+          },
+          {
+            "q": "Was passiert, wenn ein Mitarbeiter KI falsch einsetzt?",
+            "a": "Die einsetzende Organisation — Ihr Unternehmen — haftet dafür, wie Mitarbeiter KI im beruflichen Kontext nutzen."
+          }
         ]
       },
       "riskMap": {
         "title": "Risikoübersicht nach Abteilung",
         "subtitle": "Ihre Exposition nach Funktion.",
         "items": [
-          { "dept": "HR", "regulation": "EU-KI-Gesetz Anhang III Kat. 4 + DSGVO Art. 22", "risk": "Lebenslauf-Sichtung, Leistungsüberwachung, Einstellungs-KI", "urgency": "critical" },
-          { "dept": "Finanzen", "regulation": "DORA Art. 8 + EU-KI-Gesetz Anhang III", "risk": "Kreditentscheidungen, Betrugserkennung, Handels-KI", "urgency": "critical" },
-          { "dept": "Gesundheitswesen", "regulation": "EU-KI-Gesetz Anhang III Kat. 5 + DSGVO Art. 9", "risk": "Klinische KI, Triage, Patientenleistungen", "urgency": "critical" },
-          { "dept": "Recht", "regulation": "Berufsgeheimnis + DSGVO Art. 5(1)(b)", "risk": "Dokument-KI, LLM-Recherche, Entdeckungs-KI", "urgency": "high" },
-          { "dept": "Betrieb", "regulation": "EU-KI-Gesetz Anhang III Kat. 2 (kritische Infrastruktur)", "risk": "Logistik-KI, Infrastrukturmanagement-KI", "urgency": "medium" }
+          {
+            "dept": "HR",
+            "regulation": "EU-KI-Gesetz Anhang III Kat. 4 + DSGVO Art. 22",
+            "risk": "Lebenslauf-Sichtung, Leistungsüberwachung, Einstellungs-KI",
+            "urgency": "critical"
+          },
+          {
+            "dept": "Finanzen",
+            "regulation": "DORA Art. 8 + EU-KI-Gesetz Anhang III",
+            "risk": "Kreditentscheidungen, Betrugserkennung, Handels-KI",
+            "urgency": "critical"
+          },
+          {
+            "dept": "Gesundheitswesen",
+            "regulation": "EU-KI-Gesetz Anhang III Kat. 5 + DSGVO Art. 9",
+            "risk": "Klinische KI, Triage, Patientenleistungen",
+            "urgency": "critical"
+          },
+          {
+            "dept": "Recht",
+            "regulation": "Berufsgeheimnis + DSGVO Art. 5(1)(b)",
+            "risk": "Dokument-KI, LLM-Recherche, Entdeckungs-KI",
+            "urgency": "high"
+          },
+          {
+            "dept": "Betrieb",
+            "regulation": "EU-KI-Gesetz Anhang III Kat. 2 (kritische Infrastruktur)",
+            "risk": "Logistik-KI, Infrastrukturmanagement-KI",
+            "urgency": "medium"
+          }
         ]
       },
       "actionPlan": {
         "title": "Der 30-Tage-Aktionsplan für Führungskräfte",
         "subtitle": "Konkrete Schritte. Messbare Ergebnisse.",
         "steps": [
-          { "step": "Woche 1", "title": "KI-Inventar", "desc": "Identifizieren Sie jedes KI-Tool, das in allen Abteilungen eingesetzt wird. Schließen Sie informelle ChatGPT-Nutzung ein." },
-          { "step": "Woche 1", "title": "Risikoeinstufung", "desc": "Bestimmen Sie für jedes Tool, ob es Anhang III auslöst." },
-          { "step": "Woche 2", "title": "DSFA für Hochrisiko-Tools", "desc": "Beauftragen Sie eine Datenschutz-Folgenabschätzung für jedes identifizierte Hochrisiko-KI-System." },
-          { "step": "Woche 2", "title": "Einsatz der Policy-Engine", "desc": "Erzwingen Sie, welche KI-Tools welche Datenkategorien verarbeiten dürfen — nicht nur durch eine Richtlinie." },
-          { "step": "Woche 3", "title": "Aktivierung des Prüfpfads", "desc": "Implementieren Sie unveränderliche Protokollierung aller Hochrisiko-KI-Entscheidungen." },
-          { "step": "Woche 4", "title": "Vorstand-Compliance-Bericht", "desc": "Erstellen Sie das erste KI-Compliance-Evidenzkit: Inventar, Risikoeinstufung, DSFA-Status und Prüfpfad-Architektur." }
+          {
+            "step": "Woche 1",
+            "title": "KI-Inventar",
+            "desc": "Identifizieren Sie jedes KI-Tool, das in allen Abteilungen eingesetzt wird. Schließen Sie informelle ChatGPT-Nutzung ein."
+          },
+          {
+            "step": "Woche 1",
+            "title": "Risikoeinstufung",
+            "desc": "Bestimmen Sie für jedes Tool, ob es Anhang III auslöst."
+          },
+          {
+            "step": "Woche 2",
+            "title": "DSFA für Hochrisiko-Tools",
+            "desc": "Beauftragen Sie eine Datenschutz-Folgenabschätzung für jedes identifizierte Hochrisiko-KI-System."
+          },
+          {
+            "step": "Woche 2",
+            "title": "Einsatz der Policy-Engine",
+            "desc": "Erzwingen Sie, welche KI-Tools welche Datenkategorien verarbeiten dürfen — nicht nur durch eine Richtlinie."
+          },
+          {
+            "step": "Woche 3",
+            "title": "Aktivierung des Prüfpfads",
+            "desc": "Implementieren Sie unveränderliche Protokollierung aller Hochrisiko-KI-Entscheidungen."
+          },
+          {
+            "step": "Woche 4",
+            "title": "Vorstand-Compliance-Bericht",
+            "desc": "Erstellen Sie das erste KI-Compliance-Evidenzkit: Inventar, Risikoeinstufung, DSFA-Status und Prüfpfad-Architektur."
+          }
         ]
       },
-      "ctaDev": { "label": "Das Compliance-Evidenzkit ansehen", "href": "/compliance-templates", "sublabel": "Technische Templates für Ihr Engineering-Team." },
-      "ctaBusiness": { "label": "Executive-Briefing buchen", "href": "mailto:enterprise@supra-wall.com", "sublabel": "30-minütige vorstandsfähige KI-Compliance-Bewertung." }
+      "ctaDev": {
+        "label": "Das Compliance-Evidenzkit ansehen",
+        "href": "/compliance-templates",
+        "sublabel": "Technische Templates für Ihr Engineering-Team."
+      },
+      "ctaBusiness": {
+        "label": "Executive-Briefing buchen",
+        "href": "mailto:enterprise@supra-wall.com",
+        "sublabel": "30-minütige vorstandsfähige KI-Compliance-Bewertung."
+      }
+    },
+    "shared": {
+      "urgencyBadge": "2. August 2026",
+      "faqTitle": "Häufige Fragen",
+      "backToLearn": "Weiter lernen",
+      "relatedTemplates": "Verwandte Compliance-Templates",
+      "sdkPath": "Technischer Pfad (Entwickler)",
+      "businessPath": "Geschäftlicher Pfad (C-Suite)",
+      "dualCtaTitle": "Zwei Wege zur Lösung",
+      "dualCtaSubtitle": "Ob Sie es selbst implementieren oder mit einem Experten sprechen möchten."
     }
-  },
-  "shared": {
-    "urgencyBadge": "2. August 2026",
-    "faqTitle": "Häufige Fragen",
-    "backToLearn": "Weiter lernen",
-    "relatedTemplates": "Verwandte Compliance-Templates",
-    "sdkPath": "Technischer Pfad (Entwickler)",
-    "businessPath": "Geschäftlicher Pfad (C-Suite)",
-    "dualCtaTitle": "Zwei Wege zur Lösung",
-    "dualCtaSubtitle": "Ob Sie es selbst implementieren oder mit einem Experten sprechen möchten."
   }
 }
