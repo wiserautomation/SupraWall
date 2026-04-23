@@ -1,6 +1,5 @@
 {
   "name": "@suprawall/cli",
-  "license": "Apache-2.0",
   "version": "0.1.0-beta.1",
   "description": "Powerful developer CLI for suprawall",
   "engines": {

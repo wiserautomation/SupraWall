@@ -2,85 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Request, Response, NextFunction } from "express";
+import { pool } from "./db";
+import { TIER_LIMITS, Tier, TierLimits, currentMonth } from "./tier-config";
 import { logger } from "./logger";
-
-// --- TYPES MIGRATED FROM TIER-CONFIG (OSS STUB) ---
-
-export type Tier = 'open_source' | 'developer' | 'team' | 'business' | 'enterprise';
-export type SemanticLayerMode = 'none' | 'semantic' | 'behavioral' | 'custom';
-
-export interface TierLimits {
-    maxAgents: number;
-    maxVaultSecrets: number;
-    maxSeats: number;
-    auditRetentionDays: number;
-    maxEvaluationsPerMonth: number;
-    overageRatePerEval: number | null;
-    policyEngine: 'regex' | 'ai' | 'advanced';
-    threatDetection: 'regex' | 'ml' | 'advanced';
-    semanticLayer: SemanticLayerMode;
-    maxSemanticCallsPerHour: number;
-    frameworkPlugins: string[] | 'all';
-    databaseAdapters: string[] | 'all';
-    dashboard: 'self-host' | 'full' | 'white-label';
-    ssoEnabled: boolean;
-    approvals: 'none' | 'api-polling' | 'slack-dashboard' | 'advanced';
-    complianceReports: 'json' | 'pdf' | 'full-suite';
-    euAiActTemplates: boolean;
-    pdfReports: boolean;
-    budgetEnforcement: boolean;
-    slackApprovals: boolean;
-    sla: string | null;
-    slaResponseHours: number | null;
-}
-
-// Permissive TIER_LIMITS: All features enabled for self-hosters
-export const TIER_LIMITS: Record<Tier, TierLimits> = {
-    open_source: createPermissiveLimits(),
-    developer: createPermissiveLimits(),
-    team: createPermissiveLimits(),
-    business: createPermissiveLimits(),
-    enterprise: createPermissiveLimits(),
-};
-
-function createPermissiveLimits(): TierLimits {
-    return {
-        maxAgents: Infinity,
-        maxVaultSecrets: Infinity,
-        maxSeats: Infinity,
-        auditRetentionDays: 365,
-        maxEvaluationsPerMonth: Infinity,
-        overageRatePerEval: 0,
-        policyEngine: 'ai',
-        threatDetection: 'ml',
-        semanticLayer: 'semantic',
-        maxSemanticCallsPerHour: Infinity,
-        frameworkPlugins: 'all',
-        databaseAdapters: 'all',
-        dashboard: 'self-host',
-        ssoEnabled: true,
-        approvals: 'slack-dashboard',
-        complianceReports: 'full-suite',
-        euAiActTemplates: true,
-        pdfReports: true,
-        budgetEnforcement: true,
-        slackApprovals: true,
-        sla: 'Self-hosted',
-        slaResponseHours: null,
-    };
-}
-
-export function currentMonth(): string {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-}
-
-export function retentionCutoff(tier: Tier): Date {
-    const days = TIER_LIMITS[tier].auditRetentionDays;
-    return new Date(Date.now() - days * 86_400_000);
-}
-
-// --- MIDDLEWARE STUBS ---
+import { sendDiscordUsageAlert } from "./discord";
 
 export interface TieredRequest extends Request {
     tier?: Tier;
@@ -89,42 +14,189 @@ export interface TieredRequest extends Request {
 }
 
 /**
- * Permissive resolveTier: Always grants PRO/Enterprise access for self-hosters.
- * No Stripe, no billing lookups.
+ * Middleware that resolves the tenant's billing tier and injects
+ * `req.tier` and `req.tierLimits` for downstream enforcement.
+ *
+ * Falls back to 'open_source' if the tenant has no subscription or if
+ * DB resolution fails. When SUPRAWALL_MODE=local, always uses open_source
+ * limits regardless of any DB state (correct behavior for self-hosters).
  */
 export async function resolveTier(req: TieredRequest, res: Response, next: NextFunction) {
-    req.tenantId = (req as any).tenantId || (req as any).agent?.tenantId || "default";
-    req.tier = "enterprise"; // Permissive default for OSS
-    req.tierLimits = TIER_LIMITS["enterprise"];
+    // SECURITY: tenantId must come from auth middleware, never from client input
+    const tenantId =
+        (req as any).tenantId ||
+        (req as any).agent?.tenantId;
+
+    if (!tenantId) {
+        return res.status(401).json({ error: "Unauthorized: No tenant context. Authenticate first." });
+    }
+
+    req.tenantId = tenantId;
+
+    // SUPRAWALL_MODE=local: enforce open_source limits for all self-hosted deployments
+    if (process.env.SUPRAWALL_MODE === "local") {
+        req.tier = "open_source";
+        req.tierLimits = TIER_LIMITS["open_source"];
+        return next();
+    }
+
+    try {
+        const result = await pool.query(
+            "SELECT tier FROM tenants WHERE id = $1",
+            [tenantId]
+        );
+
+        // Validate the DB-stored tier is a known value; fall back to open_source if not
+        const rawTier = result.rows[0]?.tier;
+        const knownTiers: Tier[] = ['open_source', 'developer', 'team', 'business', 'enterprise'];
+        const tier: Tier = knownTiers.includes(rawTier) ? rawTier : 'open_source';
+
+        req.tier = tier;
+        req.tierLimits = TIER_LIMITS[tier];
+
+        if (req.tierLimits.semanticLayer !== 'none') {
+            logger.info(`[TierGuard] Semantic layer enabled: ${req.tierLimits.semanticLayer}`, { tenantId });
+        }
+    } catch (err) {
+        logger.warn("[TierGuard] Failed to resolve tier, defaulting to open_source", { tenantId, error: err });
+        req.tier = "open_source";
+        req.tierLimits = TIER_LIMITS["open_source"];
+    }
+
     next();
 }
 
 /**
- * Permissive checkEvaluationLimit: Always allows.
+ * Checks if a tenant has exceeded their monthly evaluation limit.
+ * If overage is allowed (metered), it returns true but logs a warning.
+ * If overage is blocked (OSS), it returns false (triggers 402).
  */
+// Circuit-breaker state for transient DB failures in checkEvaluationLimit.
+// If the DB fails, we return dbError=true so callers can return 503 (not 402)
+// and surface a clear "service degraded" signal rather than a billing-style error.
+// A short window (30s) lets the pool recover while keeping fail-closed default
+// behavior on the first failure.
+let lastLimitCheckFailureAt = 0;
+const LIMIT_CHECK_CB_WINDOW_MS = 30_000;
+
 export async function checkEvaluationLimit(
     tenantId: string,
     limits: TierLimits
 ): Promise<{ allowed: boolean; current: number; dbError?: boolean }> {
-    return { allowed: true, current: 0 };
+    const month = currentMonth();
+    try {
+        const result = await pool.query(
+            "SELECT evaluation_count FROM tenant_usage WHERE tenant_id = $1 AND month = $2",
+            [tenantId, month]
+        );
+        const current = result.rows[0]?.evaluation_count || 0;
+
+        // Block if over limit AND overage is not allowed (null = hard stop)
+        if (current >= limits.maxEvaluationsPerMonth && limits.overageRatePerEval == null) {
+            return { allowed: false, current };
+        }
+        return { allowed: true, current };
+    } catch (err) {
+        logger.error("[TierGuard] Error checking evaluation limit:", err);
+        const now = Date.now();
+        // If another failure happened recently, assume a transient DB incident
+        // and allow traffic through rather than denying every request.
+        if (now - lastLimitCheckFailureAt < LIMIT_CHECK_CB_WINDOW_MS) {
+            logger.warn("[TierGuard] Circuit-breaker open — allowing request despite DB failure");
+            return { allowed: true, current: 0, dbError: true };
+        }
+        lastLimitCheckFailureAt = now;
+        // First failure: fail-closed with a distinguishable error signal.
+        return { allowed: false, current: -1, dbError: true };
+    }
 }
 
 /**
- * Permissive recordEvaluation: No-op or basic logging.
+ * Increments the evaluation counter for a tenant.
+ * Also calculates overage units if the tenant is beyond their base limit.
  */
 export async function recordEvaluation(tenantId: string, limits: TierLimits): Promise<void> {
-    // OSS doesn't meter evaluations for billing
+    const month = currentMonth();
+    try {
+        const result = await pool.query(
+            `INSERT INTO tenant_usage (tenant_id, month, evaluation_count)
+             VALUES ($1, $2, 1)
+             ON CONFLICT (tenant_id, month)
+             DO UPDATE SET
+                evaluation_count = tenant_usage.evaluation_count + 1,
+                overage_units = CASE
+                    WHEN (tenant_usage.evaluation_count + 1) > $3 THEN (tenant_usage.evaluation_count + 1) - $3
+                    ELSE 0
+                END,
+                last_updated = $4
+             RETURNING evaluation_count`,
+            [tenantId, month, limits.maxEvaluationsPerMonth, new Date().toISOString()]
+        );
+
+        // Discord usage alerts at 50%, 75%, 90%, 100% thresholds
+        const discordUrl = process.env.DISCORD_WEBHOOK_URL;
+        if (discordUrl && result.rows.length > 0) {
+            const current = result.rows[0].evaluation_count;
+            const max = limits.maxEvaluationsPerMonth;
+            const pct = current / max;
+
+            const alertThresholds = [0.5, 0.75, 0.9, 1.0];
+            const prevPct = (current - 1) / max;
+
+            const crossed = alertThresholds.find(t => prevPct < t && pct >= t);
+            if (crossed) {
+                // Fire-and-forget: don't block the request
+                setImmediate(async () => {
+                    try {
+                        // Look up company info for better alert context
+                        const companyResult = await pool.query(
+                            `SELECT pc.paperclip_company_id, t.tier
+                             FROM paperclip_companies pc
+                             JOIN tenants t ON t.id = pc.tenant_id
+                             WHERE pc.tenant_id = $1
+                             LIMIT 1`,
+                            [tenantId]
+                        );
+                        const companyId = companyResult.rows[0]?.paperclip_company_id || tenantId;
+                        const tier = companyResult.rows[0]?.tier || "developer";
+
+                        await sendDiscordUsageAlert(discordUrl, {
+                            companyId,
+                            tenantId,
+                            currentUsage: current,
+                            maxUsage: max,
+                            currentTier: tier,
+                            // Do NOT embed the internal tenant UUID in a Discord-visible URL.
+                            // The alert body already carries companyId for support context.
+                            upgradeUrl: `https://supra-wall.com/pricing?source=discord_alert`,
+                        });
+                    } catch (e) {
+                        logger.warn("[TierGuard] Discord alert failed:", e);
+                    }
+                });
+            }
+        }
+    } catch (err) {
+        logger.error("[TierGuard] Failed to record evaluation:", { tenantId, error: err });
+    }
 }
 
 /**
- * Permissive enforceSSO: Always allows.
+ * Middleware: Enforces SSO enablement for Business+ tiers.
  */
 export async function enforceSSO(req: TieredRequest, res: Response, next: NextFunction) {
+    if (!req.tierLimits?.ssoEnabled) {
+        return res.status(403).json({
+            error: "SSO not supported",
+            message: "SSO features are only available on Business and Enterprise plans. Upgrade to enable SSO.",
+            upgradeUrl: "https://www.supra-wall.com/pricing"
+        });
+    }
     next();
 }
 
 /**
- * Stub for tierLimitError: Should theoretically never be called in permissive mode.
+ * Returns a standard tier-limit upgrade error response (402 Payment Required).
  */
 export function tierLimitError(
     feature: string,
@@ -132,10 +204,20 @@ export function tierLimitError(
     limit: number | string,
     currentTier?: string
 ) {
+    const upgradeMap: Record<string, { nextTier: string; price: string }> = {
+        open_source: { nextTier: "developer", price: "Free" },
+        developer:   { nextTier: "team",      price: "$79/mo" },
+        team:        { nextTier: "business",   price: "$249/mo" },
+        business:    { nextTier: "enterprise", price: "Custom" },
+    };
+    const upgrade = upgradeMap[currentTier || "developer"] ?? upgradeMap.developer;
+
     return {
-        error: `${feature} limit reached.`,
-        currentTier: currentTier || "enterprise",
-        message: "Limit reached in self-hosted mode.",
+        error: `${feature} limit reached (${current}/${limit}). Upgrade to ${upgrade.nextTier} to continue without interruption.`,
+        currentTier: currentTier || "developer",
+        message: `Your ${currentTier || "current"} plan allows ${limit} ${feature.toLowerCase()}(s). You currently have ${current}.`,
+        upgradeUrl: `https://www.supra-wall.com/pricing?plan=${upgrade.nextTier}&source=${feature.toLowerCase().replace(/\s+/g, "_")}_limit`,
+        upgradePrice: upgrade.price,
         code: "TIER_LIMIT_EXCEEDED",
     };
 }

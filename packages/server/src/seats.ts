@@ -3,7 +3,7 @@
 
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./db";
-import { TIER_LIMITS, Tier } from "./tier-guard";
+import { TIER_LIMITS, Tier } from "./tier-config";
 import { logger } from "./logger";
 
 /**

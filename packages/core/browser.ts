@@ -6,6 +6,7 @@
 
 import { SupraWallConfig, Adapter, Agent } from "./types";
 import { SupabaseAdapter } from "./adapters/supabase";
+import { FirebaseAdapter } from "./adapters/firebase";
 
 export class SupraWall {
     private adapter: Adapter | null = null;
@@ -15,6 +16,9 @@ export class SupraWall {
         switch (config.adapter) {
             case "supabase":
                 this.adapter = new SupabaseAdapter();
+                break;
+            case "firebase":
+                this.adapter = new FirebaseAdapter();
                 break;
             default:
                 throw new Error(`Adapter ${config.adapter} is not supported in the browser. Use a server-side entry point for SQL/Mongo adapters.`);

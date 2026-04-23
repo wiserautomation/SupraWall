@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>SupraWall</AssemblyName>
+    <RootNamespace>SupraWall</RootNamespace>
+    <Version>0.1.0</Version>
+    <Authors>SupraWall Contributors</Authors>
+    <Description>C# SDK for SupraWall. Policy enforcement for AI agents.</Description>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageProjectUrl>https://supra-wall.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/wiserautomation/SupraWall</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Text.Json" Version="8.0.0" />
+  </ItemGroup>
+</Project>

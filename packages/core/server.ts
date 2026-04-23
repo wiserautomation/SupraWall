@@ -79,10 +79,11 @@ export class SupraWall {
     }
 }
 
+import { FirebaseAdapter } from "./adapters/firebase";
 import { SupabaseAdapter } from "./adapters/supabase";
 
 export const suprawall = new SupraWall();
-export { SupabaseAdapter };
+export { FirebaseAdapter, SupabaseAdapter };
 export * from "./types";
 export * from "./semantic";
 export * from "./vault";

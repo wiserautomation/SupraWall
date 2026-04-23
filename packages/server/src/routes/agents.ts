@@ -4,6 +4,7 @@
 import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { adminAuth, AuthenticatedRequest } from "../auth";
+import { getFirestore, logToFirestore } from "../firebase";
 import crypto from "crypto";
 import { resolveTier, TieredRequest, tierLimitError } from "../tier-guard";
 import { logger } from "../logger";
@@ -117,6 +118,20 @@ router.post("/", adminAuth, resolveTier, validate(CreateAgentSchema), async (req
             }
         }
 
+        // 5. Save to Firestore (for gatekeeper runtime)
+        const db = getFirestore();
+        if (db) {
+            await db.collection("agents").doc(agentId).set({
+                name,
+                tenantId,
+                apiKeyHash,
+                scopes: finalScopes,
+                status: "active",
+                createdAt: new Date(),
+                userId: tenantId,
+            });
+        }
+
         await client.query("COMMIT");
 
         res.status(201).json({
@@ -167,6 +182,11 @@ router.delete("/:id", adminAuth, async (req: Request, res: Response) => {
 
         // 2. Delete related policies
         await client.query("DELETE FROM policies WHERE agentid = $1 AND tenantid = $2", [id, tenantId]);
+
+        const db = getFirestore();
+        if (db) {
+            await db.collection("agents").doc(id).delete();
+        }
 
         await client.query("COMMIT");
         res.json({ success: true, message: "Agent revoked successfully" });
@@ -228,6 +248,12 @@ router.post("/:id/rotate-key", adminAuth, async (req: Request, res: Response) =>
         if (result.rows.length === 0) {
             await client.query("ROLLBACK");
             return res.status(404).json({ error: "Agent not found" });
+        }
+
+        // Sync new key to Firestore so gatekeeper runtime uses the new key hash immediately
+        const db = getFirestore();
+        if (db) {
+            await db.collection("agents").doc(id).update({ apiKeyHash: newApiKeyHash });
         }
 
         await client.query("COMMIT");

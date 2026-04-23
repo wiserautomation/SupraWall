@@ -1,7 +1,6 @@
 {
   "name": "@suprawall/server",
   "version": "0.1.0",
-  "license": "Apache-2.0",
   "engines": {
     "node": ">=18.0.0"
   },
@@ -13,7 +12,8 @@
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "test:vault": "jest --testPathPattern=tests/vault/"
+    "test:vault": "jest --testPathPattern=tests/vault/",
+    "test:paperclip": "jest --testPathPattern=tests/paperclip"
   },
   "jest": {
     "preset": "ts-jest",
@@ -29,10 +29,18 @@
         "setupFilesAfterEnv": [
           "<rootDir>/tests/setup.ts"
         ]
+      },
+      {
+        "displayName": "integration",
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testTimeout": 30000,
+        "testPathPattern": "tests/paperclip"
       }
     ]
   },
   "author": "SupraWall",
+  "license": "Apache-2.0",
   "dependencies": {
     "@langchain/core": "1.1.36",
     "@suprawall/core": "file:../core",
@@ -41,6 +49,7 @@
     "cors": "2.8.6",
     "dotenv": "17.3.1",
     "express": "5.2.1",
+    "firebase-admin": "10.3.0",
     "font-awesome": "4.7.0",
     "handlebars": "4.7.9",
     "helmet": "8.1.0",
@@ -51,6 +60,7 @@
     "puppeteer": "24.40.0",
     "re2": "^1.24.0",
     "sqlite3": "6.0.1",
+    "stripe": "21.0.1",
     "undici": "7.24.4",
     "zod": "4.3.6"
   },

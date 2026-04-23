@@ -26,10 +26,11 @@ import { gatekeeperAuth } from "./auth";
 import { rateLimit } from "./rate-limit";
 import gdprRouter from "./routes/gdpr";
 import awsMarketplaceRouter from "./routes/aws-marketplace";
+import paperclipRouter from "./routes/paperclip";
 import templatesRouter from "./routes/templates";
 
-// NOTE: SupraWall Gateway (OSS)
-
+// NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
+// See: https://github.com/suprawall/suprawall-cloud
 
 dotenv.config();
 
@@ -106,6 +107,20 @@ app.use((req, res, next) => {
 // 2. Specialized Routing
 // ---------------------------------------------------------------------------
 
+// Important: Paperclip router handles its own parsing (express.raw for webhooks,
+// express.json for others) to ensure HMAC verification is possible.
+app.use("/v1/paperclip", paperclipRouter);
+
+// Paperclip: Agent Invoke — top-level alias so Paperclip agents call /v1/agent/invoke.
+// Must be mounted before the global express.json() to prevent double-parsing.
+app.post(
+    "/v1/agent/invoke",
+    rateLimit({ max: 120, windowMs: 60_000, message: "Agent invoke rate limit exceeded." }),
+    (req, res, next) => {
+        req.url = "/invoke";
+        paperclipRouter(req, res, next);
+    }
+);
 
 // Global JSON body parser for all other standard routes
 app.use(express.json());

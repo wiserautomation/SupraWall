@@ -32,7 +32,7 @@
 import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { logger } from "../logger";
-import type { Tier } from "../tier-guard";
+import type { Tier } from "../tier-config";
 import crypto from "crypto";
 
 const router = express.Router();

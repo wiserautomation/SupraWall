@@ -5,11 +5,12 @@ import { Request, Response } from "express";
 import { pool } from "./db";
 import { logger } from "./logger";
 import { resolveVaultTokens, VaultResolutionResult } from "./vault";
+import { logToFirestore, admin } from "./firebase";
 import { scrubResponse } from "./scrubber";
 import { getAgentById } from "./auth";
 import { sendSlackNotification } from "./slack";
-import { TIER_LIMITS, currentMonth } from "./tier-guard";
-import type { Tier } from "./tier-guard";
+import { TIER_LIMITS, currentMonth } from "./tier-config";
+import type { Tier } from "./tier-config";
 import { checkEvaluationLimit, recordEvaluation } from "./tier-guard";
 import { analyzeCall, type SemanticAnalysisResult } from "./semantic";
 import { updateBaseline } from "./behavioral";
@@ -577,7 +578,24 @@ export const evaluatePolicy = async (req: Request, res: Response) => {
             auditRecord.metadata
         );
 
-        // Note: Global usage mirrored to DB audit_logs above.
+        // 5. Mirror to Firestore & Update Agent Stats
+        const firestore = (admin as any)?.apps?.length > 0 ? admin.firestore() : null;
+        if (firestore) {
+            logToFirestore("audit_logs", auditRecord);
+
+            // Update Agent cumulative stats for dashboard
+            firestore.collection("agents").doc(agentId).update({
+                totalCalls: admin.firestore.FieldValue.increment(1),
+                totalSpendUsd: admin.firestore.FieldValue.increment(auditRecord.cost_usd),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp()
+            }).catch((err: any) => logger.error("[Firestore] Agent update failed:", err));
+
+            // Update User monthly usage
+            firestore.collection("users").doc(tenantId).update({
+                operationsThisMonth: admin.firestore.FieldValue.increment(1),
+                lastUsedAt: admin.firestore.FieldValue.serverTimestamp(),
+            }).catch(() => {});
+        }
 
         if (hasVaultTokens && vaultResult?.success) {
             response.resolvedArguments = resolvedArgs;

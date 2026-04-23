@@ -7,22 +7,22 @@ between users and AI agents — in one line of code.
 ## Install
 
 ```bash
-pip install suprawall
+pip install suprawall-sdk
 ```
 
 With LangChain:
 ```bash
-pip install "suprawall[langchain]"
+pip install "suprawall-sdk[langchain]"
 ```
 
 With OpenAI Agents SDK:
 ```bash
-pip install "suprawall[openai]"
+pip install "suprawall-sdk[openai]"
 ```
 
 Everything:
 ```bash
-pip install "suprawall[all]"
+pip install "suprawall-sdk[all]"
 ```
 
 ## Quickstart

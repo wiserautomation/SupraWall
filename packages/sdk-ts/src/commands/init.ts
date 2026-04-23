@@ -161,19 +161,19 @@ function installNodeSdk(packageManager: string, projectRoot: string): boolean {
 }
 
 function installPythonSdk(projectRoot: string): boolean {
-    printStep('Installing SDK (pip install suprawall)');
+    printStep('Installing SDK (pip install suprawall-sdk)');
     try {
-        execSync('pip install suprawall', { cwd: projectRoot, stdio: 'pipe' });
+        execSync('pip install suprawall-sdk', { cwd: projectRoot, stdio: 'pipe' });
         printStepDone();
         return true;
     } catch {
         // Try pip3
         try {
-            execSync('pip3 install suprawall', { cwd: projectRoot, stdio: 'pipe' });
+            execSync('pip3 install suprawall-sdk', { cwd: projectRoot, stdio: 'pipe' });
             printStepDone();
             return true;
         } catch {
-            process.stdout.write(' ' + chalk.yellow('(skipped — install manually: pip install suprawall)') + '\n');
+            process.stdout.write(' ' + chalk.yellow('(skipped — install manually: pip install suprawall-sdk)') + '\n');
             return false;
         }
     }
@@ -270,7 +270,7 @@ export async function runInit(projectRoot: string): Promise<void> {
 
     if (language === 'python') {
         installPythonSdk(projectRoot);
-        successItems.push({ label: 'SDK installed (suprawall)' });
+        successItems.push({ label: 'SDK installed (suprawall-sdk)' });
     } else {
         installNodeSdk(packageManager, projectRoot);
         successItems.push({ label: 'SDK installed (suprawall)' });

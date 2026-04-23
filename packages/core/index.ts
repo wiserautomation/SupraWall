@@ -6,6 +6,7 @@
 
 import { SupraWallConfig, Adapter, Agent } from "./types";
 import { SupabaseAdapter } from "./adapters/supabase";
+import { FirebaseAdapter } from "./adapters/firebase";
 
 export class SupraWall {
     private adapter: Adapter | null = null;
@@ -57,7 +58,7 @@ export class SupraWall {
 }
 
 export const suprawall = new SupraWall();
-export { SupabaseAdapter };
+export { SupabaseAdapter, FirebaseAdapter };
 
 export * from "./types";
 export * from "./engine";

@@ -1,0 +1,1444 @@
+{
+  "common": {
+    "title": "SupraWall | Enterprise AI Agent Security & Runtime Guardrails",
+    "description": "Secure your autonomous AI agents with the first zero-trust runtime firewall. Block prompt injection, prevent unauthorized tool execution, and control LLM costs.",
+    "getStarted": "Commencer",
+    "viewDocs": "Voir la documentation",
+    "login": "Connexion",
+    "dashboard": "Dashboard",
+    "starOnGithub": "Suivre sur GitHub",
+    "protectedIn": "Sécurisé en 30 secondes",
+    "deployOnCloud": "Deploy on Cloud",
+    "selfHost": "Self-Host"
+  },
+  "navbar": {
+    "platform": "Plateforme",
+    "solutions": "Solutions",
+    "integrations": "Intégrations",
+    "resources": "Ressources",
+    "company": "Entreprise",
+    "pricing": "Tarifs",
+    "frameworks": "Frameworks",
+    "platforms": "Platforms & Models",
+    "awsMarketplace": "AWS Marketplace",
+    "roles": "Par Rôle",
+    "industries": "Par Secteur"
+  },
+  "home": {
+    "hero": {
+      "badge": "Plateforme de Sécurité IA Open-Source",
+      "headlinePrefix": "Votre Agent IA",
+      "headlineEmphasis": "Va Dériver.",
+      "headlineSuffix": "SupraWall",
+      "headlineAction": "S'assure qu'il ne le pourra pas.",
+      "subheadline": "Open source. Une ligne de code. Sept menaces neutralisées.",
+      "cta": "Sécurisez vos Agents"
+    },
+    "features": {
+      "vault": "Vault",
+      "vaultDesc": "credentials.",
+      "cap": "Cap",
+      "capDesc": "budgets.",
+      "block": "Block",
+      "blockDesc": "unauthorized actions.",
+      "scrub": "Scrub",
+      "scrubDesc": "PII.",
+      "generate": "Generate",
+      "generateDesc": "audit trails.",
+      "stop": "Stop",
+      "stopDesc": "prompt injections.",
+      "analyze": "Analyze",
+      "analyzeDesc": "context with AI."
+    }
+  },
+  "euAiAct": {
+    "hero": {
+      "badge": "EU AI Act Compliance Hub",
+      "headlinePrefix": "Every Article.",
+      "headlineEmphasis": "Every Agent.",
+      "subheadline": "Regulation doesn't have to be a \"black box.\" SupraWall helps AI developers comply with Europe's most stringent rules in one SDK integration."
+    },
+    "moat": {
+      "title": "The Compliance",
+      "moatWord": "Moat",
+      "subtitle": "Direct mapping of SupraWall capabilities to EU AI Act requirements."
+    },
+    "table": {
+      "article": "Article",
+      "requires": "What It Requires",
+      "does": "What SupraWall Does",
+      "location": "Product Location"
+    },
+    "mapping": {
+      "art9": {
+        "req": "Prove your AI had a documented risk management system before it acted",
+        "sol": "Policy Engine: pre-execution allow/deny rules. Compliance Templates: one-click Article 9 policy activation for Banking, Healthcare, HR."
+      },
+      "art12": {
+        "req": "Log every AI action in an auditable, tamper-proof record",
+        "sol": "RSA-signed audit trail at the tool-call boundary. Every execution logged with cryptographic signature."
+      },
+      "art14": {
+        "req": "A human must be able to monitor and intervene in AI actions",
+        "sol": "Human approval workflows for flagged tool calls. Policy engine is human-defined; AI operates within human-set boundaries."
+      }
+    },
+    "articles": {
+      "art9": {
+        "title": "Article 09: Risk Management",
+        "desc": "Evidence-based risk assessments for autonomous agent workflows."
+      },
+      "art12": {
+        "title": "Article 12: Auditable Logging",
+        "desc": "Tamper-proof, cryptographically signed record of every agentic intervention."
+      },
+      "art14": {
+        "title": "Article 14: Human Oversight",
+        "desc": "Enforcing manual approval gates for sensitive agentic outcomes."
+      },
+      "cta": "SEE COMPLIANCE PATH"
+    },
+    "conformity": {
+      "badge": "Regulator Ready",
+      "titlePrefix": "Designed for",
+      "titleEmphasis": "Conformity.",
+      "description": "SupraWall turns regular agentic workflows into \"High-Risk Compliant\" architectures with zero friction. From Article 9 to 14, we've handled the engineering so you can handle the product."
+    },
+    "final": {
+      "badge": "Prêt pour l'audit",
+      "titlePrefix": "Compliance gagnée.",
+      "titleEmphasis": "Preuves livrées.",
+      "description": "Ne construisez pas une équipe de conformité. Activez l'Audit Trail de SupraWall et concentrez-vous sur votre produit.",
+      "cta": "Implement AI Act Shield"
+    }
+  },
+  "complianceTemplates": {
+    "hub": {
+      "hero": {
+        "badge": "Modèles de conformité Annex III",
+        "title": "Un seul import.",
+        "emphasis": "Tous les 8 secteurs.",
+        "description": "Modèles de sécurité déterministes pour chaque catégorie d'IA à haut risque. Chaque modèle pré-configure les 13 contrôles de base obligatoires plus la logique sectorielle pour l'Annexe III de l'IA Act.",
+        "cta": "Accéder aux modèles"
+      },
+      "grid": {
+        "title": "Modèles spécifiques aux secteurs",
+        "subtitle": "Sélectionnez votre industrie pour voir les exigences réglementaires et la configuration technique."
+      },
+      "buildVsBuy": {
+        "title": "Construire vs Modèle",
+        "subtitle": "Le coût réel de la mise en œuvre de la conformité à l'AI Act en partant de zéro.",
+        "headers": {
+          "approach": "Approche",
+          "time": "Temps",
+          "cost": "Coût",
+          "maint": "Maintenance",
+          "evidence": "Preuves",
+          "audit": "Prêt pour l'audit"
+        },
+        "rows": {
+            "diy": {
+                "name": "Construire soi-même",
+                "time": "17–35 semaines",
+                "cost": "68k€–140k€",
+                "maint": "Ingénierie continue",
+                "evidence": "Collecte manuelle",
+                "audit": "Risque d'audit élevé"
+            },
+            "suprawall": {
+                "name": "Modèle SupraWall",
+                "time": "15 minutes",
+                "cost": "Niveau Développeur",
+                "maint": "Mises à jour automatiques",
+                "evidence": "PDF auto-généré",
+                "audit": "Preuves certifiées"
+            }
+        }
+      }
+    },
+    "common": {
+        "reqHeader": "Exigence",
+        "artHeader": "Article",
+        "complexityHeader": "Complexité",
+        "templateHeader": "Modèle SupraWall",
+        "buildHeader": "Comment le construire soi-même",
+        "engineeringWeeks": "Semaines d'ingénierie",
+        "costEstimate": "Estimation du coût",
+        "totalEstimate": "Estimation totale de l'ingénierie",
+        "activationHeader": "Activation en une ligne",
+        "cta": "Accéder au modèle",
+        "preconfigured": "Pré-configuré",
+        "hitl": "File d'attente HITL",
+        "blocks": "Blocages interdits",
+        "logs": "Audit Trails"
+    },
+    "sectors": {
+        "biometrics": {
+            "title": "Conformité IA Biométrique",
+            "badge": "Annexe III Catégorie 1",
+            "opening": "Les agents d'IA biométrique sont strictement réglementés. L'identification biométrique à distance dans les espaces publics est INTERDITE (Art. 5). Tous les autres systèmes biométriques nécessitent une évaluation par un tiers. La conformité est requise d'ici le 2 août 2026.",
+            "faq": [
+                { "q": "L'identification biométrique à distance est-elle autorisée dans l'UE ?", "a": "Généralement interdite selon l'Art. 5, avec des exceptions très étroites pour l'application de la loi." }
+            ]
+        },
+        "critical-infrastructure": {
+            "title": "Infrastructures Critiques",
+            "badge": "Annexe III Catégorie 2",
+            "opening": "L'IA gérant les infrastructures d'eau, d'énergie ou de transport est à haut risque. Chevauchement avec les exigences NIS2. Priorité de sécurité élevée : chaque action physique doit être validée par un humain.",
+            "faq": [
+                { "q": "Comment cela se chevauche-t-il avec NIS2 ?", "a": "La conformité de l'IA doit être intégrée aux rapports d'incidents et à la gestion des risques de NIS2." }
+            ]
+        },
+        "education": {
+            "title": "Éducation & Formation",
+            "badge": "Annexe III Catégorie 3",
+            "opening": "L'IA pour les admissions, les évaluations ou la surveillance des examens est à haut risque. Doit garantir l'absence de refus autonome d'accès à l'éducation.",
+            "faq": [
+                { "q": "L'IA peut-elle noter les élèves de manière autonome ?", "a": "Oui, mais les résultats impactant l'accès à l'éducation doivent faire l'objet d'une surveillance humaine." }
+            ]
+        },
+        "hr-employment": {
+            "title": "RH & Emploi",
+            "badge": "Annexe III Catégorie 4",
+            "opening": "L'IA pour le tri de CV, le recrutement ou le suivi des performances est à haut risque. Déclenche un DPIA RGPD. Aucune décision autonome d'embauche/licenciement.",
+            "faq": [
+                { "q": "L'IA peut-elle prendre des décisions d'embauche finales ?", "a": "Non. Le droit de l'UE exige un décideur humain pour les actions d'emploi importantes." }
+            ]
+        },
+        "healthcare": {
+          "title": "Santé & Services Essentiels",
+          "badge": "Annexe III Catégorie 5",
+          "opening": "Englobe les dispositifs médicaux (août 2027) et les services publics (août 2026). Pas de refus autonome de prestations ou de triage.",
+          "faq": [
+              { "q": "Quelle est la date limite pour les dispositifs médicaux ?", "a": "L'IA intégrée aux dispositifs médicaux bénéficie d'une extension jusqu'en août 2027." }
+          ]
+        },
+        "law-enforcement": {
+          "title": "Application de la loi",
+          "badge": "Annexe III Catégorie 6",
+          "opening": "Systèmes restreints pour le scoring des risques ou la fiabilité des preuves. Évaluation par un tiers obligatoire. Interdit les actions basées uniquement sur le profilage.",
+          "faq": [
+              { "q": "Le profilage est-il autorisé pour l'application de la loi ?", "a": "Strictement limité. Les décisions ne peuvent pas être basées uniquement sur un profilage automatisé." }
+          ]
+        },
+        "migration-border-control": {
+          "title": "Migration & Frontières",
+          "badge": "Annexe III Catégorie 7",
+          "opening": "Évaluations des risques pour les visas/asile. Tiers obligatoire. Blocage strict des décisions d'asile autonomes.",
+          "faq": [
+              { "q": "L'IA peut-elle décider des demandes de visa ?", "a": "Non. Les agents d'immigration doivent examiner et valider toutes les actions à fort impact." }
+          ]
+        },
+        "justice-democracy": {
+          "title": "Justice & Démocratie",
+          "badge": "Annexe III Catégorie 8",
+          "opening": "IA pour la cartographie judiciaire des faits ou l'influence électorale. Tiers obligatoire. Toutes les sorties doivent être réservées à la recherche.",
+          "faq": [
+              { "q": "L'IA peut-elle aider au prononcé des peines ?", "a": "Oui, mais uniquement comme aide à la recherche non contraignante avec des marqueurs d'incertitude explicites." }
+          ]
+        }
+    }
+  },
+  "compliance": {
+    "hero": {
+      "badge": "Enterprise Ready",
+      "title": "One SDK.",
+      "emphasis": "Universal Compliance.",
+      "description": "SupraWall maps every autonomous agent tool call to specific regulatory requirements. Automate your compliance reporting and de-risk your AI transformation.",
+      "titlePrefix": "EU AI Act",
+      "titleEmphasis": "Compliance.",
+      "titleSuffix": "Solved."
+    },
+    "regulations": {
+      "title": "The Full Regulatory Stack",
+      "subtitle": "Direct features mapping to every enforcement deadline.",
+      "headers": {
+        "reg": "Regulation",
+        "deadline": "Enforcement",
+        "fine": "Max Fine",
+        "feature": "SupraWall Feature"
+      },
+      "rows": {
+        "euAiAct": {
+          "name": "EU AI Act",
+          "deadline": "Aug 2, 2026",
+          "fine": "€35M / 7%",
+          "feature": "Policy Engine, Audit Trail, HITL"
+        },
+        "gdpr": {
+          "name": "GDPR",
+          "deadline": "Active NOW",
+          "fine": "€20M / 4%",
+          "feature": "PII Shield, Audit Trail"
+        },
+        "nis2": {
+          "name": "NIS2",
+          "deadline": "Oct 2026",
+          "fine": "€10M / 2%",
+          "feature": "Incident logging, controls"
+        },
+        "dora": {
+          "name": "DORA",
+          "deadline": "Active NOW",
+          "fine": "1% daily income",
+          "feature": "Risk mgmt, audit trail"
+        },
+        "iso": {
+          "name": "ISO 42001",
+          "deadline": "Procurement",
+          "fine": "ROI / Sales",
+          "feature": "AIMS lifecycle docs"
+        }
+      }
+    },
+    "matrix": {
+      "title": "The Compliance Matrix",
+      "subtitle": "Every article. Every requirement. Every piece of evidence.",
+      "headers": {
+        "article": "Article",
+        "requirement": "Requirement",
+        "feature": "SupraWall Feature",
+        "evidence": "Evidence Generated"
+      }
+    },
+    "cta": {
+      "title": "The AI Compliance Evidence Kit",
+      "description": "Integrate SupraWall with any LLM framework and automate your Articles 12 & 14 requirements today.",
+      "cta": "Get Evidence Kit",
+      "checker": "Start Compliance Checker",
+      "titlePrefix": "Make Your Agents",
+      "titleEmphasis": "Legal-Proof",
+      "titleSuffix": "in One Line.",
+      "bookAudit": "Book Compliance Audit",
+      "viewDocs": "View Documentation"
+    },
+    "articles": {
+      "art12": {
+        "name": "Record-keeping",
+        "desc": "Automatic logging of events during the operation of high-risk AI systems.",
+        "feature": "Deterministic Audit Logs"
+      },
+      "art14": {
+        "name": "Human Oversight",
+        "desc": "Designing systems that can be effectively overseen by natural persons.",
+        "feature": "Human-in-the-loop Protocol"
+      },
+      "art10": {
+        "name": "Data Governance",
+        "desc": "Ensuring training and testing datasets are subject to appropriate governance.",
+        "feature": "Tool Access Control"
+      },
+      "art15": {
+        "name": "Robustness & Security",
+        "desc": "Appropriate level of robustness, accuracy and cybersecurity.",
+        "feature": "Deterministic Shim Layer"
+      }
+    },
+    "roadmap": {
+      "title": "Compliance Roadmap",
+      "subtitle": "How SupraWall ensures your AI agents remain within legal guardrails.",
+      "table": {
+        "head": {
+          "req": "Framework Requisition",
+          "control": "SupraWall Control",
+          "status": "Status"
+        },
+        "rows": {
+          "transparency": {
+            "req": "Transparency (Art 4b)",
+            "control": "System Prompt Injection Guards"
+          },
+          "techDoc": {
+            "req": "Technical Documentation (Art 11)",
+            "control": "Auto-generated Compliance PDF"
+          },
+          "riskMgmt": {
+            "req": "Risk Management (Art 9)",
+            "control": "Deterministic Out-of-bounds Detection"
+          },
+          "conformity": {
+            "req": "Conformity Assessment (Art 43)",
+            "control": "Validation Audit Trails"
+          }
+        }
+      }
+    }
+  },
+  "euAiActPillar": {
+    "hero": {
+      "badge": "Feuille de route de conformité à l'IA Act de l'UE pour août 2026",
+      "title": "L'IA Act de l'UE et",
+      "emphasis": "les agents d'IA.",
+      "description": "L'application commence le 2 août 2026. Les agents d'IA autonomes sont explicitement classés comme des systèmes d'IA à haut risque. Les amendes atteignent 30 millions d'euros. Voici votre feuille de route complète vers la conformité."
+    },
+    "countdown": {
+      "days": "Jours",
+      "hours": "Heures",
+      "minutes": "Minutes",
+      "seconds": "Secondes",
+      "label": "Jusqu'à l'application du 2 août 2026"
+    },
+    "articles": {
+      "title": "Les 4 articles critiques",
+      "subtitle": "Les articles 9, 12 et 14 sont les piliers techniques pour les agents d'IA autonomes.",
+      "a9": {
+        "title": "Gestion des risques",
+        "desc": "L'article 9 exige un système de gestion des risques continu pendant tout le cycle de vie."
+      },
+      "a12": {
+        "title": "Tenue de registres",
+        "desc": "L'article 12 impose l'enregistrement automatique des événements pour les systèmes d'IA à haut risque."
+      },
+      "a14": {
+        "title": "Surveillance humaine",
+        "desc": "L'article 14 exige que l'IA à haut risque permette une surveillance efficace."
+      }
+    }
+  },
+  "features": {
+    "hero": {
+      "badge": "6 Core Pillars",
+      "title": "Every Threat.",
+      "emphasis": "One SDK Shield.",
+      "description": "Deterministic security for the agentic future. Explore the six core capabilities that make SupraWall the production standard for autonomous AI agents."
+    },
+    "pillars": {
+      "vault": {
+        "title": "Credential Vault",
+        "desc": "Zero-knowledge secret injection for AI tools. Agents never see raw API keys or passwords — they only use authorized tokens."
+      },
+      "budget": {
+        "title": "Budget Limits",
+        "desc": "Hard caps on agent API spend. Prevent infinite loops and runaway costs with per-agent circuit breakers."
+      },
+      "policy": {
+        "title": "Policy Engine",
+        "desc": "Deterministic ALLOW/BLOCK rules for tool calls. Enforced outside the LLM context to prevent hallucinations and rogue actions."
+      },
+      "pii": {
+        "title": "PII Shield",
+        "desc": "Automatic outbound data scrubbing. Redact Names, Emails, SSNs, and custom patterns from tool payloads automatically."
+      },
+      "audit": {
+        "title": "Audit Trail",
+        "desc": "Immutable, signed logs of every action. One-click PDF evidence reports specifically for EU AI Act compliance."
+      },
+      "prompt": {
+        "title": "Prompt Shield",
+        "desc": "SDK-level injection protection. Enforce critical safety rules in binary code, where no indirect prompt injection can reach."
+      },
+      "cta": "Exploration Guide"
+    },
+    "convergence": {
+      "badge": "Convergence",
+      "title": "The One",
+      "emphasis": "Deterministic Layer.",
+      "dashboard": {
+        "title": "Consolidated Dashboard",
+        "desc": "Manage all six pillars from one central command center. See your total blocked exfiltrations, tokens scrubbed, and budget saved across your entire fleet.",
+        "cta": "Go to Dashboard"
+      },
+      "universal": {
+        "title": "Universal Integration",
+        "desc": "Whether you ship in LangChain, CrewAI, AutoGen, or Vercel AI, SupraWall works the same. One SDK to standardize security across your entire tech stack.",
+        "cta": "See Frameworks"
+      }
+    },
+    "howItWorks": {
+      "badge": "How it Works",
+      "title": "SDK-Level",
+      "emphasis": "Interception Point",
+      "p": "SupraWall sits between the LLM's request and the actual tool execution. It is not inside the prompt. It is binary code running on your server.",
+      "steps": {
+        "s1": {
+          "title": "Intercept",
+          "desc": "Tool call caught by SDK."
+        },
+        "s2": {
+          "title": "Validate",
+          "desc": "Policy engine run locally."
+        },
+        "s3": {
+          "title": "Enforce",
+          "desc": "Action blocked or allowed."
+        }
+      }
+    },
+    "final": {
+      "badge": "Take Control",
+      "title": "Wait for Chaos",
+      "emphasis": "Or Build on Stone.",
+      "description": "Don't patch your security one tool at a time. Standardize your agentic architecture with the six pillars of SupraWall.",
+      "cta": "Get Started for Free"
+    },
+    "try": {
+      "title": "Try It In",
+      "emphasis": "30 Seconds.",
+      "description": "No account required. Auto-detect your framework and wrap your agent with security in one command.",
+      "copy": "CLICK TO COPY",
+      "terminal": {
+        "detected": "Detected",
+        "secure": "secure it?",
+        "env": ".env updated with SUPRAWALL_API_KEY",
+        "wrapped": "wrapped with protect()",
+        "footer": "Your agent is now armored."
+      }
+    }
+  },
+  "pricing": {
+    "hero": {
+      "badge": "Gated Open Core — Free Until Production",
+      "title": "Start Free.",
+      "emphasis": "Scale With Confidence.",
+      "description": "Developer tier for solo builders. Business for scaling production. Enterprise for Article 9 compliance and legal-grade security.",
+      "stats": {
+        "interactions": "Interactions Secured",
+        "infra": "Ready Infrastructure",
+        "scale": "Production Scale"
+      }
+    },
+    "tiers": {
+      "dev": {
+        "title": "Developer",
+        "subtitle": "Self-host on your own infrastructure. No credit card.",
+        "price": "0",
+        "perks": "Free for individuals",
+        "features": [
+          "3 agents",
+          "10 vault secrets",
+          "10K ops / month",
+          "7-day audit logs",
+          "JSON status API (no PDF)",
+          "LangChain + Vercel AI plugins",
+          "PostgreSQL adapter",
+          "GitHub issues support"
+        ],
+        "cta": "View on GitHub"
+      },
+      "cloud": {
+        "title": "Cloud",
+        "subtitle": "Managed, compliance-ready. Unlimited agents & operations.",
+        "badge": "Most Popular",
+        "perks": {
+          "starter": "+ $0.002/eval after 50K",
+          "team": "+ $0.002/eval after 500K",
+          "business": "+ $0.001/eval after 5M"
+        },
+        "features": [
+          "Unlimited agents",
+          "Unlimited vault secrets (HSM)",
+          "90-day to 3-year retention",
+          "Layer 1 + Layer 2: AI semantic analysis",
+          "Behavioral anomaly detection (Business+)",
+          "Slack + Dashboard approvals",
+          "PDF compliance reports",
+          "All framework plugins (CrewAI, etc.)",
+          "Regulator-ready evidence",
+          "99.9% SLA"
+        ],
+        "cta": "Deploy Now"
+      },
+      "enterprise": {
+        "title": "Enterprise",
+        "subtitle": "Dedicated clusters, air-gapped, and certified safety.",
+        "price": "Custom",
+        "perks": "Starting at $25,000 / year",
+        "features": [
+          "Everything in Cloud",
+          "Self-hosted / VPC / Air-gapped",
+          "Layer 1 + Layer 2 + custom AI model",
+          "EU AI Act Compliance Suite",
+          "SSO + SCIM",
+          "White-label dashboard",
+          "7+ year audit retention",
+          "SOC 2 certified",
+          "Custom KMS + HSM",
+          "24/7 dedicated support + SLA",
+          "Annual contracts + POs"
+        ],
+        "cta": "Contact Sales"
+      }
+    },
+    "defense": {
+      "title": "Two-Layer",
+      "emphasis": "Defense Architecture",
+      "description": "Regex catches what you know. AI catches what you don't.",
+      "layer1": {
+        "title": "Layer 1 — Deterministic",
+        "badge": "All tiers",
+        "items": [
+          "Sub-2ms latency, zero network calls",
+          "Zero false negatives on known patterns",
+          "26+ regex rules (SQLi, XSS, prompt injection)",
+          "Budget caps, vault, scope verification",
+          "Deterministic — same input, same decision"
+        ]
+      },
+      "layer2": {
+        "title": "Layer 2 — AI Semantic",
+        "badge": "Team tier and above",
+        "items": [
+          "Context-aware argument analysis (LLM-powered)",
+          "Cross-tool attack sequence detection",
+          "Behavioral anomaly scoring (Business+)",
+          "Confidence routing: DENY / HITL / FLAG",
+          "Custom fine-tuned models (Enterprise)"
+        ]
+      }
+    },
+    "comparison": {
+      "title": "Full Feature",
+      "emphasis": "Comparison",
+      "labels": [
+        "Feature",
+        "Developer",
+        "Business",
+        "Enterprise"
+      ]
+    },
+    "roi": {
+      "title": "Measure Your",
+      "emphasis": "Security ROI.",
+      "description": "Cloud pricing that scales with your agent's autonomy.",
+      "volume": "Monthly Volume",
+      "tiers": {
+        "dev": {
+          "title": "Developer Tier",
+          "perk": "Up to 10K ops"
+        },
+        "selected": {
+          "perk": "/month"
+        },
+        "overage": {
+          "title": "Overage",
+          "perk": "Usage charges"
+        }
+      },
+      "table": [
+        {
+          "label": "0 – 10K",
+          "price": "Free"
+        },
+        {
+          "label": "10K – 500K",
+          "price": "$0.002"
+        },
+        {
+          "label": "500K – 2M",
+          "price": "$0.0015"
+        },
+        {
+          "label": "2M – 10M",
+          "price": "$0.001"
+        },
+        {
+          "label": "10M+",
+          "price": "$0.0005"
+        }
+      ],
+      "perEval": "/ eval"
+    },
+    "walls": {
+      "title": "The",
+      "emphasis": "Natural",
+      "suffix": "Upgrade Moments",
+      "items": [
+        {
+          "wall": "Wall 1",
+          "trigger": "4th agent",
+          "msg": "\"Developer only allows 3 agents\" → Business unlocks unlimited"
+        },
+        {
+          "wall": "Wall 2",
+          "trigger": "Regex fatigue",
+          "msg": "\"AI-powered policies needed\" → Higher tiers"
+        },
+        {
+          "wall": "Wall 3",
+          "trigger": "11th secret",
+          "msg": "\"10 secrets isn't enough for production Vault\" → Business"
+        },
+        {
+          "wall": "Wall 4",
+          "trigger": "Compliance audit",
+          "msg": "\"PDF reports needed, not JSON\" → Enterprise compliance"
+        },
+        {
+          "wall": "Wall 5",
+          "trigger": "8-day log",
+          "msg": "\"7-day retention is useless for an audit\" → Business"
+        },
+        {
+          "wall": "Wall 6",
+          "trigger": "Full SDK support",
+          "msg": "\"Developer only has 2 framework plugins\" → Business"
+        }
+      ],
+      "footer": "Each wall feels like \"I need the next tier\" — not \"this is broken.\""
+    },
+    "enterprise": {
+      "title": "Enterprise Compliance Suite",
+      "description": "For organizations with procurement requirements, air-gap mandates, and EU AI Act certification. Same infrastructure, elevated governance.",
+      "features": [
+        "Data Processing Agreement (DPA)",
+        "SOC 2 Type II Certification",
+        "99.99% SLA with Penalties",
+        "Article 9 Risk Templates",
+        "Dedicated Implementation Engineer",
+        "Named Account Executive"
+      ],
+      "cta": "Contact Enterprise"
+    }
+  },
+  "learn": {
+    "hero": {
+      "badge": "Learning Hub",
+      "subtitle": "Knowledge Hub",
+      "title": "AI Agent Security",
+      "description": "Master the standard rules for the autonomous agent era. Research, tutorials, and regulatory compliance — all in one SDK-first center.",
+      "featured": {
+        "badge": "Start Here: Featured Guide",
+        "title": "What is Agent Runtime Security (ARS)?",
+        "desc": "The definitive framework for securing autonomous systems in 2026.",
+        "cta": "Read Guide"
+      }
+    },
+    "categories": [
+      {
+        "title": "Security Fundamentals",
+        "articles": [
+          {
+            "title": "What is Agent Runtime Security?",
+            "desc": "The deterministic framework for AI safety."
+          },
+          {
+            "title": "Zero-Trust for AI Agents",
+            "desc": "Why agents should never trust their context."
+          },
+          {
+            "title": "Runtime AI Governance",
+            "desc": "Controlling decision-making in real-time."
+          },
+          {
+            "title": "AI Agent Security Bible",
+            "desc": "The core principles of agentic safety."
+          }
+        ]
+      },
+      {
+        "title": "EU AI Act & Compliance",
+        "articles": [
+          {
+            "title": "AI Act Compliance Guide",
+            "desc": "A practical developer's checklist."
+          },
+          {
+            "title": "Article 12: Audit Logging",
+            "desc": "Proof of monitoring requirements."
+          },
+          {
+            "title": "Article 14: Human Oversight",
+            "desc": "Enforcing the 'Kill Switch'."
+          },
+          {
+            "title": "August 2026 Deadline",
+            "desc": "Timeline for high-risk AI enforcement."
+          }
+        ]
+      },
+      {
+        "title": "Threats & Attacks",
+        "articles": [
+          {
+            "title": "Prompt Injection Control",
+            "desc": "How agents leak secrets to attackers."
+          },
+          {
+            "title": "Credential Theft Shield",
+            "desc": "Preventing tool call exfiltration."
+          },
+          {
+            "title": "Tool Call Hijacking",
+            "desc": "Hardening the identity handshake."
+          },
+          {
+            "title": "Infinite Loop Defense",
+            "desc": "Stopping runaway compute cycles."
+          }
+        ]
+      },
+      {
+        "title": "Cost & Operations",
+        "articles": [
+          {
+            "title": "Runaway Cost Prevention",
+            "desc": "Setting hard budgetary circuit breakers."
+          },
+          {
+            "title": "Setting Token Limits",
+            "desc": "Resource allocation for autonomous swarms."
+          },
+          {
+            "title": "Agentic Cost Management",
+            "desc": "Financial governance for agent fleets."
+          },
+          {
+            "title": "Usage Scaling Guide",
+            "desc": "Scaling safely without unbounded liability."
+          }
+        ]
+      },
+      {
+        "title": "Integration Guides",
+        "articles": [
+          {
+            "title": "MCP Server Security",
+            "desc": "Securing the Model Context Protocol."
+          },
+          {
+            "title": "LangChain Security Wrap",
+            "desc": "Middleware for Python and TS agents."
+          },
+          {
+            "title": "CrewAI Governance",
+            "desc": "Orchestrating manual task-level approvals."
+          },
+          {
+            "title": "What are Guardrails?",
+            "desc": "LLM safety vs. SDK-level enforcement."
+          }
+        ]
+      },
+      {
+        "title": "Glossary & Docs",
+        "articles": [
+          {
+            "title": "Security Glossary",
+            "desc": "Key terms for AI security engineers."
+          },
+          {
+            "title": "Risk Management",
+            "desc": "Quantifying agentic security threats."
+          },
+          {
+            "title": "Vault Architecture",
+            "desc": "Zero-trust credential injection."
+          },
+          {
+            "title": "Audit Trail API",
+            "desc": "Programmatic compliance retrieval."
+          }
+        ]
+      }
+    ],
+    "guidesSuffix": "Guides",
+    "readGuide": "Read Guide",
+    "browseByRegulation": "Browse by Regulation",
+    "browseByFramework": "Browse by Framework",
+    "footer": {
+      "badge": "Become a Certified Agent Sec Engineer",
+      "title": "From Learning",
+      "emphasis": "To Securing.",
+      "description": "Don't just read about the future — build it safely. Implement what you've learned with the SupraWall SDK today.",
+      "cta": "Implement SDK Now"
+    }
+  },
+  "about": {
+    "hero": {
+      "badge": "Our Mission",
+      "title": "Standardize the",
+      "emphasis": "Autonomous Future.",
+      "description": "SupraWall was founded in 2024 with a single conviction: Prompts are not security. As the world moves from <span class=\"text-white italic\">Chatbots</span> to <span class=\"text-white italic text-glow uppercase italic font-bold\">Autonomous Agents</span>, the industry needed a deterministic, binary-level safety layer."
+    },
+    "philosophy": {
+      "badge": "The Deterministic Pillar",
+      "title": "Security,",
+      "emphasis": "Not Advice.",
+      "description": "The current standard for “AI Safety” is to ask the LLM to be safe. We believe this is fundametally flawed. In a production environment, security must be enforced outside the model's context window — where it can't be manipulated by indirect prompt injections or model drift.",
+      "culture": "Engineering-first Culture",
+      "vision": {
+        "title": "Founding Vision",
+        "description": "To move agentic security into the binary runtime. To provide the world with the 1-line fixa for autonomous chaos. To ensure the agents we build today are the ones we control tomorrow."
+      }
+    },
+    "values": {
+      "badge": "Institutional Standards",
+      "title": "Every Sector.",
+      "emphasis": "Every Agent.",
+      "items": [
+        {
+          "title": "Transparency",
+          "desc": "No magic. We publish our interception methods and encourage third-party security audits."
+        },
+        {
+          "title": "Sovereignty",
+          "desc": "Your agents, your rules. We provide the substrate, but you own the enforcement policy."
+        },
+        {
+          "title": "Resilience",
+          "desc": "Our SDK is designed for mission-critical tasks in finance, legal, and healthcare."
+        }
+      ]
+    },
+    "footer": {
+      "badge": "Join the Movement",
+      "title": "Secure the",
+      "emphasis": "Uncontrolled.",
+      "description": "We are building the trust layer for the agentic internet. Come build it with us.",
+      "cta": "Get Started Now"
+    }
+  },
+  "forComplianceOfficers": {
+    "hero": {
+      "badge": "Compliance Landing",
+      "title": "Evidence Delivered.",
+      "emphasis": "Audit Won.",
+      "description": "Autonomous agents don't have to be a “black box.” SupraWall creates the immutable record for every tool call and blocked action."
+    },
+    "observability": {
+      "badge": "EU AI Act Articles 9, 11, 12, 14",
+      "title": "Automated",
+      "emphasis": "Observability.",
+      "description": "The EU AI Act requires developers of “High-Risk” agentic architectures to maintain continuous logging and human oversight. SupraWall automates this with signed, regulator-ready PDF reports produced directly from the SDK.",
+      "items": [
+        {
+          "title": "Article 12: Logging"
+        },
+        {
+          "title": "Article 14: Human Oversight"
+        },
+        {
+          "title": "Article 25: Data Protection"
+        }
+      ],
+      "report": {
+        "badge": "Signed PDF",
+        "title": "Conformity Assessment Report",
+        "signature": "RSA-4096 Signed",
+        "description": "This report confirms that of 41,200 agent tool calls, 29 blocks occurred based on Policy DP-14. Human approval was granted by 3 authorized engineers for all sensitive actions.",
+        "cta": "Download Audit Report"
+      }
+    },
+    "pillars": {
+      "badge": "Total Resilience",
+      "title": "Zero-Trust",
+      "emphasis": "Governance Standard.",
+      "items": [
+        {
+          "title": "Immutable Trail",
+          "desc": "Every action is hashed and signed at the source. Once recorded, the evidence cannot be altered."
+        },
+        {
+          "title": "Unified Risk Policy",
+          "desc": "Centralize your security policies across all internal and outbound agents in one dashboard."
+        },
+        {
+          "title": "Automated GDPR",
+          "desc": "Instantly satisfy data scrubbing requirements with the PII shield running on every integration."
+        }
+      ]
+    },
+    "footer": {
+      "badge": "For Regulators",
+      "title": "Audit Passed.",
+      "emphasis": "Risk Controlled.",
+      "description": "Don't wait for a compliance investigation. Arm your team with the evidence they need today.",
+      "cta": "Start Compliant"
+    },
+    "tryIn30Seconds": {
+      "title": "Try It In",
+      "emphasis": "30 Seconds.",
+      "description": "No account required. Auto-detect your framework and wrap your agent with security in one command.",
+      "copy": "CLICK TO COPY",
+      "armored": "Your agent is now armored."
+    }
+  },
+  "vs": {
+    "hero": {
+      "badge": "The Deterministic Edge",
+      "title": "Stop Guessing.",
+      "emphasis": "Start Intercepting.",
+      "description": "There are two ways to secure an AI agent: asking it to be safe (Probabilistic) or forcing it to be safe (Deterministic). SupraWall is the latter."
+    },
+    "cards": {
+      "winner": "Winner: SupraWall",
+      "loser": "Probabilistic Vibes",
+      "details": "DETAILED SHOWDOWN",
+      "vs": "SupraWall vs.",
+      "items": [
+        {
+          "title": "Lakera",
+          "desc": "Probabilistic prompt-based guardrails vs SDK-level deterministic interception.",
+          "pill": "LLM Safety",
+          "pros": [
+            "SDK Enforced",
+            "Vault Integration",
+            "Budget Circuit Breakers"
+          ]
+        },
+        {
+          "title": "Galileo",
+          "desc": "Monitoring & Observability vs Real-time, SDK-enforced policy boundaries.",
+          "pill": "Observability",
+          "pros": [
+            "Signed Audit Trail",
+            "Interception API",
+            "Human Oversight"
+          ]
+        },
+        {
+          "title": "NeMo Guardrails",
+          "desc": "Colang-based logic in the context window vs External binary enforcement.",
+          "pill": "Framework",
+          "pros": [
+            "No Context Leak",
+            "Zero Passivity",
+            "Immutable Policy"
+          ]
+        },
+        {
+          "title": "Guardrails AI",
+          "desc": "Structured output validation vs Total agentic runtime security.",
+          "pill": "Validation",
+          "pros": [
+            "Action Shield",
+            "Cost Control",
+            "Art. 12 Logs"
+          ]
+        },
+        {
+          "title": "Portkey",
+          "desc": "AI Gateways focused on traffic vs Security layers focused on agent actions.",
+          "pill": "Gateway",
+          "pros": [
+            "Sub-ms Latency",
+            "PII Scrubbing",
+            "Local Execution"
+          ]
+        },
+        {
+          "title": "Straiker",
+          "desc": "Automated agent testing vs Real-time agentic tool interception.",
+          "pill": "Testing",
+          "pros": [
+            "Production Ready",
+            "SDK Injection",
+            "EU AI Act Ready"
+          ]
+        }
+      ]
+    },
+    "table": {
+      "badge": "Direct Comparison",
+      "title": "Probabilistic vs.",
+      "emphasis": "Deterministic",
+      "headers": {
+        "metric": "Security Metric",
+        "alt": "Alternative Platforms",
+        "supra": "SupraWall SDK"
+      },
+      "rows": [
+        {
+          "metric": "Primary Defense",
+          "alt": "LLM Guardrails (Probabilistic)",
+          "supra": "SDK Interception (Deterministic)"
+        },
+        {
+          "metric": "Security Perimeter",
+          "alt": "Prompt Context Window",
+          "supra": "Binary Runtime Layer"
+        },
+        {
+          "metric": "Secret Protection",
+          "alt": "Zero (Agents access keys)",
+          "supra": "Vault Injection (Key-less agents)"
+        },
+        {
+          "metric": "Compliance Proof",
+          "alt": "Standard Logs",
+          "supra": "RSA-Signed Evidence Reports"
+        },
+        {
+          "metric": "Risk Of Override",
+          "alt": "High (Jailbreaking)",
+          "supra": "Zero (Bypassing logic impossible)"
+        }
+      ]
+    },
+    "faq": {
+      "badge": "Questions & Answers",
+      "title": "Still Unsure?",
+      "items": [
+        {
+          "q": "Is SupraWall just another LLM Guardrail?",
+          "a": "No. Guardrails rely on asking the LLM to behave. SupraWall is an SDK-level interceptor that enforces hard rules regardless of what the LLM wants."
+        },
+        {
+          "q": "Can I use SupraWall with LangChain?",
+          "a": "Yes. SupraWall integrates with one command into LangChain, CrewAI, and every major framework."
+        },
+        {
+          "q": "Does it add latency to tool calls?",
+          "a": "Minimal. Policy checks are performed locally on your node, typically adding <10ms to the total tool execution time."
+        },
+        {
+          "q": "Is there a free tier for developers?",
+          "a": "Yes. Our Community SDK is free for single-agent deployments and research use."
+        }
+      ]
+    }
+  },
+  "gdpr": {
+    "hero": {
+      "badge": "GDPR Compliance",
+      "title": "Zero-PII Leakage.",
+      "emphasis": "Automated.",
+      "description": "Stop sensitive data from leaving your network. SupraWall redacts PII before the tool call ever hits the external API."
+    },
+    "comparison": {
+      "title": "The Network Interception",
+      "insecureLabel": "Unprotected Context",
+      "secureLabel": "PII Shield Active",
+      "terminal": {
+        "header": "AGENT EXECUTION LOG",
+        "insecure": {
+          "status": "Payload contains PII",
+          "violation": "GDPR Violation Detected"
+        },
+        "secure": {
+          "status": "Payload Redacted",
+          "protection": "Zero-Trust Regimes Enforced"
+        }
+      },
+      "explain": {
+        "title": "Deterministic Obfuscation",
+        "p": "Don't rely on the LLM to 'be careful' with sensitive data. SupraWall sits between your agent and the internet, ensuring PII is stripped deterministically at the binary level.",
+        "features": {
+          "scrubbing": {
+            "title": "Outbound Scrubbing",
+            "desc": "SSNs, Emails, and Credit Cards replaced."
+          },
+          "logs": {
+            "title": "Clean Audit Logs",
+            "desc": "Compliance records stored with zero unmasked PII."
+          }
+        }
+      }
+    },
+    "final": {
+      "badge": "Start the Shield",
+      "title": "Secure the",
+      "emphasis": "Context Window.",
+      "description": "Don't leak user data to external API providers. Activate the PII shield and operate your agents with confidence.",
+      "cta": "Implémenter le SDK maintenant",
+      "guide": "Lire le guide développeur GDPR"
+    },
+    "deep": {
+      "titles": {
+        "art5": "Art. 5(1)(c): Data Minimization",
+        "art22": "Art. 22: Automated Decisions",
+        "art30": "Art. 30: ROPA Records"
+      },
+      "desc": {
+        "art5": "The PII Shield automatically redacts Names, SSNs, and Emails from tool call parameters before they leave your network, ensuring compliance with data minimization mandates.",
+        "art22": "SupraWall's Human-in-the-Loop (HITL) protocol ensures that high-impact agentic actions are reviewed by a human operator, satisfying Article 22's oversight requirements.",
+        "art30": "The immutable, RSA-signed audit trail serves as the primary record for all agentic data processing activities, directly feeding your ROPA reports."
+      }
+    }
+  },
+  "qa": {
+    "isLangChainSecure": {
+      "title": "LangChain est-il sécurisé ?",
+      "answer": "LangChain est un framework, pas une couche de sécurité. Bien que les versions actuelles soient plus sûres que les premières versions, les agents LangChain sont intrinsèquement vulnérables à l'injection de prompts et à l'exécution non autorisée d'outils, à moins d'être protégés par un garde-fou (guardrail) déterministe au moment de l'exécution. La sécurité doit être gérée à la limite d'exécution du SDK pour garantir que les actions autonomes restent dans les limites de politique définies.",
+      "risk1Title": "Utilisation d'outils non autorisée",
+      "risk1Desc": "Les agents peuvent décider de manière autonome d'appeler des outils shell ou de base de données destructeurs.",
+      "risk2Title": "Fuite de données",
+      "risk2Desc": "Les LLM peuvent accidentellement divulguer des données personnelles (PII) via les paramètres des outils sortants.",
+      "solutionTitle": "Sécurisation de votre flotte",
+      "solutionP": "Pour sécuriser LangChain en production, implémentez **SupraWall**. Il agit comme un shim de sécurité piloté par callbacks qui intercepte chaque invocation d'outil *avant* l'exécution, offrant une couche de protection déterministe qui persiste même si le contexte de prompt de l'agent est détourné.",
+      "guideLink": "Voir le guide d'implémentation de la sécurité LangChain"
+    },
+    "whatIsPromptInjection": {
+      "title": "Qu'est-ce que l'injection de prompts ?",
+      "answer": "L'injection de prompts est une vulnérabilité de sécurité où un attaquant fournit une entrée malveillante qui détourne les instructions d'un LLM, le forçant à ignorer son prompt système d'origine et à exécuter des actions non autorisées, telles que l'exfiltration de données, l'accès à des outils non autorisés ou le contournement des garde-fous de sécurité.",
+      "direct": "Injection Directe",
+      "directDesc": "L'utilisateur tape directement \"Ignore les instructions précédentes et...\"",
+      "indirect": "Injection Indirecte",
+      "indirectDesc": "L'agent lit un fichier externe ou une page Web contenant des commandes malveillantes.",
+      "solutionTitle": "La couche de prévention",
+      "solutionP": "L'injection de prompts ne peut pas être résolue uniquement par de \"meilleurs prompts\". Elle nécessite une Sécurité d'Exécution de l'Agent (ARS) — une couche d'interception déterministe qui valide les appels d'outils *en dehors* du contexte du LLM.",
+      "productAction": "Interception SupraWall",
+      "productDesc": "Bloque automatiquement l'exécution d'outils non autorisés même si le LLM est compromis.",
+      "guideLink": "Lire le guide complet sur la prévention de l'injection de prompts"
+    },
+    "howToComplyArticle12": {
+      "title": "Article 12 de l'IA Act de l'UE",
+      "answer": "L'article 12 de l'IA Act de l'UE exige que les systèmes d'IA à « haut risque » enregistrent automatiquement les événements (logs) tout au long de leur durée de vie. Pour les agents autonomes, cela se traduit par des pistes d'audit immuables et déterministes de chaque invocation d'outil, entrée de données et origine d'instruction, garantissant la traçabilité et la responsabilité des décisions de l'IA.",
+      "checklistTitle": "Liste de contrôle de l'article 12",
+      "step1Title": "Journalisation automatique des événements",
+      "step1Desc": "Les logs doivent être générés en temps réel, indépendamment du contexte du LLM.",
+      "step2Title": "Traçabilité",
+      "step2Desc": "Chaque appel d'outil doit être lié à une version de politique et à un identifiant de session spécifiques.",
+      "step3Title": "Protection de l'intégrité",
+      "step3Desc": "Les logs d'audit doivent être stockés dans un environnement inviolable (équivalent SOC2 type 2).",
+      "solutionTitle": "Automatisation de la conformité",
+      "solutionP": "Le SDK de SupraWall agit comme le moteur de conformité de l'article 12 en interceptant automatiquement les appels d'outils à la limite de l'exécution et en les diffusant vers un registre d'audit immuable. Cela garantit que chaque action « raisonnée » d'un agent est traçable jusqu'à une instruction source en cas d'audit réglementaire.",
+      "guideLink": "Voir le mappage détaillé de l'article 12"
+    }
+  },
+  "nichePages": {
+    "hr": {
+      "hero": {
+        "badge": "Annexe III Catégorie 4 · RGPD Article 22",
+        "urgency": "2 août 2026 — Date limite d'application de l'IA Act de l'UE",
+        "title": "Vos recruteurs utilisent ChatGPT pour les CV.",
+        "emphasis": "Voici ce que la loi européenne exige désormais.",
+        "description": "La plupart des équipes RH en Europe utilisent déjà l'IA pour la présélection des candidats. Presque aucune d'entre elles ne sait que le faire sans garde-fous est devenu une violation de la loi depuis le 2 août 2026."
+      },
+      "story": {
+        "label": "Un scénario qui se déroule aujourd'hui dans de nombreuses entreprises",
+        "quote": "Un recruteur ouvre ChatGPT, colle le CV complet d'un candidat et tape : « Cette personne correspond-elle au profil recherché ? » Le LLM répond avec une note et un résumé. Le recruteur passe au suivant. Aucune piste d'audit. Aucun contrôle des biais. Aucune validation humaine. À compter du 2 août 2026, il s'agit d'une violation de conformité passible de sanctions pouvant atteindre 35 millions d'euros ou 7 % du chiffre d'affaires mondial."
+      },
+      "behaviors": {
+        "title": "Ce que fait votre équipe RH en ce moment",
+        "subtitle": "Ce sont les comportements spécifiques qui déclenchent l'exposition à l'Annexe III et au RGPD.",
+        "items": [
+          { "icon": "upload", "title": "Téléchargement de CV sur des LLMs publics", "desc": "Les CV complets des candidats — contenant des noms, des adresses, des diplômes et des antécédents professionnels — sont directement copiés dans ChatGPT, Gemini ou Claude. Ces données sont traitées par des serveurs externes." },
+          { "icon": "filter", "title": "Présélection générée par l'IA", "desc": "Les recruteurs demandent aux LLMs de classer ou de filtrer les candidats. Lorsqu'une recommandation de l'IA influence qui passe un entretien, cela déclenche l'article 22 du RGPD : le droit de ne pas faire l'objet d'une prise de décision automatisée." },
+          { "icon": "missing-trail", "title": "Pas de piste d'audit", "desc": "L'article 12 de l'IA Act de l'UE exige un enregistrement documenté de chaque décision d'IA à haut risque. Les conversations ChatGPT sont éphémères." },
+          { "icon": "bias", "title": "Aucune documentation sur les biais", "desc": "L'IA Act exige que les systèmes d'IA à haut risque démontrent qu'ils ne discriminent pas. Les LLM standards n'ont pas d'audit de biais intégré." }
+        ]
+      },
+      "exposure": {
+        "title": "L'exposition juridique spécifique",
+        "subtitle": "Trois règles, toutes déclenchées en même temps.",
+        "items": [
+          { "tag": "IA Act de l'UE — Annexe III Cat. 4", "title": "Votre IA est classée « Haut Risque »", "desc": "Toute IA utilisée pour la sélection de CV ou l'évaluation des performances est explicitement classée comme IA à haut risque. Cela déclenche un cadre de conformité obligatoire." },
+          { "tag": "RGPD — Article 22", "title": "Droit à une décision humaine", "desc": "Le traitement automatisé qui « affecte de manière significative » une personne exige une décision humaine comme autorité finale." },
+          { "tag": "IA Act de l'UE — Article 12", "title": "Vous devez avoir une piste d'audit", "desc": "Chaque action d'une IA à haut risque doit être automatiquement consignée." }
+        ]
+      },
+      "compliantPath": {
+        "title": "À quoi ressemble un processus RH IA conforme",
+        "subtitle": "Vous ne devez pas interdire l'IA. Vous devez la gouverner.",
+        "steps": [
+          { "step": "01", "title": "Classifiez vos outils", "desc": "Si un outil touche aux données des candidats, il est Annexe III Catégorie 4 par défaut. Commencez par un inventaire." },
+          { "step": "02", "title": "Réaliser une AIPD", "desc": "Une Analyse d'Impact sur la Protection des Données est exigée par la loi avant le déploiement." },
+          { "step": "03", "title": "Exiger des pistes d'audit", "desc": "Le SDK de SupraWall intercepte les appels d'outils et écrit automatiquement des audits signés." },
+          { "step": "04", "title": "Validation humaine (HITL)", "desc": "L'IA peut assister, l'humain doit décider. SupraWall achemine toutes les sorties RH vers un responsable." },
+          { "step": "05", "title": "Activer le modèle de conformité RH", "desc": "Le modèle RH de SupraWall implémente ces contrôles en une seule importation." }
+        ]
+      },
+      "faq": [
+        { "q": "Pouvons-nous encore utiliser l'IA en RH ?", "a": "Oui — mais avec une infrastructure conforme. L'IA ne peut être le seul décideur." },
+        { "q": "Devons-nous en informer les candidats ?", "a": "Oui. L'article 13/14 du RGPD exige la transparence sur les décisions automatisées." },
+        { "q": "Et si on utilise l'IA juste pour le premier tri ?", "a": "Diminuer un pool de candidats reste une décision couverte par l'article 22 du RGPD." }
+      ],
+      "ctaDev": { "label": "Activer le modèle RH", "href": "/compliance-templates/hr-employment", "sublabel": "Une importation. Annexe III + RGPD Article 22 configurés." },
+      "ctaBusiness": { "label": "Réserver un appel de conformité", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Pour les DRH et Directeurs des Ressources Humaines. Évaluation de 30 minutes." }
+    },
+    "banking": {
+      "hero": {
+        "badge": "DORA · IA Act de l'UE Annexe III · MiFID II",
+        "urgency": "DORA actif maintenant. IA Act de l'UE : 2 août 2026.",
+        "title": "Votre banque a interdit les LLM.",
+        "emphasis": "Voici comment réintroduire l'IA en toute sécurité.",
+        "description": "La plupart des banques européennes ont interdit ChatGPT pour protéger les données clients. C'était la bonne décision. Aujourd'hui, vos équipes sont plus lentes que vos concurrents qui ont trouvé une solution."
+      },
+      "story": {
+        "label": "La séquence qui a déclenché l'interdiction de l'IA",
+        "quote": "Un analyste colle un mémo de crédit confidentiel, un autre télécharge les documents d'intégration d'un client. Le RSSI bloque l'accès aux LLM publics en moins de 24h. Six mois plus tard, les mêmes collaborateurs utilisent leurs téléphones personnels, créant un risque de sécurité supérieur."
+      },
+      "behaviors": {
+        "title": "Pourquoi l'interdiction ne fonctionne pas",
+        "subtitle": "Interdire l'IA ne l'arrête pas, cela la pousse dans la clandestinité.",
+        "items": [
+          { "icon": "bypass", "title": "Contournement des contrôles", "desc": "Les employés utilisent le réseau personnel, diminuant votre visibilité." },
+          { "icon": "competitive", "title": "Désavantage concurrentiel", "desc": "Les équipes de vos concurrents avec une IA gouvernée sont 3 à 5 fois plus rapides." },
+          { "icon": "scope", "title": "La portée de l'interdiction est erronée", "desc": "Le risque n'est pas « l'IA », c'est « la fuite des données clients ». Un moteur de politique, pas une interdiction, résout cela." }
+        ]
+      },
+      "exposure": {
+        "title": "Les vraies exigences de conformité",
+        "subtitle": "Quatre cadres réglementaires. Une solution d'infrastructure.",
+        "items": [
+          { "tag": "DORA — Article 8", "title": "Risque lié aux TIC", "desc": "DORA exige une évaluation des risques informatiques." },
+          { "tag": "IA Act de l'UE — Annexe III", "title": "Score de crédit", "desc": "Les décisions de crédit via IA sont à Haut Risque." },
+          { "tag": "RGPD", "title": "Résidence des données", "desc": "Les données financières ne peuvent quitter le périmètre de l'UE sans mécanismes valides." },
+          { "tag": "MiFID II", "title": "Tenue de registres", "desc": "L'IA aidant au conseil en investissement est soumise aux obligations d'enregistrement de la MiFID II." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Levez l'interdiction. Gardez le contrôle.",
+        "subtitle": "Une IA conforme pour les services financiers.",
+        "steps": [
+          { "step": "01", "title": "Définir les cas d'usage", "desc": "Résumés internes contre décisions de crédit." },
+          { "step": "02", "title": "Moteur de politique", "desc": "Décider quelles données peuvent aller à quel outil." },
+          { "step": "03", "title": "Résidence EU", "desc": "Sécuriser les flux sur des serveurs européens." },
+          { "step": "04", "title": "Audit DORA", "desc": "Générer la documentation des incidents TIC." },
+          { "step": "05", "title": "Activer le modèle bancaire", "desc": "Modèle DORA + IA Act de SupraWall." }
+        ]
+      },
+      "faq": [
+        { "q": "DORA s'applique-t-il à toutes les banques ?", "a": "Oui, ainsi qu'aux assureurs et fournisseurs de services de crypto-actifs de l'UE." },
+        { "q": "Un contrat Entreprise avec OpenAI suffit-il ?", "a": "Il couvre les données, pas l'évaluation des risques DORA ni les audits de l'IA Act." }
+      ],
+      "ctaDev": { "label": "Activer le modèle Bancaire", "href": "/compliance-templates/critical-infrastructure", "sublabel": "DORA + Annexe III préconfigurés." },
+      "ctaBusiness": { "label": "Appel Conformité Bancaire", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Pour RSSI et Directeurs du Risque Numérique." }
+    },
+    "healthcare": {
+      "hero": {
+        "badge": "Annexe III Catégorie 5 · RGPD Article 9",
+        "urgency": "2 août 2026 pour les services. Août 2027 pour l'IA embarquée.",
+        "title": "Vos équipes cliniques utilisent l'IA.",
+        "emphasis": "Voici le risque de l'Annexe III.",
+        "description": "Les données médicales sont des données de catégorie particulière (RGPD). Traitées par une IA, cela déclenche le statut 'Haut Risque' de l'IA Act (Annexe III)."
+      },
+      "story": {
+        "label": "Un scénario en cours dans les hôpitaux français",
+        "quote": "Une infirmière utilise ChatGPT pour résumer le dossier psychiatrique d'un patient. Aucun audit. Aucune protection des données PII. C'est à la fois une violation de l'article 9 du RGPD et un manquement de l'IA Act."
+      },
+      "behaviors": {
+        "title": "Pratiques générant un risque juridique",
+        "subtitle": "Ces pratiques courantes contournent l'équipe de conformité.",
+        "items": [
+          { "icon": "notes", "title": "Notes cliniques via IA", "desc": "L'utilisation de LLMs extérieurs." },
+          { "icon": "triage", "title": "Triage assisté par l'IA", "desc": "Influencer la priorité d'urgences via IA est à Haut Risque." },
+          { "icon": "records", "title": "Résumés", "desc": "Absence de contrôles." },
+          { "icon": "admin", "title": "Gestion", "desc": "Risques associés." }
+        ]
+      },
+      "exposure": {
+        "title": "Deux cadres, un appel",
+        "subtitle": "RGPD et IA Act se rejoignent.",
+        "items": [
+          { "tag": "RGPD", "title": "Art 9", "desc": "Données sensibles de santé." },
+          { "tag": "IA Act", "title": "Annexe III", "desc": "Santé = Haut Risque." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Rejoindre la conformité IA Clinique",
+        "subtitle": "Avec SupraWall.",
+        "steps": [
+          { "step": "01", "title": "Classification", "desc": "Inventaire." },
+          { "step": "02", "title": "AIPD", "desc": "DPIA obligatoire." },
+          { "step": "03", "title": "Nettoyage PII", "desc": "Masquage." },
+          { "step": "04", "title": "HITL", "desc": "Validation." },
+          { "step": "05", "title": "Activer le modèle", "desc": "Installation." }
+        ]
+      },
+      "faq": [
+        { "q": "Avons-nous jusqu'en 2027 ?", "a": "Seulement pour les dispositifs médicaux intégrés. Pour la gestion administrative, c'est 2026." }
+      ],
+      "ctaDev": { "label": "Modèle Santé", "href": "/compliance-templates/healthcare", "sublabel": "IA Act + RGPD." },
+      "ctaBusiness": { "label": "Réserver avec SupraWall", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Directions d'hôpitaux." }
+    },
+    "legal": {
+      "hero": {
+        "badge": "Secret Professionnel · RGPD · IA Act",
+        "urgency": "Risque direct pour la profession d'avocat.",
+        "title": "Des cabinets exposent leurs dossiers via l'IA.",
+        "emphasis": "Voici le risque de responsabilité civile.",
+        "description": "Le secret professionnel est vital. L'envoi de documents à de très grands modèles d'IA sans garde-fous l'efface."
+      },
+      "story": {
+        "label": "Fuite de confidentialité",
+        "quote": "Un jeune collaborateur résume une acquisition via ChatGPT."
+      },
+      "behaviors": {
+        "title": "Pourquoi vos avocats trichent",
+        "subtitle": "Rapidité l'emporte souvent.",
+        "items": [
+          { "icon": "upload-doc", "title": "Upload public", "desc": "Bris de confidentialité." },
+          { "icon": "draft", "title": "Recherche", "desc": "Hallucinations." },
+          { "icon": "research", "title": "Avis", "desc": "Sans vérification." },
+          { "icon": "discovery", "title": "Audits", "desc": "Sans audit trail." }
+        ]
+      },
+      "exposure": {
+        "title": "Problèmes",
+        "subtitle": "Gros problèmes.",
+        "items": [
+          { "tag": "Secret pro", "title": "Perte de privilège", "desc": "Dommages." },
+          { "tag": "RGPD", "title": "Fin non prévue", "desc": "Mettre l'IA au travail est illégal." },
+          { "tag": "IA Act", "title": "Recherche influençable", "desc": "Recherche trompeuse." }
+        ]
+      },
+      "compliantPath": {
+        "title": "Le chemin de la sécurité",
+        "subtitle": "Conformité en 5 étapes.",
+        "steps": [
+          { "step": "01", "title": "Évaluer", "desc": "Ce qui se passe." },
+          { "step": "02", "title": "Gérer", "desc": "Politiques." },
+          { "step": "03", "title": "Installer le Vault", "desc": "Rétention des données." },
+          { "step": "04", "title": "Divulgation", "desc": "Aux assurances/client." },
+          { "step": "05", "title": "Activer le SDK", "desc": "Via le modèle Justice/Démocratie." }
+        ]
+      },
+      "faq": [
+        { "q": "Mon abonnement Microsoft Copilot M365 est-il conforme à l'IA Act?", "a": "Il offre de meilleures frontières de sécurité que ChatGPT public, mais il ne fournit pas automatiquement les pistes d'audit immuables exigées par l'IA Act de l'UE pour l'IA à haut risque." }
+      ],
+      "ctaDev": { "label": "Activer Modèle Légal", "href": "/compliance-templates/justice-democracy", "sublabel": "PII et Audit." },
+      "ctaBusiness": { "label": "Appel d'Évaluation", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Avocats associés." }
+    },
+    "executives": {
+      "hero": {
+        "badge": "Gouvernance de l'IA pour le Conseil",
+        "urgency": "L'IA Act s'applique en août 2026.",
+        "title": "Votre entreprise utilise l'IA.",
+        "emphasis": "Votre CA posera ces questions dans 90 jours.",
+        "description": "Les pénalités de l'IA Act de l'UE vont jusqu'à 35 millions d'euros ou 7 % du chiffre d'affaires. Préparez vos réponses."
+      },
+      "story": {
+        "label": "La question du COMEX aujourd'hui",
+        "quote": "« Nous utilisons l'IA partout. Sommes-nous en règle ? Qui est pénalement responsable ? » Les administrateurs indépendants posent déjà la question."
+      },
+      "boardQuestions": {
+        "title": "Les 5 questions clés",
+        "subtitle": "Soyez prêt.",
+        "items": [
+          { "q": "En règle avec l'IA Act ?", "a": "Demande un inventaire des outils Annexe III, DPID, etc." },
+          { "q": "Amende max ?", "a": "Jusqu'à 7 % du CA mondial (supérieur au RGPD)." },
+          { "q": "Responsable ?", "a": "Le « déployeur » (votre entreprise) est responsable, pas OpenAI." },
+          { "q": "Registre de risques ?", "a": "L'article 9 l'exige." },
+          { "q": "Employé frauduleux ?", "a": "L'entreprise employeuse reste responsable de l'accès aux comptes professionnels." }
+        ]
+      },
+      "riskMap": {
+        "title": "Risques par équipe",
+        "subtitle": "Examinez.",
+        "items": [
+          { "dept": "RH", "regulation": "Annexe 3 Cat 4 + RGPD 22", "risk": "Recrutement/tri de CV par l'IA", "urgency": "critical" },
+          { "dept": "Finance", "regulation": "DORA + Annexe 3", "risk": "Décisions de crédit automatisées", "urgency": "critical" },
+          { "dept": "Santé", "regulation": "RGPD 9 + Annexe 3 Cat 5", "risk": "Prise de notes cliniques assistée", "urgency": "critical" },
+          { "dept": "Légal", "regulation": "RGPD 5 + Secret pro", "risk": "Téléchargements de documents vers LLMs publics", "urgency": "high" },
+          { "dept": "Opérations", "regulation": "Annexe 3 Cat 2", "risk": "Gestion de l'infrastructure via l'IA", "urgency": "medium" }
+        ]
+      },
+      "actionPlan": {
+        "title": "Plan d'action de 30 jours",
+        "subtitle": "Pour agir.",
+        "steps": [
+          { "step": "Semaine 1", "title": "Inventaire de l'IA", "desc": "Identifier tous les outils d'IA utilisés." },
+          { "step": "Semaine 1", "title": "Classification des risques", "desc": "Vérifier si ces outils sont de l'Annexe III." },
+          { "step": "Semaine 2", "title": "AIPD pour le haut risque", "desc": "Lancer les analyses d'impact." },
+          { "step": "Semaine 2", "title": "Déploiement du moteur de stratégie", "desc": "Définir les règles d'accès de manière déterministe." },
+          { "step": "Semaine 3", "title": "Activation de la piste d'audit", "desc": "S'assurer de l'enregistrement de toutes les décisions." },
+          { "step": "Semaine 4", "title": "Rapport du CA", "desc": "Présenter le kit de preuves." }
+        ]
+      },
+      "ctaDev": { "label": "Kit de preuves", "href": "/compliance-templates", "sublabel": "Côté tech/ingé." },
+      "ctaBusiness": { "label": "Briefing", "href": "mailto:enterprise@supra-wall.com", "sublabel": "Direction." }
+    },
+    "shared": {
+      "urgencyBadge": "2 août 2026",
+      "faqTitle": "Questions Fréquentes",
+      "backToLearn": "Retour",
+      "relatedTemplates": "Modèles Liés",
+      "sdkPath": "Voie Technologique",
+      "businessPath": "Voie C-Suite",
+      "dualCtaTitle": "Deux façons",
+      "dualCtaSubtitle": "Pour gérer cela."
+    }
+  }
+}

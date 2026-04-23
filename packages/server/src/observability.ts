@@ -41,6 +41,7 @@ export function observabilityMiddleware(req: Request, res: Response, next: NextF
             response_time_ms: duration,
             tenant_id: authReq.tenantId || null,
             tier: (authReq as any).tier || null,
+            paperclip_event: req.baseUrl.includes('paperclip'),
             error: res.statusCode >= 400
         });
     });

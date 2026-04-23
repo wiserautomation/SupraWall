@@ -39,8 +39,8 @@ Deploy an agent with budget limits and tool restrictions in a single `POST` requ
     ],
     "vault": [
       {
-        "secretName": "API_KEY_EXAMPLE",
-        "allowedTools": ["processor"],
+        "secretName": "STRIPE_API_KEY",
+        "allowedTools": ["payment_processor"],
         "requiresApproval": true
       }
     ]

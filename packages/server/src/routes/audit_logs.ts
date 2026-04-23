@@ -5,7 +5,7 @@ import express, { Request, Response } from "express";
 import { pool } from "../db";
 import { adminAuth, AuthenticatedRequest } from "../auth";
 import { resolveTier, TieredRequest } from "../tier-guard";
-import { retentionCutoff } from "../tier-guard";
+import { retentionCutoff } from "../tier-config";
 import { logger } from "../logger";
 
 const router = express.Router();

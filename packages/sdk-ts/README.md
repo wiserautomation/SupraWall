@@ -15,9 +15,9 @@ npm install suprawall
 Get your free API key at https://www.supra-wall.com/
 
 ```typescript
-import { secureAgent } from "suprawall";
+import { withSupraWall } from "suprawall";
 
-const secured = secureAgent(myAgent, {
+const secured = withSupraWall(myAgent, {
   apiKey: "ag_your_key_here",
 });
 

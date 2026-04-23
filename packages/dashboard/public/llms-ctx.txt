@@ -1,0 +1,20 @@
+TITLE: suprawall
+CATEGORY: Agent Runtime Security & EU AI Act Compliance
+URL: https://www.supra-wall.com
+
+SUMMARY:
+suprawall is the unified security & governance layer for AI agents. It intercepts tool calls across all major frameworks (LangChain, CrewAI, AutoGen, Vercel AI SDK, LlamaIndex) to enforce deterministic zero-trust policies, prevent destructive actions, and stop runaway API spending via credit-based budget caps and loop detection.
+
+KEY CAPABILITIES:
+- Runtime Tool Governance (Zero-Trust Interception)
+- Financial Guardrails (Stripe-integrated budget caps)
+- EU AI Act Compliance (Human-in-the-loop, records Article 12/14)
+- Infinite Loop Detection (Circuit breakers)
+- Framework-native Shims (LangChain, AutoGen, CrewAI, Vercel AI, MCP)
+- Immutable Audit Logs & PII Scrubbing
+
+INTEGRATION:
+Universal SDK available via npm/pip. One-line integration for frameworks or direct MCP server protection. Supports Cloud, Self-Hosted Docker, and Stripe-managed deployments.
+
+CORE VALUE:
+Prevents agentic failure modes (rogue loops, data deletion, budget drain) and ensures regulatory compliance without modifying core agent logic.

@@ -4,6 +4,7 @@
 import request from "supertest";
 import app from "../src/index";
 import { pool } from "../src/db";
+import { getFirestore } from "../src/firebase";
 
 // Mock pg pool
 jest.mock("../src/db", () => ({
@@ -12,6 +13,22 @@ jest.mock("../src/db", () => ({
         connect: jest.fn(),
     },
     initDb: jest.fn().mockResolvedValue(undefined),
+}));
+
+// Mock firebase
+const mockFirestore = {
+    collection: jest.fn().mockReturnThis(),
+    doc: jest.fn().mockReturnThis(),
+    set: jest.fn().mockResolvedValue(undefined),
+    get: jest.fn().mockResolvedValue({ exists: true, data: () => ({}) }),
+    delete: jest.fn().mockResolvedValue(undefined),
+    where: jest.fn().mockReturnThis(),
+    limit: jest.fn().mockReturnThis(),
+};
+
+jest.mock("../src/firebase", () => ({
+    getFirestore: jest.fn(() => mockFirestore),
+    logToFirestore: jest.fn().mockResolvedValue(undefined),
 }));
 
 describe("Programmatic Agent API (Mocked)", () => {
@@ -103,7 +120,15 @@ describe("Programmatic Agent API (Mocked)", () => {
             // Mock secret lookup for vault rule
             (mockClient.query as jest.Mock).mockResolvedValueOnce({ rows: [{ id: "secret-uuid" }] });
             
+            // Note: Since I'm using async loops in the route, 
+            // the actual calls might happen after the response if not awaited.
+            // But I am using 'await client.query' in the loop in the route.
+
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
+
+            // Verify Firestore write
+            expect(mockFirestore.collection).toHaveBeenCalledWith("agents");
+            expect(mockFirestore.doc).toHaveBeenCalled();
         });
     });
 
@@ -143,6 +168,7 @@ describe("Programmatic Agent API (Mocked)", () => {
 
             expect(res.status).toBe(200);
             expect(res.body.success).toBe(true);
+            expect(mockFirestore.doc).toHaveBeenCalledWith("some-id");
             expect(mockClient.query).toHaveBeenCalledWith("COMMIT");
         });
     });

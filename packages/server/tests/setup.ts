@@ -174,5 +174,19 @@ jest.mock("../src/db", () => {
     };
 });
 
-// Firebase has been removed from the open-source build; PostgreSQL is the
-// only supported backing store, so no Firestore mock is required here.
+// ---------------------------------------------------------------------------
+// GLOBAL FIREBASE MOCK
+// ---------------------------------------------------------------------------
+
+jest.mock("../src/firebase", () => ({
+    getFirestore: jest.fn(() => ({
+        collection: jest.fn().mockReturnThis(),
+        doc: jest.fn().mockReturnThis(),
+        set: jest.fn().mockResolvedValue(undefined),
+        get: jest.fn().mockResolvedValue({ exists: true, data: () => ({}) }),
+        delete: jest.fn().mockResolvedValue(undefined),
+        where: jest.fn().mockReturnThis(),
+        limit: jest.fn().mockReturnThis(),
+    })),
+    logToFirestore: jest.fn().mockResolvedValue(undefined),
+}));

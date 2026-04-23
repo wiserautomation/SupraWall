@@ -3,11 +3,15 @@
 
 import { Request, Response, NextFunction } from "express";
 import { pool } from "./db";
+import { getAuth } from "./firebase";
 import { AuthProvider, AgentInfo } from "./auth/types";
 import { PostgresAuthProvider } from "./auth/postgres";
 import { logger } from "./logger";
 import { hashApiKey } from "./util/hash";
-import { TIER_LIMITS } from "./tier-guard";
+import { checkEvaluationLimit } from "./tier-guard";
+import { TIER_LIMITS } from "./tier-config";
+
+const TEMP_KEY_EVAL_LIMIT = 50;
 
 // Re-export types for backward compatibility
 export type { AgentInfo } from "./auth/types";
@@ -16,15 +20,32 @@ export type { AuthProvider } from "./auth/types";
 export interface AuthenticatedRequest extends Request {
     agent?: AgentInfo;
     tenantId?: string;
-    userEmail?: string;
+    userEmail?: string; // Set when authenticated via Firebase ID token (not master key)
 }
 
 /**
  * Initialize the auth provider based on configuration.
- * OSS version defaults to PostgresAuthProvider.
+ *
+ * Priority:
+ *   1. AUTH_PROVIDER=firebase → FirebaseAuthProvider (requires firebase-admin)
+ *   2. AUTH_PROVIDER=postgres → PostgresAuthProvider (default)
+ *   3. No config → PostgresAuthProvider
  */
 function createAuthProvider(): AuthProvider {
-    logger.info("[Auth] Initializing PostgresAuthProvider (OSS)");
+    const providerType = (process.env.AUTH_PROVIDER || "postgres").toLowerCase();
+
+    if (providerType === "firebase") {
+        try {
+            const { FirebaseAuthProvider } = require("./auth/firebase");
+            logger.info("[Auth] Using FirebaseAuthProvider");
+            return new FirebaseAuthProvider();
+        } catch (e) {
+            logger.warn("[Auth] Firebase provider requested but failed to load. Falling back to PostgreSQL.");
+            return new PostgresAuthProvider();
+        }
+    }
+
+    logger.info("[Auth] Using PostgresAuthProvider");
     return new PostgresAuthProvider();
 }
 
@@ -41,6 +62,7 @@ export function getAuthProvider(): AuthProvider {
 /**
  * Admin authentication middleware.
  * Validates the master API key (Bearer token) against the tenants table.
+ * Uses database index lookups which are not vulnerable to standard string-comparison timing attacks.
  */
 export const adminAuth = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization;
@@ -52,6 +74,7 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
     const hashedMasterKey = hashApiKey(masterKey);
 
     try {
+        // 1. Try resolving via Master API Key
         const result = await pool.query(
             "SELECT id FROM tenants WHERE master_api_key = $1 LIMIT 1",
             [hashedMasterKey]
@@ -62,7 +85,20 @@ export const adminAuth = async (req: Request, res: Response, next: NextFunction)
             return next();
         }
 
-        return res.status(401).json({ error: "Unauthorized: Invalid Master API Key." });
+        // 2. Try resolving via Firebase ID Token
+        const firebaseAdmin = require("./firebase").admin;
+        if (firebaseAdmin) {
+            try {
+                const decodedToken = await firebaseAdmin.auth().verifyIdToken(masterKey);
+                (req as AuthenticatedRequest).tenantId = decodedToken.uid;
+                (req as AuthenticatedRequest).userEmail = decodedToken.email;
+                return next();
+            } catch (fbErr) {
+                // Not a valid Firebase token either
+            }
+        }
+
+        return res.status(401).json({ error: "Unauthorized: Invalid Master API Key or Session Token." });
     } catch (error) {
         logger.error("[AdminAuth] Error:", { error });
         res.status(500).json({ error: "Internal authentication error" });
@@ -77,25 +113,73 @@ export async function gatekeeperAuth(req: Request, res: Response, next: NextFunc
     let apiKey = req.body?.apiKey || req.headers["x-api-key"];
     const authHeader = req.headers.authorization;
 
-    // Support Bearer Token (Master Key) in gatekeeper as well
+    // Support Bearer Token (Master Key or Firebase Token) in gatekeeper as well
     if (!apiKey && authHeader && authHeader.startsWith("Bearer ")) {
         const token = authHeader.substring(7);
         const hashedToken = hashApiKey(token);
         
+        // 1. Try resolving as Master API Key
         const masterRes = await pool.query(
             "SELECT id FROM tenants WHERE master_api_key = $1",
             [hashedToken]
         );
-        if (masterRes.rows.length > 0) {
+        if (masterRes.rows.length === 0) {
+            // 2. Try Firebase ID Token
+            try {
+                const firebaseAuth = getAuth();
+                const decoded = await firebaseAuth.verifyIdToken(token);
+                (req as AuthenticatedRequest).tenantId = decoded.uid;
+                return next();
+            } catch (e) {
+                // Fall through to error
+            }
+        } else {
             (req as AuthenticatedRequest).tenantId = masterRes.rows[0].id;
             return next();
         }
     }
 
+    // sw_temp_* keys: issued during Paperclip onboard for frictionless start
+    if (apiKey && typeof apiKey === "string" && apiKey.startsWith("sw_temp_")) {
+        try {
+            const tokenResult = await pool.query(
+                `SELECT tenant_id, tier, expires_at, activated
+                 FROM paperclip_tokens WHERE token = $1 LIMIT 1`,
+                [hashApiKey(apiKey)]
+            );
+            if (tokenResult.rows.length > 0) {
+                const tokenRow = tokenResult.rows[0];
+                if (new Date(tokenRow.expires_at) > new Date()) {
+                    // Enforce usage cap on temporary keys (frictionless onboarding limit)
+                    const { allowed, current } = await checkEvaluationLimit(tokenRow.tenant_id, {
+                        ...TIER_LIMITS.developer,
+                        maxEvaluationsPerMonth: TEMP_KEY_EVAL_LIMIT,
+                        overageRatePerEval: null // Hard stop
+                    });
+
+                    if (!allowed) {
+                        return res.status(402).json({
+                            decision: "DENY",
+                            reason: `Temporary API key evaluation limit reached (${current}/${TEMP_KEY_EVAL_LIMIT}). Activate your account to unlock full developer tier limits.`,
+                            upgradeUrl: `https://supra-wall.com/activate?token=${apiKey}`
+                        });
+                    }
+
+                    (req as AuthenticatedRequest).tenantId = tokenRow.tenant_id;
+                    return next();
+                }
+                return res.status(401).json({ decision: "DENY", reason: "Temporary API key has expired. Visit your activation URL to get a new one." });
+            }
+        } catch (tempKeyErr) {
+            logger.error("[Gatekeeper] Temp key lookup error:", { error: tempKeyErr });
+        }
+        return res.status(401).json({ decision: "DENY", reason: "Unauthorized: Invalid temporary key." });
+    }
+
     if (!apiKey) {
         return res.status(401).json({
             decision: "DENY",
-            reason: "Unauthorized: Missing API Key."
+            reason: "Unauthorized: Missing API Key. Get your key at https://supra-wall.com"
         });
     }
 
@@ -117,6 +201,7 @@ export async function gatekeeperAuth(req: Request, res: Response, next: NextFunc
             });
         }
 
+        // 2. Attach agent info to request
         (req as AuthenticatedRequest).agent = agent;
         (req as AuthenticatedRequest).tenantId = agent.tenantId;
         next();
@@ -124,16 +209,45 @@ export async function gatekeeperAuth(req: Request, res: Response, next: NextFunc
         logger.error("[Gatekeeper] Auth error:", { error });
         res.status(500).json({ decision: "DENY", reason: "Internal authentication error" });
     }
-}
+};
 
 /**
  * Role-enforcement middleware for organization member management.
- * In OSS mode with Master Key auth, the caller is implicitly the owner.
+ * If the caller authenticated via Firebase token (userEmail is set), verify they hold
+ * the required role in organization_members. Master API key holders are implicitly owners.
  */
 export function requireMemberRole(requiredRole: "admin" | "owner") {
     return async (req: Request, res: Response, next: NextFunction) => {
-        // Master API key holders are implicitly owners
-        next();
+        const authReq = req as AuthenticatedRequest;
+
+        // Master API key holders are implicitly owners — no additional check needed
+        if (!authReq.userEmail) return next();
+
+        try {
+            const result = await pool.query(
+                `SELECT role FROM organization_members
+                 WHERE tenant_id = $1 AND user_email = $2 AND status = 'active'`,
+                [authReq.tenantId, authReq.userEmail]
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(403).json({ error: "Forbidden: Not a member of this organization" });
+            }
+
+            const role: string = result.rows[0].role;
+            const roleHierarchy = ["viewer", "member", "admin", "owner"];
+            const callerLevel = roleHierarchy.indexOf(role);
+            const requiredLevel = roleHierarchy.indexOf(requiredRole);
+
+            if (callerLevel < requiredLevel) {
+                return res.status(403).json({ error: `Forbidden: Requires '${requiredRole}' role or higher` });
+            }
+
+            next();
+        } catch (error) {
+            logger.error("[RoleCheck] Error:", { error });
+            res.status(500).json({ error: "Internal authentication error" });
+        }
     };
 }
 
@@ -150,8 +264,13 @@ export const getAgentById = async (agentId: string): Promise<AgentInfo | null> =
  */
 export const verifyScope = (req: AuthenticatedRequest, toolName: string): boolean => {
     const scopes = req.agent?.scopes || [];
+
+    // Simple wildcard support: "*:*" or "namespace:*"
     if (scopes.includes("*:*")) return true;
+
     const [namespace] = toolName.includes(":") ? toolName.split(":") : [null];
+
     if (namespace && scopes.includes(`${namespace}:*`)) return true;
+
     return scopes.includes(toolName);
 };

@@ -1,14 +1,10 @@
-# NOTE: This package is not yet published to PyPI. The live, publicly
-# installable Python integration is `langchain-suprawall`, located in
-# plugins/langchain-py/. This SDK is under development for future release.
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
 name = "suprawall-sdk"
-version = "0.1.0"
+version = "1.1.0"
 description = "The open-source core for AI agent security and compliance"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -26,8 +22,8 @@ all       = ["openai-agents>=0.0.3", "pytest>=7.0.0"]
 
 [project.urls]
 Homepage      = "https://supra-wall.com"
-Repository    = "https://github.com/wiserautomation/SupraWall"
-"Bug Tracker" = "https://github.com/wiserautomation/SupraWall/issues"
+Repository    = "https://github.com/suprawall/suprawall"
+"Bug Tracker" = "https://github.com/suprawall/suprawall/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["suprawall"]

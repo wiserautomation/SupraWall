@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /stripe/
+Disallow: /_next/
+Disallow: /*?utm_*
+Disallow: /*?ref=*
+
+Sitemap: https://www.supra-wall.com/sitemap.xml
+LLMs: https://www.supra-wall.com/llms.txt
+Full-LLMs: https://www.supra-wall.com/llms-full.txt

@@ -1,0 +1,117 @@
+
+> dashboard@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local, .env.production
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 10.9s
+  Running TypeScript ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/78) ...
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+⚠ metadataBase property in metadata export is not set for resolving social open graph or twitter images, using "http://localhost:3000". See https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase
+  Generating static pages using 7 workers (19/78) 
+  Generating static pages using 7 workers (38/78) 
+  Generating static pages using 7 workers (58/78) 
+✓ Generating static pages using 7 workers (78/78) in 687.4ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin
+├ ○ /admin/agents
+├ ○ /admin/analytics
+├ ○ /admin/audit
+├ ○ /admin/intelligence
+├ ○ /admin/published
+├ ○ /admin/queue
+├ ○ /admin/settings
+├ ○ /admin/tasks
+├ ○ /admin/users
+├ ƒ /api/agents/register
+├ ƒ /api/approvals
+├ ƒ /api/approvals/[id]
+├ ƒ /api/approvals/[id]/respond
+├ ƒ /api/audit
+├ ƒ /api/audit/export
+├ ƒ /api/audit/scan
+├ ƒ /api/badge/[agentId]
+├ ƒ /api/compliance/certificate
+├ ƒ /api/cron/generate-content
+├ ƒ /api/generate
+├ ƒ /api/intelligence
+├ ƒ /api/stripe/checkout
+├ ƒ /api/stripe/report-usage
+├ ƒ /api/stripe/webhook
+├ ƒ /api/tasks
+├ ƒ /api/tasks/[id]
+├ ƒ /api/tasks/[id]/published
+├ ƒ /api/tasks/pending
+├ ƒ /api/v1/evaluate
+├ ƒ /api/v1/scrub
+├ ƒ /api/v1/vault/log
+├ ƒ /api/v1/vault/rules
+├ ƒ /api/v1/vault/rules/[id]
+├ ƒ /api/v1/vault/secrets
+├ ƒ /api/v1/vault/secrets/[id]
+├ ƒ /api/v1/vault/secrets/[id]/rotate
+├ ƒ /api/widget/countdown
+├ ○ /apple-icon.png
+├ ○ /audit
+├ ○ /blog/agent-to-agent-commerce-eu-ai-act
+├ ○ /blog/ai-gateway-vs-compliance-layer
+├ ○ /blog/prevent-agent-infinite-loops
+├ ƒ /certificate/[certId]
+├ ○ /compliance
+├ ○ /connect
+├ ○ /connect/analytics
+├ ○ /connect/events
+├ ○ /connect/keys
+├ ○ /dashboard
+├ ○ /dashboard/agents
+├ ○ /dashboard/approvals
+├ ○ /dashboard/audit
+├ ○ /dashboard/compliance
+├ ○ /dashboard/integrations
+├ ○ /dashboard/monitoring
+├ ○ /dashboard/policies
+├ ○ /dashboard/settings
+├ ○ /dashboard/team
+├ ○ /dashboard/vault
+├ ○ /docs
+├ ○ /docs/frameworks/langchain
+├ ○ /docs/frameworks/llamaindex
+├ ○ /docs/mcp
+├ ○ /eu-ai-act/article-12
+├ ○ /eu-ai-act/article-14
+├ ○ /icon.png
+├ ○ /integrations/autogen
+├ ○ /integrations/crewai
+├ ○ /integrations/langchain
+├ ○ /integrations/openclaw
+├ ○ /integrations/pydanticai
+├ ○ /integrations/vercel
+├ ○ /learn/what-is-agent-runtime-security
+├ ○ /login
+├ ○ /partner
+├ ○ /pricing
+├ ○ /quickstart
+├ ƒ /share/compliance/[orgId]
+├ ○ /sitemap.xml
+├ ○ /spec
+├ ○ /use-cases/cost-control
+├ ○ /use-cases/prompt-injection
+├ ○ /vs/guardrails-ai
+├ ○ /vs/lakera
+├ ○ /vs/nemo-guardrails
+└ ○ /vs/portkey
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

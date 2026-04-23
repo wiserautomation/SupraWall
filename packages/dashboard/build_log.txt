@@ -1,0 +1,119 @@
+> [debug] [2026-03-14T20:56:15.849Z] Found config in file "/Users/peghin/Desktop/Antigravity Project/SupraWall/dashboard/vercel.json"
+> [debug] [2026-03-14T20:56:15.853Z] Vercel CLI 50.25.4
+> [debug] [2026-03-14T20:56:15.857Z] Agent/TTY/nonInteractive: isAgent=false agentName=none stdin.isTTY=true --non-interactive=false explicitFalse=false => nonInteractive=false
+> [debug] [2026-03-14T20:56:15.857Z] user supplied a possible target for deployment or an extension
+> [debug] [2026-03-14T20:56:15.861Z] failed to find extension command with name "vercel---prod"
+> [debug] [2026-03-14T20:56:15.878Z] Setting target to production
+> [debug] [2026-03-14T20:56:15.899Z] Spinner invoked (Retrieving project…) with a 1000ms delay
+> [debug] [2026-03-14T20:56:15.900Z] Valid access token, skipping token refresh.
+> [debug] [2026-03-14T20:56:15.920Z] #1 → GET https://api.vercel.com/teams/team_wwexRblkAMuAiVmQlyxsSDj5?teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+> [debug] [2026-03-14T20:56:15.921Z] #2 → GET https://api.vercel.com/v9/projects/prj_r3GavDHWL9nEsbYhqkCEtF0qtVow?teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+> [debug] [2026-03-14T20:56:16.659Z] #1 ← 200 OK: sfo1::w46rd-1773521776504-f456fdbfc282 [738ms]
+> [debug] [2026-03-14T20:56:16.662Z] #2 ← 200 OK: sfo1::58zf7-1773521776511-3fff83a72591 [741ms]
+> [debug] [2026-03-14T20:56:16.663Z] Error while parsing repo data: ENOENT: no such file or directory, open '/Users/peghin/Desktop/Antigravity Project/SupraWall/dashboard/.git/config'
+> [debug] [2026-03-14T20:56:17.810Z] Spinner invoked (Deploying alejandros-projects-6ff678b3/dashboard) with a 0ms delay
+[client-debug] 2026-03-14T20:56:17.810Z Creating deployment...
+[client-debug] 2026-03-14T20:56:17.810Z Provided 'path' is a directory.
+[client-debug] 2026-03-14T20:56:17.811Z Found 26 rules in .vercelignore
+[client-debug] 2026-03-14T20:56:17.811Z Building file tree...
+[client-debug] 2026-03-14T20:56:17.817Z Found 165 files in the specified directory
+[client-debug] 2026-03-14T20:56:17.854Z Yielding a 'hashes-calculated' event with 162 hashes
+> [debug] [2026-03-14T20:56:17.855Z] #3 → GET https://api.vercel.com/v9/projects/dashboard?teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+> [debug] [2026-03-14T20:56:18.095Z] #3 ← 200 OK: sfo1::w46rd-1773521778035-135f30d5a331 [240ms]
+[client-debug] 2026-03-14T20:56:18.097Z Using provided API URL: https://api.vercel.com
+[client-debug] 2026-03-14T20:56:18.097Z Using provided user agent: vercel 50.25.4 node-v22.12.0 darwin (arm64)
+[client-debug] 2026-03-14T20:56:18.097Z Setting platform version to harcoded value 2
+[client-debug] 2026-03-14T20:56:18.097Z Creating the deployment and starting upload...
+[client-debug] 2026-03-14T20:56:18.097Z Determining necessary files for upload...
+[client-debug] 2026-03-14T20:56:18.097Z Creating deployment
+[client-debug] 2026-03-14T20:56:18.099Z Sending deployment creation API request
+[client-debug] 2026-03-14T20:56:18.590Z Deployment response: {"error":{"code":"missing_files","message":"Missing files","missing":["169ad2e4c1d0ffd8aad37c32997e2c33f4bc3b5d"]}}
+[client-debug] 2026-03-14T20:56:18.591Z Error: Deployment request status is 400
+[client-debug] 2026-03-14T20:56:18.591Z 1 files are required to upload
+[client-debug] 2026-03-14T20:56:18.591Z Yielding a 'file-count' event
+> [debug] [2026-03-14T20:56:18.591Z] Total files 162, 1 changed
+> [debug] [2026-03-14T20:56:18.592Z] Spinner invoked (Uploading [--------------------] (0.0B/1.9KB)) with a 0ms delay
+[client-debug] 2026-03-14T20:56:18.593Z Building an upload list...
+[client-debug] 2026-03-14T20:56:18.594Z Starting upload
+[client-debug] 2026-03-14T20:56:18.594Z POST https://api.vercel.com/v2/files?teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+> [debug] [2026-03-14T20:56:18.595Z] Spinner invoked (Uploading [====================] (1.9KB/1.9KB)) with a 0ms delay
+[client-debug] 2026-03-14T20:56:19.224Z DONE in 630ms: POST https://api.vercel.com/v2/files?teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+[client-debug] 2026-03-14T20:56:19.224Z File 169ad2e4c1d0ffd8aad37c32997e2c33f4bc3b5d (/Users/peghin/Desktop/Antigravity Project/SupraWall/dashboard/build_log.txt) uploaded
+[client-debug] 2026-03-14T20:56:19.224Z Yielding a 'file-uploaded' event
+> [debug] [2026-03-14T20:56:19.225Z] Uploaded: /Users/peghin/Desktop/Antigravity Project/SupraWall/dashboard/build_log.txt (1.91KB)
+[client-debug] 2026-03-14T20:56:19.225Z All files uploaded
+[client-debug] 2026-03-14T20:56:19.225Z Yielding a 'all-files-uploaded' event
+[client-debug] 2026-03-14T20:56:19.225Z Starting deployment creation
+[client-debug] 2026-03-14T20:56:19.225Z Creating deployment
+[client-debug] 2026-03-14T20:56:19.226Z Sending deployment creation API request
+[client-debug] 2026-03-14T20:56:20.648Z Deployment response: {"alias":["dashboard-alejandros-projects-6ff678b3.vercel.app","dashboard-alejandro-1968-alejandros-projects-6ff678b3.vercel.app"],"aliasAssigned":false,"automaticAliases":["dashboard-alejandros-projects-6ff678b3.vercel.app","dashboard-alejandro-1968-alejandros-projects-6ff678b3.vercel.app"],"bootedAt":1773521779981,"buildingAt":1773521779981,"buildSkipped":false,"createdAt":1773521779981,"creator":{"uid":"UNdTHkRCAuFnhr54uHkYC5P2","username":"alejandro-1968"},"id":"dpl_ACFWKtTPrFZi81zMHWq346zP8XU3","name":"dashboard","meta":{"gitCommitAuthorName":"wiserautomation","gitCommitAuthorEmail":"alejandro@wiserautomation.agency","gitCommitMessage":"fix: resolve build errors related to Next.js 15+ params, missing imports, and firebase-admin utility methods","gitCommitRef":"main","gitCommitSha":"33a3a6867168e25ee1dbc71000e7f22b0ffbf952","gitDirty":"1"},"originCacheRegion":"iad1","project":{"id":"prj_r3GavDHWL9nEsbYhqkCEtF0qtVow","name":"dashboard","framework":"nextjs"},"public":false,"readyState":"INITIALIZING","regions":["iad1"],"source":"cli","status":"INITIALIZING","target":"production","team":{"id":"team_wwexRblkAMuAiVmQlyxsSDj5","name":"alejandro's projects","slug":"alejandros-projects-6ff678b3"},"type":"LAMBDAS","url":"dashboard-dj1wt3xei-alejandros-projects-6ff678b3.vercel.app","version":2,"previewCommentsEnabled":true,"oidcTokenClaims":{"sub":"owner:alejandros-projects-6ff678b3:project:dashboard:environment:production","iss":"https://oidc.vercel.com/alejandros-projects-6ff678b3","scope":"owner:alejandros-projects-6ff678b3:project:dashboard:environment:production","aud":"https://vercel.com/alejandros-projects-6ff678b3","owner":"alejandros-projects-6ff678b3","owner_id":"team_wwexRblkAMuAiVmQlyxsSDj5","project":"dashboard","project_id":"prj_r3GavDHWL9nEsbYhqkCEtF0qtVow","environment":"production","plan":"hobby"},"lambdas":[{"id":"bld_3zcivcwuo","createdAt":1773521780279,"entrypoint":".","readyState":"READY","readyStateAt":1773521780279,"output":[]}],"aliasAssignedAt":null,"build":{"env":[]},"builds":[],"createdIn":"sfo1","env":[],"functions":null,"inspectorUrl":"https://vercel.com/alejandros-projects-6ff678b3/dashboard/ACFWKtTPrFZi81zMHWq346zP8XU3","isInConcurrentBuildsQueue":false,"isInSystemBuildsQueue":true,"ownerId":"team_wwexRblkAMuAiVmQlyxsSDj5","plan":"hobby","projectId":"prj_r3GavDHWL9nEsbYhqkCEtF0qtVow","projectSettings":{"buildCommand":null,"devCommand":null,"framework":"nextjs","commandForIgnoringBuildStep":null,"installCommand":null,"outputDirectory":null,"speedInsights":{"id":"MZZV4G1YFAhPTSSgtaHuqQFbGQM","hasData":false},"webAnalytics":{"id":"rlro6llEKWF5rDLmkgkC1zNeQ"},"nodeVersion":"24.x"},"routes":null,"config":{"version":1,"secureComputePrimaryRegion":null,"secureComputeFallbackRegion":null,"functionTimeout":300,"functionType":"fluid","functionMemoryType":"standard","isUsingActiveCPU":true,"resourceConfig":{"buildQueue":{"configuration":"SKIP_NAMESPACE_QUEUE"}}}}
+[client-debug] 2026-03-14T20:56:20.648Z Deployment created
+[client-debug] 2026-03-14T20:56:20.649Z Yielding a 'created' event
+Inspect: https://vercel.com/alejandros-projects-6ff678b3/dashboard/ACFWKtTPrFZi81zMHWq346zP8XU3 [3s]
+Production: https://dashboard-dj1wt3xei-alejandros-projects-6ff678b3.vercel.app [3s]
+https://dashboard-dj1wt3xei-alejandros-projects-6ff678b3.vercel.app> [debug] [2026-03-14T20:56:20.651Z] Spinner invoked (Building...) with a 0ms delay
+> [debug] [2026-03-14T20:56:20.651Z] #4 → GET https://api.vercel.com/v2/user
+[client-debug] 2026-03-14T20:56:20.651Z Waiting for deployment to be ready...
+[client-debug] 2026-03-14T20:56:20.652Z Waiting for builds and the deployment to complete...
+> [debug] [2026-03-14T20:56:20.955Z] #4 ← 200 OK: sfo1::sbg7q-1773521780831-24af2b7401ac [304ms]
+> [debug] [2026-03-14T20:56:20.957Z] #5 → GET https://api.vercel.com/v3/now/deployments/dpl_ACFWKtTPrFZi81zMHWq346zP8XU3/events?direction=forward&follow=1&format=lines&teamId=team_wwexRblkAMuAiVmQlyxsSDj5
+[client-debug] 2026-03-14T20:56:21.119Z Deployment state changed to BUILDING
+[client-debug] 2026-03-14T20:56:21.119Z Yielding a 'building' event
+> [debug] [2026-03-14T20:56:21.119Z] Spinner invoked (Building...) with a 0ms delay
+> [debug] [2026-03-14T20:56:24.316Z] #5 ← 200 OK: sfo1::6pm6v-1773521781135-f256ad6edf7e [3.36s]
+> [debug] [2026-03-14T20:56:24.324Z] Spinner invoked (Building: Running build in Washington, D.C., USA (East) – iad1) with a 0ms delay
+> [debug] [2026-03-14T20:56:24.324Z] Spinner invoked (Building: Build machine configuration: 2 cores, 8 GB) with a 0ms delay
+> [debug] [2026-03-14T20:56:24.324Z] Spinner invoked (Building: Retrieving list of deployment files...) with a 0ms delay
+> [debug] [2026-03-14T20:56:24.324Z] Spinner invoked (Building: Skipping build cache, deployment was triggered without cache.) with a 0ms delay
+> [debug] [2026-03-14T20:56:24.324Z] Spinner invoked (Building: Downloading 165 deployment files...) with a 0ms delay
+> [debug] [2026-03-14T20:56:25.351Z] Spinner invoked (Building: Running "vercel build") with a 0ms delay
+> [debug] [2026-03-14T20:56:25.351Z] Spinner invoked (Building: Vercel CLI 50.32.4) with a 0ms delay
+> [debug] [2026-03-14T20:56:26.387Z] Spinner invoked (Building: Installing dependencies...) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.724Z] Spinner invoked (Building: added 1031 packages in 36s) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: 319 packages are looking for funding) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: run `npm fund` for details) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: Detected Next.js version: 16.1.6) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: Running "npm run build") with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: > dashboard@0.1.0 build) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: > next build) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: Attention: Next.js now collects completely anonymous telemetry regarding usage.) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.726Z] Spinner invoked (Building: This information is used to shape Next.js' roadmap and prioritize features.) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.727Z] Spinner invoked (Building: You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.727Z] Spinner invoked (Building: https://nextjs.org/telemetry) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.727Z] Spinner invoked (Building: ▲ Next.js 16.1.6 (Turbopack)) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.727Z] Spinner invoked (Building: - Environments: .env.production) with a 0ms delay
+> [debug] [2026-03-14T20:57:03.727Z] Spinner invoked (Building: Creating an optimized production build ...) with a 0ms delay
+> [debug] [2026-03-14T20:57:36.828Z] Spinner invoked (Building: ✓ Compiled successfully in 33.2s) with a 0ms delay
+> [debug] [2026-03-14T20:57:36.829Z] Spinner invoked (Building: Running TypeScript ...) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.234Z] Spinner invoked (Building: Failed to compile.) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.234Z] Spinner invoked (Building: ./src/hooks/useConnect.ts:2:10) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: Type error: Variable 'app' implicitly has type 'any' in some locations where its type cannot be determined.) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: 1 | import { useState, useEffect, useCallback } from "react";) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: > 2 | import { app } from "@/lib/firebase";) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: |          ^) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: 3 | import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: 4 | import type {) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.235Z] Spinner invoked (Building: 5 |     Platform,) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.236Z] Spinner invoked (Building: Next.js build worker exited with code: 1 and signal: null) with a 0ms delay
+> [debug] [2026-03-14T20:57:49.236Z] Spinner invoked (Building: Error: Command "npm run build" exited with 1) with a 0ms delay
+[client-debug] 2026-03-14T20:57:56.597Z Yielding a 'error' event
+> [debug] [2026-03-14T20:57:56.618Z] Error: Error: Command "npm run build" exited with 1
+Error: Command "npm run build" exited with 1
+    at Now.handleDeploymentError (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4712:12)
+    at processDeployment (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4476:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Now.create (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4605:24)
+    at async createDeploy (file:///usr/local/lib/node_modules/vercel/dist/commands/deploy/index.js:169:12)
+    at async handleDefaultDeploy (file:///usr/local/lib/node_modules/vercel/dist/commands/deploy/index.js:1236:18)
+    at async main (file:///usr/local/lib/node_modules/vercel/dist/index.js:24076:18)
+> [debug] [2026-03-14T20:57:56.619Z] handling error: Error: Command "npm run build" exited with 1
+    at Now.handleDeploymentError (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4712:12)
+    at processDeployment (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4476:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Now.create (file:///usr/local/lib/node_modules/vercel/dist/chunks/chunk-7PX7XQE5.js:4605:24)
+    at async createDeploy (file:///usr/local/lib/node_modules/vercel/dist/commands/deploy/index.js:169:12)
+    at async handleDefaultDeploy (file:///usr/local/lib/node_modules/vercel/dist/commands/deploy/index.js:1236:18)
+    at async main (file:///usr/local/lib/node_modules/vercel/dist/index.js:24076:18)
+Error: Command "npm run build" exited with 1
+> [debug] [2026-03-14T20:57:57.416Z] Telemetry event tracked
+> [debug] [2026-03-14T20:57:57.427Z] Telemetry subprocess exited with code 0

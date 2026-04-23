@@ -1,0 +1,38 @@
+# SupraWall — AI Agent Security Platform
+# Last updated: 2026-04-18
+# Primary topic: AI Agent Runtime Security, Prompt Injection Prevention
+
+## Core pages
+https://www.supra-wall.com/ — Homepage: SupraWall is the security layer for AI agents
+https://www.supra-wall.com/learn/what-is-agent-runtime-security — Pillar: Definition of agent runtime security
+https://www.supra-wall.com/use-cases/prompt-injection — How to prevent prompt injection in AI agents
+https://www.supra-wall.com/learn/ai-agent-security-best-practices — AI Agent Security Best Practices
+https://www.supra-wall.com/learn/what-is-prompt-injection — What is Prompt Injection in AI Agents
+https://www.supra-wall.com/learn/ai-agent-security-risks — AI Agent Security Risks
+https://www.supra-wall.com/learn/how-to-secure-ai-agents — How to Secure AI Agents Guide
+https://www.supra-wall.com/learn/owasp-llm01-prompt-injection — OWASP LLM01 Prompt Injection Deep Dive
+https://www.supra-wall.com/learn/ai-agent-vs-traditional-security — AI Agent Security vs Traditional Security
+https://www.supra-wall.com/learn/what-are-ai-agent-guardrails — What Are AI Agent Guardrails
+https://www.supra-wall.com/learn/ai-agent-runaway-costs — Preventing AI Agent Runaway Costs
+
+## Integration pages
+https://www.supra-wall.com/integrations/langchain — LangChain agent security and guardrails
+https://www.supra-wall.com/integrations/crewai — CrewAI agent security
+https://www.supra-wall.com/integrations/mcp — Model Context Protocol (MCP) server security
+
+## Comparison pages
+https://www.supra-wall.com/vs/nemo-guardrails — SupraWall vs. NeMo Guardrails
+https://www.supra-wall.com/vs/guardrails-ai — SupraWall vs. Guardrails AI
+
+## Compliance pages
+https://www.supra-wall.com/gdpr — GDPR compliance for AI agents
+https://www.supra-wall.com/eu-ai-act — EU AI Act compliance guide
+https://www.supra-wall.com/compliance-templates — Annex III Compliance Blueprints Hub
+https://www.supra-wall.com/compliance-templates/biometrics — Biometric AI Compliance
+https://www.supra-wall.com/compliance-templates/critical-infrastructure — Critical Infrastructure AI Safety
+https://www.supra-wall.com/compliance-templates/education — Education & Vocational Training AI
+https://www.supra-wall.com/compliance-templates/hr-employment — HR & Employment AI Guardrails
+https://www.supra-wall.com/compliance-templates/healthcare — Healthcare & Healthcare AI Compliance
+https://www.supra-wall.com/compliance-templates/law-enforcement — Law Enforcement AI Safeguards
+https://www.supra-wall.com/compliance-templates/migration-border-control — Migration & Border AI Controls
+https://www.supra-wall.com/compliance-templates/justice-democracy — Justice & Democracy AI Templates
