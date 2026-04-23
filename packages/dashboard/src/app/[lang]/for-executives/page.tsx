@@ -1,10 +1,12 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { Metadata } from "next";
 import { i18n, Locale } from "@/i18n/config";
 import { SLUG_MAP } from "../../../i18n/slug-map";
 import ExecutivesClient from "./ExecutivesClient";
 import { getDictionary } from "../../../i18n/getDictionary";
+import { Navbar } from "@/components/Navbar";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     const { lang } = await params;

@@ -27,7 +27,10 @@
         "CRON_SECRET",
         "SUPRAWALL_API_URL",
         "TEST_VAR",
-        "MAILERLITE_API_KEY"
+        "MAILERLITE_API_KEY",
+        "FIREBASE_PROJECT_ID",
+        "FIREBASE_CLIENT_EMAIL",
+        "FIREBASE_PRIVATE_KEY"
       ]
     },
     "lint": {
