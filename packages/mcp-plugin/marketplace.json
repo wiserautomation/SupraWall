@@ -1,0 +1,135 @@
+{
+  "name": "suprawall",
+  "displayName": "SupraWall Security",
+  "description": "Add security policies and approval workflows to your AI agents. Block dangerous actions, require human approval for high-risk operations, and maintain compliance-ready audit logs.",
+  "version": "1.0.0",
+  "author": {
+    "name": "SupraWall",
+    "email": "support@supra-wall.com",
+    "url": "https://www.supra-wall.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suprawall/suprawall-mcp-plugin"
+  },
+  "homepage": "https://www.supra-wall.com/mcp",
+  "documentation": "https://www.supra-wall.com/docs/mcp",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "governance",
+    "compliance",
+    "ai-agents",
+    "claude",
+    "mcp",
+    "policies",
+    "audit"
+  ],
+  "category": "security",
+  "main": "dist/index.js",
+  "tools": [
+    {
+      "name": "check_policy",
+      "description": "Check if an action is allowed by security policies",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for the agent"
+          },
+          "tool_name": {
+            "type": "string",
+            "description": "Name of the tool/action to check"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Parameters for the action"
+          }
+        },
+        "required": ["agent_id", "tool_name"]
+      }
+    },
+    {
+      "name": "request_approval",
+      "description": "Request human approval for a high-risk action",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for the agent"
+          },
+          "action_description": {
+            "type": "string",
+            "description": "Description of the action requiring approval"
+          },
+          "risk_level": {
+            "type": "string",
+            "enum": ["low", "medium", "high", "critical"],
+            "description": "Risk level of the action"
+          }
+        },
+        "required": ["agent_id", "action_description"]
+      }
+    },
+    {
+      "name": "log_action",
+      "description": "Log an agent action to the audit trail",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "description": "Unique identifier for the agent"
+          },
+          "action": {
+            "type": "string",
+            "description": "Action that was performed"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": ["allowed", "denied", "approved"],
+            "description": "Outcome of the policy check"
+          }
+        },
+        "required": ["agent_id", "action", "outcome"]
+      }
+    }
+  ],
+  "configuration": {
+    "api_key": {
+      "type": "string",
+      "description": "Your SupraWall API key (get it at https://app.supra-wall.com)",
+      "required": true
+    },
+    "api_url": {
+      "type": "string",
+      "description": "SupraWall API endpoint",
+      "default": "https://api.supra-wall.com",
+      "required": false
+    }
+  },
+  "pricing": {
+    "type": "freemium",
+    "free_tier": {
+      "description": "10,000 policy checks per month",
+      "limits": {
+        "checks_per_month": 10000
+      }
+    },
+    "paid_tiers": [
+      {
+        "name": "Pro",
+        "price": "$99/month",
+        "description": "100,000 policy checks per month",
+        "url": "https://www.supra-wall.com/pricing"
+      }
+    ]
+  },
+  "support": {
+    "email": "support@supra-wall.com",
+    "slack": "https://join.slack.com/suprawall",
+    "documentation": "https://www.supra-wall.com/docs"
+  }
+}

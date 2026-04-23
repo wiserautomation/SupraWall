@@ -1,0 +1,9 @@
+name: "SupraWall"
+description: "Deterministic security for AI agents. Policy enforcement, PII scrubbing, credential vault, and budget caps for LangChain, Hermes, CrewAI, AutoGen, and 12+ frameworks. One-line install. Works with any OpenRouter model."
+url: "https://supra-wall.com"
+docs: "https://supra-wall.com/integrations/openrouter"
+tags:
+  - productivity
+  - other
+open_source: "https://github.com/wiserautomation/SupraWall"
+date_added: "2026-04-23"
