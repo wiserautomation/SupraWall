@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, temp-reflight-final]
   pull_request:
-    branches: [main]
+    branches: [main, temp-reflight-final]
 
 jobs:
   python-sdk:
