@@ -1,0 +1,17 @@
+{
+  "name": "vercel-compliant-agent",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@langchain/core": "1.1.36",
+    "suprawall-vercel-ai": "^0.1.0",
+    "ai": "^6.0.138",
+    "next": "^16.2.3",
+    "react": "latest",
+    "react-dom": "latest"
+  }
+}

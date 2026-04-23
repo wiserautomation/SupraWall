@@ -1,0 +1,14 @@
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+license = "Apache-2.0"
+name = "langchain-suprawall"
+version = "0.1.0"
+description = "Official SupraWall security integration for LangChain Python"
+authors = ["SupraWall <hello@suprawall.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+requests = "^2.28.0"

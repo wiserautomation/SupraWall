@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python-sdk:
+    name: Python SDK
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.10', '3.11', '3.12']
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install Python SDK
+        run: |
+          cd packages/sdk-python
+          pip install -e ".[dev]"
+
+      - name: Run Python tests
+        run: |
+          cd packages/sdk-python
+          python -m pytest tests/ -v
+
+  go-sdk:
+    name: Go SDK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      - name: Build Go SDK
+        run: |
+          cd packages/sdk-go
+          go build ./...
+
+      - name: Test Go SDK
+        run: |
+          cd packages/sdk-go
+          go test ./...
+
+  typescript-sdk:
+    name: TypeScript SDK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        working-directory: packages/sdk-ts
+        run: npm install --legacy-peer-deps
+
+      - name: Build TypeScript SDK
+        working-directory: packages/sdk-ts
+        run: npm run build
+
+      - name: Run tests
+        working-directory: packages/sdk-ts
+        run: npm test

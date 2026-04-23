@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "name": "CrewAI Anti-Escalation",
+  "version": "1.0.0",
+  "description": "Prevents agent-to-agent escalation loops and unrestricted multi-agent writes",
+  "rules": [
+    {
+      "name": "Limit Agent Delegation",
+      "tool": "delegate_task",
+      "action": "REQUIRE_APPROVAL",
+      "message": "Manual approval required for agent-to-agent task delegation to prevent unbounded costs."
+    },
+    {
+      "name": "Restrict Root Writes",
+      "tool": "file_writer",
+      "action": "DENY",
+      "condition": {
+        "type": "regex",
+        "pattern": "^/($|bin|boot|dev|etc|home|lib|media|mnt|opt|proc|root|run|sbin|srv|sys|tmp|usr|var)"
+      },
+      "message": "Agents are not permitted to write outside of the sandbox directory."
+    }
+  ]
+}

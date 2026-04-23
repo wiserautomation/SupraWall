@@ -1,0 +1,33 @@
+{
+  "name": "suprawall-scan",
+  "version": "1.0.0",
+  "description": "SupraWall CI/CD Security Scanner for AI Agents",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "ncc build src/index.ts -o dist --minify --no-cache",
+    "test": "jest --passWithNoTests"
+  },
+  "keywords": [
+    "github-action",
+    "ai",
+    "security",
+    "compliance",
+    "llm",
+    "agent"
+  ],
+  "author": "SupraWall",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1",
+    "axios": "^1.14.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.37",
+    "@vercel/ncc": "^0.38.4",
+    "typescript": "^5.9.3"
+  }
+}

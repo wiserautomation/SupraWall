@@ -1,0 +1,40 @@
+{
+  "name": "suprawall-langchain",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "Official SupraWall security integration for LangChain (TypeScript)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiserautomation/SupraWall.git",
+    "directory": "plugins/langchain-ts"
+  },
+  "homepage": "https://github.com/wiserautomation/SupraWall#readme",
+  "bugs": {
+    "url": "https://github.com/wiserautomation/SupraWall/issues"
+  },
+  "keywords": [
+    "suprawall",
+    "langchain",
+    "ai",
+    "security",
+    "agents",
+    "guardrails",
+    "eu-ai-act"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "@langchain/core": "^0.1.0 || ^0.2.0 || ^0.3.0 || ^1.0.0"
+  },
+  "devDependencies": {
+    "@langchain/core": "^1.1.36",
+    "typescript": "^5.0.0"
+  }
+}

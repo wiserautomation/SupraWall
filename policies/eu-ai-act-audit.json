@@ -1,0 +1,20 @@
+{
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "name": "EU AI Act Audit Compliance",
+  "version": "1.0.0",
+  "description": "Enforces mandatory human-in-the-loop and audit logs for high-risk AI operations (Article 9/13/14 ready)",
+  "rules": [
+    {
+      "name": "Audit High-Risk Tooling",
+      "tool": "database:write|system:*|identity:*",
+      "action": "REQUIRE_APPROVAL",
+      "message": "EU AI Act Article 14 Compliance: This tool call is classified as high-risk and requires human oversight before execution."
+    },
+    {
+      "name": "Enforce Transparency on File Reads",
+      "tool": "read_file",
+      "action": "ALLOW",
+      "message": "Audit Log: AI agent is reading a file. Logged for transparency according to Article 13."
+    }
+  ]
+}

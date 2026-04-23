@@ -1,0 +1,36 @@
+{
+  "name": "suprawall-vercel-ai",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "Official SupraWall security integration for Vercel AI SDK",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiserautomation/SupraWall.git",
+    "directory": "plugins/vercel-ai"
+  },
+  "homepage": "https://github.com/wiserautomation/SupraWall#readme",
+  "bugs": {
+    "url": "https://github.com/wiserautomation/SupraWall/issues"
+  },
+  "keywords": [
+    "suprawall",
+    "vercel",
+    "ai-sdk",
+    "ai",
+    "security",
+    "agents",
+    "guardrails"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

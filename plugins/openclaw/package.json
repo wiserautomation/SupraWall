@@ -1,0 +1,38 @@
+{
+  "name": "suprawall-claw",
+  "version": "0.1.0",
+  "license": "Apache-2.0",
+  "description": "Native SupraWall security integration for OpenClaw autonomous browser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiserautomation/SupraWall.git",
+    "directory": "plugins/openclaw"
+  },
+  "homepage": "https://github.com/wiserautomation/SupraWall#readme",
+  "bugs": {
+    "url": "https://github.com/wiserautomation/SupraWall/issues"
+  },
+  "keywords": [
+    "suprawall",
+    "openclaw",
+    "browser-agent",
+    "ai",
+    "security",
+    "agents"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "dependencies": {
+    "suprawall": "^1.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}
