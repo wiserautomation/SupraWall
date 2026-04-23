@@ -1,0 +1,26 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "suprawall-hermes"
+version = "1.0.0"
+description = "SupraWall security plugin for Hermes Agent"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.9"
+authors = [{ name = "SupraWall Contributors" }]
+keywords = ["hermes", "agent", "security", "suprawall", "guardrails"]
+dependencies = [
+    "suprawall-sdk>=1.0.0",
+]
+
+[project.urls]
+Homepage   = "https://supra-wall.com"
+Repository = "https://github.com/wiserautomation/SupraWall"
+
+[project.entry-points."hermes.plugins"]
+suprawall-security = "suprawall_hermes"
+
+[tool.hatch.build.targets.wheel]
+packages = ["suprawall_hermes"]

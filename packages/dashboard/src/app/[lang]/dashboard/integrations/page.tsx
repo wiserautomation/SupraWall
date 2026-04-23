@@ -9,7 +9,7 @@ import {
     Workflow, Box, Users, Database, 
     CreditCard, Globe, Layers, Brain,
     ArrowRight, Paperclip as PaperclipIcon,
-    Bot as OpenAIHost
+    Bot as OpenAIHost, Bot
 } from "lucide-react";
 import Link from "next/link";
 
@@ -181,5 +181,14 @@ const frameworks = [
         textColor: "text-emerald-400",
         href: "/integrations/openai-agents",
         badge: "Infrastructure"
-    }
+    },
+    {
+        name: "Hermes Agent",
+        desc: "Runtime security plugin for self-hosted Hermes. ALLOW/DENY gating, PII scrubbing, and vault injection.",
+        icon: Bot,
+        color: "bg-violet-600",
+        textColor: "text-violet-300",
+        href: "/integrations/hermes",
+        badge: "Autonomous"
+    },
 ];

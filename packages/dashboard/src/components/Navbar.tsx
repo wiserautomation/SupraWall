@@ -10,7 +10,7 @@ import {
     Shield, ArrowRight, ChevronDown, KeyRound, DollarSign, 
     ShieldCheck, EyeOff, FileText, Bug, Book, Workflow, 
     Users, Globe, ShieldAlert, Zap, Layers, Code2, Lock, Github,
-    ListCheck, Activity, Scale, Briefcase
+    ListCheck, Activity, Scale, Briefcase, Bot
 } from "lucide-react";
 import Link from "next/link";
 import { Locale } from "../i18n/config";
@@ -73,6 +73,7 @@ export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?
         { href: prefix("/integrations/stripe"), icon: <DollarSign className="w-4 h-4 text-emerald-500" />, label: "Stripe", desc: "Financial guardrails" },
         { href: prefix("/integrations/claude"), icon: <Zap className="w-4 h-4 text-orange-500" />, label: "Claude / Anthropic", desc: "Computer use security" },
         { href: prefix("/integrations/openclaw"), icon: <Globe className="w-4 h-4 text-purple-400" />, label: "OpenClaw", desc: "Browser-level firewall" },
+        { href: prefix("/integrations/hermes"), icon: <Bot className="w-4 h-4 text-violet-400" />, label: "Hermes Agent", desc: "Self-hosted runtime plugin" },
     ];
 
     return (
