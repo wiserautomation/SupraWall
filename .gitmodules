@@ -1,6 +1,3 @@
-[submodule "packages/mcp-plugin"]
-	path = packages/mcp-plugin
-	url = https://github.com/wiserautomation/suprawall-mcp-plugin.git
 [submodule "suprawall-plugins"]
 	path = suprawall-plugins
 	url = https://github.com/wiserautomation/suprawall-plugins.git
