@@ -69,6 +69,16 @@ export default function AdminAnalyticsPage() {
                     </div>
                 </div>
             </div>
+            {/* GA4 Warning Banner */}
+            {gaData?.warning && (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                    <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                        <p className="text-sm font-bold text-amber-500 uppercase tracking-widest">Analytics Connectivity Issue</p>
+                        <p className="text-xs text-neutral-400 mt-1">{gaData.warning}</p>
+                    </div>
+                </div>
+            )}
 
             {/* 📈 GOOGLE ANALYTICS STATS (TOP) */}
             <div className="space-y-4">

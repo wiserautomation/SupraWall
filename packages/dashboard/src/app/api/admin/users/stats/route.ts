@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db, getAdminAuth } from '@/lib/firebase-admin';
-import { query } from '@/lib/db_sql';
+import { query, ensureSchema } from '@/lib/db_sql';
 import { subDays, startOfDay, subMonths, format } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +27,9 @@ export async function GET(req: NextRequest) {
         if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
+        const { userId } = decodedToken as { userId: string, email: string };
+
+        await ensureSchema();
 
         const [usersSnap, orgsSnap] = await Promise.all([
             db.collection('users').get(),
@@ -54,22 +57,27 @@ export async function GET(req: NextRequest) {
         }).length;
 
         // --- 2. Power Users (Top 10 by Eval Volume globally in PG) ---
-        const powerUsersRes = await query(
-            `SELECT tenantid as userId, COUNT(*) as count 
-             FROM audit_logs 
-             GROUP BY tenantid 
-             ORDER BY count DESC 
-             LIMIT 10`
-        );
+        let powerUsers: any[] = [];
+        try {
+            const powerUsersRes = await query(
+                `SELECT tenantid as userId, COUNT(*) as count 
+                 FROM audit_logs 
+                 GROUP BY tenantid 
+                 ORDER BY count DESC 
+                 LIMIT 10`
+            );
 
-        const powerUsers = powerUsersRes.rows.map(row => {
-            const userDoc = usersSnap.docs.find(d => d.id === row.userId);
-            return {
-                email: userDoc?.data().email || row.userId,
-                evaluations: parseInt(row.count),
-                isPaid: paidUserIds.has(row.userId)
-            };
-        });
+            powerUsers = powerUsersRes.rows.map(row => {
+                const userDoc = usersSnap.docs.find(d => d.id === row.userId);
+                return {
+                    email: userDoc?.data().email || row.userId,
+                    evaluations: parseInt(row.count),
+                    isPaid: paidUserIds.has(row.userId)
+                };
+            });
+        } catch (pgErr) {
+            console.error("[Admin User Stats] Postgres power user lookup failed:", pgErr);
+        }
 
         // --- 3. User Segments ---
         const segments = [

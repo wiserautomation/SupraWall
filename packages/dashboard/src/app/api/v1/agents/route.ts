@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
                 tenantId: data.tenantId || data.userId,
                 userId: data.userId,
                 status: data.status || 'active',
-                createdAt: data.createdAt?.toDate?.()?.toISOString() || data.createdAt,
+                createdAt: (data.createdAt || data.timestamp)?.toDate?.()?.toISOString() || (data.createdAt || data.timestamp),
                 scopes: data.scopes || ["*:*"],
                 source: 'firestore'
             });

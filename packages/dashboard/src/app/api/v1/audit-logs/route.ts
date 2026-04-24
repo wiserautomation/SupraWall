@@ -46,9 +46,10 @@ export async function GET(request: NextRequest) {
             fsQuery = fsQuery.where("agentId", "==", agentId);
         }
         
-        const fsSnap = await fsQuery.orderBy("createdAt", "desc").limit(limitParam).get();
+        const fsSnap = await fsQuery.orderBy("timestamp", "desc").limit(limitParam).get();
         fsRows = fsSnap.docs.map(doc => {
             const data = doc.data();
+            const ts = data.timestamp || data.createdAt;
             return {
                 id: doc.id,
                 agentid: data.agentId,
@@ -56,7 +57,7 @@ export async function GET(request: NextRequest) {
                 decision: data.decision,
                 reason: data.reason,
                 cost_usd: data.cost_usd || 0,
-                timestamp: data.createdAt?.toDate?.() || data.createdAt,
+                timestamp: ts?.toDate?.() || ts,
                 metadata: data.metadata || {},
                 source: 'firestore'
             };

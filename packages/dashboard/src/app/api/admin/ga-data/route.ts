@@ -37,66 +37,80 @@ export async function GET(req: NextRequest) {
             },
         });
 
-        // --- 3. Run Reports (Last 7 Days) ---
-        // 3.1 Totals & Daily Stats
-        const [response] = await analyticsDataClient.runReport({
-            property: `properties/${PROPERTY_ID}`,
-            dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
-            dimensions: [{ name: "date" }],
-            metrics: [
-                { name: "activeUsers" },
-                { name: "sessions" },
-                { name: "screenPageViews" },
-                { name: "averageSessionDuration" }
-            ],
-        });
+        let totals = { users: 0, sessions: 0, pageviews: 0, avgSessionDuration: 0 };
+        let dailyStats: any[] = [];
+        let topPages: any[] = [];
+        let topGeos: any[] = [];
+        let warning: string | null = null;
 
-        const dailyStats = response.rows?.map(row => ({
-            date: row.dimensionValues?.[0]?.value,
-            users: parseInt(row.metricValues?.[0]?.value || "0"),
-            sessions: parseInt(row.metricValues?.[1]?.value || "0")
-        })) || [];
+        try {
+            // --- 3. Run Reports (Last 7 Days) ---
+            // 3.1 Totals & Daily Stats
+            const [response] = await analyticsDataClient.runReport({
+                property: `properties/${PROPERTY_ID}`,
+                dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+                dimensions: [{ name: "date" }],
+                metrics: [
+                    { name: "activeUsers" },
+                    { name: "sessions" },
+                    { name: "screenPageViews" },
+                    { name: "averageSessionDuration" }
+                ],
+            });
 
-        const totals = {
-            users: dailyStats.reduce((acc, curr) => acc + curr.users, 0),
-            sessions: dailyStats.reduce((acc, curr) => acc + curr.sessions, 0),
-            pageviews: response.rows?.reduce((acc, row) => acc + parseInt(row.metricValues?.[2]?.value || "0"), 0) || 0,
-            avgSessionDuration: response.rows?.[0] ? parseFloat(response.rows[0].metricValues?.[3]?.value || "0") : 0
-        };
+            dailyStats = response.rows?.map(row => ({
+                date: row.dimensionValues?.[0]?.value,
+                users: parseInt(row.metricValues?.[0]?.value || "0"),
+                sessions: parseInt(row.metricValues?.[1]?.value || "0")
+            })) || [];
 
-        // 3.2 Top Pages
-        const [pagesResponse] = await analyticsDataClient.runReport({
-            property: `properties/${PROPERTY_ID}`,
-            dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
-            dimensions: [{ name: "pagePath" }],
-            metrics: [{ name: "screenPageViews" }],
-            limit: 10
-        });
+            totals = {
+                users: dailyStats.reduce((acc, curr) => acc + curr.users, 0),
+                sessions: dailyStats.reduce((acc, curr) => acc + curr.sessions, 0),
+                pageviews: response.rows?.reduce((acc, row) => acc + parseInt(row.metricValues?.[2]?.value || "0"), 0) || 0,
+                avgSessionDuration: response.rows?.[0] ? parseFloat(response.rows[0].metricValues?.[3]?.value || "0") : 0
+            };
 
-        const topPages = pagesResponse.rows?.map(row => ({
-            path: row.dimensionValues?.[0]?.value,
-            views: parseInt(row.metricValues?.[0]?.value || "0")
-        })) || [];
+            // 3.2 Top Pages
+            const [pagesResponse] = await analyticsDataClient.runReport({
+                property: `properties/${PROPERTY_ID}`,
+                dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+                dimensions: [{ name: "pagePath" }],
+                metrics: [{ name: "screenPageViews" }],
+                limit: 10
+            });
 
-        // 3.3 Top Geos
-        const [geosResponse] = await analyticsDataClient.runReport({
-            property: `properties/${PROPERTY_ID}`,
-            dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
-            dimensions: [{ name: "country" }],
-            metrics: [{ name: "activeUsers" }],
-            limit: 5
-        });
+            topPages = pagesResponse.rows?.map(row => ({
+                path: row.dimensionValues?.[0]?.value,
+                views: parseInt(row.metricValues?.[0]?.value || "0")
+            })) || [];
 
-        const topGeos = geosResponse.rows?.map(row => ({
-            country: row.dimensionValues?.[0]?.value,
-            users: parseInt(row.metricValues?.[0]?.value || "0")
-        })) || [];
+            // 3.3 Top Geos
+            const [geosResponse] = await analyticsDataClient.runReport({
+                property: `properties/${PROPERTY_ID}`,
+                dateRanges: [{ startDate: "7daysAgo", endDate: "today" }],
+                dimensions: [{ name: "country" }],
+                metrics: [{ name: "activeUsers" }],
+                limit: 5
+            });
+
+            topGeos = geosResponse.rows?.map(row => ({
+                country: row.dimensionValues?.[0]?.value,
+                users: parseInt(row.metricValues?.[0]?.value || "0")
+            })) || [];
+        } catch (gaErr: any) {
+            console.warn("[GA4 Data API] Fetch failed (returning empty stats):", gaErr.message);
+            warning = gaErr.message.includes("UNAUTHENTICATED") 
+                ? "GA4 Authentication failed. Ensure process.env.FIREBASE_CLIENT_EMAIL has 'Viewer' access to property " + PROPERTY_ID
+                : gaErr.message;
+        }
 
         return NextResponse.json({
             totals,
             dailyStats: dailyStats.sort((a, b) => (a.date || "").localeCompare(b.date || "")),
             topPages,
-            topGeos
+            topGeos,
+            warning
         });
 
     } catch (err: any) {

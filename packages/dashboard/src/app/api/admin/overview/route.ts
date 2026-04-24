@@ -3,7 +3,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { db, getAdminAuth } from '@/lib/firebase-admin';
-import { query } from '@/lib/db_sql';
+import { query, ensureSchema } from '@/lib/db_sql';
 import { stripe } from '@/lib/stripe';
 import { subDays, startOfDay } from 'date-fns';
 
@@ -29,6 +29,8 @@ export async function GET(req: NextRequest) {
         if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
+
+        await ensureSchema();
 
         // --- 2. Aggregate Data from Firebase ---
         const [usersSnap, agentsSnap, orgsSnap] = await Promise.all([

@@ -138,8 +138,9 @@ export async function POST(req: NextRequest) {
             effectiveRules = [...(subKey.policyOverrides ?? []), ...baseRules];
             effectiveRateLimit = subKey.rateLimitOverride ?? baseRateLimit;
         } else {
-            // Regular agent key — validate format before hitting Firestore (SEC-004)
-            const AGENT_KEY_FORMAT = /^sw_(agent|admin|agc)_[a-zA-Z0-9]{16,}$/;
+            // Regular agent key — validate format (SEC-004)
+            // Allow ag_ (new dashboard), sw_ (legacy), and agc_ (connect)
+            const AGENT_KEY_FORMAT = /^(sw|ag|agc)_(agent|admin|agc|[\w-]+)_[a-zA-Z0-9_-]{16,}$/;
             if (!AGENT_KEY_FORMAT.test(apiKey)) {
                 return NextResponse.json(
                     { error: "Invalid API key format" },
@@ -147,14 +148,44 @@ export async function POST(req: NextRequest) {
                 );
             }
 
+            let agentData: any = null;
+            let agentIdFromDoc: string | null = null;
+
+            // 1. Try Firestore (Legacy)
             const agentsSnapshot = await db.collection("agents").where("apiKey", "==", apiKey).limit(1).get();
-            if (agentsSnapshot.empty) {
+            if (!agentsSnapshot.empty) {
+                const agentDoc = agentsSnapshot.docs[0];
+                agentData = agentDoc.data();
+                agentIdFromDoc = agentDoc.id;
+            } else {
+                // 2. Try PostgreSQL (New)
+                try {
+                    await ensureSchema();
+                    const pgAgentResult = await pgPool.query(
+                        "SELECT * FROM agents WHERE apikeyhash = $1 LIMIT 1",
+                        [apiKey]
+                    );
+                    if (pgAgentResult.rows.length > 0) {
+                        const row = pgAgentResult.rows[0];
+                        agentData = {
+                            userId: row.tenantid,
+                            name: row.name,
+                            status: row.status,
+                            guardrails: row.guardrails || {},
+                            scopes: row.scopes
+                        };
+                        agentIdFromDoc = row.id;
+                    }
+                } catch (pgErr) {
+                    console.error("[Evaluate Auth] Postgres lookup failed:", pgErr);
+                }
+            }
+
+            if (!agentData) {
                 return NextResponse.json({ error: "Invalid API key" }, { status: 401, headers: { 'WWW-Authenticate': 'Bearer' } });
             }
 
-            const agentDoc = agentsSnapshot.docs[0];
-            const agentData = agentDoc.data();
-            agentId = agentDoc.id;
+            agentId = agentIdFromDoc!;
             tenantId = agentData.userId;
             userId = agentData.userId;
             agentName = agentData.name || "Unknown Agent";
@@ -674,7 +705,10 @@ async function logAudit(tenantId: string, agentId: string, toolName: string, fin
     await db.collection("audit_logs").add({
         userId: tenantId, 
         agentId, toolName, arguments: finalArgs, decision, reason, sessionId: sId, agentRole: role,
-        cost_usd: cost, is_loop: isLoop, timestamp: admin.firestore.FieldValue.serverTimestamp()
+        cost_usd: cost, is_loop: isLoop, 
+        timestamp: admin.firestore.FieldValue.serverTimestamp(),
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        syncedToPostgres: true // Prevent double-counting in stats
     });
 
     // Secondary: PostgreSQL (forensic audit trail — non-blocking, never fails the request)

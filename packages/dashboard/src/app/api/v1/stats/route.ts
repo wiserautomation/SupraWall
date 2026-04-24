@@ -56,13 +56,17 @@ export async function GET(request: NextRequest) {
             const agentsCountSnap = await db.collection("agents").where("userId", "in", queryIds).get();
             const legacyAgentsCount = agentsCountSnap.size;
 
-            // Count legacy audit logs
-            const logsCountSnap = await db.collection("audit_logs").where("userId", "in", queryIds).get();
-            const legacyLogsCount = logsCountSnap.size;
+            // Count legacy audit logs (excluding those synced to Postgres to avoid double counting)
+            const allLogsSnap = await db.collection("audit_logs").where("userId", "in", queryIds).get();
+            const legacyLogsCount = allLogsSnap.docs.filter(d => !d.data().syncedToPostgres).length;
             
             totalCalls += legacyLogsCount;
-            // Note: actualSpend and blockedActions from Firestore are harder to aggregate without a full scan
-            // For now we just restore the visibility of the primary volume KPI
+            
+            // Aggregate spend from legacy logs
+            const legacySpend = allLogsSnap.docs
+                .filter(d => !d.data().syncedToPostgres)
+                .reduce((acc, d) => acc + (d.data().cost_usd || 0), 0);
+            actualSpend += legacySpend;
         } catch (e) {
             console.warn("[API Stats GET] Legacy Firestore count failed:", e);
         }
