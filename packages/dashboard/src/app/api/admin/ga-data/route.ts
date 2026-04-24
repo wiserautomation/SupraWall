@@ -104,7 +104,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ 
             error: "Failed to fetch GA4 metrics", 
             message: err.message,
-            propertyId: PROPERTY_ID 
+            propertyId: PROPERTY_ID,
+            hint: err.message.includes("UNAUTHENTICATED") 
+                ? "Ensure process.env.FIREBASE_CLIENT_EMAIL has 'Viewer' access to GA4 Property ID " + PROPERTY_ID 
+                : "Check your FIREBASE_PRIVATE_KEY format."
         }, { status: 500 });
     }
 }

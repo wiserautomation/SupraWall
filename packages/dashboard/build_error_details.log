@@ -1,0 +1,1903 @@
+
+> @suprawall/dashboard@0.1.0 build
+> next build
+
+▲ Next.js 16.2.3 (Turbopack)
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 67 errors:
+./packages/dashboard/src/app/globals.css
+Error evaluating Node.js code
+Error: Cannot find module 'magic-string'
+Require stack:
+- /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/node_modules/@tailwindcss/node/dist/index.js
+- /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/node_modules/@tailwindcss/postcss/dist/index.js
+- /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/.next/build/chunks/[root-of-the-server]__0_qfy2-._.js
+- /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/.next/build/chunks/[turbopack]_runtime.js
+- /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/.next/build/postcss.js
+    [at Function._resolveFilename (node:internal/modules/cjs/loader:1383:15)]
+    [at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)]
+    [at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)]
+    [at Function._load (node:internal/modules/cjs/loader:1192:37)]
+    [at TracingChannel.traceSync (node:diagnostics_channel:328:14)]
+    [at wrapModuleLoad (node:internal/modules/cjs/loader:237:24)]
+    [at Module.require (node:internal/modules/cjs/loader:1463:12)]
+    [at require (node:internal/modules/helpers:147:16)]
+    [at Object.<anonymous> (/Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard/node_modules/@tailwindcss/node/dist/index.js:15:217)]
+    [at Module._compile (node:internal/modules/cjs/loader:1705:14)]
+
+Import traces:
+  App Route:
+    ./packages/dashboard/src/app/globals.css
+    ./packages/dashboard/src/app/llms.txt/route.ts
+
+  Client Component Browser:
+    ./packages/dashboard/src/app/globals.css [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/layout.tsx [Server Component]
+
+
+./packages/core/node_modules/@firebase/app/dist/esm/index.esm.js:2:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m1 |[0m ...[33mmponent[0m, [33mComponentContainer[0m } [36mfrom[0m [32m'@firebase/component'[0m;
+[31m[1m>[0m [90m2 |[0m ...[33mgger[0m, setUserLogHandler, setLogLevel [36mas[0m setLogLevel$1 } [36mfrom[0m [32m'@fireb...[0m
+  [90m  |[0m    [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m ...[33mrorFactory[0m, base64Decode, getDefaultAppConfig, deepEqual, isBrowser,...
+  [90m4 |[0m ...[33mrebaseError[0m } [36mfrom[0m [32m'@firebase/util'[0m;
+  [90m5 |[0m ...enDB } [36mfrom[0m [32m'idb'[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/core/node_modules/@firebase/app/dist/esm/index.esm.js
+    ./packages/core/adapters/firebase.ts
+    ./packages/core/index.ts
+    ./packages/dashboard/src/lib/semantic-server.ts
+    ./packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/core/node_modules/@firebase/firestore/dist/common-270e6a50.node.mjs:4:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m2 |[0m [36mimport[0m { [33mFirebaseError[0m, isCloudWorkstation, pingServer, updateEmulatorB...
+  [90m3 |[0m [36mimport[0m { [33mInteger[0m, [33mMd5[0m } [36mfrom[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { [33mLogger[0m, [33mLogLevel[0m } [36mfrom[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { [33mTextEncoder[0m, inspect, [33mTextDecoder[0m } [36mfrom[0m [32m'util'[0m;
+  [90m6 |[0m [36mimport[0m { randomBytes [36mas[0m randomBytes$1 } [36mfrom[0m [32m'crypto'[0m;
+  [90m7 |[0m [36mimport[0m * [36mas[0m grpc [36mfrom[0m [32m'@grpc/grpc-js'[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/core/node_modules/@firebase/firestore/dist/common-270e6a50.node.mjs
+    ./packages/core/adapters/firebase.ts
+    ./packages/core/index.ts
+    ./packages/dashboard/src/lib/semantic-server.ts
+    ./packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/core/node_modules/@firebase/firestore/dist/index.node.mjs:7:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m 5 |[0m [36mimport[0m { getModularInstance, deepEqual } [36mfrom[0m [32m'@firebase/util'[0m;
+  [90m 6 |[0m [36mimport[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m [32m'@firebase/logger'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m [32m'util'[0m;
+  [90m 9 |[0m [36mimport[0m [32m'crypto'[0m;
+  [90m10 |[0m [36mimport[0m [32m'@grpc/grpc-js'[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/core/node_modules/@firebase/firestore/dist/index.node.mjs
+    ./packages/core/adapters/firebase.ts
+    ./packages/core/index.ts
+    ./packages/dashboard/src/lib/semantic-server.ts
+    ./packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/app/dist/esm/index.esm.js:2:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m1 |[0m ...[33mmponent[0m, [33mComponentContainer[0m } [36mfrom[0m [32m'@firebase/component'[0m;
+[31m[1m>[0m [90m2 |[0m ...[33mgger[0m, setUserLogHandler, setLogLevel [36mas[0m setLogLevel$1 } [36mfrom[0m [32m'@fireb...[0m
+  [90m  |[0m    [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m ...[33mrorFactory[0m, base64Decode, getDefaultAppConfig, deepEqual, isBrowser,...
+  [90m4 |[0m ...[33mrebaseError[0m } [36mfrom[0m [32m'@firebase/util'[0m;
+  [90m5 |[0m ...enDB } [36mfrom[0m [32m'idb'[0m;
+
+
+
+Import traces:
+  Client Component SSR:
+    ./packages/dashboard/node_modules/@firebase/app/dist/esm/index.esm.js [Client Component SSR]
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Server Component]
+
+  Client Component Browser:
+    ./packages/dashboard/node_modules/@firebase/app/dist/esm/index.esm.js [Client Component Browser]
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/lib/notifications.ts [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/layout.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/layout.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js:3:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m1 |[0m [36mimport[0m { [33mSDK_VERSION[0m, _isFirebaseServerApp, _getProvider, _registerComp...
+  [90m2 |[0m [36mimport[0m { [33mErrorFactory[0m, isBrowserExtension, isMobileCordova, isReactNati...
+[31m[1m>[0m [90m3 |[0m [36mimport[0m { [33mLogger[0m, [33mLogLevel[0m } [36mfrom[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m4 |[0m [36mimport[0m { [33mComponent[0m } [36mfrom[0m [32m'@firebase/component'[0m;
+  [90m5 |[0m
+  [90m6 |[0m /**
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js [Client Component Browser]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Server Component]
+
+  #3 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js [Client Component Browser]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/monitoring/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/monitoring/page.tsx [Server Component]
+
+  #4 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js [Client Component Browser]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/hooks/useConnect.ts [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Server Component]
+
+  #5 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index-3398f4bb.js [Client Component Browser]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component Browser]
+    ./packages/dashboard/src/hooks/useConnect.ts [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/auth/dist/esm/index.js:4:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m2 |[0m [36mimport[0m [32m'@firebase/app'[0m;
+  [90m3 |[0m [36mimport[0m [32m'@firebase/util'[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m [32m'@firebase/component'[0m;
+  [90m6 |[0m [90m//# sourceMappingURL=index.js.map[0m
+  [90m7 |[0m
+
+
+
+Import trace:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/esm/index.js [Client Component Browser]
+    ./packages/dashboard/node_modules/firebase/auth/dist/esm/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/vault/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/vault/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/index.js:5:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m3 |[0m [36mimport[0m [32m'@firebase/util'[0m;
+  [90m4 |[0m [36mimport[0m [32m'@firebase/component'[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [90m//# sourceMappingURL=index.js.map[0m
+  [90m7 |[0m
+
+
+
+Import trace:
+  Client Component SSR:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/index.js [Client Component SSR]
+    ./packages/dashboard/node_modules/firebase/auth/dist/index.mjs [Client Component SSR]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/vault/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/vault/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/totp-413dc172.js:4:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m2 |[0m [36mimport[0m { [33mErrorFactory[0m, isBrowserExtension, isMobileCordova, isReactNati...
+  [90m3 |[0m [36mimport[0m { [33mComponent[0m } [36mfrom[0m [32m'@firebase/component'[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { [33mLogger[0m, [33mLogLevel[0m } [36mfrom[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m
+  [90m6 |[0m /**
+  [90m7 |[0m  * @license
+
+
+
+Import traces:
+  #1 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/totp-413dc172.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Server Component]
+
+  #2 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/totp-413dc172.js [Client Component SSR]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Server Component]
+
+  #3 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/totp-413dc172.js [Client Component SSR]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/monitoring/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/monitoring/page.tsx [Server Component]
+
+  #4 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/auth/dist/node-esm/totp-413dc172.js [Client Component SSR]
+    ./packages/dashboard/node_modules/react-firebase-hooks/auth/dist/index.esm.js [Client Component SSR]
+    ./packages/dashboard/src/hooks/useConnect.ts [Client Component SSR]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/common-091f2944.esm.js:4:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m2 |[0m [36mimport[0m { [33mFirebaseError[0m, isCloudWorkstation, pingServer, updateEmulatorB...
+  [90m3 |[0m [36mimport[0m { [33mInteger[0m, [33mMd5[0m } [36mfrom[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { [33mLogger[0m, [33mLogLevel[0m } [36mfrom[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { getStatEventTarget, [33mEvent[0m, [33mXhrIo[0m, [33mEventType[0m, [33mErrorCode[0m, [33mWebCha...[0m
+  [90m6 |[0m
+  [90m7 |[0m /**
+
+
+
+Import traces:
+  #1 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-091f2944.esm.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Server Component]
+
+  #2 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-091f2944.esm.js [Client Component Browser]
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/layout.tsx [Server Component]
+
+  #3 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-091f2944.esm.js [Client Component Browser]
+    ./packages/dashboard/src/lib/notifications.ts [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Server Component]
+
+  #4 [Client Component Browser]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-091f2944.esm.js [Client Component Browser]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component Browser]
+    ./packages/dashboard/src/hooks/useConnect.ts [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/connect/events/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs:4:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m2 |[0m [36mimport[0m { [33mFirebaseError[0m, isCloudWorkstation, pingServer, updateEmulatorB...
+  [90m3 |[0m [36mimport[0m { [33mInteger[0m, [33mMd5[0m } [36mfrom[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { [33mLogger[0m, [33mLogLevel[0m } [36mfrom[0m [32m'@firebase/logger'[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { [33mTextEncoder[0m, inspect, [33mTextDecoder[0m } [36mfrom[0m [32m'util'[0m;
+  [90m6 |[0m [36mimport[0m { randomBytes [36mas[0m randomBytes$1 } [36mfrom[0m [32m'crypto'[0m;
+  [90m7 |[0m [36mimport[0m * [36mas[0m grpc [36mfrom[0m [32m'@grpc/grpc-js'[0m;
+
+
+
+Import traces:
+  #1 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Server Component]
+
+  #2 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/lib/notifications.ts [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Server Component]
+
+  #3 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs [Client Component SSR]
+    ./packages/dashboard/node_modules/firebase/firestore/dist/index.mjs [Client Component SSR]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component SSR]
+    ./packages/dashboard/src/lib/admin-fetch.ts [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/index.esm.js:7:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m 5 |[0m [36mimport[0m { getModularInstance, deepEqual } [36mfrom[0m [32m'@firebase/util'[0m;
+  [90m 6 |[0m [36mimport[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m [32m'@firebase/logger'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m [32m'@firebase/webchannel-wrapper/webchannel-blob'[0m;
+  [90m 9 |[0m
+  [90m10 |[0m [36mconst[0m [33mUt[0m = [32m"@firebase/firestore"[0m, [33mHt[0m = [32m"4.12.0"[0m;
+
+
+
+Import trace:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.esm.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs:7:1
+Module not found: Can't resolve '@firebase/logger'
+  [90m 5 |[0m [36mimport[0m { getModularInstance, deepEqual } [36mfrom[0m [32m'@firebase/util'[0m;
+  [90m 6 |[0m [36mimport[0m [32m'@firebase/webchannel-wrapper/bloom-blob'[0m;
+[31m[1m>[0m [90m 7 |[0m [36mimport[0m [32m'@firebase/logger'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mimport[0m [32m'util'[0m;
+  [90m 9 |[0m [36mimport[0m [32m'crypto'[0m;
+  [90m10 |[0m [36mimport[0m [32m'@grpc/grpc-js'[0m;
+
+
+
+Import trace:
+  Client Component SSR:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/core/node_modules/@firebase/firestore/dist/common-270e6a50.node.mjs:8:1
+Module not found: Can't resolve '@grpc/proto-loader'
+  [90m 6 |[0m [36mimport[0m { randomBytes [36mas[0m randomBytes$1 } [36mfrom[0m [32m'crypto'[0m;
+  [90m 7 |[0m [36mimport[0m * [36mas[0m grpc [36mfrom[0m [32m'@grpc/grpc-js'[0m;
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m * [36mas[0m protoLoader [36mfrom[0m [32m'@grpc/proto-loader'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m
+  [90m10 |[0m /**
+  [90m11 |[0m  * @license
+
+
+
+Import trace:
+  App Route:
+    ./packages/core/node_modules/@firebase/firestore/dist/common-270e6a50.node.mjs
+    ./packages/core/adapters/firebase.ts
+    ./packages/core/index.ts
+    ./packages/dashboard/src/lib/semantic-server.ts
+    ./packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/core/node_modules/@firebase/firestore/dist/index.node.mjs:11:1
+Module not found: Can't resolve '@grpc/proto-loader'
+  [90m 9 |[0m [36mimport[0m [32m'crypto'[0m;
+  [90m10 |[0m [36mimport[0m [32m'@grpc/grpc-js'[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m [32m'@grpc/proto-loader'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mconst[0m name$1 = [32m"@firebase/firestore"[0m;
+  [90m14 |[0m [36mconst[0m version = [32m"4.11.0"[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/core/node_modules/@firebase/firestore/dist/index.node.mjs
+    ./packages/core/adapters/firebase.ts
+    ./packages/core/index.ts
+    ./packages/dashboard/src/lib/semantic-server.ts
+    ./packages/dashboard/src/app/api/v1/evaluate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs:8:1
+Module not found: Can't resolve '@grpc/proto-loader'
+  [90m 6 |[0m [36mimport[0m { randomBytes [36mas[0m randomBytes$1 } [36mfrom[0m [32m'crypto'[0m;
+  [90m 7 |[0m [36mimport[0m * [36mas[0m grpc [36mfrom[0m [32m'@grpc/grpc-js'[0m;
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m * [36mas[0m protoLoader [36mfrom[0m [32m'@grpc/proto-loader'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m
+  [90m10 |[0m /**
+  [90m11 |[0m  * @license
+
+
+
+Import traces:
+  #1 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/simulation/page.tsx [Server Component]
+
+  #2 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/lib/notifications.ts [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/settings/page.tsx [Server Component]
+
+  #3 [Client Component SSR]:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/common-39667707.node.mjs [Client Component SSR]
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs [Client Component SSR]
+    ./packages/dashboard/node_modules/firebase/firestore/dist/index.mjs [Client Component SSR]
+    ./packages/dashboard/src/lib/firebase.ts [Client Component SSR]
+    ./packages/dashboard/src/lib/admin-fetch.ts [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs:11:1
+Module not found: Can't resolve '@grpc/proto-loader'
+  [90m 9 |[0m [36mimport[0m [32m'crypto'[0m;
+  [90m10 |[0m [36mimport[0m [32m'@grpc/grpc-js'[0m;
+[31m[1m>[0m [90m11 |[0m [36mimport[0m [32m'@grpc/proto-loader'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m
+  [90m13 |[0m [36mconst[0m name$1 = [32m"@firebase/firestore"[0m;
+  [90m14 |[0m [36mconst[0m version = [32m"4.12.0"[0m;
+
+
+
+Import trace:
+  Client Component SSR:
+    ./packages/dashboard/node_modules/@firebase/firestore/dist/index.node.mjs [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/connect/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/client.mjs:2:1
+Module not found: Can't resolve '@posthog/core'
+  [90m1 |[0m ... [36mfrom[0m [32m"./version.mjs"[0m;
+[31m[1m>[0m [90m2 |[0m ...[33mreStateless[0m, isBlockedUA, isPlainObject, safeSetTimeout, uuidv7 } [36mfr..[0m.
+  [90m  |[0m    [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m ...[33magError[0m } [36mfrom[0m [32m"./types.mjs"[0m;
+  [90m4 |[0m ...[33magsPoller[0m, [33mInconclusiveMatchError[0m, [33mRequiresServerEvaluation[0m } [36mfrom[0m [32m"...[0m
+  [90m5 |[0m ...ing [36mfrom[0m [32m"./extensions/error-tracking/index.mjs"[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/client.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs:5:1
+Module not found: Can't resolve '@posthog/core'
+  [90m3 |[0m [36mimport[0m error_tracking [36mfrom[0m [32m"../extensions/error-tracking/index.mjs"[0m;
+  [90m4 |[0m [36mimport[0m { [33mPostHogBackendClient[0m } [36mfrom[0m [32m"../client.mjs"[0m;
+[31m[1m>[0m [90m5 |[0m [36mimport[0m { [33mErrorTracking[0m } [36mfrom[0m [32m"@posthog/core"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m [36mimport[0m { [33mPostHogContext[0m } [36mfrom[0m [32m"../extensions/context/context.mjs"[0m;
+  [90m7 |[0m [36mexport[0m * [36mfrom[0m [32m"../exports.mjs"[0m;
+  [90m8 |[0m error_tracking.errorPropertiesBuilder = [36mnew[0m [33mErrorTracking[0m.[33mErrorProperti...[0m
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/exports.mjs:1:1
+Module not found: Can't resolve '@posthog/core'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mFeatureFlagError[0m } [36mfrom[0m [32m"@posthog/core"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mexport[0m * [36mfrom[0m [32m"./extensions/sentry-integration.mjs"[0m;
+  [90m3 |[0m [36mexport[0m * [36mfrom[0m [32m"./extensions/express.mjs"[0m;
+  [90m4 |[0m [36mexport[0m * [36mfrom[0m [32m"./types.mjs"[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/exports.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/extensions/error-tracking/index.mjs:2:1
+Module not found: Can't resolve '@posthog/core'
+  [90m1 |[0m [36mimport[0m { addUncaughtExceptionListener, addUnhandledRejectionListener } [36m...[0m
+[31m[1m>[0m [90m2 |[0m [36mimport[0m { [33mBucketedRateLimiter[0m, isObject } [36mfrom[0m [32m"@posthog/core"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m3 |[0m [36mconst[0m [33mSHUTDOWN_TIMEOUT[0m = [35m2000[0m;
+  [90m4 |[0m [36mclass[0m [33mErrorTracking[0m {
+  [90m5 |[0m     constructor(client, options, _logger){
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/extensions/error-tracking/index.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/extensions/error-tracking/modifiers/context-lines.node.mjs:1:1
+Module not found: Can't resolve '@posthog/core'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { [33mErrorTracking[0m } [36mfrom[0m [32m"@posthog/core"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { createReadStream } [36mfrom[0m [32m"node:fs"[0m;
+  [90m3 |[0m [36mimport[0m { createInterface } [36mfrom[0m [32m"node:readline"[0m;
+  [90m4 |[0m [36mconst[0m [33mLRU_FILE_CONTENTS_CACHE[0m = [36mnew[0m [33mErrorTracking[0m.[33mReduceableCache[0m([35m25[0m);
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/extensions/error-tracking/modifiers/context-lines.node.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/posthog-node/dist/extensions/feature-flags/feature-flags.mjs:1:1
+Module not found: Can't resolve '@posthog/core'
+[31m[1m>[0m [90m1 |[0m [36mimport[0m { safeSetTimeout } [36mfrom[0m [32m"@posthog/core"[0m;
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m2 |[0m [36mimport[0m { hashSHA1 } [36mfrom[0m [32m"./crypto.mjs"[0m;
+  [90m3 |[0m [36mconst[0m [33mSIXTY_SECONDS[0m = [35m60000[0m;
+  [90m4 |[0m [36mconst[0m [33mLONG_SCALE[0m = [35m0xfffffffffffffff[0m;
+
+
+
+Import trace:
+  App Route:
+    ./packages/dashboard/node_modules/posthog-node/dist/extensions/feature-flags/feature-flags.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/client.mjs
+    ./packages/dashboard/node_modules/posthog-node/dist/entrypoints/index.node.mjs
+    ./packages/dashboard/src/lib/posthog-client.ts
+    ./packages/dashboard/src/app/api/paperclip/activate/route.ts
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/class-variance-authority/dist/index.mjs:15:5
+Module not found: Can't resolve 'clsx'
+  [90m13 |[0m  * [33mLicense[0m [36mfor[0m the specific language governing permissions and limitat...
+  [90m14 |[0m  * the [33mLicense[0m.
+[31m[1m>[0m [90m15 |[0m  */ [36mimport[0m { clsx } [36mfrom[0m [32m"clsx"[0m;
+  [90m   |[0m     [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m16 |[0m [36mconst[0m falsyToString = (value)=>[36mtypeof[0m value === [32m"boolean"[0m ? [32m`[0m${value[32m}`[0m...
+  [90m17 |[0m [36mexport[0m [36mconst[0m cx = clsx;
+  [90m18 |[0m [36mexport[0m [36mconst[0m cva = (base, config)=>(props)=>{
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/class-variance-authority/dist/index.mjs [Client Component Browser]
+    ./packages/dashboard/src/components/ui/sheet.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/class-variance-authority/dist/index.mjs [Client Component SSR]
+    ./packages/dashboard/src/components/ui/sheet.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Area.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _Curve = require([32m"../shape/Curve"[0m);
+  [90m13 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m14 |[0m [36mvar[0m _LabelList = require([32m"../component/LabelList"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Area.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Area.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Bar.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m13 |[0m [36mvar[0m _Cell = require([32m"../component/Cell"[0m);
+  [90m14 |[0m [36mvar[0m _LabelList = require([32m"../component/LabelList"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Bar.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/revenue/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/revenue/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Bar.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/revenue/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/revenue/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Brush.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _d3Scale = require([32m"victory-vendor/d3-scale"[0m);
+  [90m12 |[0m [36mvar[0m _range = _interopRequireDefault(require([32m"es-toolkit/compat/range"[0m));
+  [90m13 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Brush.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Brush.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/CartesianAxis.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m 9 |[0m [36mvar[0m _get = _interopRequireDefault(require([32m"es-toolkit/compat/get"[0m));
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _Text = require([32m"../component/Text"[0m);
+  [90m13 |[0m [36mvar[0m _Label = require([32m"../component/Label"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/CartesianAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/CartesianAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Funnel.js:12:13
+Module not found: Can't resolve 'clsx'
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m11 |[0m [36mvar[0m _omit = _interopRequireDefault(require([32m"es-toolkit/compat/omit"[0m));
+[31m[1m>[0m [90m12 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mvar[0m _selectors = require([32m"../state/selectors/selectors"[0m);
+  [90m14 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+  [90m15 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Funnel.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Funnel.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Line.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m13 |[0m [36mvar[0m _LabelList = require([32m"../component/LabelList"[0m);
+  [90m14 |[0m [36mvar[0m _Dots = require([32m"../component/Dots"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Line.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Line.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceArea.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _Label = require([32m"../component/Label"[0m);
+  [90m13 |[0m [36mvar[0m _CartesianUtils = require([32m"../util/CartesianUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceArea.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceArea.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceDot.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _Dot = require([32m"../shape/Dot"[0m);
+  [90m13 |[0m [36mvar[0m _Label = require([32m"../component/Label"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceDot.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceDot.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceLine.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _Label = require([32m"../component/Label"[0m);
+  [90m13 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceLine.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/ReferenceLine.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/Scatter.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m13 |[0m [36mvar[0m _LabelList = require([32m"../component/LabelList"[0m);
+  [90m14 |[0m [36mvar[0m _ReactUtils = require([32m"../util/ReactUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Scatter.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Scatter.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/XAxis.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _CartesianAxis = require([32m"./CartesianAxis"[0m);
+  [90m11 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+  [90m12 |[0m [36mvar[0m _cartesianAxisSlice = require([32m"../state/cartesianAxisSlice"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/XAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/XAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/cartesian/YAxis.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _CartesianAxis = require([32m"./CartesianAxis"[0m);
+  [90m11 |[0m [36mvar[0m _cartesianAxisSlice = require([32m"../state/cartesianAxisSlice"[0m);
+  [90m12 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/YAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/YAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/chart/RechartsWrapper.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _tooltipSlice = require([32m"../state/tooltipSlice"[0m);
+  [90m11 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+  [90m12 |[0m [36mvar[0m _mouseEventsMiddleware = require([32m"../state/mouseEventsMiddleware"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/chart/RechartsWrapper.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/chart/Sankey.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/chart/RechartsWrapper.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/chart/Sankey.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/chart/SunburstChart.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m 9 |[0m [36mvar[0m _d3Scale = require([32m"victory-vendor/d3-scale"[0m);
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _get = _interopRequireDefault(require([32m"es-toolkit/compat/get"[0m));
+  [90m12 |[0m [36mvar[0m _Surface = require([32m"../container/Surface"[0m);
+  [90m13 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/chart/SunburstChart.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/chart/SunburstChart.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/Cursor.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _types = require([32m"../util/types"[0m);
+  [90m12 |[0m [36mvar[0m _Curve = require([32m"../shape/Curve"[0m);
+  [90m13 |[0m [36mvar[0m _Cross = require([32m"../shape/Cross"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/Cursor.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/component/Tooltip.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/Cursor.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/component/Tooltip.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/DefaultLegendContent.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.[33mDefaultLegendContent[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _Surface = require([32m"../container/Surface"[0m);
+  [90m10 |[0m [36mvar[0m _Symbols = require([32m"../shape/Symbols"[0m);
+  [90m11 |[0m [36mvar[0m _types = require([32m"../util/types"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/DefaultLegendContent.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/DefaultLegendContent.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/DefaultTooltipContent.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m _sortBy = _interopRequireDefault(require([32m"es-toolkit/compat/sortBy.[0m..
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m11 |[0m [36mfunction[0m _interopRequireDefault(e) { [36mreturn[0m e && e.__esModule ? e : { [36m...[0m
+  [90m12 |[0m [36mfunction[0m _interopRequireWildcard(e, t) { [36mif[0m ([32m"function"[0m == [36mtypeof[0m [33mWeak...[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/DefaultTooltipContent.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/DefaultTooltipContent.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/Dots.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _Dot = require([32m"../shape/Dot"[0m);
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _ReactUtils = require([32m"../util/ReactUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/Dots.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Area.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/Dots.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/Area.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/Label.js:14:13
+Module not found: Can't resolve 'clsx'
+  [90m12 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m13 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m14 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m15 |[0m [36mvar[0m _Text = require([32m"./Text"[0m);
+  [90m16 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m17 |[0m [36mvar[0m _PolarUtils = require([32m"../util/PolarUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/Label.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/Label.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/ResponsiveContainer.js:7:13
+Module not found: Can't resolve 'clsx'
+  [90m 5 |[0m });
+  [90m 6 |[0m exports.useResponsiveContainerContext = exports.[33mResponsiveContainer[0m = [36m...[0m
+[31m[1m>[0m [90m 7 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m10 |[0m [36mvar[0m _throttle = _interopRequireDefault(require([32m"es-toolkit/compat/thro...[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/ResponsiveContainer.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/ResponsiveContainer.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/component/Text.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m13 |[0m [36mvar[0m _Global = require([32m"../util/Global"[0m);
+  [90m14 |[0m [36mvar[0m _DOMUtils = require([32m"../util/DOMUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/component/Text.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/component/Text.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/container/Layer.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.[33mLayer[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _svgPropertiesAndEvents = require([32m"../util/svgPropertiesAndEvents"[0m);
+  [90m10 |[0m [36mvar[0m _excluded = [[32m"children"[0m, [32m"className"[0m];
+  [90m11 |[0m [36mfunction[0m _interopRequireWildcard(e, t) { [36mif[0m ([32m"function"[0m == [36mtypeof[0m [33mWeak...[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/container/Layer.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/container/Layer.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/container/Surface.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _svgPropertiesAndEvents = require([32m"../util/svgPropertiesAndEvents"[0m);
+  [90m11 |[0m [36mvar[0m _excluded = [[32m"children"[0m, [32m"width"[0m, [32m"height"[0m, [32m"viewBox"[0m, [32m"className"[0m..[32m.[0m
+  [90m12 |[0m [36mfunction[0m _interopRequireWildcard(e, t) { [36mif[0m ([32m"function"[0m == [36mtypeof[0m [33mWeak...[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/container/Surface.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/container/Surface.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/Pie.js:12:13
+Module not found: Can't resolve 'clsx'
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m11 |[0m [36mvar[0m _get = _interopRequireDefault(require([32m"es-toolkit/compat/get"[0m));
+[31m[1m>[0m [90m12 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mvar[0m _pieSelectors = require([32m"../state/selectors/pieSelectors"[0m);
+  [90m14 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+  [90m15 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/Pie.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/Pie.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/PolarAngleAxis.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m12 |[0m [36mvar[0m _Dot = require([32m"../shape/Dot"[0m);
+  [90m13 |[0m [36mvar[0m _Polygon = require([32m"../shape/Polygon"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarAngleAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarAngleAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/PolarGrid.js:7:13
+Module not found: Can't resolve 'clsx'
+  [90m 5 |[0m });
+  [90m 6 |[0m exports.defaultPolarGridProps = exports.[33mPolarGrid[0m = [36mvoid[0m [35m0[0m;
+[31m[1m>[0m [90m 7 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 9 |[0m [36mvar[0m _PolarUtils = require([32m"../util/PolarUtils"[0m);
+  [90m10 |[0m [36mvar[0m _hooks = require([32m"../state/hooks"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarGrid.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarGrid.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/PolarRadiusAxis.js:12:13
+Module not found: Can't resolve 'clsx'
+  [90m10 |[0m [36mvar[0m _maxBy = _interopRequireDefault(require([32m"es-toolkit/compat/maxBy"[0m));
+  [90m11 |[0m [36mvar[0m _minBy = _interopRequireDefault(require([32m"es-toolkit/compat/minBy"[0m));
+[31m[1m>[0m [90m12 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mvar[0m _Text = require([32m"../component/Text"[0m);
+  [90m14 |[0m [36mvar[0m _Label = require([32m"../component/Label"[0m);
+  [90m15 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarRadiusAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/PolarRadiusAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/Radar.js:12:13
+Module not found: Can't resolve 'clsx'
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+  [90m11 |[0m [36mvar[0m _last = _interopRequireDefault(require([32m"es-toolkit/compat/last"[0m));
+[31m[1m>[0m [90m12 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m13 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m14 |[0m [36mvar[0m _PolarUtils = require([32m"../util/PolarUtils"[0m);
+  [90m15 |[0m [36mvar[0m _ChartUtils = require([32m"../util/ChartUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/Radar.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/Radar.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/polar/RadialBar.js:11:13
+Module not found: Can't resolve 'clsx'
+  [90m 9 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m10 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m11 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m12 |[0m [36mvar[0m _RadialBarUtils = require([32m"../util/RadialBarUtils"[0m);
+  [90m13 |[0m [36mvar[0m _Layer = require([32m"../container/Layer"[0m);
+  [90m14 |[0m [36mvar[0m _ReactUtils = require([32m"../util/ReactUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/polar/RadialBar.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/polar/RadialBar.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Cross.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.[33mCross[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m10 |[0m [36mvar[0m _svgPropertiesAndEvents = require([32m"../util/svgPropertiesAndEvents"[0m);
+  [90m11 |[0m [36mvar[0m _excluded = [[32m"x"[0m, [32m"y"[0m, [32m"top"[0m, [32m"left"[0m, [32m"width"[0m, [32m"height"[0m, [32m"classNam..[0m.
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Cross.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Cross.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Curve.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m _d3Shape = require([32m"victory-vendor/d3-shape"[0m);
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _types = require([32m"../util/types"[0m);
+  [90m11 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m12 |[0m [36mvar[0m _isWellBehavedNumber = require([32m"../util/isWellBehavedNumber"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Curve.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Curve.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/analytics/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Dot.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.[33mDot[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _types = require([32m"../util/types"[0m);
+  [90m10 |[0m [36mvar[0m _svgPropertiesNoEvents = require([32m"../util/svgPropertiesNoEvents"[0m);
+  [90m11 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Dot.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Dot.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Polygon.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.[33mPolygon[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _svgPropertiesAndEvents = require([32m"../util/svgPropertiesAndEvents"[0m);
+  [90m10 |[0m [36mvar[0m _round = require([32m"../util/round"[0m);
+  [90m11 |[0m [36mvar[0m _excluded = [[32m"points"[0m, [32m"className"[0m, [32m"baseLinePoints"[0m, [32m"connectNull..[0m.
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Polygon.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Polygon.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Rectangle.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _resolveDefaultProps = require([32m"../util/resolveDefaultProps"[0m);
+  [90m11 |[0m [36mvar[0m _JavascriptAnimate = require([32m"../animation/JavascriptAnimate"[0m);
+  [90m12 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Rectangle.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Rectangle.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Sector.js:8:13
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m exports.defaultSectorProps = exports.[33mSector[0m = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+[31m[1m>[0m [90m 8 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mvar[0m _PolarUtils = require([32m"../util/PolarUtils"[0m);
+  [90m10 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m11 |[0m [36mvar[0m _resolveDefaultProps = require([32m"../util/resolveDefaultProps"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Sector.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Sector.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Symbols.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m [33mReact[0m = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m _d3Shape = require([32m"victory-vendor/d3-shape"[0m);
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _DataUtils = require([32m"../util/DataUtils"[0m);
+  [90m11 |[0m [36mvar[0m _svgPropertiesAndEvents = require([32m"../util/svgPropertiesAndEvents"[0m);
+  [90m12 |[0m [36mvar[0m _excluded = [[32m"type"[0m, [32m"size"[0m, [32m"sizeType"[0m];
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Symbols.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Symbols.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/shape/Trapezoid.js:9:13
+Module not found: Can't resolve 'clsx'
+  [90m 7 |[0m [36mvar[0m _react = _interopRequireWildcard(require([32m"react"[0m));
+  [90m 8 |[0m [36mvar[0m [33mReact[0m = _react;
+[31m[1m>[0m [90m 9 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m10 |[0m [36mvar[0m _resolveDefaultProps = require([32m"../util/resolveDefaultProps"[0m);
+  [90m11 |[0m [36mvar[0m _JavascriptAnimate = require([32m"../animation/JavascriptAnimate"[0m);
+  [90m12 |[0m [36mvar[0m _useAnimationId = require([32m"../util/useAnimationId"[0m);
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Trapezoid.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/shape/Trapezoid.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/util/tooltip/translate.js:10:13
+Module not found: Can't resolve 'clsx'
+  [90m 8 |[0m exports.getTooltipTranslateXY = getTooltipTranslateXY;
+  [90m 9 |[0m exports.getTransformStyle = getTransformStyle;
+[31m[1m>[0m [90m10 |[0m [36mvar[0m _clsx = require([32m"clsx"[0m);
+  [90m   |[0m             [31m[1m^^^^^^^^^^^^^^^[0m
+  [90m11 |[0m [36mvar[0m _DataUtils = require([32m"../DataUtils"[0m);
+  [90m12 |[0m [36mvar[0m [33mCSS_CLASS_PREFIX[0m = [32m'recharts-tooltip-wrapper'[0m;
+  [90m13 |[0m [36mvar[0m [33mTOOLTIP_HIDDEN[0m = {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/util/tooltip/translate.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/component/TooltipBoundingBox.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/component/Tooltip.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/util/tooltip/translate.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/component/TooltipBoundingBox.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/component/Tooltip.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/src/app/[lang]/pricing/PricingClient.tsx:8:1
+Module not found: Can't resolve 'clsx'
+  [90m 6 |[0m [36mimport[0m [33mReact[0m, { useState, useMemo } [36mfrom[0m [32m'react'[0m;
+  [90m 7 |[0m [36mimport[0m { [33mCheck[0m, [33mX[0m, [33mMinus[0m, [33mZap[0m, [33mShield[0m, [33mUsers[0m, [33mArrowRight[0m, [33mDollarSign[0m, [33m...[0m
+[31m[1m>[0m [90m 8 |[0m [36mimport[0m { clsx, [36mtype[0m [33mClassValue[0m } [36mfrom[0m [32m'clsx'[0m;
+  [90m   |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m [36mimport[0m { twMerge } [36mfrom[0m [32m'tailwind-merge'[0m;
+  [90m10 |[0m [36mimport[0m { auth } [36mfrom[0m [32m'@/lib/firebase'[0m;
+  [90m11 |[0m [36mimport[0m { useAuthState } [36mfrom[0m [32m'react-firebase-hooks/auth'[0m;
+
+
+
+Import traces:
+  App Route:
+    ./packages/dashboard/src/app/[lang]/pricing/PricingClient.tsx
+    ./packages/dashboard/src/app/llms.txt/route.ts
+
+  Server Component:
+    ./packages/dashboard/src/app/[lang]/pricing/PricingClient.tsx
+    ./packages/dashboard/src/app/[lang]/pricing/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/src/lib/utils.ts:4:1
+Module not found: Can't resolve 'clsx'
+  [90m2 |[0m [90m// SPDX-License-Identifier: Apache-2.0[0m
+  [90m3 |[0m
+[31m[1m>[0m [90m4 |[0m [36mimport[0m { clsx, [36mtype[0m [33mClassValue[0m } [36mfrom[0m [32m"clsx"[0m
+  [90m  |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m5 |[0m [36mimport[0m { twMerge } [36mfrom[0m [32m"tailwind-merge"[0m
+  [90m6 |[0m
+  [90m7 |[0m [36mexport[0m [36mfunction[0m cn(...inputs: [33mClassValue[0m[]) {
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/src/lib/utils.ts [Client Component Browser]
+    ./packages/dashboard/src/components/ui/label.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/[id]/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/[id]/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/src/lib/utils.ts [Client Component SSR]
+    ./packages/dashboard/src/components/ui/label.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/[id]/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/agents/[id]/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/unified/lib/index.js:350:1
+Module not found: Can't resolve 'extend'
+  [90m348 |[0m
+  [90m349 |[0m [36mimport[0m {bail} [36mfrom[0m [32m'bail'[0m
+[31m[1m>[0m [90m350 |[0m [36mimport[0m extend [36mfrom[0m [32m'extend'[0m
+  [90m    |[0m [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m351 |[0m [36mimport[0m {ok [36mas[0m assert} [36mfrom[0m [32m'devlop'[0m
+  [90m352 |[0m [36mimport[0m isPlainObj [36mfrom[0m [32m'is-plain-obj'[0m
+  [90m353 |[0m [36mimport[0m {trough} [36mfrom[0m [32m'trough'[0m
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/unified/lib/index.js [Client Component Browser]
+    ./packages/dashboard/node_modules/react-markdown/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/tasks/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/tasks/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/unified/lib/index.js [Client Component SSR]
+    ./packages/dashboard/node_modules/react-markdown/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/tasks/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/tasks/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/recharts/lib/state/hooks.js:8:21
+Module not found: Can't resolve 'use-sync-external-store/shim/with-selector'
+  [90m 6 |[0m ...pDispatch = [36mvoid[0m [35m0[0m;
+  [90m 7 |[0m ...pSelector = useAppSelector;
+[31m[1m>[0m [90m 8 |[0m ...ctor = require([32m"use-sync-external-store/shim/with-selector"[0m);
+  [90m   |[0m           [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m 9 |[0m ...require([32m"react"[0m);
+  [90m10 |[0m ...ReduxContext = require([32m"./RechartsReduxContext"[0m);
+  [90m11 |[0m ...tch = a => a;
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/recharts/lib/state/hooks.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/XAxis.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/recharts/lib/state/hooks.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/cartesian/XAxis.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/admin/funnel/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/dashboard/node_modules/react-redux/dist/cjs/react-redux.production.min.cjs:5:1195
+Module not found: Can't resolve 'use-sync-external-store/with-selector.js'
+  [90m3 |[0m ...
+  [90m4 |[0m ...
+[31m[1m>[0m [90m5 |[0m ...);[36mvar[0m [33mFe[0m=require([32m"use-sync-external-store/with-selector.js"[0m);[36mvar[0m [33mRt[0m=...
+  [90m  |[0m             [31m[1m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+  [90m6 |[0m ...
+
+
+
+Import traces:
+  Client Component Browser:
+    ./packages/dashboard/node_modules/react-redux/dist/cjs/react-redux.production.min.cjs [Client Component Browser]
+    ./packages/dashboard/node_modules/react-redux/dist/cjs/index.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/state/RechartsStoreProvider.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/chart/Treemap.js [Client Component Browser]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component Browser]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./packages/dashboard/node_modules/react-redux/dist/cjs/react-redux.production.min.cjs [Client Component SSR]
+    ./packages/dashboard/node_modules/react-redux/dist/cjs/index.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/state/RechartsStoreProvider.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/chart/Treemap.js [Client Component SSR]
+    ./packages/dashboard/node_modules/recharts/lib/index.js [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Client Component SSR]
+    ./packages/dashboard/src/app/[lang]/dashboard/integrations/paperclip/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at ./packages/core/node_modules/ (firebase/app/dist/esm/index.esm.js:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/core/node_modules/ (firebase/firestore/dist/common-270e6a50.node.mjs:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/core/node_modules/ (firebase/firestore/dist/index.node.mjs:7:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/app/dist/esm/index.esm.js:2:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/auth/dist/esm/index-3398f4bb.js:3:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/auth/dist/esm/index.js:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/auth/dist/node-esm/index.js:5:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/auth/dist/node-esm/totp-413dc172.js:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/common-091f2944.esm.js:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/common-39667707.node.mjs:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/index.esm.js:7:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/index.node.mjs:7:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/core/node_modules/ (firebase/firestore/dist/common-270e6a50.node.mjs:8:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/core/node_modules/ (firebase/firestore/dist/index.node.mjs:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/common-39667707.node.mjs:8:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at ./packages/dashboard/node_modules/ (firebase/firestore/dist/index.node.mjs:11:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    ... collapsed 45 duplicate lines matching above 1 lines 45 times...
+    at <unknown> (./packages/dashboard/src/app/[lang]/pricing/PricingClient.tsx:8:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./packages/dashboard/src/lib/utils.ts:4:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    ... collapsed 3 duplicate lines matching above 1 lines 3 times...
+npm error Lifecycle script `build` failed with error:
+npm error code 1
+npm error path /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard
+npm error workspace @suprawall/dashboard@0.1.0
+npm error location /Users/alejandropeghin/Desktop/AntiG/SW-Private/SupraWall/packages/dashboard
+npm error command failed
+npm error command sh -c next build

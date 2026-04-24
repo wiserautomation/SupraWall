@@ -38,6 +38,9 @@ SupraWall is a deterministic perimeter that wraps your agent — any agent — a
 > **It is not another guardrail model. It is the rule of law.**
 
 And with the EU AI Act enforcement deadline on **August 2, 2026**, we ship [8 pre-built sector templates](#eu-ai-act-compliance--shipped-not-promised) covering every Annex III high-risk category — HR, healthcare, education, critical infrastructure, biometrics, law enforcement, migration, justice — plus a DORA template for financial services. Compliance by `pip install`, not by 200-page PDF.
+<br/>
+
+If SupraWall saves you from an incident (or prevents one), drop a ⭐ — it helps other security-minded devs find this.
 
 ---
 
@@ -211,8 +214,6 @@ If you want probabilistic content moderation, use a guardrail model. If you want
 ## Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=wiserautomation/SupraWall&type=Date)](https://star-history.com/#wiserautomation/SupraWall&Date)
-
-If SupraWall saved you from an incident, please ⭐ the repo — it's how this kind of infrastructure finds the people who need it.
 
 ---
 

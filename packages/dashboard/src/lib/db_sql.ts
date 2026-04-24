@@ -55,7 +55,7 @@ export function ensureSchema(): Promise<void> {
                     max_cost_usd FLOAT DEFAULT 10,
                     budget_alert_usd FLOAT DEFAULT 8,
                     max_iterations INTEGER DEFAULT 50,
-                    loop_detection BOOLEAN DEFAULT FALSE,
+                    loop_detection BOOLEAN DEFAULT FALSE
                 );
                 
                 CREATE TABLE IF NOT EXISTS tenants (

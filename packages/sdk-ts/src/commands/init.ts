@@ -6,6 +6,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import readline from 'readline';
 import chalk from 'chalk';
+import os from 'os';
 
 import { detectEnvironment, type DetectedEnvironment, type Language } from '../detectors/framework';
 import { findAgentFiles, type AgentFile } from '../detectors/agent-files';
@@ -339,6 +340,26 @@ export async function runInit(projectRoot: string): Promise<void> {
     if (mode === 'cloud') {
         console.log(chalk.gray('  Opening your dashboard...'));
         tryOpenBrowser(DASHBOARD_URL);
+    }
+
+    // ── Step 11: Star request (once only) ─────────────────────────────────────
+    const home = os.homedir();
+    const configDir = path.join(home, '.suprawall');
+    const flagFile = path.join(configDir, '.welcomed');
+
+    if (!fs.existsSync(flagFile)) {
+        console.log(
+            `\n${chalk.green('✓')} ${chalk.bold('SupraWall initialized.')} If this was useful, star the repo: ${chalk.cyan('github.com/wiserautomation/SupraWall')}`
+        );
+        
+        try {
+            if (!fs.existsSync(configDir)) {
+                fs.mkdirSync(configDir, { recursive: true });
+            }
+            fs.writeFileSync(flagFile, new Date().toISOString(), 'utf8');
+        } catch (e) {
+            // Non-fatal if we can't write the flag
+        }
     }
 }
 
