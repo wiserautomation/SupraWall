@@ -27,6 +27,44 @@
 
 ---
 
+## Get started
+
+```bash
+pip install suprawall-sdk
+```
+
+```python
+from suprawall import wrap_with_firewall
+from langchain.agents import create_react_agent, AgentExecutor
+from langchain_openai import ChatOpenAI
+from langchain_community.tools import ShellTool
+from langchain import hub
+
+llm = ChatOpenAI(model="gpt-4o-mini")
+tools = [ShellTool()]
+agent = AgentExecutor(
+    agent=create_react_agent(llm, tools, hub.pull("hwchase17/react")),
+    tools=tools,
+)
+safe_agent = wrap_with_firewall(agent)
+
+safe_agent.invoke({"input": "Delete all files in /tmp"})
+```
+
+```
+SupraWallBlocked: action 'terminal' blocked by policy 'no-destructive-shell'.
+Shell commands with destructive patterns (rm -rf, etc.) are blocked by default. (trace: a3f2b891)
+```
+
+No proxy to deploy. No API key for the default policy. No config file. One import, one wrapper call.
+
+**Works with any framework — auto-detected, no `framework=` argument:**
+LangChain · LangGraph · AutoGen · CrewAI · OpenAI Agents SDK · Anthropic
+
+[→ Custom policies · Budget caps · Human-in-the-loop · Cloud enforcement](https://www.supra-wall.com/docs)
+
+---
+
 ## Why this exists
 
 AI agents now write code, spend money, query databases, and take real-world actions on your behalf — autonomously. The frameworks that orchestrate them (Paperclip, OpenClaw, LangChain, CrewAI, AutoGen, Claude Code) are excellent at *making them productive*. None of them are responsible for *making them safe*.
@@ -41,43 +79,6 @@ And with the EU AI Act enforcement deadline on **August 2, 2026**, we ship [8 pr
 <br/>
 
 If SupraWall saves you from an incident (or prevents one), drop a ⭐ — it helps other security-minded devs find this.
-
----
-
-## Quickstart
-
-### Python
-
-```bash
-pip install suprawall-sdk
-```
-
-```python
-from suprawall import secure_agent
-from your_framework import build_agent  # LangChain, CrewAI, AutoGen, custom — doesn't matter
-
-agent = secure_agent(build_agent(), policy="policies/langchain-safe.json")
-
-# Dangerous tool call from a prompt-injected user message:
-agent.invoke("DROP TABLE users")
-# ⚡ SupraWall intercepted. BLOCKED. Audit log #A-00847 signed ✓
-```
-
-### TypeScript / Node
-
-```bash
-npm install suprawall
-```
-
-```typescript
-import { secureAgent } from "suprawall";
-import { agent } from "./my-agent";
-
-const safe = secureAgent(agent, { policy: "./policies/langchain-safe.json" });
-await safe.invoke("DROP TABLE users"); // BLOCKED — pre-execution
-```
-
-That's it. No proxy to deploy. No sidecar. No model fine-tune. The wrapper sits between the agent's reasoning loop and the tool runtime, where deterministic rules belong.
 
 ---
 

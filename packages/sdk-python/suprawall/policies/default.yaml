@@ -1,0 +1,38 @@
+version: "1.0"
+name: "SupraWall Default Safety Policy"
+description: >
+  Out-of-the-box policy that blocks the highest-risk agent behaviors.
+  No API key or network connection required — evaluated locally in <1ms.
+  Override with: wrap_with_firewall(agent, policy="path/to/custom.yaml")
+
+rules:
+  # Blocks shell/bash/terminal tool calls that contain destructive command patterns.
+  # Catches rm -rf, dd if=/dev/zero, mkfs, Windows del /s, and similar.
+  - name: no-destructive-shell
+    description: >
+      Shell commands with destructive patterns (rm -rf, dd, mkfs, etc.)
+      are blocked by default.
+    tool_pattern: '(?i)\b(shell|bash|terminal|run_command|execute_code|shell_exec|subprocess|powershell)\b'
+    args_pattern: >-
+      (?i)(rm\s+-[rfRFsS]{1,4}|rmdir\s|dd\s+if=|mkfs|shred\s|wipe\s
+      |truncate\s+-s\s*0|\bdel\s+/[sfqp]|\brd\s+/s|format\s+[c-zC-Z]:
+      |>\s*/dev/(?!null\b))
+
+  # Blocks file-write tool calls targeting sensitive system directories.
+  - name: no-write-outside-cwd
+    description: >
+      File writes to system paths (/etc, /root, /sys, /proc, /boot)
+      are blocked by default.
+    tool_pattern: '(?i)\b(write_file|file_write|save_file|create_file|write_to_file|file_create)\b'
+    args_pattern: '(^/etc/|^/root/|^/sys/|^/proc/|^/boot/|[\\]Windows[\\]System32)'
+
+  # Blocks any tool call whose arguments contain credential patterns.
+  # Catches OpenAI keys, AWS keys, GitHub tokens, Slack tokens, JWTs.
+  - name: no-secret-exfil
+    description: >
+      Detected a credential pattern in tool arguments.
+      Exfiltration of API keys, tokens, or secrets is blocked by default.
+    tool_pattern: null  # applies to ALL tools
+    args_pattern: >-
+      (?i)(sk-[a-zA-Z0-9]{32,}|AKIA[A-Z0-9]{16}|gh[po]_[a-zA-Z0-9]{36,}
+      |xoxb-[a-zA-Z0-9\-]+|eyJhbGci[a-zA-Z0-9\._\-]{20,})
