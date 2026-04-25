@@ -20,29 +20,42 @@ const COLORS = ['#10b981', '#f43f5e', '#f59e0b']; // ALLOW, DENY, REQUIRE_APPROV
 
 export default function AdminOverviewPage() {
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [stats, setStats] = useState<any>(null);
     const [funnel, setFunnel] = useState<any>(null);
+    const [warnings, setWarnings] = useState<string[]>([]);
 
     useEffect(() => {
         async function fetchAllData() {
             setLoading(true);
-            setError(null);
+            setWarnings([]);
             try {
-                const [overviewRes, funnelRes] = await Promise.all([
+                const [overviewRes, funnelRes] = await Promise.allSettled([
                     adminFetch('/api/admin/overview'),
                     adminFetch('/api/admin/funnel')
                 ]);
 
-                if (!overviewRes.ok || !funnelRes.ok) {
-                    setError('Failed to load some metrics. Please refresh the page.');
+                const newWarnings: string[] = [];
+
+                if (overviewRes.status === 'fulfilled' && overviewRes.value.ok) {
+                    const data = await overviewRes.value.json();
+                    setStats(data);
+                    if (data.warnings?.length > 0) newWarnings.push(...data.warnings);
                 } else {
-                    setStats(await overviewRes.json());
-                    setFunnel(await funnelRes.json());
+                    newWarnings.push("Overview data failed to load.");
                 }
+
+                if (funnelRes.status === 'fulfilled' && funnelRes.value.ok) {
+                    const data = await funnelRes.value.json();
+                    setFunnel(data);
+                    if (data.warnings?.length > 0) newWarnings.push(...data.warnings);
+                } else {
+                    newWarnings.push("Funnel data failed to load.");
+                }
+
+                setWarnings(newWarnings);
             } catch (err) {
                 console.error("SupraWall Admin: Failed to load executive insights", err);
-                setError('Failed to load executive insights. Please try again.');
+                setWarnings(["Critical failure fetching dashboard data."]);
             }
             setLoading(false);
         }
@@ -57,28 +70,17 @@ export default function AdminOverviewPage() {
         );
     }
 
-    if (error) {
-        return (
-            <div className="space-y-6">
-                <div className="flex items-center gap-3 p-4 bg-rose-500/10 border border-rose-500/20 rounded-lg text-rose-400">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                    <p className="text-sm font-medium">{error}</p>
-                </div>
-            </div>
-        );
-    }
-
     const { stats: kpis, signupTrends } = stats || {};
 
     const executiveKPIs = [
-        { title: "Total Users", value: kpis?.totalUsers, sub: "+12% MoM", icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-        { title: "Active Agents", value: kpis?.totalAgents, sub: "Live Monitoring", icon: Server, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-        { title: "Monthly Revenue", value: `$${kpis?.mrr}`, sub: "Live MRR", icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-        { title: "Churn Rate", value: kpis?.churnRate, sub: "Retention", icon: Percent, color: "text-rose-500", bg: "bg-rose-500/10" },
-        { title: "Ops Today", value: kpis?.opsToday, sub: "Global Volume", icon: Activity, color: "text-blue-500", bg: "bg-blue-500/10" },
-        { title: "Success Rate", value: kpis?.successRate, sub: "System Health", icon: Zap, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-        { title: "Paid Orgs", value: kpis?.totalPaidUsers, sub: "Conversion", icon: Filter, color: "text-purple-500", bg: "bg-purple-500/10" },
-        { title: "Global Savings", value: `$${(kpis?.totalRevenue * 0.4).toFixed(0)}`, sub: "Damage Blocked", icon: Shield, color: "text-amber-500", bg: "bg-amber-500/10" },
+        { title: "Total Users", value: kpis?.totalUsers || 0, sub: "Registered", icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { title: "Active Agents", value: kpis?.totalAgents || 0, sub: "Live Monitoring", icon: Server, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { title: "Monthly Revenue", value: `$${kpis?.mrr || 0}`, sub: "Live MRR", icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { title: "Churn Rate", value: kpis?.churnRate || '0%', sub: "Retention", icon: Percent, color: "text-rose-500", bg: "bg-rose-500/10" },
+        { title: "Ops Today", value: kpis?.opsToday || 0, sub: "Global Volume", icon: Activity, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { title: "Success Rate", value: kpis?.successRate || '0%', sub: "System Health", icon: Zap, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { title: "Paid Orgs", value: kpis?.totalPaidUsers || 0, sub: "Conversion", icon: Filter, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { title: "Global Savings", value: `$${((kpis?.totalRevenue || 0) * 0.4).toFixed(0)}`, sub: "Damage Blocked", icon: Shield, color: "text-amber-500", bg: "bg-amber-500/10" },
     ];
 
     return (
@@ -94,6 +96,17 @@ export default function AdminOverviewPage() {
                     </Link>
                 </div>
             </div>
+
+            {warnings.length > 0 && (
+                <div className="space-y-2">
+                    {warnings.map((warn, i) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <p className="text-sm font-medium">{warn}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* KPI Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -131,7 +144,7 @@ export default function AdminOverviewPage() {
                     </CardHeader>
                     <CardContent className="h-[350px] pt-4">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={signupTrends}>
+                            <AreaChart data={signupTrends || []}>
                                 <defs>
                                     <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#10b981" stopOpacity={0.4} />
@@ -159,7 +172,7 @@ export default function AdminOverviewPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col justify-center py-8 gap-1.5 px-6">
-                        {funnel?.funnel?.map((stage: any, i: number) => (
+                        {funnel?.funnel?.length > 0 ? funnel.funnel.map((stage: any, i: number) => (
                             <div key={stage.name} className="space-y-1">
                                 <div className="flex justify-between items-end px-1">
                                     <span className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">{stage.name}</span>
@@ -172,7 +185,9 @@ export default function AdminOverviewPage() {
                                     />
                                 </div>
                             </div>
-                        ))}
+                        )) : (
+                            <div className="text-center text-neutral-500 text-xs py-10">Funnel data unavailable</div>
+                        )}
                     </CardContent>
                     <div className="p-4 bg-emerald-500/5 border-t border-white/[0.05]">
                         <Link href="/admin/funnel" className="text-center block text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] hover:text-emerald-400 transition-colors">
@@ -190,7 +205,7 @@ export default function AdminOverviewPage() {
                 <div className="space-y-4 relative z-10">
                     <h2 className="text-4xl font-black italic uppercase tracking-tighter leading-none">Healthy Yield Targets.</h2>
                     <p className="text-emerald-100 font-bold italic uppercase text-sm tracking-tight opacity-80 max-w-xl">
-                        Platform success rate is currently {kpis?.successRate || 'computing'}% across all evaluation nodes. Revenue growth is pacing 14% ahead of previous month.
+                        Platform success rate is currently {kpis?.successRate || 'computing'}% across all evaluation nodes. 
                     </p>
                 </div>
                 <div className="relative z-10 flex gap-4">

@@ -3,20 +3,43 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { collection, query, orderBy, limit, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Activity, Shield, ShieldCheck, ShieldAlert, Clock, Info, AlertCircle } from "lucide-react";
+import { Activity, ShieldCheck, ShieldAlert, Clock, Info, AlertCircle } from "lucide-react";
+import { adminFetch } from "@/lib/admin-fetch";
 
 export default function AdminAuditPage() {
-    const [logs, setLogs] = useState<any[]>([]);
+    const [pgLogs, setPgLogs] = useState<any[]>([]);
+    const [fsLogs, setFsLogs] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [warnings, setWarnings] = useState<string[]>([]);
+    const fetchedPg = useRef(false);
 
     useEffect(() => {
+        // Fetch Postgres static logs once
+        if (!fetchedPg.current) {
+            fetchedPg.current = true;
+            adminFetch('/api/admin/audit-logs')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.warnings) {
+                        setWarnings(data.warnings);
+                    } else if (Array.isArray(data)) {
+                        setPgLogs(data);
+                    }
+                })
+                .catch(err => {
+                    console.error("Failed to fetch Postgres audit logs", err);
+                    setWarnings(prev => [...prev, "Failed to fetch global Postgres logs."]);
+                });
+        }
+
+        // Subscribe to Firestore real-time logs
         const q = query(
             collection(db, "audit_logs"),
             orderBy("timestamp", "desc"),
@@ -26,19 +49,34 @@ export default function AdminAuditPage() {
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const logsData = snapshot.docs.map((doc) => ({
                 id: doc.id,
+                source: 'firestore',
                 ...doc.data(),
             }));
-            setLogs(logsData);
+            setFsLogs(logsData);
             setLoading(false);
             setError(null);
         }, (error) => {
             console.error("Firebase onSnapshot error:", error);
-            setError('Failed to load audit logs. Please refresh the page.');
+            setWarnings(prev => {
+                if (!prev.includes("Failed to connect to real-time Firestore stream.")) {
+                    return [...prev, "Failed to connect to real-time Firestore stream."];
+                }
+                return prev;
+            });
             setLoading(false);
         });
 
         return () => unsubscribe();
     }, []);
+
+    // Merge and sort both sources
+    const allLogs = [...pgLogs, ...fsLogs];
+    const uniqueLogs = Array.from(new Map(allLogs.map(item => [item.id, item])).values());
+    const sortedLogs = uniqueLogs.sort((a, b) => {
+        const timeA = new Date(a.timestamp).getTime();
+        const timeB = new Date(b.timestamp).getTime();
+        return timeB - timeA;
+    }).slice(0, 100);
 
     const getDecisionBadge = (decision: string) => {
         switch (decision) {
@@ -72,6 +110,17 @@ export default function AdminAuditPage() {
                 </div>
             )}
 
+            {warnings.length > 0 && (
+                <div className="space-y-2 mb-4">
+                    {warnings.map((warn, i) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <p className="text-sm font-medium">{warn}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
+
             <Card className="bg-[#0A0A0A] border-white/5">
                 <CardHeader className="py-5 border-b border-white/5">
                     <CardTitle className="text-lg font-bold flex items-center gap-2">
@@ -91,23 +140,23 @@ export default function AdminAuditPage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {loading ? (
+                                {loading && sortedLogs.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center text-neutral-500">
                                             Listening for global events...
                                         </td>
                                     </tr>
-                                ) : logs.length === 0 ? (
+                                ) : sortedLogs.length === 0 ? (
                                     <tr>
                                         <td colSpan={5} className="px-6 py-12 text-center text-neutral-500">
                                             No recent activity.
                                         </td>
                                     </tr>
                                 ) : (
-                                    logs.map((log) => (
+                                    sortedLogs.map((log) => (
                                         <tr key={log.id} className="hover:bg-white/[0.05] transition-colors font-mono">
                                             <td className="px-6 py-4 text-neutral-400 text-xs">
-                                                {format(new Date(log.timestamp), "MMM d, HH:mm:ss")}
+                                                {log.timestamp ? format(new Date(log.timestamp), "MMM d, HH:mm:ss") : "N/A"}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="text-neutral-300 text-xs truncate max-w-[200px]" title={log.userId}>U: {log.userId}</div>

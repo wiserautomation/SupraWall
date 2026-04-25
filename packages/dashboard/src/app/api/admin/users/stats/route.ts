@@ -27,7 +27,6 @@ export async function GET(req: NextRequest) {
         if (!decodedToken.email || !ADMIN_EMAILS.includes(decodedToken.email)) {
             return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
         }
-        const { userId } = decodedToken as { userId: string, email: string };
 
         await ensureSchema();
 

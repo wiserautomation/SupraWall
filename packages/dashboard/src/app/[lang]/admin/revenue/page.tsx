@@ -61,13 +61,13 @@ export default function AdminRevenuePage() {
         );
     }
 
-    const { summary, charts, paymentHistory } = data || {};
+    const { summary, charts, paymentHistory, warnings } = data || {};
 
     const kpiData = [
-        { title: "Monthly Recurring Revenue", value: `$${summary?.mrr?.toLocaleString()}`, sub: "Live MRR", icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-        { title: "Annual Run Rate", value: `$${summary?.arr?.toLocaleString()}`, sub: "Projected ARR", icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-500/10" },
-        { title: "Avg Revenue / Paid User", value: `$${summary?.arpu?.toFixed(2)}`, sub: "ARPU", icon: Users, color: "text-purple-500", bg: "bg-purple-500/10" },
-        { title: "Estimated LTV", value: `$${summary?.ltv?.toLocaleString()}`, sub: "Lifetime Value", icon: ArrowUpRight, color: "text-amber-500", bg: "bg-amber-500/10" },
+        { title: "Monthly Recurring Revenue", value: `$${summary?.mrr?.toLocaleString() || 0}`, sub: "Live MRR", icon: DollarSign, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+        { title: "Annual Run Rate", value: `$${summary?.arr?.toLocaleString() || 0}`, sub: "Projected ARR", icon: TrendingUp, color: "text-blue-500", bg: "bg-blue-500/10" },
+        { title: "Avg Revenue / Paid User", value: `$${summary?.arpu?.toFixed(2) || '0.00'}`, sub: "ARPU", icon: Users, color: "text-purple-500", bg: "bg-purple-500/10" },
+        { title: "Estimated LTV", value: `$${summary?.ltv?.toLocaleString() || 0}`, sub: "Lifetime Value", icon: ArrowUpRight, color: "text-amber-500", bg: "bg-amber-500/10" },
     ];
 
     return (
@@ -78,6 +78,17 @@ export default function AdminRevenuePage() {
                     <p className="text-neutral-500 text-sm font-medium">Revenue, billing health, and growth projections.</p>
                 </div>
             </div>
+
+            {warnings && warnings.length > 0 && (
+                <div className="space-y-2">
+                    {warnings.map((warn: string, i: number) => (
+                        <div key={i} className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500">
+                            <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                            <p className="text-sm font-medium">{warn}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
 
             {/* KPI Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -111,7 +122,7 @@ export default function AdminRevenuePage() {
                     </CardHeader>
                     <CardContent className="h-[300px] pt-4">
                         <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={charts?.revenueTimeline}>
+                            <AreaChart data={charts?.revenueTimeline || []}>
                                 <defs>
                                     <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
@@ -140,7 +151,7 @@ export default function AdminRevenuePage() {
                             <div className="flex justify-between items-end">
                                 <div>
                                     <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">New MRR</p>
-                                    <p className="text-2xl font-black text-emerald-500">+${charts?.waterfall?.new}</p>
+                                    <p className="text-2xl font-black text-emerald-500">+${charts?.waterfall?.new || 0}</p>
                                 </div>
                                 <div className="w-24 bg-emerald-500/10 h-2 rounded-full overflow-hidden">
                                     <div className="bg-emerald-500 h-full w-[60%]" />
@@ -149,7 +160,7 @@ export default function AdminRevenuePage() {
                             <div className="flex justify-between items-end">
                                 <div>
                                     <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">Churn MRR</p>
-                                    <p className="text-2xl font-black text-rose-500">-${Math.abs(charts?.waterfall?.churn)}</p>
+                                    <p className="text-2xl font-black text-rose-500">-${Math.abs(charts?.waterfall?.churn || 0)}</p>
                                 </div>
                                 <div className="w-24 bg-rose-500/10 h-2 rounded-full overflow-hidden">
                                     <div className="bg-rose-500 h-full w-[15%]" />
@@ -157,7 +168,7 @@ export default function AdminRevenuePage() {
                             </div>
                             <div className="p-4 bg-white/5 rounded-xl border border-white/5">
                                 <p className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mb-1">Net Movement</p>
-                                <p className="text-xl font-bold italic text-white">${charts?.waterfall?.new + charts?.waterfall?.churn}</p>
+                                <p className="text-xl font-bold italic text-white">${(charts?.waterfall?.new || 0) + (charts?.waterfall?.churn || 0)}</p>
                             </div>
                         </div>
                     </CardContent>
@@ -184,7 +195,7 @@ export default function AdminRevenuePage() {
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-white/5">
-                                {paymentHistory?.map((inv: any) => (
+                                {paymentHistory && paymentHistory.length > 0 ? paymentHistory.map((inv: any) => (
                                     <tr key={inv.id} className="hover:bg-white/[0.02] transition-colors group">
                                         <td className="px-6 py-4 font-medium text-white">{inv.customerEmail}</td>
                                         <td className="px-6 py-4 text-neutral-400 font-mono text-xs">{format(new Date(inv.date), "MMM d, HH:mm")}</td>
@@ -200,7 +211,11 @@ export default function AdminRevenuePage() {
                                             <a href={inv.pdf} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline text-xs font-bold uppercase tracking-tight">View PDF</a>
                                         </td>
                                     </tr>
-                                ))}
+                                )) : (
+                                    <tr>
+                                        <td colSpan={5} className="px-6 py-8 text-center text-neutral-500">No payment history found.</td>
+                                    </tr>
+                                )}
                             </tbody>
                         </table>
                     </div>
