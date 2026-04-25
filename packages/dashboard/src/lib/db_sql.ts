@@ -160,6 +160,25 @@ export function ensureSchema(): Promise<void> {
                     last_updated TIMESTAMP DEFAULT NOW()
                 );
 
+                CREATE TABLE IF NOT EXISTS public_traces (
+                    id VARCHAR(20) PRIMARY KEY,
+                    trace_json JSONB NOT NULL,
+                    audit_hash VARCHAR(64) NOT NULL,
+                    public BOOLEAN DEFAULT TRUE,
+                    secret_token VARCHAR(128),
+                    flagged BOOLEAN DEFAULT FALSE,
+                    deleted BOOLEAN DEFAULT FALSE,
+                    upload_ip VARCHAR(45),
+                    created_at TIMESTAMPTZ DEFAULT NOW()
+                );
+
+                CREATE TABLE IF NOT EXISTS global_stats (
+                    key VARCHAR(64) PRIMARY KEY,
+                    value_int BIGINT DEFAULT 0,
+                    last_updated TIMESTAMPTZ DEFAULT NOW()
+                );
+                INSERT INTO global_stats (key, value_int) VALUES ('total_blocks', 0) ON CONFLICT DO NOTHING;
+
                 CREATE INDEX IF NOT EXISTS idx_agents_tenantid ON agents(tenantid);
                 CREATE INDEX IF NOT EXISTS idx_audit_logs_tenantid_ts ON audit_logs(tenantid, timestamp DESC);
                 CREATE INDEX IF NOT EXISTS idx_threat_events_tenantid_ts ON threat_events(tenantid, timestamp DESC);
@@ -167,6 +186,7 @@ export function ensureSchema(): Promise<void> {
                 CREATE INDEX IF NOT EXISTS idx_approval_requests_tenantid ON approval_requests(tenantid);
                 CREATE INDEX IF NOT EXISTS idx_semantic_log_tenant ON semantic_analysis_log(tenant_id);
                 CREATE INDEX IF NOT EXISTS idx_baselines_tenant_agent ON agent_behavioral_baselines(tenant_id, agent_id);
+                CREATE INDEX IF NOT EXISTS idx_public_traces_created ON public_traces(created_at DESC);
             `);
             console.log("[DB] Schema initialized successfully");
         } catch (err) {

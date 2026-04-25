@@ -28,6 +28,8 @@ import gdprRouter from "./routes/gdpr";
 import awsMarketplaceRouter from "./routes/aws-marketplace";
 import paperclipRouter from "./routes/paperclip";
 import templatesRouter from "./routes/templates";
+import tracesRouter from "./routes/traces";
+import telemetryRouter from "./routes/telemetry";
 
 // NOTE: stripe-app routes are part of SupraWall Cloud (proprietary).
 // See: https://github.com/suprawall/suprawall-cloud
@@ -193,6 +195,12 @@ app.use("/v1/members", membersRouter);
 
 // AWS Marketplace Integration Routes (Registration URL + SNS webhook + Entitlement check)
 app.use("/v1/aws", awsMarketplaceRouter);
+
+// Public Trace Routes (no auth — audit hash is the integrity proof)
+app.use("/v1/traces", tracesRouter);
+
+// Anonymous Telemetry Routes
+app.use("/v1/telemetry", telemetryRouter);
 
 // Export the app for Vercel
 export default app;
