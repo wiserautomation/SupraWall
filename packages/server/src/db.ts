@@ -17,6 +17,10 @@ const rawUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || "";
 const maskedUrl = rawUrl.replace(/(postgresql?:\/\/)([^:]+):([^@]+)(@)/, "$1$2:****$4");
 if (maskedUrl) {
     logger.info(`[DB] Initializing connection: ${maskedUrl}`);
+    // Log the database name so operators can confirm the server and dashboard
+    // are pointing at the same Postgres instance (a common silent misconfiguration).
+    const dbName = rawUrl.split("/").pop()?.split("?")[0] ?? "unknown";
+    logger.info(`[DB] Database name: ${dbName}`);
 }
 
 let dbUrl = rawUrl.trim();

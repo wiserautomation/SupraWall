@@ -110,7 +110,8 @@ export async function GET(req: NextRequest) {
             dailyStats: dailyStats.sort((a, b) => (a.date || "").localeCompare(b.date || "")),
             topPages,
             topGeos,
-            warning
+            warning,
+            fetched_at: new Date().toISOString(),
         });
 
     } catch (err: any) {

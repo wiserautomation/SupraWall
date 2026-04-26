@@ -110,3 +110,57 @@ jobs:
         run: |
           cd packages/sdk-go
           go test ./...
+
+  health-smoke-test:
+    name: Production Health Smoke Test
+    runs-on: ubuntu-latest
+    # Only runs on main — skipped on PRs to avoid false positives during feature branches.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    # Requires these secrets to be set in GitHub repository settings:
+    #   SUPRAWALL_ADMIN_TOKEN — a valid Firebase ID token for an ADMIN_EMAILS address
+    #   NEXT_PUBLIC_APP_URL   — https://supra-wall.com (or staging URL)
+    #
+    # To add: Settings → Secrets and variables → Actions → New repository secret
+    needs: [dashboard]
+
+    steps:
+      - name: Check /api/admin/health — no configured source may be unreachable
+        env:
+          APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL }}
+          ADMIN_TOKEN: ${{ secrets.SUPRAWALL_ADMIN_TOKEN }}
+        run: |
+          if [ -z "$APP_URL" ] || [ -z "$ADMIN_TOKEN" ]; then
+            echo "::warning::NEXT_PUBLIC_APP_URL or SUPRAWALL_ADMIN_TOKEN secret not set — skipping smoke test."
+            exit 0
+          fi
+
+          RESPONSE=$(curl -sf \
+            -H "Authorization: Bearer $ADMIN_TOKEN" \
+            -H "Content-Type: application/json" \
+            "$APP_URL/api/admin/health")
+
+          if [ $? -ne 0 ]; then
+            echo "::error::/api/admin/health returned a non-200 status. Deployment may be broken."
+            exit 1
+          fi
+
+          # Fail if any source is configured but unreachable (credential rot).
+          FAILURES=$(echo "$RESPONSE" | python3 -c "
+          import json, sys
+          data = json.load(sys.stdin)
+          sources = data.get('sources', {})
+          bad = [
+            name for name, s in sources.items()
+            if s.get('configured') and not s.get('reachable')
+          ]
+          if bad:
+            print('Configured but unreachable: ' + ', '.join(bad))
+            sys.exit(1)
+          ")
+
+          if [ $? -ne 0 ]; then
+            echo "::error::$FAILURES"
+            exit 1
+          fi
+
+          echo "All configured data sources are reachable."

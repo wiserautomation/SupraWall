@@ -4,6 +4,12 @@
 import { Pool } from "pg";
 
 const connectionString = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+// Log the database name on module load so operators can confirm the dashboard
+// and the Express telemetry server point at the same Postgres instance.
+if (connectionString) {
+    const _dbName = connectionString.split("/").pop()?.split("?")[0] ?? "unknown";
+    console.log(`[DB] Dashboard connecting to database: ${_dbName}`);
+}
 
 const sslConfig = connectionString
     ? {

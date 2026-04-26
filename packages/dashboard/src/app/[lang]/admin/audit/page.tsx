@@ -18,6 +18,7 @@ export default function AdminAuditPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [warnings, setWarnings] = useState<string[]>([]);
+    const [pgFetchedAt, setPgFetchedAt] = useState<string | null>(null);
     const fetchedPg = useRef(false);
 
     useEffect(() => {
@@ -31,6 +32,9 @@ export default function AdminAuditPage() {
                         setWarnings(data.warnings);
                     } else if (Array.isArray(data)) {
                         setPgLogs(data);
+                    } else if (data.logs) {
+                        setPgLogs(data.logs);
+                        if (data.fetched_at) setPgFetchedAt(data.fetched_at);
                     }
                 })
                 .catch(err => {
@@ -101,6 +105,11 @@ export default function AdminAuditPage() {
                     </h1>
                     <p className="text-neutral-400 text-sm">Real-time global feed of all agent tool executions and policy decisions.</p>
                 </div>
+                {pgFetchedAt && (
+                    <span className="text-[10px] text-neutral-600 tabular-nums">
+                        Postgres snapshot at {new Date(pgFetchedAt).toLocaleTimeString()}
+                    </span>
+                )}
             </div>
 
             {error && (

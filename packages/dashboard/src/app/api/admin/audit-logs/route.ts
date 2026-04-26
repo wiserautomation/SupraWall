@@ -43,7 +43,7 @@ export async function GET(req: NextRequest) {
             source: 'postgres'
         }));
 
-        return NextResponse.json(logs);
+        return NextResponse.json({ logs, fetched_at: new Date().toISOString() });
     } catch (err: any) {
         console.error('[Admin Audit API] Fetch failed:', err.message);
         return NextResponse.json({ warnings: ['Failed to fetch global audit logs from Postgres: ' + err.message] });

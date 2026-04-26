@@ -67,6 +67,11 @@ export default function AdminAnalyticsPage() {
                     <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
                         <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">GA4 Property: 525946717</span>
                     </div>
+                    {gaData?.fetched_at && (
+                        <span className="text-[10px] text-neutral-600 tabular-nums">
+                            Updated {new Date(gaData.fetched_at).toLocaleTimeString()}
+                        </span>
+                    )}
                 </div>
             </div>
             {/* GA4 Warning Banner */}

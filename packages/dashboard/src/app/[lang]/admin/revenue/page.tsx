@@ -77,6 +77,11 @@ export default function AdminRevenuePage() {
                     <h1 className="text-3xl font-black tracking-tight text-white uppercase italic">Financial Command</h1>
                     <p className="text-neutral-500 text-sm font-medium">Revenue, billing health, and growth projections.</p>
                 </div>
+                {data?.fetched_at && (
+                    <span className="text-[10px] text-neutral-600 tabular-nums">
+                        Updated {new Date(data.fetched_at).toLocaleTimeString()}
+                    </span>
+                )}
             </div>
 
             {warnings && warnings.length > 0 && (

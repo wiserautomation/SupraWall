@@ -53,6 +53,11 @@ export default function EcosystemHubPage() {
                     </h1>
                     <p className="text-neutral-500 text-sm font-medium italic uppercase tracking-widest">Tracking Global Plugin Adoption & Registry Footprint.</p>
                 </div>
+                {ecosystem?.fetched_at && (
+                    <span className="text-[10px] text-neutral-600 tabular-nums">
+                        Updated {new Date(ecosystem.fetched_at).toLocaleTimeString()}
+                    </span>
+                )}
             </div>
 
             {/* 📈 PLUGIN ADOPTION (TOP) */}

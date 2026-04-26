@@ -87,56 +87,44 @@ export async function GET(req: NextRequest) {
         warnings.push('Postgres data unavailable: ' + pgErr.message);
     }
 
-    // --- 3. GitHub PR Statuses ---
-    const prsToTrack = [
-        { repo: "crewAIInc/awesome-crewai", number: 49, label: "CrewAI Awesome" },
-        { repo: "e2b-dev/awesome-ai-agents", number: 696, label: "e2b AI Agents" },
-        { repo: "e2b-dev/awesome-ai-sdks", number: 133, label: "e2b AI SDKs" },
-        { repo: "corca-ai/awesome-llm-security", number: 137, label: "LLM Security" },
-        { repo: "Giskard-AI/awesome-ai-safety", number: 21, label: "Giskard Safety" },
-        { repo: "Joe-B-Security/awesome-prompt-injection", number: 37, label: "Prompt Injection" },
-        { repo: "chenryn/aiops-handbook", number: 8, label: "AIOps Handbook" },
-        { repo: "modelcontextprotocol/servers", number: 4295, label: "MCP Registry" },
-        { repo: "langgenius/dify-plugins", number: 2252, label: "Dify Marketplace" },
-        { repo: "run-llama/llama_index", number: 21311, label: "LlamaIndex Hub" },
-        { repo: "microsoft/autogen", number: 7541, label: "AutoGen Framework" }
-    ];
-
+    // --- 3. SupraWall open PRs (live GitHub search, not hardcoded list) ---
     const ghToken = process.env.GITHUB_TOKEN;
     let prStatuses: any[] = [];
-    
-    try {
-        prStatuses = await Promise.all(prsToTrack.map(async (pr) => {
-            try {
-                if (!ghToken) {
-                    return { id: pr.number, label: pr.label, repo: pr.repo, status: "unconfigured", url: "" };
-                }
 
-                const ghRes = await fetch(`https://api.github.com/repos/${pr.repo}/pulls/${pr.number}`, {
+    try {
+        if (!ghToken) {
+            warnings.push("GITHUB_TOKEN not configured — PR tracker unavailable.");
+        } else {
+            // Search for all open PRs in the SupraWall repo (and optionally submitted to ecosystem registries)
+            const searchRes = await fetch(
+                `https://api.github.com/search/issues?q=repo:wiserautomation/SupraWall+is:pr&sort=updated&order=desc&per_page=25`,
+                {
                     headers: {
                         "Authorization": `token ${ghToken}`,
                         "Accept": "application/vnd.github.v3+json",
-                        "User-Agent": "SupraWall-Ecosystem-Tracker"
+                        "User-Agent": "SupraWall-Ecosystem-Tracker",
                     },
-                    next: { revalidate: 300 }
-                });
-                
-                if (ghRes.ok) {
-                    const data = await ghRes.json();
-                    return {
-                        id: pr.number, label: pr.label, repo: pr.repo,
-                        status: data.merged ? "merged" : data.state,
-                        url: data.html_url, updated_at: data.updated_at
-                    };
+                    next: { revalidate: 300 },
                 }
-                return { id: pr.number, label: pr.label, repo: pr.repo, status: "unknown", url: `https://github.com/pulls/${pr.number}` };
-            } catch (err) {
-                return { id: pr.number, label: pr.label, repo: pr.repo, status: "error", url: "" };
+            );
+
+            if (searchRes.ok) {
+                const searchData = await searchRes.json();
+                prStatuses = (searchData.items ?? []).map((item: any) => ({
+                    id: item.number,
+                    label: item.title,
+                    repo: "wiserautomation/SupraWall",
+                    status: item.pull_request?.merged_at ? "merged" : item.state,
+                    url: item.html_url,
+                    updated_at: item.updated_at,
+                }));
+            } else {
+                warnings.push(`GitHub PR search returned ${searchRes.status}.`);
             }
-        }));
+        }
     } catch (ghErr: any) {
-         console.error('[Admin Ecosystem] GitHub fetch failed:', ghErr.message);
-         warnings.push('GitHub data unavailable: ' + ghErr.message);
+        console.error("[Admin Ecosystem] GitHub PR search failed:", ghErr.message);
+        warnings.push("GitHub data unavailable: " + ghErr.message);
     }
 
     return NextResponse.json({
@@ -144,6 +132,7 @@ export async function GET(req: NextRequest) {
         pluginUsage,
         adoptionTrend,
         registryPRs: prStatuses,
-        warnings
+        warnings,
+        fetched_at: new Date().toISOString(),
     });
 }

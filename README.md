@@ -218,6 +218,32 @@ If you want probabilistic content moderation, use a guardrail model. If you want
 
 ---
 
+## Telemetry
+
+SupraWall includes **opt-in, anonymous telemetry** to help us understand how many agents the SDK is protecting.
+
+**What it sends:** a single `install` event the first time `wrap_with_firewall()` runs on a new machine, and a `wrap` event (with framework name) on each subsequent call. No code, no arguments, no PII, no tool names.
+
+**Default:** off. On the first `wrap_with_firewall()` call you will see a one-time prompt:
+
+```
+SupraWall: Would you like to enable anonymous telemetry?
+           This sends a simple ping when an attack is blocked to help us
+           show a real-time 'attacks blocked' counter on our homepage.
+           No PII, no code, and no tool arguments are ever sent.
+           Enable anonymous telemetry? [y/N]:
+```
+
+Your answer is cached in `~/.suprawall/telemetry-consent`. Respond `N` or press Enter to decline permanently — SupraWall never retries after a decline. The prompt does not appear in non-interactive terminals (CI/CD pipelines etc.) and is silently skipped.
+
+**To disable after enabling:**
+
+```bash
+echo '{"consent": false}' > ~/.suprawall/telemetry-consent
+```
+
+---
+
 ## Contributing
 
 We're a small team (Wiser Automation) and we want SupraWall to be a community-owned standard, not a single-vendor tool.
