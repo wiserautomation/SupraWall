@@ -67,7 +67,7 @@ class PiiRedactor:
     # Each entry: (regex_pattern, replacement_label)
     _PATTERNS: list = [
         # Credentials — must come before generic patterns
-        (r"sk-[a-zA-Z0-9]{20,}", "[OPENAI-KEY]"),
+        (r"sk-[a-zA-Z0-9-]{20,}", "[OPENAI-KEY]"),  # handles sk-xxx and sk-proj-xxx formats
         (r"AKIA[A-Z0-9]{16}", "[AWS-KEY]"),
         (r"gh[po]_[a-zA-Z0-9]{36,}", "[GH-TOKEN]"),
         (r"xoxb-[a-zA-Z0-9\-]{10,}", "[SLACK-TOKEN]"),
@@ -345,6 +345,7 @@ def maybe_send_install_ping(framework: Optional[str] = None) -> None:
     Called by wrap_with_firewall() on every invocation.
 
     Behaviour:
+      - If SUPRAWALL_TELEMETRY=0 or DO_NOT_TRACK=1 is set, returns immediately.
       - If telemetry consent has never been asked, ask now (blocks briefly).
       - If the user declined, do nothing.
       - If the user consented, send an 'install' event once per machine
@@ -355,6 +356,10 @@ def maybe_send_install_ping(framework: Optional[str] = None) -> None:
     calling code is never blocked.
     """
     import threading
+
+    # Respect explicit opt-out env vars — enterprise / CI kill switch
+    if os.environ.get("SUPRAWALL_TELEMETRY") == "0" or os.environ.get("DO_NOT_TRACK") == "1":
+        return
 
     # First: check / prompt for consent (runs in foreground, once ever)
     try:

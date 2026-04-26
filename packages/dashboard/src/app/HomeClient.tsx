@@ -188,6 +188,61 @@ export function LiveSavings() {
     );
 }
 
+// ── Attacks Blocked Counter (real data from oss-stats API) ──
+
+export function AttacksBlockedCounter() {
+    const [stats, setStats] = useState<{ blocks: number; installs: number; github_stars: number | null } | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        fetch("/api/v1/oss-stats/public")
+            .then(r => r.json())
+            .then(data => setStats(data))
+            .catch(() => {});
+    }, []);
+
+    if (!mounted) return null;
+
+    const blocks = stats?.blocks ?? 0;
+    const installs = stats?.installs ?? 0;
+    const stars = stats?.github_stars;
+
+    return (
+        <div className="w-full py-10 border-t border-white/5">
+            <div className="flex flex-wrap justify-center gap-10 md:gap-16">
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-4xl md:text-5xl font-black text-white tabular-nums tracking-tighter">
+                        {blocks > 0 ? blocks.toLocaleString() : "—"}
+                    </span>
+                    <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em] flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                        Agent attacks blocked
+                    </span>
+                </div>
+                <div className="flex flex-col items-center gap-1">
+                    <span className="text-4xl md:text-5xl font-black text-white tabular-nums tracking-tighter">
+                        {installs > 0 ? installs.toLocaleString() : "—"}
+                    </span>
+                    <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">SDK installs</span>
+                </div>
+                {typeof stars === "number" && stars > 0 && (
+                    <div className="flex flex-col items-center gap-1">
+                        <span className="text-4xl md:text-5xl font-black text-white tabular-nums tracking-tighter">
+                            {stars.toLocaleString()}
+                        </span>
+                        <span className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">GitHub stars</span>
+                    </div>
+                )}
+            </div>
+            <p className="mt-4 text-center text-[10px] text-neutral-700 uppercase tracking-widest">
+                Live · updated every 5 minutes ·{" "}
+                <a href="/traces" className="hover:text-neutral-500 transition-colors underline">Browse public traces →</a>
+            </p>
+        </div>
+    );
+}
+
 // ── Threat Card (Interactive) ──
 
 const THREAT_CARDS = [

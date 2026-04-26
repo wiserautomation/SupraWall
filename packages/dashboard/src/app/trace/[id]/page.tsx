@@ -12,6 +12,8 @@ import type { Metadata } from "next";
 import { pool, ensureSchema } from "@/lib/db_sql";
 import Link from "next/link";
 import CopyLinkButton from "./CopyLinkButton";
+import DownloadPngButton from "./DownloadPngButton";
+import FlagButton from "./FlagButton";
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -199,10 +201,12 @@ export default async function TracePage({ params }: { params: Promise<{ id: stri
                             Share on X
                         </a>
                         <CopyLinkButton url={shareUrl} />
+                        <DownloadPngButton traceId={id} />
                     </div>
                     <p className="text-xs text-zinc-600 mt-3">
                         Pre-filled X text: <em>&ldquo;My AI agent just tried to {tool}. SupraWall blocked it.&rdquo;</em>
                     </p>
+                    <FlagButton traceId={id} />
                 </section>
 
             </main>

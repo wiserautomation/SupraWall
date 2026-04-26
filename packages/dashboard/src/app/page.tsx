@@ -13,7 +13,7 @@ import {
     LayoutDashboard, Cpu, Network, Github
 } from "lucide-react";
 import Link from "next/link";
-import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection } from "./HomeClient";
+import { SwarmVisualization, TechTabs, TagBadge, AttackDemo, LiveSavings, AttacksBlockedCounter, ThreatCardsGrid, ICPEntryPoints, ComplianceTemplatesSection } from "./HomeClient";
 
 export default function LandingPage() {
     const jsonLd = {
@@ -220,6 +220,7 @@ export default function LandingPage() {
                 <section className="bg-black border-b border-white/5">
                     <div className="max-w-7xl mx-auto px-6">
                         <LiveSavings />
+                        <AttacksBlockedCounter />
                     </div>
                 </section>
 

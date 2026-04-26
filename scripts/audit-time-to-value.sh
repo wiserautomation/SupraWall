@@ -22,41 +22,47 @@ TARGET_SECONDS=120
 # Uses a lightweight mock agent so no LLM API key is required in CI.
 # --------------------------------------------------------------------------
 read -r -d '' QUICKSTART <<'PYEOF' || true
-import sys, time
+import sys, time, os
+
+# Silence telemetry prompts during the TTV audit
+os.environ["SUPRAWALL_TELEMETRY"] = "0"
 
 start = time.perf_counter()
 
-from suprawall import wrap_with_firewall, SupraWallBlocked
+from suprawall import SupraWallBlocked
 from suprawall.local_policy import LocalPolicyEngine
+from suprawall.firewall import _handle_violation
 
-# Smoke-test the local policy engine directly (no LLM needed)
+# Step 1: Verify the default policy engine catches destructive shell commands.
 engine = LocalPolicyEngine()
 violation = engine.check("shell", {"command": "rm -rf /tmp/*"})
 if not violation:
     print("FAIL: default policy did not block 'rm -rf /tmp/*'", file=sys.stderr)
     sys.exit(1)
 
-# Demonstrate wrap_with_firewall with a minimal mock agent
-class _DemoAgent:
-    """Simulates an agent that would call a shell tool on dangerous input."""
-    def invoke(self, query):
-        from suprawall.local_policy import LocalPolicyEngine as _E
-        from suprawall.firewall import SupraWallBlocked as _B
-        _v = _E().check("shell", {"command": query.get("input", query)})
-        if _v:
-            raise _B(action="shell", policy=_v["name"], reason=_v["description"])
-        return "ok"
-
-safe_agent = wrap_with_firewall(_DemoAgent())
-
+# Step 2: Run the real adapter codepath — the same path every framework adapter uses.
+# _handle_violation() increments telemetry, raises SupraWallBlocked, and populates
+# trace_id via generate_trace_id(). This is not a mock.
 try:
-    safe_agent.invoke({"input": "rm -rf /tmp/*"})
+    _handle_violation("shell", violation, engine, {"command": "rm -rf /tmp/*"})
     print("FAIL: SupraWallBlocked was not raised", file=sys.stderr)
     sys.exit(1)
 except SupraWallBlocked as exc:
     elapsed_ms = (time.perf_counter() - start) * 1000
+    if not exc.trace_id or not exc.trace_id[1] == "-":
+        print(f"FAIL: trace_id format wrong: {exc.trace_id!r}", file=sys.stderr)
+        sys.exit(1)
     print(f"SupraWallBlocked raised in {elapsed_ms:.1f}ms")
     print(f"  {exc}")
+    print(f"  trace_id: {exc.trace_id}")
+
+# Step 3: Verify save_local() works without network.
+try:
+    exc.save_local(directory="/tmp/suprawall-ttv-audit")
+    print("  save_local(): OK")
+except Exception as e:
+    print(f"FAIL: save_local() raised: {e}", file=sys.stderr)
+    sys.exit(1)
 PYEOF
 
 # --------------------------------------------------------------------------

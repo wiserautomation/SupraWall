@@ -14,11 +14,11 @@ import functools
 import inspect
 import logging
 import threading
-import uuid
 from datetime import datetime, timezone
 from typing import Any, Optional
 
 from .local_policy import LocalPolicyEngine
+from .runtime.trace import generate_trace_id
 
 log = logging.getLogger("suprawall")
 SDK_VERSION = "1.1.0"
@@ -61,7 +61,7 @@ class SupraWallBlocked(Exception):
         self.action = action
         self.policy = policy
         self.reason = reason
-        self.trace_id = trace_id or uuid.uuid4().hex[:8]
+        self.trace_id = trace_id or generate_trace_id()
         self._args = args or {}
         super().__init__(str(self))
 
@@ -363,6 +363,10 @@ def _maybe_send_telemetry() -> None:
         prompt_and_store_telemetry_consent,
     )
     import os
+
+    # Respect explicit opt-out env vars — enterprise / CI kill switch
+    if os.environ.get("SUPRAWALL_TELEMETRY") == "0" or os.environ.get("DO_NOT_TRACK") == "1":
+        return
 
     # Skip prompt in non-interactive environments (CI, etc.)
     if not os.isatty(0) and not has_telemetry_consent():

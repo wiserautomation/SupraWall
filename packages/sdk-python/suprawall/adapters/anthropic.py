@@ -45,12 +45,22 @@ def wrap_anthropic(agent: Any, engine: Any) -> Any:
         if inspect.iscoroutinefunction(original):
             @functools.wraps(original)
             async def _async(*args, _o=original, _e=engine, _mn=method_name, **kwargs):
+                call_args = {"args": list(args), "kwargs": kwargs}
+                violation = _e.check(f"anthropic.{_mn}", call_args)
+                if violation:
+                    from suprawall.firewall import _handle_violation
+                    _handle_violation(f"anthropic.{_mn}", violation, _e, call_args)
                 return await _o(*args, **kwargs)
             setattr(agent, method_name, _async)
             setattr(getattr(agent, method_name), _GUARDED_ATTR, True)
         else:
             @functools.wraps(original)
             def _sync(*args, _o=original, _e=engine, _mn=method_name, **kwargs):
+                call_args = {"args": list(args), "kwargs": kwargs}
+                violation = _e.check(f"anthropic.{_mn}", call_args)
+                if violation:
+                    from suprawall.firewall import _handle_violation
+                    _handle_violation(f"anthropic.{_mn}", violation, _e, call_args)
                 return _o(*args, **kwargs)
             setattr(agent, method_name, _sync)
             setattr(getattr(agent, method_name), _GUARDED_ATTR, True)
