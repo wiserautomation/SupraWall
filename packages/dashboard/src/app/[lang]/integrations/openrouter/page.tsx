@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/openrouter',
-        title: "OpenRouter App Attribution Security | Rank Your Agent | SupraWall",
+        title: "OpenRouter App Attribution Security | Rank Your Agent",
         description: "Automatically inject OpenRouter App Attribution headers into your agent requests. Get free analytics, rank on leaderboards, and secure your router-based agents.",
         keywords: ["openrouter attribution", "rank ai agents", "openrouter leaderboard", "secure openrouter agents", "ai agent analytics"],
     });

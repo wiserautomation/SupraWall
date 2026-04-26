@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/stripe',
-        title: "Security for Stripe AI Agents | Financial Data Guardrails | SupraWall",
+        title: "Security for Stripe AI Agents | Financial Data Guardrails",
         description: "Secure Stripe-enabled AI agents with deterministic financial guardrails. Prevent unauthorized refunds, set hard budget caps, and maintain EU AI Act Article 9 compliance.",
         keywords: ["stripe agent security", "secure stripe tools", "financial AI guardrails", "prevent unauthorized charges", "eu ai act financial agents"],
     });

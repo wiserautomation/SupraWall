@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent PII Protection: Keep Sensitive Data Safe | SupraWall",
+  title: "AI Agent PII Protection: Keep Sensitive Data Safe",
   description:
     "AI agents that can read customer PII, health records, or payment data create serious compliance risks. Learn how to enforce data access limits at the SDK level.",
   keywords: [

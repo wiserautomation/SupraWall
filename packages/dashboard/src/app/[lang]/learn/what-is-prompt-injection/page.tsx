@@ -14,7 +14,7 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
-    title: "What is Prompt Injection in AI Agents? | SupraWall",
+    title: "What is Prompt Injection in AI Agents?",
     description: "Prompt injection is the single greatest vulnerability for AI agents. Learn how to prevent malicious instructions from hijacking your autonomous systems.",
     keywords: ["what is prompt injection", "AI agent prompt injection", "LLM injection attacks", "preventing prompt injection", "jailbreaking AI agents"],
     alternates: {

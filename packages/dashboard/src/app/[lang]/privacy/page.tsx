@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'privacy',
-        title: "Privacy Policy | SupraWall",
+        title: "Privacy Policy",
         description: "SupraWall Privacy Policy — How we handle data for AI agent security and compliance.",
     });
 }

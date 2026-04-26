@@ -20,7 +20,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Audit Trail & Logging | EU AI Act Article 12 | SupraWall",
+  title: "AI Agent Audit Trail & Logging | EU AI Act Article 12",
   description:
     "Build a tamper-proof audit trail for autonomous AI agents. Log every tool call, policy decision, and agent action for EU AI Act Article 12 compliance and forensic investigation.",
   keywords: [
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
       "https://www.supra-wall.com/learn/ai-agent-audit-trail-logging",
   },
   openGraph: {
-    title: "AI Agent Audit Trail & Logging | EU AI Act Article 12 | SupraWall",
+    title: "AI Agent Audit Trail & Logging | EU AI Act Article 12",
     description:
       "Build a tamper-proof audit trail for autonomous AI agents. Log every tool call, policy decision, and agent action for EU AI Act Article 12 compliance and forensic investigation.",
     url: "https://www.supra-wall.com/learn/ai-agent-audit-trail-logging",

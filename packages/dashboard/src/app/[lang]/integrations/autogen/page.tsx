@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/autogen',
-        title: "AutoGen Agent Security | Real-time Guardrails | SupraWall",
+        title: "AutoGen Agent Security | Real-time Guardrails",
         description: "Secure your AutoGen agents with runtime interception. Prevent unauthorized code execution and PII exfiltration in autonomous multi-agent conversations.",
         keywords: ["autogen security", "secure autogen agents", "autogen guardrails", "agentic code execution security", "microsoft autogen security"],
     });

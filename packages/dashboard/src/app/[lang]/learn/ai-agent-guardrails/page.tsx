@@ -20,7 +20,7 @@ import {
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "AI Agent Guardrails: The Complete Guide to Runtime Security | SupraWall",
+  title: "AI Agent Guardrails: The Complete Guide to Runtime Security",
   description: "Learn how to implement AI agent guardrails to prevent prompt injection, credential exfiltration, and runaway costs. Includes comparison of SupraWall, Guardrails AI, and NeMo.",
   keywords: [
     "ai agent guardrails",

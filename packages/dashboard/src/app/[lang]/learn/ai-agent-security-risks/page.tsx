@@ -16,7 +16,7 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
-    title: "AI Agent Security Risks: The Complete Threat Landscape | SupraWall",
+    title: "AI Agent Security Risks: The Complete Threat Landscape",
     description: "Beyond simple chatbots, autonomous agents face unique risks like tool abuse, lateral movement, and recursive spending. Learn how to mitigate them.",
     keywords: ["AI agent security risks", "autonomous agent threats", "LLM security vulnerabilities", "agentic AI security guide", "preventing AI agent hacking"],
     alternates: {

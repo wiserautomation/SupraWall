@@ -18,7 +18,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "EU AI Act Article 9: Risk Management Guide | SupraWall",
+    title: "EU AI Act Article 9: Risk Management Guide",
     description:
         "Article 9 requires a risk management system for high-risk AI. Learn how to build one for autonomous AI agents and generate the evidence documentation regulators expect.",
     keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
             "https://www.supra-wall.com/learn/eu-ai-act-article-9-risk-management",
     },
     openGraph: {
-        title: "EU AI Act Article 9: Risk Management Guide | SupraWall",
+        title: "EU AI Act Article 9: Risk Management Guide",
         description:
             "Article 9 requires a risk management system for high-risk AI. Learn how to build one for autonomous AI agents and generate the evidence documentation regulators expect.",
         url: "https://www.supra-wall.com/learn/eu-ai-act-article-9-risk-management",

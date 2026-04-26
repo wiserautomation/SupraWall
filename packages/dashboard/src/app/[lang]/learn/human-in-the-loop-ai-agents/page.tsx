@@ -22,7 +22,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Human-in-the-Loop for AI Agents: Implementation Guide | SupraWall",
+  title: "Human-in-the-Loop for AI Agents: Implementation Guide",
   description:
     "Learn how to implement human-in-the-loop (HITL) controls for autonomous AI agents. Pause agents on high-risk actions, route approvals via Slack or email, and satisfy EU AI Act Article 14.",
   keywords: [
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     canonical: "https://www.supra-wall.com/learn/human-in-the-loop-ai-agents",
   },
   openGraph: {
-    title: "Human-in-the-Loop for AI Agents: Implementation Guide | SupraWall",
+    title: "Human-in-the-Loop for AI Agents: Implementation Guide",
     description:
       "Learn how to implement human-in-the-loop (HITL) controls for autonomous AI agents. Pause agents on high-risk actions, route approvals via Slack or email, and satisfy EU AI Act Article 14.",
     url: "https://www.supra-wall.com/learn/human-in-the-loop-ai-agents",

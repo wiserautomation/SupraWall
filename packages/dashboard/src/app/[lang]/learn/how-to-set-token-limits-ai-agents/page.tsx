@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Set Token Limits for AI Agents | SupraWall",
+  title: "How to Set Token Limits for AI Agents",
   description:
     "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
   keywords: [
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
       "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
   },
   openGraph: {
-    title: "How to Set Token Limits for AI Agents | SupraWall",
+    title: "How to Set Token Limits for AI Agents",
     description:
       "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
     url: "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",

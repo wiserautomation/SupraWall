@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "AI Audit Trail Requirements: Compliance & Security Guide | SupraWall",
+  title: "AI Audit Trail Requirements: Compliance & Security Guide",
   description: "Learn the essential AI audit trail requirements for enterprise security, legal discovery, and regulatory compliance including the EU AI Act.",
   keywords: [
     "ai audit trail requirements",

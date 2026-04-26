@@ -11,7 +11,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     return generateLocalizedMetadata({
         params,
-        title: "Transparent Enterprise Pricing | SupraWall Security",
+        title: "Transparent Enterprise Pricing Security",
         description: "Zero-trust security and compliance for AI agentic applications, priced for the scale of autonomous swarms.",
         internalPath: "pricing"
     });

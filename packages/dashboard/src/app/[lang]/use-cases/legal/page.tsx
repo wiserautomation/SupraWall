@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'use-cases/legal',
-        title: "AI Agent Security for Legal Teams | Privilege & Audits | SupraWall",
+        title: "AI Agent Security for Legal Teams | Privilege & Audits",
         description: "Secure autonomous agents in law firms and legal departments. Maintain attorney-client privilege, prevent data leaks, and generate immutable audit trails for every agentic action.",
         keywords: [
             "AI agents in legal firms",

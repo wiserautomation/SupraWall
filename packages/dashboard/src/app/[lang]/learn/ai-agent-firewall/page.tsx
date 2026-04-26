@@ -19,7 +19,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Firewall: Why Output Filters Are Not Enough | SupraWall",
+  title: "AI Agent Firewall: Why Output Filters Are Not Enough",
   description:
     "An AI agent firewall intercepts tool calls at the execution boundary — not at the output layer. Learn why output filters fail against agentic threats and how runtime firewalls protect production systems.",
   keywords: [

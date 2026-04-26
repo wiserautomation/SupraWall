@@ -16,7 +16,7 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
-    title: "AI Agent Security vs. Traditional Security | SupraWall",
+    title: "AI Agent Security vs. Traditional Security",
     description: "Traditional firewalls don't understand natural language. Learn why AI agents need a new security paradigm focused on runtime tool execution.",
     keywords: ["AI agent security vs traditional security", "LLM security differences", "agentic AI security paradigm", "runtime firewall vs network firewall", "security for autonomous systems"],
     alternates: {

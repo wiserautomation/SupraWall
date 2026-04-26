@@ -22,7 +22,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "EU AI Act August 2026 Deadline: What AI Agent Developers Must Do Now | SupraWall",
+    title: "EU AI Act August 2026 Deadline: What AI Agent Developers Must Do Now",
     description:
         "The EU AI Act Article 6 deadline hits August 2, 2026. AI agents classified as high-risk must implement risk management, audit logging, and human oversight. Here's your compliance roadmap.",
     keywords: [
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
         canonical: "https://www.supra-wall.com/learn/eu-ai-act-august-2026-deadline",
     },
     openGraph: {
-        title: "EU AI Act August 2026 Deadline: What AI Agent Developers Must Do Now | SupraWall",
+        title: "EU AI Act August 2026 Deadline: What AI Agent Developers Must Do Now",
         description:
             "The EU AI Act Article 6 deadline hits August 2, 2026. AI agents classified as high-risk must implement risk management, audit logging, and human oversight. Here's your compliance roadmap.",
         url: "https://www.supra-wall.com/learn/eu-ai-act-august-2026-deadline",

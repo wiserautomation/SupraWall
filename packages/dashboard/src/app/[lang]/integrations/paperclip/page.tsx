@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/paperclip',
-        title: "Security for Paperclip AI Agents | Credential Vault | SupraWall",
+        title: "Security for Paperclip AI Agents | Credential Vault",
         description: "Secure your Paperclip agent fleets with role-based policies and a hardware-grade credential vault. Prevent raw API key leakage and rogue tool execution.",
         keywords: ["paperclip security", "secure paperclip", "ai agent vault", "agentic tool policy", "multi-agent security"],
     });

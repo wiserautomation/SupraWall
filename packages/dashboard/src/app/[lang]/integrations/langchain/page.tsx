@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/langchain',
-        title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
+        title: "Security for LangChain Agents | EU AI Act Compliance",
         description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
         keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],
     });

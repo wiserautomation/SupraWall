@@ -15,7 +15,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Secrets Management 2026 | SupraWall",
+  title: "AI Agent Secrets Management 2026",
   description:
     "Traditional secrets managers were built for servers, not LLMs. Learn why AI agents need a different approach to credential security — and how to implement it.",
   keywords: [

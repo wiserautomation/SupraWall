@@ -17,7 +17,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Runtime AI Governance: The New Security Category | SupraWall",
+  title: "Runtime AI Governance: The New Security Category",
   description:
     "Runtime AI governance is the emerging practice of enforcing policies on AI agents in real time — not after the fact. Learn why it's becoming the default enterprise requirement.",
   keywords: [
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     canonical: "https://www.supra-wall.com/learn/runtime-ai-governance",
   },
   openGraph: {
-    title: "Runtime AI Governance: The New Security Category | SupraWall",
+    title: "Runtime AI Governance: The New Security Category",
     description:
       "Runtime AI governance is the emerging practice of enforcing policies on AI agents in real time — not after the fact. Learn why it's becoming the default enterprise requirement.",
     url: "https://www.supra-wall.com/learn/runtime-ai-governance",

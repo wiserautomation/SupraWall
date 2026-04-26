@@ -18,7 +18,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return generateLocalizedMetadata({
     params,
-    title: "AI Agent Runaway Costs — Detection & Prevention | SupraWall",
+    title: "AI Agent Runaway Costs — Detection & Prevention",
     description: "Stop AI agents from consuming uncapped tokens and blowing your cloud budget. SupraWall enforces token limits in real time. See how it works.",
     keywords: [
       "AI agent runaway costs",

@@ -18,7 +18,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Vault & Secrets Management | SupraWall",
+  title: "AI Agent Vault & Secrets Management",
   description:
     "How to securely manage API keys, credentials, and secrets for autonomous AI agents. Prevent secret sprawl and token exfiltration with a zero-trust agent vault.",
   keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
       "https://www.supra-wall.com/learn/ai-agent-vault-secrets-management",
   },
   openGraph: {
-    title: "AI Agent Vault & Secrets Management | SupraWall",
+    title: "AI Agent Vault & Secrets Management",
     description:
       "How to securely manage API keys, credentials, and secrets for autonomous AI agents. Prevent secret sprawl and token exfiltration with a zero-trust agent vault.",
     url: "https://www.supra-wall.com/learn/ai-agent-vault-secrets-management",

@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'features/vault',
-        title: "AI Agent Credential Vault | Protect Secrets from Autonomous Agents | SupraWall",
+        title: "AI Agent Credential Vault | Protect Secrets from Autonomous Agents",
         description: "Your AI agent should never see your API keys, passwords, or credit cards. SupraWall Vault gives agents permissioned access to credentials without exposing raw values.",
         keywords: [
             "AI agent credential vault",

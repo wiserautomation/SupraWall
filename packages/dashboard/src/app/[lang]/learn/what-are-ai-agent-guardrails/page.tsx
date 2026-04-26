@@ -28,7 +28,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     return generateLocalizedMetadata({
         params,
-        title: "AI Agent Guardrails: What They Are & How to Enforce Them | SupraWall",
+        title: "AI Agent Guardrails: What They Are & How to Enforce Them",
         description: "Guardrails aren't just prompts. Learn how to intercept tool calls deterministically before they execute in agentic swarms.",
         internalPath: "learn/what-are-ai-agent-guardrails"
     });

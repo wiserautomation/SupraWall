@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/hermes',
-        title: "Security for Hermes Agent | SupraWall",
+        title: "Security for Hermes Agent",
         description: "Protect self-hosted Hermes Agent with deterministic ALLOW/DENY gating, PII scrubbing, credential vault, and budget caps — installed in one command.",
         keywords: ["hermes agent security", "nous research security", "hermes plugin suprawall", "autonomous agent security"],
     });

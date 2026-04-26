@@ -19,7 +19,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   return generateLocalizedMetadata({
     params,
-    title: "Prompt Injection & Credential Theft in AI Agents | SupraWall",
+    title: "Prompt Injection & Credential Theft in AI Agents",
     description: "Indirect prompt injection can trick AI agents into exfiltrating your API keys, passwords, and tokens. Here's how the attack works and how to stop it.",
     keywords: [
       "prompt injection credential theft",

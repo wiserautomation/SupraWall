@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   return generateLocalizedMetadata({
     params,
     internalPath: 'learn/zero-trust-ai-agents',
-    title: "Zero Trust for AI Agents: 2026 Playbook | SupraWall",
+    title: "Zero Trust for AI Agents: 2026 Playbook",
     description: "Apply zero trust principles to autonomous AI agents. Learn how to verify every tool call, enforce least-privilege, and implement deny-by-default policies for production agents.",
     keywords: [
       "zero trust AI agents",

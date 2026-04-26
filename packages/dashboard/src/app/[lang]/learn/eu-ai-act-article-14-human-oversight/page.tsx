@@ -19,7 +19,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "EU AI Act Article 14: Human Oversight for Agents | SupraWall",
+    title: "EU AI Act Article 14: Human Oversight for Agents",
     description:
         "Article 14 requires human oversight for high-risk AI systems. Learn exactly what this means for autonomous agents, what technical controls satisfy regulators, and how to document it.",
     keywords: [
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
             "https://www.supra-wall.com/learn/eu-ai-act-article-14-human-oversight",
     },
     openGraph: {
-        title: "EU AI Act Article 14: Human Oversight for Agents | SupraWall",
+        title: "EU AI Act Article 14: Human Oversight for Agents",
         description:
             "Article 14 requires human oversight for high-risk AI systems. Learn exactly what this means for autonomous agents, what technical controls satisfy regulators, and how to document it.",
         url: "https://www.supra-wall.com/learn/eu-ai-act-article-14-human-oversight",

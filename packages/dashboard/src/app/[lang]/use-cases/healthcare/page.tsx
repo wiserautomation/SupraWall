@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'use-cases/healthcare',
-        title: "AI Agent Security for Healthcare | HIPAA & PII Protection | SupraWall",
+        title: "AI Agent Security for Healthcare | HIPAA & PII Protection",
         description: "Secure autonomous agents in healthcare and life sciences. Automatically redact PHI and PII from agentic tool calls to ensure HIPAA compliance and patient privacy.",
         keywords: [
             "AI agents in healthcare",

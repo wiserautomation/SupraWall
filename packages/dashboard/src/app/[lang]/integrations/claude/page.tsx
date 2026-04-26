@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/claude',
-        title: "Security for Claude 3.5 Sonnet | Computer Use Guardrails | SupraWall",
+        title: "Security for Claude 3.5 Sonnet | Computer Use Guardrails",
         description: "Secure Claude with Anthropic Computer Use security. Prevent unauthorized clicks and type actions in autonomous desktop environments. EU AI Act compliant Article 14.",
         keywords: ["claude 3.5 sonnet security", "claude computer use guardrails", "anthropic agent security", "secure claude tool use", "eu ai act Claude"],
     });

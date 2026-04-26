@@ -17,7 +17,7 @@ import {
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "EU AI Act Logging Requirements: Technical Guide to Article 12 | SupraWall",
+  title: "EU AI Act Logging Requirements: Technical Guide to Article 12",
   description: "Comprehensive guide to EU AI Act Article 12 logging and record-keeping requirements. Learn what data your high-risk AI system must log to ensure compliance.",
   keywords: [
     "eu ai act logging requirements",

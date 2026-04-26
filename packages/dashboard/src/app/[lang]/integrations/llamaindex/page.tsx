@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/llamaindex',
-        title: "Security for LlamaIndex | Data-Aware Agent Governance | SupraWall",
+        title: "Security for LlamaIndex | Data-Aware Agent Governance",
         description: "Learn how to secure LlamaIndex agents and query engines. Runtime guardrails for RAG systems, preventing prompt injection and data leakage (EU AI Act Articles 11 & 12).",
         keywords: ["llamaindex security", "secure llamaindex agents", "rag guardrails", "llamaindex tool governance", "eu ai act RAG", "ai act compliance"],
     });

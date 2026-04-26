@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Infinite Loop Detection & Circuit Breakers | SupraWall",
+  title: "AI Agent Infinite Loop Detection & Circuit Breakers",
   description:
     "AI agents loop silently until you get a $4,000 bill. Learn how to detect repetitive tool call patterns, implement circuit breakers, and halt runaway agents.",
   keywords: [

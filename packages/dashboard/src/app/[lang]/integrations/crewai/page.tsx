@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/crewai',
-        title: "Security for CrewAI Agents | Tool-Call Interception | SupraWall",
+        title: "Security for CrewAI Agents | Tool-Call Interception",
         description: "Secure your CrewAI swarms with runtime policy enforcement. Prevent prompt injection and rogue tool execution in autonomous multi-agent systems.",
         keywords: ["crewai security", "secure crewai", "crewai guardrails", "agentic tool policy", "multi-agent security"],
     });

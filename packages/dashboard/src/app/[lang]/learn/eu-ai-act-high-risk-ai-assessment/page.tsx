@@ -18,7 +18,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Is Your AI Agent High-Risk? EU AI Act Guide | SupraWall",
+    title: "Is Your AI Agent High-Risk? EU AI Act Guide",
     description:
         "Not sure if the EU AI Act applies to your AI agent? This self-assessment guide walks you through the Annex III classification criteria with real-world agent examples.",
     keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
             "https://www.supra-wall.com/learn/eu-ai-act-high-risk-ai-assessment",
     },
     openGraph: {
-        title: "Is Your AI Agent High-Risk? EU AI Act Guide | SupraWall",
+        title: "Is Your AI Agent High-Risk? EU AI Act Guide",
         description:
             "Not sure if the EU AI Act applies to your AI agent? This self-assessment guide walks you through the Annex III classification criteria with real-world agent examples.",
         url: "https://www.supra-wall.com/learn/eu-ai-act-high-risk-ai-assessment",

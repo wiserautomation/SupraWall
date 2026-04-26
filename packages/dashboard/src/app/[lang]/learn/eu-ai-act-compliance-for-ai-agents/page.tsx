@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
     return generateLocalizedMetadata({
         params,
-        title: `${t.hero.title} ${t.hero.emphasis} — August 2026 Requirements | SupraWall`,
+        title: `${t.hero.title} ${t.hero.emphasis} — August 2026 Requirements`,
         description: t.hero.description,
         internalPath: "learn/eu-ai-act-compliance-for-ai-agents"
     });

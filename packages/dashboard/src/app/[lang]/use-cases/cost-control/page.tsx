@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'use-cases/cost-control',
-        title: "AI Budget Control & Cost Guardrails | SupraWall",
+        title: "AI Budget Control & Cost Guardrails",
         description: "Enforce real-time budget caps on autonomous AI agents. Prevent credit drain with runtime cost circuit breakers and session-based spending limits.",
         keywords: ["ai budget control", "llm cost management", "agent spending limits", "secure ai orchestration", "token budget enforcement"],
     });

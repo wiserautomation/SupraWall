@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'learn/how-to-secure-ai-agents',
-        title: "How to Secure AI Agents: Step-by-Step Guide | SupraWall",
+        title: "How to Secure AI Agents: Step-by-Step Guide",
         description: "Securing AI agents requires more than just better prompts. Follow this guide to implement deterministic runtime firewalls and tool-use policies.",
         keywords: ["how to secure AI agents", "AI agent security guide", "securing autonomous agents", "agentic security best practices", "implementing LLM guardrails"],
     });

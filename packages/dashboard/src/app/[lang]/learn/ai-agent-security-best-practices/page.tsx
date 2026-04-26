@@ -24,7 +24,7 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
-    title: "AI Agent Security Best Practices 2026 | SupraWall",
+    title: "AI Agent Security Best Practices 2026",
     description:
         "12 battle-tested AI agent security best practices for production deployments — from zero-trust tool interception to budget caps and audit trail requirements.",
     keywords: [
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         canonical: "https://www.supra-wall.com/learn/ai-agent-security-best-practices",
     },
     openGraph: {
-        title: "AI Agent Security Best Practices 2026 | SupraWall",
+        title: "AI Agent Security Best Practices 2026",
         description:
             "12 battle-tested AI agent security best practices for production deployments — from zero-trust tool interception to budget caps and audit trail requirements.",
         url: "https://www.supra-wall.com/learn/ai-agent-security-best-practices",

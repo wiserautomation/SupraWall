@@ -16,7 +16,7 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
 export const metadata: Metadata = {
-    title: "OWASP LLM01: Prompt Injection - Deep Dive & Prevention | SupraWall",
+    title: "OWASP LLM01: Prompt Injection - Deep Dive & Prevention",
     description: "OWASP LLM01 is the top risk for large language models. Learn how it affects autonomous AI agents and how to implement deterministic defenses.",
     keywords: ["OWASP LLM01", "prompt injection OWASP", "LLM security top 10", "preventing LLM01", "agentic prompt injection risks"],
     alternates: {

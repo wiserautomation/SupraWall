@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/vercel',
-        title: "Vercel AI SDK Security & Runtime Interception | SupraWall",
+        title: "Vercel AI SDK Security & Runtime Interception",
         description: "Secure your Next.js AI agents with SupraWall. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
         keywords: ["vercel ai sdk security", "secure nextjs agents", "ai sdk tool governance", "edge runtime security"],
     });

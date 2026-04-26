@@ -7,7 +7,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "AI Agent Security Glossary: 30+ Terms Defined | SupraWall",
+  title: "AI Agent Security Glossary: 30+ Terms Defined",
   description:
     "The definitive glossary of AI agent security terminology. Definitions for agent runtime security, tool interception, prompt injection, HITL, guardrails, EU AI Act terms, and more.",
   keywords: [
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     canonical: "https://www.supra-wall.com/learn/ai-agent-security-glossary",
   },
   openGraph: {
-    title: "AI Agent Security Glossary: 30+ Terms Defined | SupraWall",
+    title: "AI Agent Security Glossary: 30+ Terms Defined",
     description:
       "The definitive glossary of AI agent security terminology. Definitions for agent runtime security, tool interception, prompt injection, HITL, guardrails, EU AI Act terms, and more.",
     url: "https://www.supra-wall.com/learn/ai-agent-security-glossary",

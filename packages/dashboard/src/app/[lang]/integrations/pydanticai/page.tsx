@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/pydanticai',
-        title: "Security for PydanticAI Agents | SupraWall Guide",
+        title: "Security for PydanticAI Agents Guide",
         description: "Secure PydanticAI agents with runtime tool governance. Prevent rogue tool calls, ensure data integrity, and maintain EU AI Act risk compliance.",
         keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai", "eu ai act compliance pydanticai"],
     });

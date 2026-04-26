@@ -14,7 +14,7 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Protect API Keys from AI Agents | SupraWall",
+  title: "How to Protect API Keys from AI Agents",
   description:
     "Step-by-step guide to keeping API keys, tokens, and passwords out of AI agent context windows. Covers LangChain, CrewAI, AutoGen, and Vercel AI SDK.",
   keywords: [

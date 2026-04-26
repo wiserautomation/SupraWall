@@ -13,7 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'use-cases/financial-services',
-        title: "AI Agent Security for Financial Services | SupraWall",
+        title: "AI Agent Security for Financial Services",
         description: "Secure autonomous agents in banking, insurance, and fintech. Prevent infinite spending loops, redact customer PII, and maintain immutable audit trails for compliance.",
         keywords: [
             "AI agents in financial services",

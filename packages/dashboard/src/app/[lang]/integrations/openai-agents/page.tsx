@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     return generateLocalizedMetadata({
         params,
         internalPath: 'integrations/openai-agents',
-        title: "Security for OpenAI Agents SDK | Runtime Guardrails | SupraWall",
+        title: "Security for OpenAI Agents SDK | Runtime Guardrails",
         description: "Secure your OpenAI Agents SDK deployments with runtime interception. Prevent unauthorized tool calls and exfiltration in autonomous system loops.",
         keywords: ["openai agents security", "secure openai sdk agents", "openai tool call guardrails", "agentic execution policy", "openai swarm security"],
     });
