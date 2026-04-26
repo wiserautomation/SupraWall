@@ -5,18 +5,92 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { 
-    Users, Server, Activity, Shield, BrickWall, TrendingUp, Zap, AlertCircle, 
-    DollarSign, Filter, MousePointer2, Percent, ArrowUpRight, Gauge
+import {
+    Users, Server, Activity, Shield, Zap, AlertCircle,
+    DollarSign, Filter, Percent, Gauge, CheckCircle2, XCircle, MinusCircle
 } from "lucide-react";
 import {
-    LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
-    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
+    AreaChart, Area,
+    XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from "recharts";
 import Link from "next/link";
 import { adminFetch } from "@/lib/admin-fetch";
 
-const COLORS = ['#10b981', '#f43f5e', '#f59e0b']; // ALLOW, DENY, REQUIRE_APPROVAL
+// ---------------------------------------------------------------------------
+// DataSourcesStrip — Phase 1 honesty fix
+// ---------------------------------------------------------------------------
+
+type SourceStatus = { configured: boolean; reachable: boolean; last_seen_at: string | null; detail: string };
+
+function SourceBadge({ name, s }: { name: string; s: SourceStatus }) {
+    let color: string;
+    let Icon: React.ElementType;
+    let label: string;
+
+    if (!s.configured) {
+        color = "bg-rose-500/10 border-rose-500/20 text-rose-400";
+        Icon = XCircle;
+        label = "Not configured";
+    } else if (!s.reachable) {
+        color = "bg-rose-500/10 border-rose-500/20 text-rose-400";
+        Icon = XCircle;
+        label = "Unreachable";
+    } else if (!s.last_seen_at) {
+        color = "bg-amber-500/10 border-amber-500/20 text-amber-400";
+        Icon = MinusCircle;
+        label = "No data yet";
+    } else {
+        color = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+        Icon = CheckCircle2;
+        label = "OK";
+    }
+
+    return (
+        <div title={s.detail} className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-semibold ${color}`}>
+            <Icon className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="capitalize">{name.replace(/_/g, " ")}</span>
+            <span className="opacity-60 font-normal">· {label}</span>
+        </div>
+    );
+}
+
+function DataSourcesStrip() {
+    const [sources, setSources] = useState<Record<string, SourceStatus> | null>(null);
+    const [checkedAt, setCheckedAt] = useState<string | null>(null);
+
+    useEffect(() => {
+        adminFetch("/api/admin/health")
+            .then(r => r.json())
+            .then(data => { setSources(data.sources); setCheckedAt(data.checked_at); })
+            .catch(() => {});
+    }, []);
+
+    if (!sources) return null;
+
+    const allOk = Object.values(sources).every(s => s.configured && s.reachable);
+
+    return (
+        <div className={`p-4 rounded-xl border ${allOk ? "bg-emerald-500/5 border-emerald-500/15" : "bg-amber-500/5 border-amber-500/15"}`}>
+            <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-black text-neutral-500 uppercase tracking-widest mr-1">Data sources</span>
+                {Object.entries(sources).map(([name, s]) => (
+                    <SourceBadge key={name} name={name} s={s} />
+                ))}
+                {checkedAt && (
+                    <span className="ml-auto text-[10px] text-neutral-600">
+                        Checked {new Date(checkedAt).toLocaleTimeString()}
+                    </span>
+                )}
+            </div>
+            {!allOk && (
+                <p className="mt-2 text-xs text-amber-400/80">
+                    One or more data sources are misconfigured or unreachable — numbers below may show as zero.{" "}
+                    <Link href="/admin/settings" className="underline hover:text-amber-300">View settings →</Link>
+                </p>
+            )}
+        </div>
+    );
+}
 
 export default function AdminOverviewPage() {
     const [loading, setLoading] = useState(true);
@@ -97,10 +171,12 @@ export default function AdminOverviewPage() {
                 </div>
             </div>
 
+            <DataSourcesStrip />
+
             {warnings.length > 0 && (
                 <div className="space-y-2">
-                    {warnings.map((warn, i) => (
-                        <div key={i} className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500">
+                    {warnings.map((warn, idx) => (
+                        <div key={idx} className="flex items-center gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-500">
                             <AlertCircle className="w-5 h-5 flex-shrink-0" />
                             <p className="text-sm font-medium">{warn}</p>
                         </div>
@@ -172,7 +248,7 @@ export default function AdminOverviewPage() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex-1 flex flex-col justify-center py-8 gap-1.5 px-6">
-                        {funnel?.funnel?.length > 0 ? funnel.funnel.map((stage: any, i: number) => (
+                        {funnel?.funnel?.length > 0 ? funnel.funnel.map((stage: any) => (
                             <div key={stage.name} className="space-y-1">
                                 <div className="flex justify-between items-end px-1">
                                     <span className="text-[9px] font-black text-neutral-400 uppercase tracking-widest">{stage.name}</span>

@@ -245,6 +245,14 @@ def wrap_with_firewall(agent: Any, policy: Optional[str] = None, dry_run: bool =
     framework = detect_framework(agent)
     _fw_ctx.framework = framework  # stored for trace building in share_url()
 
+    # Opt-in anonymous telemetry: install ping (once per machine) + wrap ping (every call).
+    # Non-blocking — dispatched to a background daemon thread.
+    try:
+        from suprawall.runtime.trace import maybe_send_install_ping
+        maybe_send_install_ping(framework)
+    except Exception:
+        pass  # telemetry must never crash the user's code
+
     _adapters = {
         "langchain":  _adapt_langchain,
         "langgraph":  _adapt_langgraph,

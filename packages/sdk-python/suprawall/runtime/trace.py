@@ -305,3 +305,83 @@ def save_trace_locally(trace: Trace, directory: str = LOCAL_TRACES_DIR) -> str:
     with open(path, "w") as fh:
         json.dump(trace.to_dict(), fh, indent=2, default=str)
     return os.path.abspath(path)
+
+
+# ---------------------------------------------------------------------------
+# Anonymous telemetry helpers
+# ---------------------------------------------------------------------------
+
+_INSTALL_MARKER = os.path.expanduser("~/.suprawall/installed")
+
+
+def _send_telemetry_event(event: str, framework: Optional[str] = None) -> None:
+    """
+    Fire-and-forget POST to TELEMETRY_ENDPOINT.
+    Never raises — all failures are silently swallowed.
+    Intended to be called from a background thread.
+    """
+    try:
+        import urllib.request
+        payload: dict = {"event": event}
+        if framework:
+            payload["framework"] = framework
+        data = json.dumps(payload).encode("utf-8")
+        req = urllib.request.Request(
+            TELEMETRY_ENDPOINT,
+            data=data,
+            headers={
+                "Content-Type": "application/json",
+                "X-SupraWall-SDK": f"python-{SDK_VERSION}",
+            },
+            method="POST",
+        )
+        urllib.request.urlopen(req, timeout=5)  # noqa: S310
+    except Exception:
+        pass
+
+
+def maybe_send_install_ping(framework: Optional[str] = None) -> None:
+    """
+    Called by wrap_with_firewall() on every invocation.
+
+    Behaviour:
+      - If telemetry consent has never been asked, ask now (blocks briefly).
+      - If the user declined, do nothing.
+      - If the user consented, send an 'install' event once per machine
+        (tracked by ~/.suprawall/installed), then send a 'wrap' event
+        (every call, with framework name).
+
+    All network I/O is dispatched to a daemon background thread so the
+    calling code is never blocked.
+    """
+    import threading
+
+    # First: check / prompt for consent (runs in foreground, once ever)
+    try:
+        if not os.path.exists(TELEMETRY_CONSENT_FILE):
+            prompt_and_store_telemetry_consent()
+    except Exception:
+        return  # e.g. non-interactive terminal — skip silently
+
+    if not has_telemetry_consent():
+        return
+
+    # Determine whether to send install ping
+    send_install = not os.path.exists(_INSTALL_MARKER)
+    if send_install:
+        try:
+            os.makedirs(os.path.dirname(_INSTALL_MARKER), exist_ok=True)
+            with open(_INSTALL_MARKER, "w") as fh:
+                json.dump({"installed_at": datetime.now(timezone.utc).isoformat()}, fh)
+        except Exception:
+            send_install = False  # don't retry if we can't write
+
+    fw = framework or "unknown"
+
+    def _bg() -> None:
+        if send_install:
+            _send_telemetry_event("install", fw)
+        _send_telemetry_event("wrap", fw)
+
+    t = threading.Thread(target=_bg, daemon=True)
+    t.start()

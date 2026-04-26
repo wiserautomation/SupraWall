@@ -28,11 +28,9 @@ export async function GET(req: NextRequest) {
 
     const warnings: string[] = [];
 
-    // --- 1. Fetch Users ---
-    let totalUsers = 1;
+    // --- 1. Check Firebase reachability (used for data_status) ---
     try {
-        const usersSnap = await db.collection('users').get();
-        totalUsers = usersSnap.size || 1;
+        await db.collection('users').limit(1).get();
     } catch (fbErr: any) {
         console.warn('[Admin Revenue] Firebase fetch failed:', fbErr.message);
         warnings.push('Firebase data unavailable: ' + fbErr.message);
@@ -168,6 +166,21 @@ export async function GET(req: NextRequest) {
         summary,
         charts,
         paymentHistory,
-        warnings
+        warnings,
+        data_status: {
+            firestore: !process.env.FIREBASE_CLIENT_EMAIL
+                ? "not_configured"
+                : warnings.some(w => w.startsWith("Firebase"))
+                ? "unreachable"
+                : "ok",
+            stripe: !process.env.STRIPE_SECRET_KEY
+                ? "not_configured"
+                : warnings.some(w => w.startsWith("Stripe"))
+                ? "unreachable"
+                : summary.mrr === 0
+                ? "reachable_empty"
+                : "ok",
+        },
+        fetched_at: new Date().toISOString(),
     });
 }

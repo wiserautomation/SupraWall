@@ -134,6 +134,30 @@ export async function GET(req: NextRequest) {
             churnRate: churnRate.toFixed(1) + '%'
         },
         signupTrends,
-        warnings
+        warnings,
+        data_status: {
+            firestore: !process.env.FIREBASE_CLIENT_EMAIL
+                ? "not_configured"
+                : warnings.some(w => w.startsWith("Firebase"))
+                ? "unreachable"
+                : totalUsers === 0 && totalAgents === 0
+                ? "reachable_empty"
+                : "ok",
+            postgres: !(process.env.DATABASE_URL || process.env.POSTGRES_URL)
+                ? "not_configured"
+                : warnings.some(w => w.startsWith("Postgres"))
+                ? "unreachable"
+                : opsToday === 0
+                ? "reachable_empty"
+                : "ok",
+            stripe: !process.env.STRIPE_SECRET_KEY
+                ? "not_configured"
+                : warnings.some(w => w.startsWith("Stripe"))
+                ? "unreachable"
+                : mrr === 0
+                ? "reachable_empty"
+                : "ok",
+        },
+        fetched_at: new Date().toISOString(),
     });
 }

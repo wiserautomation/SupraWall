@@ -852,6 +852,16 @@ export const initDb = async () => {
             evidence JSONB DEFAULT '{}',
             UNIQUE(agent_id, template_id, control_id)
         );
+
+        -- Anonymous SDK telemetry counters (no PII, no agent data)
+        CREATE TABLE IF NOT EXISTS global_stats (
+            key VARCHAR(64) PRIMARY KEY,
+            value_int BIGINT DEFAULT 0,
+            last_updated TIMESTAMPTZ DEFAULT NOW()
+        );
+        INSERT INTO global_stats (key, value_int) VALUES ('block',   0) ON CONFLICT DO NOTHING;
+        INSERT INTO global_stats (key, value_int) VALUES ('install', 0) ON CONFLICT DO NOTHING;
+        INSERT INTO global_stats (key, value_int) VALUES ('wrap',    0) ON CONFLICT DO NOTHING;
     `;
     await pool.query(query);
 };

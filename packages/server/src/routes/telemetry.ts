@@ -7,33 +7,50 @@ import { logger } from "../logger";
 
 const router = Router();
 
+const ALLOWED_EVENTS = ["block", "install", "wrap"] as const;
+type TelemetryEvent = typeof ALLOWED_EVENTS[number];
+
 /**
  * POST /v1/telemetry/event
- * 
- * Records an anonymous event (e.g. "block").
- * Used for the homepage real-time counter.
- * No PII or arguments are sent or stored.
+ *
+ * Records an anonymous SDK event. No PII, no arguments stored.
+ * Events:
+ *   block   — an agent action was blocked by a policy (existing)
+ *   install — first wrap_with_firewall() call on a new machine (opt-in, once per machine)
+ *   wrap    — each subsequent wrap_with_firewall() call, with optional framework name
+ *
+ * Each event type has its own row in global_stats keyed by event name.
+ * Framework-specific wrap counts are stored as "wrap:<framework>".
  */
 router.post("/event", async (req: Request, res: Response) => {
     const { event, framework } = req.body;
 
-    if (event !== "block") {
-        return res.status(400).json({ error: "Unsupported event type" });
+    if (!ALLOWED_EVENTS.includes(event as TelemetryEvent)) {
+        return res.status(400).json({ error: `Unsupported event type. Allowed: ${ALLOWED_EVENTS.join(", ")}` });
     }
 
-    try {
-        // Increment the global total_blocks counter
+    const upsertKey = async (key: string) => {
         await pool.query(
-            `INSERT INTO global_stats (key, value_int) 
-             VALUES ('total_blocks', 1) 
-             ON CONFLICT (key) 
-             DO UPDATE SET value_int = global_stats.value_int + 1, last_updated = NOW()`
+            `INSERT INTO global_stats (key, value_int)
+             VALUES ($1, 1)
+             ON CONFLICT (key)
+             DO UPDATE SET value_int = global_stats.value_int + 1, last_updated = NOW()`,
+            [key]
         );
-        
+    };
+
+    try {
+        await upsertKey(event);
+
+        // For wraps, also track per-framework breakdown
+        if (event === "wrap" && framework && typeof framework === "string") {
+            const safe = framework.replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
+            if (safe) await upsertKey(`wrap:${safe}`);
+        }
+
         return res.status(201).json({ ok: true });
     } catch (err: any) {
-        logger.error("[Telemetry] Error incrementing block counter:", { error: err.message });
-        // Don't fail the request for the SDK, just return 500
+        logger.error("[Telemetry] Error recording event:", { event, error: err.message });
         return res.status(500).json({ error: "Internal Server Error" });
     }
 });

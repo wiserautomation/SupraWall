@@ -20,11 +20,11 @@ import {
     BarChart2,
     CheckSquare,
     Brain,
-    Layout,
     ListOrdered,
     DollarSign,
     Filter,
-    Share2
+    Share2,
+    PackageOpen,
 } from "lucide-react";
 import { isAdminEmail } from "@/lib/auth-config";
 
@@ -88,6 +88,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
     const navItems = [
         { name: "Overview", href: "/admin", icon: BarChart2 },
+        { name: "OSS Metrics", href: "/admin/oss", icon: PackageOpen },
         { name: "Revenue", href: "/admin/revenue", icon: DollarSign },
         { name: "Funnel", href: "/admin/funnel", icon: Filter },
         { name: "Traffic", href: "/admin/analytics", icon: Activity },
@@ -97,7 +98,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         { name: "Audit Logs", href: "/admin/audit", icon: Database },
         { name: "Task Review", href: "/admin/tasks", icon: CheckSquare },
         { name: "Intelligence", href: "/admin/intelligence", icon: Brain },
-        { name: "Published", href: "/admin/published", icon: Layout },
         { name: "Queue", href: "/admin/queue", icon: ListOrdered },
         { name: "Settings", href: "/admin/settings", icon: Settings },
         { name: "Beta List", href: "/admin/beta", icon: ListOrdered },
