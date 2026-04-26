@@ -12,7 +12,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     return generateLocalizedMetadata({
         params,
-        title: "GDPR for AI Agents. Secured at the SDK.",
+        title: "GDPR Compliance for AI Agents: Article 25 & Audit Trails (2026)",
         description: "Zero-PII leakage for autonomous agentic systems. Automated redaction for every outbound tool call.",
         keywords: [
             "GDPR compliance AI agents",

@@ -3,8 +3,7 @@
 
 import { sendTransactionalEmail } from './mailerlite';
 import { phase1Templates } from './phase1';
-import fs from 'fs';
-import path from 'path';
+import { BASE_EMAIL_TEMPLATE } from './templates/base';
 
 /**
  * High-level email dispatcher for SupraWall system events (via MailerLite).
@@ -42,32 +41,16 @@ export async function dispatchEmail(
     ? { name: 'SupraWall Security', email: process.env.EMAIL_SENDER_SECURITY || 'security@supra-wall.com' }
     : { name: 'SupraWall Team', email: process.env.EMAIL_SENDER_TEAM || 'team@supra-wall.com' };
 
-  // Render HTML manually since MailerLite transactional uses HTML field
-  const baseTemplatePath = path.join(process.cwd(), 'packages/dashboard/src/lib/emails/templates/base.html');
-  const fallbackPath = path.join(process.cwd(), 'src/lib/emails/templates/base.html');
-  
-  let html: string;
-  try {
-    if (fs.existsSync(baseTemplatePath)) {
-      html = fs.readFileSync(baseTemplatePath, 'utf8');
-    } else if (fs.existsSync(fallbackPath)) {
-      html = fs.readFileSync(fallbackPath, 'utf8');
-    } else {
-      throw new Error(`Base template not found at ${baseTemplatePath} or ${fallbackPath}`);
-    }
-  } catch (err) {
-    console.error(`[Email Dispatcher] Path Error: ${err}`);
-    return { success: false, error: "Template read error" };
-  }
-
   // Inject content into base template
-  html = html.replace('{{content}}', templateConfig.content);
+  let html = BASE_EMAIL_TEMPLATE.replace('{{content}}', templateConfig.content);
+  let subject = templateConfig.subject;
 
-  // Simple variable substitution
+  // Simple variable substitution for both subject and html
   Object.keys(params).forEach(key => {
     const value = params[key];
     const regex = new RegExp(`{{${key}}}`, 'g');
     html = html.replace(regex, value);
+    subject = subject.replace(regex, value);
   });
 
   console.info(`[Email Dispatcher] Dispatching ${tag} to ${to}...`);
@@ -75,7 +58,7 @@ export async function dispatchEmail(
   return await sendTransactionalEmail({
     to: { email: to, name },
     from: sender,
-    subject: templateConfig.name,
+    subject: subject,
     html: html
   });
 }

@@ -11,7 +11,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     return generateLocalizedMetadata({
         params,
-        title: "Enterprise AI Security Features | SupraWall Firewall",
+        title: "SupraWall Features: Policy Engine, Vault, PII Shield & HITL",
         description: "Explore the security stack for autonomous agents. Prompt injection shields, deterministic PII redaction, and runtime tool enforcement.",
         internalPath: "features"
     });

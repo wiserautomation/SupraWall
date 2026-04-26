@@ -11,6 +11,7 @@
 import type { Metadata } from "next";
 import { pool, ensureSchema } from "@/lib/db_sql";
 import Link from "next/link";
+import CopyLinkButton from "./CopyLinkButton";
 
 // ---------------------------------------------------------------------------
 // Data fetching
@@ -197,12 +198,7 @@ export default async function TracePage({ params }: { params: Promise<{ id: stri
                         >
                             Share on X
                         </a>
-                        <button
-                            onClick={() => navigator.clipboard.writeText(shareUrl)}
-                            className="flex-1 text-center bg-[#b8ff00]/10 hover:bg-[#b8ff00]/20 text-[#b8ff00] text-sm px-4 py-2.5 rounded-lg transition-colors font-medium border border-[#b8ff00]/20"
-                        >
-                            Copy link
-                        </button>
+                        <CopyLinkButton url={shareUrl} />
                     </div>
                     <p className="text-xs text-zinc-600 mt-3">
                         Pre-filled X text: <em>&ldquo;My AI agent just tried to {tool}. SupraWall blocked it.&rdquo;</em>

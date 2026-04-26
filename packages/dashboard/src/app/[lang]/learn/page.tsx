@@ -10,7 +10,7 @@ import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
     return generateLocalizedMetadata({
         params,
-        title: "AI Agent Security Hub | SupraWall Learn",
+        title: "AI Agent Security Guides: Prompt Injection, GDPR, EU AI Act",
         description: "Comprehensive guides, tutorials, and best practices for securing AI agents in production. EU AI Act compliance, zero-trust guardrails, and more.",
         internalPath: "learn"
     });
@@ -52,8 +52,41 @@ export default async function LearnHubPage({
         }
     };
 
+    
+    const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "inLanguage": lang,
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "What is AI Agent Security Guides: Prompt Injection, GDPR, EU AI Act?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Comprehensive guides, tutorials, and best practices for securing AI agents in production. EU AI Act compliance, zero-trust guardrails, and more."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Why is AI Agent Security Guides: Prompt Injection, GDPR, EU AI Act important for AI agents?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Autonomous AI agents require specialized runtime guardrails to prevent prompt injection, unauthorized tool execution, and budget overruns. Understanding this is critical for secure deployment."
+                }
+            },
+            {
+                "@type": "Question",
+                "name": "Does SupraWall support AI Agent Security Guides: Prompt Injection, GDPR, EU AI Act compliance?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. SupraWall provides the deterministic SDK-level middleware required to enforce security policies and generate audit logs for AI Agent Security Guides: Prompt Injection, GDPR, EU AI Act requirements."
+                }
+            }
+        ]
+    };
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
             <LearnHubClient lang={lang} dictionary={dictionary} />
