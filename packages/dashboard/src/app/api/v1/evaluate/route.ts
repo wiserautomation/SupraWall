@@ -13,6 +13,8 @@ import { resolveVaultTokens } from '@/lib/vault-server';
 import { scrubPii } from '@/lib/guardrail-scrubber';
 import { analyzeCall, updateBaseline, type SemanticAnalysisResult, type SemanticLayerMode } from '@/lib/semantic-server';
 import { pool as pgPool, ensureSchema } from '@/lib/db_sql';
+import { dispatchEmail } from '@/lib/emails/dispatcher';
+import { getUserEmail } from '@/lib/user';
 
 // ── Types ──
 
@@ -217,6 +219,18 @@ export async function POST(req: NextRequest) {
                 // Log threat to Postgres for dashboard visibility
                 logThreat(tenantId, agentId, toolName, threatResult.threatType!, threatResult.severity!, threatResult.detail || threatResult.reason!);
 
+                // Trigger Security Alert Email (SW-A-003)
+                getUserEmail(userId).then(email => {
+                    if (email) {
+                        dispatchEmail("SW-A-003", email, {
+                            agent_name: agentName,
+                            threat_type: threatResult.threatType,
+                            tool_target: toolName,
+                            incident_log_url: `https://app.supra-wall.com/dashboard/threats`
+                        }).catch(err => console.error("[Email] Threat alert failed:", err));
+                    }
+                });
+
                 return NextResponse.json({
                     decision: "DENY",
                     reason: threatResult.reason,
@@ -233,6 +247,32 @@ export async function POST(req: NextRequest) {
             }
             if (guardrailResult.modifiedArgs) {
                 finalArgs = guardrailResult.modifiedArgs;
+            }
+
+            // ── Budget Threshold Alert (80%) ──
+            if (agentData.guardrails?.budget?.limitUsd) {
+                const limit = agentData.guardrails.budget.limitUsd;
+                const spend = agentData.totalSpendUsd || 0;
+                const threshold = limit * 0.8;
+                
+                // If we just crossed 80% and haven't alerted yet (using a simple flag for now)
+                if (spend >= threshold && spend < limit && !agentData.budgetAlert80Sent) {
+                    getUserEmail(userId).then(email => {
+                        if (email) {
+                            dispatchEmail("SW-A-001", email, {
+                                agent_name: agentName,
+                                current_spend: spend.toFixed(2),
+                                limit: limit.toFixed(2),
+                                burn_rate: "N/A",
+                                time_to_cap: "estimated < 24h",
+                                hit_timestamp: new Date().toISOString()
+                            }).catch(err => console.error("[Email] Budget alert failed:", err));
+                            
+                            // Flag it in DB to prevent spam
+                            db.collection("agents").doc(agentId).update({ budgetAlert80Sent: true }).catch(() => {});
+                        }
+                    });
+                }
             }
 
             // Fetch tenant policies
@@ -371,6 +411,23 @@ export async function POST(req: NextRequest) {
             
             await logAudit(tenantId, agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop, source);
             
+            // Trigger HITL Approval Email (SW-HITL-001)
+            getUserEmail(userId).then(email => {
+                if (email) {
+                    dispatchEmail("SW-HITL-001", email, {
+                        agent_name: agentName,
+                        action_summary: `Tool call: ${toolName}`,
+                        tool_name: toolName,
+                        params: JSON.stringify(resolvedArguments).slice(0, 500),
+                        risk_level: "HIGH",
+                        expiry_time: "24 hours",
+                        approve_url: `https://app.supra-wall.com/approvals/${requestId}/approve`,
+                        deny_url: `https://app.supra-wall.com/approvals/${requestId}/deny`,
+                        dashboard_url: `https://app.supra-wall.com/dashboard/approvals`
+                    }).catch(err => console.error("[Email] HITL alert failed:", err));
+                }
+            });
+
             return NextResponse.json({ 
                 decision: "REQUIRE_APPROVAL", 
                 reason: "This action requires human approval.", 

@@ -4,9 +4,9 @@
 
 # SupraWall
 
-### The rule of law for zero-human companies.
+### Stop your AI agent from calling the wrong API.
 
-**A deterministic security perimeter for AI agents. One line of code. Open source.**
+**The deterministic firewall for AI agents. One line of code. Open source.**
 
 [![PyPI](https://img.shields.io/pypi/v/suprawall-sdk?label=pypi&color=B8FF00)](https://pypi.org/project/suprawall-sdk/)
 [![npm](https://img.shields.io/npm/v/suprawall?label=npm&color=B8FF00)](https://www.npmjs.com/package/suprawall)
@@ -16,12 +16,12 @@
 
 [Quickstart](#quickstart) · [How it works](#how-it-works) · [Frameworks](#works-with-any-agent-stack) · [**EU AI Act templates**](#eu-ai-act-compliance--shipped-not-promised) · [Cloud](#self-host-or-cloud) · [Docs](https://www.supra-wall.com/docs)
 
-<!-- LAUNCH VIDEO — MP4 plays inline on github.com; GIF is the fallback for email/RSS/social cards -->
-<video src="assets/launch-demo.mp4" autoplay loop muted playsinline width="760">
-  <img src="assets/launch-demo.gif" alt="SupraWall intercepting a destructive tool call in real time" width="760">
-</video>
+<!-- LAUNCH VIDEO — links out to YouTube; GitHub strips iframes -->
+<a href="https://youtu.be/jTGoVOWx3_k">
+  <img src="https://img.youtube.com/vi/jTGoVOWx3_k/maxresdefault.jpg" alt="Watch the SupraWall launch video — deterministic firewall for AI agents" width="760">
+</a>
 
-*Paperclip gives your agents a company. SupraWall gives them a constitution.*
+*Every blocked action becomes a [shareable trace](#shareable-attack-traces). Public proof your agent didn't fire.*
 
 </div>
 
@@ -29,8 +29,31 @@
 
 ## Get started
 
+**60-second smoke test.** No LLM, no API keys, no framework — see the policy engine block a destructive call directly:
+
 ```bash
 pip install suprawall-sdk
+```
+
+```python
+from suprawall import LocalPolicyEngine
+
+engine = LocalPolicyEngine()  # ships with safe defaults — no config
+
+verdict = engine.check(tool_name="terminal", args={"command": "rm -rf /"})
+print(verdict)
+# → {'name': 'no-destructive-shell',
+#    'description': "Shell commands with destructive patterns ...",
+#    ...}
+```
+
+That's the same engine that runs inside `wrap_with_firewall()`. No proxy. No API key. No config file.
+
+**With a real LangChain agent.** Same one-liner, real ReAct loop, real shell tool:
+
+```bash
+pip install suprawall-sdk langchain langchain-openai langchain-community
+export OPENAI_API_KEY=sk-...
 ```
 
 ```python
@@ -49,14 +72,8 @@ agent = AgentExecutor(
 safe_agent = wrap_with_firewall(agent)
 
 safe_agent.invoke({"input": "Delete all files in /tmp"})
+# → raises SupraWallBlocked before the shell tool ever runs
 ```
-
-```
-SupraWallBlocked: action 'terminal' blocked by policy 'no-destructive-shell'.
-Shell commands with destructive patterns (rm -rf, etc.) are blocked by default. (trace: a3f2b891)
-```
-
-No proxy to deploy. No API key for the default policy. No config file. One import, one wrapper call.
 
 **Works with any framework — auto-detected, no `framework=` argument:**
 LangChain · LangGraph · AutoGen · CrewAI · OpenAI Agents SDK · Anthropic
@@ -65,20 +82,38 @@ LangChain · LangGraph · AutoGen · CrewAI · OpenAI Agents SDK · Anthropic
 
 ---
 
+## Shareable attack traces
+
+Every block produces a structured, signed record of what your agent tried to do and why SupraWall stopped it. Save it locally — or share a public URL.
+
+```python
+try:
+    safe_agent.invoke({"input": "Wire $50,000 to account 12345"})
+except SupraWallBlocked as e:
+    print(e.share_url())
+    # → https://supra-wall.com/trace/A-00847
+```
+
+The trace page shows the attempted action (PII auto-redacted), the policy that fired, and a SHA-256 audit hash signed by SupraWall. It's tamper-evident — proof your agent didn't fire, not just a screenshot.
+
+**Privacy:** traces never leave your machine unless you explicitly call `share_url()`. Use `e.save_local()` to keep it offline. PII (emails, phone numbers, API keys, credit cards) is auto-redacted before any upload.
+
+---
+
 ## Why this exists
 
-AI agents now write code, spend money, query databases, and take real-world actions on your behalf — autonomously. The frameworks that orchestrate them (Paperclip, OpenClaw, LangChain, CrewAI, AutoGen, Claude Code) are excellent at *making them productive*. None of them are responsible for *making them safe*.
+AI agents now write code, spend money, query databases, and take real-world actions on your behalf — autonomously. The frameworks that orchestrate them (LangChain, LangGraph, CrewAI, AutoGen, OpenAI Agents SDK) are excellent at *making them productive*. None of them are responsible for *making them safe*.
 
 So agents do what unconstrained software has always done: leak credentials, run `DROP TABLE users`, exfiltrate PII, burn $40k overnight in OpenAI tokens, and fail every compliance audit you'll ever face under the EU AI Act.
 
-SupraWall is a deterministic perimeter that wraps your agent — any agent — and intercepts every tool call **before it executes**. Not probabilistically. Not via another LLM. Not after the fact. At the boundary, in under 2ms, with a signed audit log.
+SupraWall is a deterministic firewall that wraps your agent — any agent — and intercepts every tool call **before it executes**. Not probabilistically. Not via another LLM. Not after the fact. At the boundary, in under 2ms, with a signed audit log.
 
-> **It is not another guardrail model. It is the rule of law.**
+> **It is not another guardrail model. Rules belong in code, not in prompts.**
 
 And with the EU AI Act enforcement deadline on **August 2, 2026**, we ship [8 pre-built sector templates](#eu-ai-act-compliance--shipped-not-promised) covering every Annex III high-risk category — HR, healthcare, education, critical infrastructure, biometrics, law enforcement, migration, justice — plus a DORA template for financial services. Compliance by `pip install`, not by 200-page PDF.
 <br/>
 
-If SupraWall saves you from an incident (or prevents one), drop a ⭐ — it helps other security-minded devs find this.
+If SupraWall blocks something it shouldn't have — or saves you from one that would've cost real money — drop a ⭐ and (better) [share the trace](#shareable-attack-traces). It helps other security-minded devs find this.
 
 ---
 
@@ -102,13 +137,15 @@ SupraWall is framework-agnostic. It wraps the *tool boundary*, which every agent
 
 | Framework | Status | Plugin |
 |---|---|---|
-| [Paperclip](https://github.com/paperclipai/paperclip) | ✅ First-class | [`packages/paperclip-plugin`](packages/paperclip-plugin) |
 | LangChain (Py + TS) | ✅ First-class | Built into core SDK |
+| LangGraph | ✅ First-class | Built into core SDK |
 | CrewAI | ✅ First-class | Built into core SDK |
 | AutoGen | ✅ First-class | Built into core SDK |
+| OpenAI Agents SDK | ✅ First-class | Built into core SDK |
+| Anthropic SDK | ✅ First-class | Built into core SDK |
 | Claude Code / OpenClaw | ✅ Via MCP | [`suprawall-mcp-plugin`](https://github.com/wiserautomation/suprawall-mcp-plugin) |
 | Vercel AI SDK | ✅ First-class | Built into core SDK |
-| Custom / homegrown | ✅ | One-line `secure_agent()` wrapper |
+| Custom / homegrown | ✅ | One-line `wrap_with_firewall()` wrapper |
 
 Languages: Python, TypeScript, Go, C#. More via the MCP plugin.
 
@@ -140,7 +177,7 @@ npx suprawall init  # interactive policy bootstrap
 | [`pii-protection.json`](policies/pii-protection.json) | SSN, CC, email exfiltration |
 | [`eu-ai-act-audit.json`](policies/eu-ai-act-audit.json) | Human-in-the-loop for high-risk tools |
 | [`budget-guardrail.json`](policies/budget-guardrail.json) | Token + cost circuit breakers |
-| [`paperclip-company.json`](policies/paperclip-company.json) | Company-scoped budgets, role-based tool access |
+| [`role-based-access.json`](policies/role-based-access.json) | Per-agent budgets, role-scoped tool access |
 
 [→ All starter policies](policies/) · [→ Write your own](docs/policies.md)
 
@@ -262,5 +299,5 @@ Active issues good for first-time contributors are tagged [`good first issue`](h
 [Website](https://www.supra-wall.com) · [Docs](https://www.supra-wall.com/docs) · [Cloud](https://www.supra-wall.com/cloud) · [Blog](https://www.supra-wall.com/blog) · [X / @The_real_Peghin](https://x.com/The_real_Peghin) · [License: Apache 2.0](LICENSE)
 
 <div align="center">
-<sub>Built by <a href="https://wiserautomation.agency">Wiser Automation</a> · Made for the zero-human company era.</sub>
+<sub>Built by <a href="https://wiserautomation.agency">Wiser Automation</a> · The deterministic firewall for AI agents.</sub>
 </div>

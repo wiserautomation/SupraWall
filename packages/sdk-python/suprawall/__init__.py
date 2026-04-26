@@ -6,6 +6,7 @@ from .openai import wrap_openai_agent
 from .smolagents import wrap_smolagents
 from .identity import AgentIdentity, AgentCredentials, SCOPE_PRESETS
 from .firewall import wrap_with_firewall, SupraWallBlocked, detect_framework
+from .local_policy import LocalPolicyEngine
 from .runtime.trace import Trace, PiiRedactor, generate_trace_id
 
 __all__ = [
@@ -13,6 +14,7 @@ __all__ = [
     "wrap_with_firewall",
     "SupraWallBlocked",
     "detect_framework",
+    "LocalPolicyEngine",
     "Trace",
     "PiiRedactor",
     "generate_trace_id",
