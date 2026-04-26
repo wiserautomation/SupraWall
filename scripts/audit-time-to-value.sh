@@ -49,7 +49,8 @@ try:
     sys.exit(1)
 except SupraWallBlocked as exc:
     elapsed_ms = (time.perf_counter() - start) * 1000
-    if not exc.trace_id or not exc.trace_id[1] == "-":
+    import re as _re
+    if not _re.match(r'^[A-Z]-\d{5}$', exc.trace_id or ""):
         print(f"FAIL: trace_id format wrong: {exc.trace_id!r}", file=sys.stderr)
         sys.exit(1)
     print(f"SupraWallBlocked raised in {elapsed_ms:.1f}ms")

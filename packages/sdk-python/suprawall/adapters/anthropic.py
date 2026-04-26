@@ -64,7 +64,6 @@ def wrap_anthropic(agent: Any, engine: Any) -> Any:
                 return _o(*args, **kwargs)
             setattr(agent, method_name, _sync)
             setattr(getattr(agent, method_name), _GUARDED_ATTR, True)
-        break
 
     log.debug("[SupraWall] Anthropic agent protected.")
     return agent
