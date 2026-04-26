@@ -15,34 +15,38 @@ import {
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Zero Trust for AI Agents: 2026 Playbook | SupraWall",
-  description:
-    "Apply zero trust principles to autonomous AI agents. Learn how to verify every tool call, enforce least-privilege, and implement deny-by-default policies for production agents.",
-  keywords: [
-    "zero trust AI agents",
-    "zero trust agentic AI",
-    "AI agent zero trust model",
-    "zero trust LLM",
-    "agentic trust framework",
-  ],
-  alternates: {
-    canonical: "https://www.supra-wall.com/learn/zero-trust-ai-agents",
-  },
-  openGraph: {
-    title: "Zero Trust for AI Agents: 2026 Playbook | SupraWall",
-    description:
-      "Apply zero trust principles to autonomous AI agents. Learn how to verify every tool call, enforce least-privilege, and implement deny-by-default policies for production agents.",
-    url: "https://www.supra-wall.com/learn/zero-trust-ai-agents",
-    siteName: "SupraWall",
-    type: "article",
-  },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function ZeroTrustAIAgentsPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+  return generateLocalizedMetadata({
+    params,
+    internalPath: 'learn/zero-trust-ai-agents',
+    title: "Zero Trust for AI Agents: 2026 Playbook | SupraWall",
+    description: "Apply zero trust principles to autonomous AI agents. Learn how to verify every tool call, enforce least-privilege, and implement deny-by-default policies for production agents.",
+    keywords: [
+      "zero trust AI agents",
+      "zero trust agentic AI",
+      "AI agent zero trust model",
+      "zero trust LLM",
+      "agentic trust framework",
+    ],
+  });
+}
+
+export default async function ZeroTrustAIAgentsPage({
+  params,
+}: {
+  params: Promise<{ lang: string }>;
+}) {
+  const { lang } = (await params) as { lang: Locale };
+  const dictionary = await getDictionary(lang);
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "TechArticle",
+    "inLanguage": lang,
     headline: "Zero Trust for AI Agents: 2026 Playbook",
     description:
       "Apply zero trust principles to autonomous AI agents. Learn how to verify every tool call, enforce least-privilege, and implement deny-by-default policies for production agents.",
@@ -56,6 +60,7 @@ export default function ZeroTrustAIAgentsPage() {
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "inLanguage": lang,
     mainEntity: [
       {
         "@type": "Question",
@@ -110,7 +115,7 @@ export default function ZeroTrustAIAgentsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
-      <Navbar />
+      <Navbar lang={lang} dictionary={dictionary} />
 
       <main className="pt-40 pb-32 px-6">
         <div className="max-w-4xl mx-auto space-y-16">

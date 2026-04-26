@@ -7,22 +7,35 @@ import Link from "next/link";
 import { Metadata } from "next";
 import ClaudeClient from "./ClaudeClient";
 
-export const metadata: Metadata = {
-    title: "Security for Claude 3.5 Sonnet | Computer Use Guardrails | SupraWall",
-    description: "Secure Claude with Anthropic Computer Use security. Prevent unauthorized clicks and type actions in autonomous desktop environments. EU AI Act compliant Article 14.",
-    keywords: ["claude 3.5 sonnet security", "claude computer use guardrails", "anthropic agent security", "secure claude tool use", "eu ai act Claude"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/claude',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function ClaudeIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/claude',
+        title: "Security for Claude 3.5 Sonnet | Computer Use Guardrails | SupraWall",
+        description: "Secure Claude with Anthropic Computer Use security. Prevent unauthorized clicks and type actions in autonomous desktop environments. EU AI Act compliant Article 14.",
+        keywords: ["claude 3.5 sonnet security", "claude computer use guardrails", "anthropic agent security", "secure claude tool use", "eu ai act Claude"],
+    });
+}
+
+export default async function ClaudeIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Claude",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/claude",
+        "url": `https://www.supra-wall.com/${lang}/integrations/claude`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "The security layer for Anthropic Claude agents, specifically designed for Computer Use and high-trust tool execution swarms."
     };
@@ -30,7 +43,7 @@ export default function ClaudeIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-orange-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden text-center">
                 <div className="max-w-7xl mx-auto space-y-20 relative z-10">

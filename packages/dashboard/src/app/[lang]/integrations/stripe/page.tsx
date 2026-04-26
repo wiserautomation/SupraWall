@@ -7,22 +7,35 @@ import Link from "next/link";
 import { Metadata } from "next";
 import StripeClient from "./StripeClient";
 
-export const metadata: Metadata = {
-    title: "Security for Stripe AI Agents | Financial Data Guardrails | SupraWall",
-    description: "Secure Stripe-enabled AI agents with deterministic financial guardrails. Prevent unauthorized refunds, set hard budget caps, and maintain EU AI Act Article 9 compliance.",
-    keywords: ["stripe agent security", "secure stripe tools", "financial AI guardrails", "prevent unauthorized charges", "eu ai act financial agents"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/stripe',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function StripeIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/stripe',
+        title: "Security for Stripe AI Agents | Financial Data Guardrails | SupraWall",
+        description: "Secure Stripe-enabled AI agents with deterministic financial guardrails. Prevent unauthorized refunds, set hard budget caps, and maintain EU AI Act Article 9 compliance.",
+        keywords: ["stripe agent security", "secure stripe tools", "financial AI guardrails", "prevent unauthorized charges", "eu ai act financial agents"],
+    });
+}
+
+export default async function StripeIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Stripe",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/stripe",
+        "url": `https://www.supra-wall.com/${lang}/integrations/stripe`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Enterprise-grade financial security guardrails for autonomous agents using the Stripe API."
     };
@@ -30,7 +43,7 @@ export default function StripeIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden text-center">
                 <div className="max-w-7xl mx-auto space-y-20 relative z-10">

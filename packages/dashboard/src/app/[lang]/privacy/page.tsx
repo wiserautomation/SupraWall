@@ -7,10 +7,17 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { Locale } from "@/i18n/config";
 
-export const metadata: Metadata = {
-    title: "Privacy Policy | SupraWall",
-    description: "SupraWall Privacy Policy — How we handle data for AI agent security and compliance.",
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { getDictionary } from "@/i18n/getDictionary";
+
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'privacy',
+        title: "Privacy Policy | SupraWall",
+        description: "SupraWall Privacy Policy — How we handle data for AI agent security and compliance.",
+    });
+}
 
 export default async function PrivacyPage({
     params,
@@ -18,9 +25,10 @@ export default async function PrivacyPage({
     params: Promise<{ lang: string }>;
 }) {
     const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     return (
         <div className="min-h-screen bg-[#000000] text-neutral-200 font-sans selection:bg-emerald-500/30 selection:text-white">
-            <Navbar lang={lang} />
+            <Navbar lang={lang} dictionary={dictionary} />
             
             <main className="pt-32 pb-24 px-6">
                 <div className="max-w-4xl mx-auto space-y-16">

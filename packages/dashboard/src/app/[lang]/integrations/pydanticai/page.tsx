@@ -6,23 +6,36 @@ import { ArrowRight, Shield, Zap, Terminal, CheckCircle2, Box, Cpu, Lock, Databa
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Security for PydanticAI Agents | SupraWall Guide",
-    description: "Secure PydanticAI agents with runtime tool governance. Prevent rogue tool calls, ensure data integrity, and maintain EU AI Act risk compliance.",
-    keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai", "eu ai act compliance pydanticai"],    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/pydanticai',
-    },
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/pydanticai',
+        title: "Security for PydanticAI Agents | SupraWall Guide",
+        description: "Secure PydanticAI agents with runtime tool governance. Prevent rogue tool calls, ensure data integrity, and maintain EU AI Act risk compliance.",
+        keywords: ["pydanticai security", "pydanticai guardrails", "secure pydantic agents", "agent runtime security pydanticai", "eu ai act compliance pydanticai"],
+    });
+}
 
-export default function PydanticAIIntegrationPage() {
+export default async function PydanticAIIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for PydanticAI",
+        "inLanguage": lang,
         "description": "Enterprise-grade runtime security shim for PydanticAI autonomous agents.",
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/pydanticai",
+        "url": `https://www.supra-wall.com/${lang}/integrations/pydanticai`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "featureList": [
             "Typed Tool Interception",
@@ -35,6 +48,7 @@ export default function PydanticAIIntegrationPage() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -66,7 +80,7 @@ export default function PydanticAIIntegrationPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
 
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <article className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20">

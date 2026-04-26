@@ -15,19 +15,32 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
-export const metadata: Metadata = {
-    title: "How to Secure AI Agents: Step-by-Step Guide | SupraWall",
-    description: "Securing AI agents requires more than just better prompts. Follow this guide to implement deterministic runtime firewalls and tool-use policies.",
-    keywords: ["how to secure AI agents", "AI agent security guide", "securing autonomous agents", "agentic security best practices", "implementing LLM guardrails"],
-    alternates: {
-        canonical: "https://www.supra-wall.com/learn/how-to-secure-ai-agents",
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function HowToSecureAIAgentsPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'learn/how-to-secure-ai-agents',
+        title: "How to Secure AI Agents: Step-by-Step Guide | SupraWall",
+        description: "Securing AI agents requires more than just better prompts. Follow this guide to implement deterministic runtime firewalls and tool-use policies.",
+        keywords: ["how to secure AI agents", "AI agent security guide", "securing autonomous agents", "agentic security best practices", "implementing LLM guardrails"],
+    });
+}
+
+export default async function HowToSecureAIAgentsPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         name: "How to Secure AI Agents with SupraWall",
         description: "A step-by-step guide for developers to implement runtime security in autonomous agent systems.",
         totalTime: "PT15M",
@@ -37,19 +50,19 @@ export default function HowToSecureAIAgentsPage() {
                 "@type": "HowToStep",
                 name: "Audit Tool Capabilities",
                 text: "Analyze which tools your agent needs and define an absolute allowlist.",
-                url: "https://www.supra-wall.com/learn/how-to-secure-ai-agents#step1"
+                url: `https://www.supra-wall.com/${lang}/learn/how-to-secure-ai-agents#step1`
             },
             {
                 "@type": "HowToStep",
                 name: "Implement Interception",
                 text: "Use SupraWall SDK to wrap agent tool calls at the execution layer.",
-                url: "https://www.supra-wall.com/learn/how-to-secure-ai-agents#step2"
+                url: `https://www.supra-wall.com/${lang}/learn/how-to-secure-ai-agents#step2`
             },
             {
                 "@type": "HowToStep",
                 name: "Apply Policies",
                 text: "Configured deterministic ALLOW/DENY/APPROVAL rules for every tool.",
-                url: "https://www.supra-wall.com/learn/how-to-secure-ai-agents#step3"
+                url: `https://www.supra-wall.com/${lang}/learn/how-to-secure-ai-agents#step3`
             }
         ]
     };
@@ -57,11 +70,12 @@ export default function HowToSecureAIAgentsPage() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".howto-step"]
         },
-        "url": "https://www.supra-wall.com/learn/how-to-secure-ai-agents"
+        "url": `https://www.supra-wall.com/${lang}/learn/how-to-secure-ai-agents`
     };
 
     const summaryRows = [
@@ -76,7 +90,7 @@ export default function HowToSecureAIAgentsPage() {
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(speakableSchema) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-4xl mx-auto space-y-20">

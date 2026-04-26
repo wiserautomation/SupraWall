@@ -7,27 +7,36 @@ import Link from "next/link";
 import { Metadata } from "next";
 import VercelClient from "./VercelClient";
 
-export const metadata: Metadata = {
-    title: "Vercel AI SDK Security & Runtime Interception | SupraWall",
-    description: "Secure your Next.js AI agents with SupraWall. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
-    keywords: ["vercel ai sdk security", "secure nextjs agents", "ai sdk tool governance", "edge runtime security"],
-    openGraph: {
-        title: "How to Secure Vercel AI SDK Agents",
-        description: "The official security shim for the Vercel AI SDK. Protect your edge functions from prompt injection and rogue tools.",
-    },    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/vercel',
-    },
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/vercel',
+        title: "Vercel AI SDK Security & Runtime Interception | SupraWall",
+        description: "Secure your Next.js AI agents with SupraWall. Zero-trust governance for the Vercel AI SDK. Block unauthorized tool calls at the edge with sub-1ms latency.",
+        keywords: ["vercel ai sdk security", "secure nextjs agents", "ai sdk tool governance", "edge runtime security"],
+    });
+}
 
-export default function VercelIntegrationPage() {
+export default async function VercelIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const softwareAppSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Vercel AI SDK",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/vercel",
+        "url": `https://www.supra-wall.com/${lang}/integrations/vercel`,
         "author": {
             "@type": "Organization",
             "name": "SupraWall"
@@ -44,6 +53,7 @@ export default function VercelIntegrationPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         "name": "How to secure Vercel AI SDK agents",
         "description": "Step-by-step guide to securing your Next.js AI agents using SupraWall edge-native shim.",
         "step": [
@@ -80,7 +90,7 @@ export default function VercelIntegrationPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">

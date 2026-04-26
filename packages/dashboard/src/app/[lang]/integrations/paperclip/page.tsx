@@ -6,22 +6,35 @@ import { ArrowRight, Code2, Shield, Zap, Paperclip, Terminal, CheckCircle2, File
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Security for Paperclip AI Agents | Credential Vault | SupraWall",
-    description: "Secure your Paperclip agent fleets with role-based policies and a hardware-grade credential vault. Prevent raw API key leakage and rogue tool execution.",
-    keywords: ["paperclip security", "secure paperclip", "ai agent vault", "agentic tool policy", "multi-agent security"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/paperclip',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function PaperclipIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/paperclip',
+        title: "Security for Paperclip AI Agents | Credential Vault | SupraWall",
+        description: "Secure your Paperclip agent fleets with role-based policies and a hardware-grade credential vault. Prevent raw API key leakage and rogue tool execution.",
+        keywords: ["paperclip security", "secure paperclip", "ai agent vault", "agentic tool policy", "multi-agent security"],
+    });
+}
+
+export default async function PaperclipIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const softwareAppSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Paperclip",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/paperclip",
+        "url": `https://www.supra-wall.com/${lang}/integrations/paperclip`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Enterprise security and automated credential vault for Paperclip AI agent fleets."
     };
@@ -29,7 +42,7 @@ export default function PaperclipIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-7xl mx-auto space-y-24">

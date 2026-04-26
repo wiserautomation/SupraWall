@@ -7,23 +7,32 @@ import Link from "next/link";
 import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
-export const metadata: Metadata = {
-    title: "Preventing Prompt Injection in AI Agents | Security Guide",
-    description: "Prompt injection is the single biggest threat to autonomous agents. Learn how to use runtime security to block malicious instructions and secure your tools.",
-    keywords: ["prompt injection prevention", "secure ai agents", "langchain prompt injection", "agent jailbreak protection"],
-    openGraph: {
-        title: "How to Stop Prompt Injection in Autonomous Agents",
-        description: "Enterprise-grade protection against prompt injection and jailbreaks for agentic workflows.",
-    },
-    alternates: {
-        canonical: 'https://www.supra-wall.com/use-cases/prompt-injection',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function PromptInjectionPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'use-cases/prompt-injection',
+        title: "Preventing Prompt Injection in AI Agents | Security Guide",
+        description: "Prompt injection is the single biggest threat to autonomous agents. Learn how to use runtime security to block malicious instructions and secure your tools.",
+        keywords: ["prompt injection prevention", "secure ai agents", "langchain prompt injection", "agent jailbreak protection"],
+    });
+}
+
+export default async function PromptInjectionPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         "name": "How to Prevent Prompt Injection in AI Agents",
         "description": "Step-by-step guide to securing autonomous agents against prompt injection using runtime guardrails.",
         "step": [
@@ -45,16 +54,18 @@ export default function PromptInjectionPage() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]
         },
-        "url": "https://www.supra-wall.com/use-cases/prompt-injection"
+        "url": `https://www.supra-wall.com/${lang}/use-cases/prompt-injection`
     };
 
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         mainEntity: [
             {
                 "@type": "Question",
@@ -121,7 +132,7 @@ export default function PromptInjectionPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-4xl mx-auto space-y-20">

@@ -8,20 +8,33 @@ import { Metadata } from "next";
 import LearnClient from "./LearnClient";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
-export const metadata: Metadata = {
-    title: "What is Agent Runtime Security? | AI Guardrails Explained",
-    description: "Agent Runtime Security (ARS) is the layer of protection between autonomous AI agents and your systems. Learn about EU AI Act compliance and agent firewalls.",
-    keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/learn/what-is-agent-runtime-security',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function AgentRuntimeSecurityPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'learn/what-is-agent-runtime-security',
+        title: "What is Agent Runtime Security? | AI Guardrails Explained",
+        description: "Agent Runtime Security (ARS) is the layer of protection between autonomous AI agents and your systems. Learn about EU AI Act compliance and agent firewalls.",
+        keywords: ["agent runtime security", "ai agent guardrails", "agent firewall", "secure ai agents", "eu ai act compliance"],
+    });
+}
+
+export default async function AgentRuntimeSecurityPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
         "headline": "What is Agent Runtime Security?",
+        "inLanguage": lang,
         "description": "Agent Runtime Security (ARS) is the safety layer for AI agents that prevents malicious or accidental system damage via tool calling.",
         "author": {
             "@type": "Organization",
@@ -34,16 +47,18 @@ export default function AgentRuntimeSecurityPage() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]
         },
-        "url": "https://www.supra-wall.com/learn/what-is-agent-runtime-security"
+        "url": `https://www.supra-wall.com/${lang}/learn/what-is-agent-runtime-security`
     };
 
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -110,7 +125,7 @@ export default function AgentRuntimeSecurityPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-4xl mx-auto space-y-16">

@@ -21,6 +21,7 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
         "@type": "WebApplication",
         "name": "SupraWall",
         "url": `https://www.supra-wall.com/${lang}`,
+        "inLanguage": lang,
         "description": dictionary.common.description,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
@@ -58,17 +59,17 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                                 <span className="underline decoration-emerald-800">{dictionary.home.hero.headlineAction}</span>
                             </h1>
 
-                            <div className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium">
-                                <span className="text-white font-bold">{dictionary.home.features.vault}</span> {dictionary.home.features.vaultDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.cap}</span> {dictionary.home.features.capDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.block}</span> {dictionary.home.features.blockDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.scrub}</span> {dictionary.home.features.scrubDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.generate}</span> {dictionary.home.features.generateDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.stop}</span> {dictionary.home.features.stopDesc}{' '}
-                                <span className="text-white font-bold">{dictionary.home.features.analyze}</span> {dictionary.home.features.analyzeDesc}{' '}
-                                <br className="hidden md:block" />
-                                <span className="text-emerald-400 italic">{dictionary.home.hero.subheadline}</span>
-                            </div>
+                             <div className="text-xl md:text-2xl text-neutral-400 max-w-5xl mx-auto leading-relaxed font-medium">
+                                 <span className="text-white font-bold">{dictionary.home.features.vault}</span> {dictionary.home.features.vaultDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.cap}</span> {dictionary.home.features.capDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.block}</span> {dictionary.home.features.blockDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.scrub}</span> {dictionary.home.features.scrubDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.generate}</span> {dictionary.home.features.generateDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.stop}</span> {dictionary.home.features.stopDesc}{' '}
+                                 <span className="text-white font-bold">{dictionary.home.features.analyze}</span> {dictionary.home.features.analyzeDesc}{' '}
+                                 <br className="hidden md:block" />
+                                 <p className="answer-first-paragraph text-emerald-400 italic inline">{dictionary.home.hero.subheadline}</p>
+                             </div>
                             
                             <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
                                 <Link

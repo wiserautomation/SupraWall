@@ -7,23 +7,36 @@ import Link from "next/link";
 import { Metadata } from "next";
 import OpenClawClient from "./OpenClawClient";
 
-export const metadata: Metadata = {
-    title: "OpenClaw Security Firewall | Autonomous Browser Protection",
-    description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage and maintain EU AI Act compliance with the first browser-level agent firewall.",
-    keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails", "eu ai act web agents"],    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/openclaw',
-    },
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/openclaw',
+        title: "OpenClaw Security Firewall | Autonomous Browser Protection",
+        description: "Secure OpenClaw agents and autonomous browsers. Prevent session leakage and maintain EU AI Act compliance with the first browser-level agent firewall.",
+        keywords: ["openclaw security firewall", "autonomous browser security", "secure web agents", "browser automation guardrails", "eu ai act web agents"],
+    });
+}
 
-export default function OpenClawIntegrationPage() {
+export default async function OpenClawIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for OpenClaw",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/openclaw",
+        "url": `https://www.supra-wall.com/${lang}/integrations/openclaw`,
         "author": {
             "@type": "Organization",
             "name": "SupraWall"
@@ -40,6 +53,7 @@ export default function OpenClawIntegrationPage() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -70,7 +84,7 @@ export default function OpenClawIntegrationPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">

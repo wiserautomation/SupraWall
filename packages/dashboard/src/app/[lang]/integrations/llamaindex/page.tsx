@@ -7,23 +7,36 @@ import Link from "next/link";
 import { Metadata } from "next";
 import LlamaIndexClient from "./LlamaIndexClient";
 
-export const metadata: Metadata = {
-    title: "Security for LlamaIndex | Data-Aware Agent Governance | SupraWall",
-    description: "Learn how to secure LlamaIndex agents and query engines. Runtime guardrails for RAG systems, preventing prompt injection and data leakage (EU AI Act Articles 11 & 12).",
-    keywords: ["llamaindex security", "secure llamaindex agents", "rag guardrails", "llamaindex tool governance", "eu ai act RAG", "ai act compliance"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/llamaindex',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function LlamaIndexIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/llamaindex',
+        title: "Security for LlamaIndex | Data-Aware Agent Governance | SupraWall",
+        description: "Learn how to secure LlamaIndex agents and query engines. Runtime guardrails for RAG systems, preventing prompt injection and data leakage (EU AI Act Articles 11 & 12).",
+        keywords: ["llamaindex security", "secure llamaindex agents", "rag guardrails", "llamaindex tool governance", "eu ai act RAG", "ai act compliance"],
+    });
+}
+
+export default async function LlamaIndexIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for LlamaIndex",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/llamaindex",
+        "url": `https://www.supra-wall.com/${lang}/integrations/llamaindex`,
         "author": {
             "@type": "Organization",
             "name": "SupraWall"
@@ -43,7 +56,7 @@ export default function LlamaIndexIntegrationPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden text-center">
                 <div className="max-w-7xl mx-auto space-y-20 relative z-10">

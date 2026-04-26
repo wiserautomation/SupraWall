@@ -5,45 +5,45 @@ import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import VaultClient from "./VaultClient";
 
-export const metadata: Metadata = {
-    title: "AI Agent Credential Vault | Protect Secrets from Autonomous Agents | SupraWall",
-    description: "Your AI agent should never see your API keys, passwords, or credit cards. SupraWall Vault gives agents permissioned access to credentials without exposing raw values.",
-    keywords: [
-        "AI agent credential vault",
-        "AI agent secrets management",
-        "agent API key protection",
-        "LLM vault",
-        "prevent agent credential theft",
-        "AI agent PII protection",
-        "agent secrets vault",
-    ],
-    alternates: {
-        canonical: "https://www.supra-wall.com/features/vault",
-    },
-    openGraph: {
-        title: "Your AI Agent Can Read Your Passwords. Vault Makes Sure It Can't.",
-        description: "SupraWall Vault: zero-knowledge credential management for autonomous AI agents. Agents authenticate without ever seeing raw secrets.",
-        url: "https://www.supra-wall.com/features/vault",
-        siteName: "SupraWall",
-        type: "website",
-    },
-    twitter: {
-        card: "summary_large_image",
-        title: "Your AI Agent Can Read Your Passwords. Vault Makes Sure It Can't.",
-        description: "SupraWall Vault: zero-knowledge credential management for autonomous AI agents.",
-    },
-    robots: "index, follow",
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function VaultPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'features/vault',
+        title: "AI Agent Credential Vault | Protect Secrets from Autonomous Agents | SupraWall",
+        description: "Your AI agent should never see your API keys, passwords, or credit cards. SupraWall Vault gives agents permissioned access to credentials without exposing raw values.",
+        keywords: [
+            "AI agent credential vault",
+            "AI agent secrets management",
+            "agent API key protection",
+            "LLM vault",
+            "prevent agent credential theft",
+            "AI agent PII protection",
+            "agent secrets vault",
+        ],
+    });
+}
+
+export default async function VaultPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
+        "inLanguage": lang,
         name: "SupraWall Vault",
         applicationCategory: "SecurityApplication",
         operatingSystem: "Cloud, Self-hosted",
         description: "Zero-knowledge credential vault for AI agents. Agents authenticate to APIs, databases, and services without ever seeing raw secrets like passwords, API keys, or credit card numbers.",
-        url: "https://www.supra-wall.com/features/vault",
+        url: `https://www.supra-wall.com/${lang}/features/vault`,
         offers: {
             "@type": "Offer",
             price: "0",
@@ -55,6 +55,7 @@ export default function VaultPage() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         mainEntity: [
             {
                 "@type": "Question",
@@ -110,6 +111,7 @@ export default function VaultPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         name: "How to Protect AI Agent Credentials with SupraWall Vault",
         step: [
             { "@type": "HowToStep", text: "Store your secrets in SupraWall Vault via the dashboard or CLI." },
@@ -121,10 +123,11 @@ export default function VaultPage() {
     const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "inLanguage": lang,
         itemListElement: [
-            { "@type": "ListItem", position: 1, name: "Home", item: "https://www.supra-wall.com" },
-            { "@type": "ListItem", position: 2, name: "Features", item: "https://www.supra-wall.com/features" },
-            { "@type": "ListItem", position: 3, name: "Vault", item: "https://www.supra-wall.com/features/vault" },
+            { "@type": "ListItem", position: 1, name: "Home", item: `https://www.supra-wall.com/${lang}` },
+            { "@type": "ListItem", position: 2, name: "Features", item: `https://www.supra-wall.com/${lang}/features` },
+            { "@type": "ListItem", position: 3, name: "Vault", item: `https://www.supra-wall.com/${lang}/features/vault` },
         ],
     };
 
@@ -134,7 +137,7 @@ export default function VaultPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
             <VaultClient />
         </div>
     );

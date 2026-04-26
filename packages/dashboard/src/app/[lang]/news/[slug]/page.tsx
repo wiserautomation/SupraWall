@@ -80,6 +80,7 @@ export default function NewsArticlePage({ params }: Props) {
     const newsArticleSchema = {
         "@context": "https://schema.org",
         "@type": "NewsArticle",
+        "inLanguage": lang,
         headline: article.title,
         description: article.excerpt,
         datePublished: article.date,
@@ -109,6 +110,7 @@ export default function NewsArticlePage({ params }: Props) {
     const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "inLanguage": lang,
         itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: `https://www.supra-wall.com/${lang}` },
             { "@type": "ListItem", position: 2, name: "News", item: `${baseUrl}/news` },

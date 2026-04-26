@@ -6,22 +6,35 @@ import { ArrowRight, Code2, Shield, Zap, Terminal, CheckCircle2, FileText, Globe
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "SupraWall MCP Server | Claude Desktop Security | Official Integration",
-    description: "Official Model Context Protocol (MCP) server for SupraWall. Add Article 14 human oversight and Article 12 audit trails to Claude Desktop and Anthropic agents.",
-    keywords: ["mcp server security", "model context protocol security", "claude desktop guardrails", "anthropic mcp security", "suprawall mcp server"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/mcp',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function MCPIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/mcp',
+        title: "SupraWall MCP Server | Claude Desktop Security | Official Integration",
+        description: "Official Model Context Protocol (MCP) server for SupraWall. Add Article 14 human oversight and Article 12 audit trails to Claude Desktop and Anthropic agents.",
+        keywords: ["mcp server security", "model context protocol security", "claude desktop guardrails", "anthropic mcp security", "suprawall mcp server"],
+    });
+}
+
+export default async function MCPIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall MCP Server",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/mcp",
+        "url": `https://www.supra-wall.com/${lang}/integrations/mcp`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Compliance middleware for Model Context Protocol (MCP) agents."
     };
@@ -29,7 +42,7 @@ export default function MCPIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-7xl mx-auto space-y-24">

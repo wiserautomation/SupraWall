@@ -15,19 +15,21 @@ interface HowToSchemaProps {
     description: string;
     steps: HowToStep[];
     totalTime?: string; // PT5M
+    lang?: string;
 }
 
 /**
  * HowToSchema component for injecting Google-friendly step-by-step rich results.
  * Usage: Place this inside a page to boost visibility for "How to [Action]" queries.
  */
-export function HowToSchema({ name, description, steps, totalTime = "PT5M" }: HowToSchemaProps) {
+export function HowToSchema({ name, description, steps, totalTime = "PT5M", lang }: HowToSchemaProps) {
     const schema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
         "name": name,
         "description": description,
         "totalTime": totalTime,
+        "inLanguage": lang,
         "step": steps.map((step, index) => ({
             "@type": "HowToStep",
             "position": index + 1,

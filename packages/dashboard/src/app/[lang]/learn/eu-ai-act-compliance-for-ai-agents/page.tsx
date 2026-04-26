@@ -33,6 +33,7 @@ export default async function EUAIActCompliancePage({
     const breadcrumbSchema = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
+        "inLanguage": lang,
         "itemListElement": [
             {
                 "@type": "ListItem",

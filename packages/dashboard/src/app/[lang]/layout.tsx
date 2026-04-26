@@ -114,6 +114,7 @@ export default async function LocaleLayout({
   const speakableSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
+    "inLanguage": lang,
     "speakable": {
       "@type": "SpeakableSpecification",
       "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".faq-section"]

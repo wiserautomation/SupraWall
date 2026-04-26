@@ -6,22 +6,35 @@ import { ArrowRight, Globe, Shield, Zap, TrendingUp, CheckCircle2, FileText, Loc
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "OpenRouter App Attribution Security | Rank Your Agent | SupraWall",
-    description: "Automatically inject OpenRouter App Attribution headers into your agent requests. Get free analytics, rank on leaderboards, and secure your router-based agents.",
-    keywords: ["openrouter attribution", "rank ai agents", "openrouter leaderboard", "secure openrouter agents", "ai agent analytics"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/openrouter',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function OpenRouterIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/openrouter',
+        title: "OpenRouter App Attribution Security | Rank Your Agent | SupraWall",
+        description: "Automatically inject OpenRouter App Attribution headers into your agent requests. Get free analytics, rank on leaderboards, and secure your router-based agents.",
+        keywords: ["openrouter attribution", "rank ai agents", "openrouter leaderboard", "secure openrouter agents", "ai agent analytics"],
+    });
+}
+
+export default async function OpenRouterIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for OpenRouter",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/openrouter",
+        "url": `https://www.supra-wall.com/${lang}/integrations/openrouter`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Deterministic security and automatic app attribution for AI agents using OpenRouter."
     };
@@ -29,7 +42,7 @@ export default function OpenRouterIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-purple-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden text-center">
                 <div className="max-w-7xl mx-auto space-y-20 relative z-10">

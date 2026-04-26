@@ -9,23 +9,36 @@ import LangChainClient from "./LangChainClient";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 import { HowToSchema } from "@/components/HowToSchema";
 
-export const metadata: Metadata = {
-    title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
-    description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
-    keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/langchain',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function LangChainIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/langchain',
+        title: "Security for LangChain Agents | EU AI Act Compliance | SupraWall",
+        description: "Learn how to secure LangChain agents with runtime guardrails and ensure EU AI Act compliance (Articles 12 & 14) using SupraWall. Prevent prompt injection and rogue tool execution.",
+        keywords: ["langchain agent security", "secure langchain agents", "langchain guardrails", "langchain prompt injection", "eu ai act langchain", "ai act compliance"],
+    });
+}
+
+export default async function LangChainIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for LangChain",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/langchain",
+        "url": `https://www.supra-wall.com/${lang}/integrations/langchain`,
         "author": {
             "@type": "Organization",
             "name": "SupraWall"
@@ -46,11 +59,12 @@ export default function LangChainIntegrationPage() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".code-section"]
         },
-        "url": "https://www.supra-wall.com/integrations/langchain"
+        "url": `https://www.supra-wall.com/${lang}/integrations/langchain`
     };
 
     const howToSteps = [
@@ -75,6 +89,7 @@ export default function LangChainIntegrationPage() {
     const faqJsonLd = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -117,13 +132,14 @@ export default function LangChainIntegrationPage() {
                 name="How to secure LangChain agents"
                 description="Step-by-step guide to securing your LangChain agents using SupraWall runtime guardrails."
                 steps={howToSteps}
+                lang={lang}
             />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
             />
 
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-20 items-center">

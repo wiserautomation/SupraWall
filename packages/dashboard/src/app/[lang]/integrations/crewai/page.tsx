@@ -6,22 +6,35 @@ import { ArrowRight, Code2, Shield, Zap, Terminal, CheckCircle2, FileText, Globe
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "Security for CrewAI Agents | Tool-Call Interception | SupraWall",
-    description: "Secure your CrewAI swarms with runtime policy enforcement. Prevent prompt injection and rogue tool execution in autonomous multi-agent systems.",
-    keywords: ["crewai security", "secure crewai", "crewai guardrails", "agentic tool policy", "multi-agent security"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/crewai',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function CrewAIIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/crewai',
+        title: "Security for CrewAI Agents | Tool-Call Interception | SupraWall",
+        description: "Secure your CrewAI swarms with runtime policy enforcement. Prevent prompt injection and rogue tool execution in autonomous multi-agent systems.",
+        keywords: ["crewai security", "secure crewai", "crewai guardrails", "agentic tool policy", "multi-agent security"],
+    });
+}
+
+export default async function CrewAIIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const softwareAppSchema = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for CrewAI",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/crewai",
+        "url": `https://www.supra-wall.com/${lang}/integrations/crewai`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Enterprise security and runtime guardrails for CrewAI multi-agent systems."
     };
@@ -29,6 +42,7 @@ export default function CrewAIIntegrationPage() {
     const howToSchema = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         "name": "How to secure CrewAI agents",
         "step": [
             { "@type": "HowToStep", "name": "Install SDK", "text": "pip install suprawall-sdk" },
@@ -40,7 +54,7 @@ export default function CrewAIIntegrationPage() {
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareAppSchema) }} />
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-7xl mx-auto space-y-24">

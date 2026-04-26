@@ -6,22 +6,36 @@ import { ArrowRight, Box, Shield, Zap, Terminal, CheckCircle2, FileText, Globe }
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "AutoGen Agent Security | Real-time Guardrails | SupraWall",
-    description: "Secure your AutoGen agents with runtime interception. Prevent unauthorized code execution and PII exfiltration in autonomous multi-agent conversations.",
-    keywords: ["autogen security", "secure autogen agents", "autogen guardrails", "agentic code execution security", "microsoft autogen security"],
-    alternates: {
-        canonical: 'https://www.supra-wall.com/integrations/autogen',
-    },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function AutoGenIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/autogen',
+        title: "AutoGen Agent Security | Real-time Guardrails | SupraWall",
+        description: "Secure your AutoGen agents with runtime interception. Prevent unauthorized code execution and PII exfiltration in autonomous multi-agent conversations.",
+        keywords: ["autogen security", "secure autogen agents", "autogen guardrails", "agentic code execution security", "microsoft autogen security"],
+    });
+}
+
+export default async function AutoGenIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for AutoGen",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
-        "url": "https://www.supra-wall.com/integrations/autogen",
+        "url": `https://www.supra-wall.com/${lang}/integrations/autogen`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Enterprise-grade runtime security for AutoGen agents."
     };
@@ -29,7 +43,7 @@ export default function AutoGenIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <div className="max-w-7xl mx-auto space-y-24">

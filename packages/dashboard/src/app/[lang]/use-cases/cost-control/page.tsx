@@ -6,24 +6,33 @@ import { ArrowRight, Shield, Zap, Terminal, CheckCircle2, AlertTriangle, Coins, 
 import Link from "next/link";
 import { Metadata } from "next";
 
-export const metadata: Metadata = {
-    title: "AI Budget Control & Cost Guardrails | SupraWall",
-    description: "Enforce real-time budget caps on autonomous AI agents. Prevent credit drain with runtime cost circuit breakers and session-based spending limits.",
-    keywords: ["ai budget control", "llm cost management", "agent spending limits", "secure ai orchestration", "token budget enforcement"],
-    openGraph: {
-        title: "Real-time AI Cost Circuit Breakers | SupraWall",
-        description: "Don't let rogue agents exhaust your budget. SupraWall provides the industry's first runtime circuit breaker for LLM spending.",
-    },    alternates: {
-        canonical: 'https://www.supra-wall.com/use-cases/cost-control',
-    },
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-};
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'use-cases/cost-control',
+        title: "AI Budget Control & Cost Guardrails | SupraWall",
+        description: "Enforce real-time budget caps on autonomous AI agents. Prevent credit drain with runtime cost circuit breakers and session-based spending limits.",
+        keywords: ["ai budget control", "llm cost management", "agent spending limits", "secure ai orchestration", "token budget enforcement"],
+    });
+}
 
-export default function CostControlPage() {
+export default async function CostControlPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "TechArticle",
         "headline": "Real-time AI Budget Control: Implementing Runtime Circuit Breakers",
+        "inLanguage": lang,
         "description": "A technical overview of enforcing hard cost boundaries at the agent execution level using the AGPS protocol.",
         "author": {
             "@type": "Organization",
@@ -34,12 +43,13 @@ export default function CostControlPage() {
             "@type": "Organization",
             "name": "SupraWall"
         },
-        "mainEntityOfPage": "https://www.supra-wall.com/use-cases/cost-control"
+        "mainEntityOfPage": `https://www.supra-wall.com/${lang}/use-cases/cost-control`
     };
 
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         mainEntity: [
             {
                 "@type": "Question",
@@ -87,6 +97,7 @@ export default function CostControlPage() {
     const howToJsonLd = {
         "@context": "https://schema.org",
         "@type": "HowTo",
+        "inLanguage": lang,
         "name": "How to Enforce AI Spending Limits",
         "step": [
             {
@@ -119,7 +130,7 @@ export default function CostControlPage() {
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
 
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6">
                 <article className="max-w-4xl mx-auto space-y-12">

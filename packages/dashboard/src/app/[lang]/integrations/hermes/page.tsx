@@ -8,21 +8,36 @@ import { Metadata } from "next";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 import { HowToSchema } from "@/components/HowToSchema";
 
-export const metadata: Metadata = {
-    title: "Security for Hermes Agent | SupraWall",
-    description: "Protect self-hosted Hermes Agent with deterministic ALLOW/DENY gating, PII scrubbing, credential vault, and budget caps — installed in one command.",
-    keywords: ["hermes agent security", "nous research security", "hermes plugin suprawall", "autonomous agent security"],
-    alternates: { canonical: "https://www.supra-wall.com/integrations/hermes" },
-};
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+import { Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/getDictionary";
 
-export default function HermesIntegrationPage() {
+export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'integrations/hermes',
+        title: "Security for Hermes Agent | SupraWall",
+        description: "Protect self-hosted Hermes Agent with deterministic ALLOW/DENY gating, PII scrubbing, credential vault, and budget caps — installed in one command.",
+        keywords: ["hermes agent security", "nous research security", "hermes plugin suprawall", "autonomous agent security"],
+    });
+}
+
+export default async function HermesIntegrationPage({
+    params,
+}: {
+    params: Promise<{ lang: string }>;
+}) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
+
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "SoftwareApplication",
         "name": "SupraWall for Hermes Agent",
+        "inLanguage": lang,
         "applicationCategory": "SecurityApplication",
         "operatingSystem": "Any",
-        "url": "https://www.supra-wall.com/integrations/hermes",
+        "url": `https://www.supra-wall.com/${lang}/integrations/hermes`,
         "author": { "@type": "Organization", "name": "SupraWall" },
         "description": "Runtime security plugin for Hermes Agent. Intercepts every tool call with ALLOW/DENY policy enforcement, PII scrubbing, vault credential injection, and budget caps.",
     };
@@ -64,8 +79,8 @@ export default function HermesIntegrationPage() {
     return (
         <div className="min-h-screen bg-black text-white selection:bg-violet-500/30 font-sans">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <HowToSchema name="How to secure Hermes Agent with SupraWall" description="Step-by-step guide to installing the SupraWall security plugin for Hermes Agent." steps={howToSteps} />
-            <Navbar />
+            <HowToSchema name="How to secure Hermes Agent with SupraWall" description="Step-by-step guide to installing the SupraWall security plugin for Hermes Agent." steps={howToSteps} lang={lang} />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto">
