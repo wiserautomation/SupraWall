@@ -16,13 +16,17 @@ export async function generateLocalizedMetadata({
     title,
     description,
     keywords,
-    internalPath, // e.g. "learn/article-slug"
+    internalPath,
+    ogImage = "/og-image.png",
+    ogType = "article",
 }: {
     params: Promise<{ lang: string }>;
     title: string;
     description: string;
     keywords?: string[];
     internalPath: string;
+    ogImage?: string;
+    ogType?: "article" | "website";
 }): Promise<Metadata> {
     const { lang } = await params;
     
@@ -33,17 +37,25 @@ export async function generateLocalizedMetadata({
         return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
     };
 
+    const buildFullUrl = (path: string) => {
+        try {
+            return new URL(path.replace(/^\/+/, ''), BASE_URL.replace(/\/+$/, '') + '/').toString();
+        } catch (e) {
+            return `${BASE_URL}${path}`;
+        }
+    };
+
     // Build alternates for hreflang
     const languages: Record<string, string> = {};
     i18n.locales.forEach((locale) => {
-        languages[locale] = `${BASE_URL}${getLocalizedPath(locale)}`;
+        languages[locale] = buildFullUrl(getLocalizedPath(locale));
     });
     
-    // Add x-default (usually English)
-    languages['x-default'] = `${BASE_URL}${getLocalizedPath('en')}`;
+    // Add x-default (English)
+    languages['x-default'] = buildFullUrl(getLocalizedPath('en'));
 
     // Current page's canonical URL
-    const canonical = `${BASE_URL}${getLocalizedPath(lang)}`;
+    const canonical = buildFullUrl(getLocalizedPath(lang));
 
     return {
         title,
@@ -72,14 +84,14 @@ export async function generateLocalizedMetadata({
             description,
             url: canonical,
             siteName: "SupraWall",
-            type: "article",
-            images: ["/og-image.png"],
+            type: ogType,
+            images: [ogImage],
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
-            images: ["/og-image.png"],
+            images: [ogImage],
         }
     };
 }

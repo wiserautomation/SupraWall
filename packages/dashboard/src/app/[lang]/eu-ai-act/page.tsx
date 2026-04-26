@@ -5,24 +5,12 @@ import { SLUG_MAP } from "../../../i18n/slug-map";
 import EuAiActClient from "./EuAiActClient";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
+
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = 'https://www.supra-wall.com';
-    const isDefault = lang === i18n.defaultLocale;
-    const internalSlug = 'eu-ai-act';
-
-    // Build alternates for hreflang pointing to public aliases
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        const publicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
-        languages[l] = `${baseUrl}/${l}/${publicSlug}`;
-    });
-    const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-    languages['x-default'] = `${baseUrl}/en/${defaultPublicSlug}`;
-
-    const currentPublicSlug = SLUG_MAP[internalSlug]?.[lang] || internalSlug;
-
-    return {
+    return generateLocalizedMetadata({
+        params,
+        internalPath: 'eu-ai-act',
         title: "EU AI Act Compliance Hub for AI Agents | SupraWall",
         description: "The definitive guide and solution hub for the EU AI Act specifically for autonomous agentic systems. Satisfy Articles 9, 11, 12, and 14 with deterministic SDK-level evidence.",
         keywords: [
@@ -33,22 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             "human oversight requirements agents",
             "suprawall eu ai act solution",
         ],
-        alternates: {
-            canonical: `${baseUrl}/${lang}/eu-ai-act`,
-            languages,
-        },
-        robots: {
-            index: true,
-            follow: true,
-        },
-        openGraph: {
-            title: "EU AI Act Compliance Hub | SupraWall Security",
-            description: "Zero-trust compliance for the EU AI Act. Automated evidence trails and deterministic risk controls.",
-            url: `${baseUrl}/${lang}/eu-ai-act`,
-            siteName: "SupraWall",
-            type: "website",
-        },
-    };
+        ogType: "website"
+    });
 }
 
 import { getDictionary } from "../../../i18n/getDictionary";

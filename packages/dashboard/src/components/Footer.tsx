@@ -3,9 +3,18 @@
 
 import Link from "next/link";
 import { Shield, Triangle, Database, Lock } from "lucide-react";
+import { SLUG_MAP } from "@/i18n/slug-map";
 
 export function Footer({ lang = 'en', dictionary }: { lang?: string, dictionary?: any }) {
-    const prefix = (href: string) => href.startsWith('http') ? href : `/${lang}${href === '/' ? '' : href}`;
+    const prefix = (href: string) => {
+        if (href.startsWith('http')) return href;
+        
+        const pathParts = href.split('/').filter(Boolean);
+        const localizedParts = pathParts.map(part => SLUG_MAP[part]?.[lang] || part);
+        const finalPath = localizedParts.join('/');
+        
+        return `/${lang}${finalPath ? '/' + finalPath : ''}`;
+    };
 
     return (
         <footer className="bg-black border-t border-white/5 py-32 px-6 text-neutral-500 font-bold uppercase tracking-widest text-[10px]">
@@ -42,6 +51,7 @@ export function Footer({ lang = 'en', dictionary }: { lang?: string, dictionary?
                 <div>
                     <h4 className="font-black text-white uppercase text-xs tracking-widest mb-8">Solutions</h4>
                     <ul className="space-y-4">
+                        <li><Link href={prefix("/news")} className="hover:text-emerald-500 transition-colors">Security News</Link></li>
                         <li><Link href={prefix("/for-developers")} className="hover:text-emerald-500 transition-colors">For Developers</Link></li>
                         <li><Link href={prefix("/for-compliance-officers")} className="hover:text-emerald-500 transition-colors">Compliance Officers</Link></li>
                         <li><Link href={prefix("/for-enterprise")} className="hover:text-emerald-500 transition-colors">For Enterprise</Link></li>

@@ -15,22 +15,25 @@ interface Props {
 
 export function generateStaticParams() {
     const params: { lang: string; slug: string }[] = [];
-    i18n.locales.forEach((lang) => {
-        newsArticles
-            .filter((a: NewsArticle) => a.published)
-            .forEach((a: NewsArticle) => {
-                params.push({ lang, slug: a.slug });
-            });
-    });
+    // Only generate static pages for English as news content is currently English-only
+    newsArticles
+        .filter((a: NewsArticle) => a.published)
+        .forEach((a: NewsArticle) => {
+            params.push({ lang: 'en', slug: a.slug });
+        });
     return params;
 }
 
 export function generateMetadata({ params }: Props): Metadata {
-    const article = getArticle(params.slug);
+    const { lang, slug } = params;
+    
+    // News content is currently English-only
+    if (lang !== 'en') return { title: "Not Found", robots: "noindex, nofollow" };
+
+    const article = getArticle(slug);
     if (!article) return { title: "Not Found" };
 
-    const { lang } = params;
-    const baseUrl = `https://www.supra-wall.com/${lang}`;
+    const baseUrl = 'https://www.supra-wall.com/en';
 
     return {
         title: `${article.title} | SupraWall News`,
@@ -64,10 +67,15 @@ export function generateMetadata({ params }: Props): Metadata {
 
 export default function NewsArticlePage({ params }: Props) {
     const { slug, lang } = params;
+    
+    // News content is currently English-only. 
+    // Prevent rendering on other language paths to avoid thin content indexing.
+    if (lang !== 'en') notFound();
+
     const article = getArticle(slug);
     if (!article) notFound();
 
-    const baseUrl = `https://www.supra-wall.com/${lang}`;
+    const baseUrl = 'https://www.supra-wall.com/en';
 
     const newsArticleSchema = {
         "@context": "https://schema.org",

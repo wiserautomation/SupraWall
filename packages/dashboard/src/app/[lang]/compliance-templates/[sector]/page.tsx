@@ -13,16 +13,19 @@ import SectorTemplateClient from "./SectorTemplateClient";
 
 export async function generateStaticParams() {
     const params = [];
-    for (const locale of i18n.locales) {
-        for (const template of sectorTemplates) {
-            params.push({ lang: locale, sector: template.slug });
-        }
+    // Sector templates are currently English-only in terms of deep indexing
+    for (const template of sectorTemplates) {
+        params.push({ lang: 'en', sector: template.slug });
     }
     return params;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; sector: string }> }): Promise<Metadata> {
     const { lang, sector } = await params;
+
+    // Sector templates are currently English-only for SEO
+    if (lang !== 'en') return { title: "Not Found", robots: "noindex, nofollow" };
+
     const template = getTemplateBySlug(sector);
     if (!template) return {};
 
@@ -32,26 +35,23 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 
     const baseUrl = 'https://www.supra-wall.com';
     
-    // Build alternates for hreflang
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        const publicSectorSlug = SLUG_MAP[sector]?.[l] || sector;
-        const publicHubSlug = SLUG_MAP['compliance-templates']?.[l] || 'compliance-templates';
-        languages[l] = `${baseUrl}/${l}/${publicHubSlug}/${publicSectorSlug}`;
-    });
-    languages['x-default'] = `${baseUrl}/en/compliance-templates/${sector}`;
+    // Build alternates for hreflang (point all to English for now if translated version not indexed)
+    const languages: Record<string, string> = {
+        'en': `${baseUrl}/en/compliance-templates/${sector}`,
+        'x-default': `${baseUrl}/en/compliance-templates/${sector}`
+    };
 
     return {
         title: `${localized.title} | Annex III Compliance Blueprint`,
         description: localized.opening,
         alternates: {
-            canonical: `${baseUrl}/${lang}/compliance-templates/${sector}`,
+            canonical: `${baseUrl}/en/compliance-templates/${sector}`,
             languages,
         },
         openGraph: {
             title: localized.title,
             description: localized.opening,
-            url: `${baseUrl}/${lang}/compliance-templates/${sector}`,
+            url: `${baseUrl}/en/compliance-templates/${sector}`,
             siteName: "SupraWall",
             type: "article",
         },
@@ -68,6 +68,10 @@ export default async function SectorTemplatePage({
     params: Promise<{ lang: string; sector: string }>;
 }) {
     const { lang, sector } = (await params) as { lang: Locale; sector: string };
+
+    // Sector templates are currently English-only
+    if (lang !== 'en') notFound();
+
     const template = getTemplateBySlug(sector);
     
     if (!template) {

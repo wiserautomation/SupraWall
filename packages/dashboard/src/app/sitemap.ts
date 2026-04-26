@@ -70,14 +70,32 @@ function getLocalizedPath(internalPath: string, locale: string): string {
 }
 
 /**
- * Safe URL builder to prevent double slashes.
+ * Safe URL builder to prevent double slashes or protocol-stripping bugs.
+ * Uses the URL constructor for maximum robustness.
  */
 function buildUrl(base: string, path: string): string {
-    const cleanBase = base.replace(/\/+$/, '');
-    const cleanPath = path.replace(/^\/+/, '');
-    return `${cleanBase}/${cleanPath}`;
+    try {
+        const url = new URL(path.replace(/^\/+/, ''), base.replace(/\/+$/, '') + '/');
+        return url.toString();
+    } catch (e) {
+        // Fallback to template string if URL constructor fails
+        const cleanBase = base.replace(/\/+$/, '');
+        const cleanPath = path.replace(/^\/+/, '');
+        return `${cleanBase}/${cleanPath}`;
+    }
 }
 
+// Whitelist of internal paths allowed for German (de) translation indexing
+const DE_PILLAR_WHITELIST = [
+    '',
+    'gdpr',
+    'eu-ai-act',
+    'features',
+    'pricing',
+    'compliance',
+    'for-compliance-officers',
+    'about'
+];
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const appDir = path.join(process.cwd(), 'src', 'app');
@@ -95,38 +113,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const uniqueRoutes = Array.from(new Set(['', ...baseRoutes, ...newsRoutes, ...sectorRoutes]));
 
     uniqueRoutes.forEach((route) => {
-        // Normalize the route path
-        const internalPath = route;
+        const internalPath = route.replace(/^\/+/, '');
+        const baseInternalPath = internalPath.split('/')[0];
 
         // Generate entries for all supported locales
         i18n.locales.forEach((locale) => {
-            const finalPath = getLocalizedPath(internalPath, locale);
-            const fullUrl = buildUrl(BASE_URL, finalPath || `/${locale}`);
+            // FILTER 1: German (de) only allowed for pillar pages
+            if (locale === 'de' && !DE_PILLAR_WHITELIST.includes(baseInternalPath)) {
+                return;
+            }
 
-            // Build alternates for this URL
-            const languages: Record<string, string> = {};
-            i18n.locales.forEach((altLocale) => {
-                const altPath = getLocalizedPath(internalPath, altLocale);
-                languages[altLocale] = buildUrl(BASE_URL, altPath || `/${altLocale}`);
-            });
-            
-            // Add x-default (pointing to English version)
-            const xDefaultPath = getLocalizedPath(internalPath, 'en');
-            languages['x-default'] = buildUrl(BASE_URL, xDefaultPath || '/en');
+            // FILTER 2: News and Sector templates are currently English-only
+            if (locale !== 'en' && (internalPath.startsWith('news/') || internalPath.startsWith('compliance-templates/'))) {
+                return;
+            }
+
+            const finalPath = getLocalizedPath(internalPath, locale);
+            const fullUrl = buildUrl(BASE_URL, finalPath);
 
             sitemapEntries.push({
                 url: fullUrl,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
-                priority: internalPath === '' ? 1.0 : internalPath.split('/').length > 2 ? 0.6 : 0.8,
-                // @ts-ignore
-                alternates: {
-                    languages,
-                }
+                priority: internalPath === '' ? 1.0 : internalPath.split('/').length > 1 ? 0.6 : 0.8,
+                // HREFLANG removed from XML as per SEO plan (keep in head only)
             });
         });
     });
 
     return sitemapEntries;
 }
+
 

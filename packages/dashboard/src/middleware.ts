@@ -80,7 +80,8 @@ export function middleware(request: NextRequest) {
   const url = new URL(request.url);
   url.pathname = `/${detectedLocale}${pathname === '/' ? '' : pathname}`;
   
-  return NextResponse.redirect(url, 307);
+  // Use 301 (Permanent Redirect) for marketing SEO
+  return NextResponse.redirect(url, 301);
 }
 
 export const config = {

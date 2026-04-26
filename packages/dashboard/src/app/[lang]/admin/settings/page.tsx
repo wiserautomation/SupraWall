@@ -12,7 +12,21 @@ import { adminFetch } from "@/lib/admin-fetch";
 // Source of truth: the route handlers themselves — not a manually-maintained list.
 // ---------------------------------------------------------------------------
 
-const ENV_GROUPS = [
+interface EnvVar {
+    name: string;
+    note: string;
+    required?: boolean;
+    alt?: string;
+    alias?: string;
+}
+
+interface EnvGroup {
+    label: string;
+    color: string;
+    vars: EnvVar[];
+}
+
+const ENV_GROUPS: EnvGroup[] = [
     {
         label: "PostgreSQL",
         color: "blue",
@@ -191,12 +205,12 @@ export default function AdminSettingsPage() {
                                             </code>
                                             <div className="flex-1 min-w-0">
                                                 <p className="text-xs text-neutral-400 leading-relaxed">
-                                                    {"alias" in v ? (
-                                                        <span className="text-neutral-500 italic">{v.alias as string} — </span>
+                                                    {v.alias ? (
+                                                        <span className="text-neutral-500 italic">{v.alias} — </span>
                                                     ) : null}
                                                     {v.note}
-                                                    {"alt" in v ? (
-                                                        <span className="ml-1 text-neutral-600">(or <code className="font-mono">{v.alt as string}</code>)</span>
+                                                    {v.alt ? (
+                                                        <span className="ml-1 text-neutral-600">(or <code className="font-mono">{v.alt}</code>)</span>
                                                     ) : null}
                                                 </p>
                                             </div>
