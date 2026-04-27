@@ -18,9 +18,7 @@
 
 <!-- LAUNCH VIDEO — autoplay MP4 with GIF fallback, wrapped in a YouTube link for HD viewing -->
 <a href="https://youtu.be/jTGoVOWx3_k">
-  <video src="assets/launch-demo.mp4" autoplay loop muted playsinline width="760" poster="assets/launch-demo.gif">
-    <img src="assets/launch-demo.gif" alt="SupraWall intercepting a destructive tool call in real time" width="760">
-  </video>
+  <img src="assets/launch-demo.gif" alt="SupraWall intercepting a destructive tool call in real time" width="760">
 </a>
 
 *Every blocked action becomes a [shareable trace](#shareable-attack-traces). Public proof your agent didn't fire.*
