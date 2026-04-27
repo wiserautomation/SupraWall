@@ -330,11 +330,27 @@ def _adapt_generic(agent: Any, engine: LocalPolicyEngine) -> Any:
 
 
 def _check_call_args(args: tuple, kwargs: dict, engine: LocalPolicyEngine, method_name: str) -> None:
-    """Checks invocation arguments for policy violations (generic-agent fallback)."""
+    """Checks invocation arguments for policy violations (generic-agent fallback).
+
+    Two passes per argument:
+    1. Standard check with tool name — catches no-secret-exfil and any
+       tool-pattern rules that happen to match "generic.<method>".
+    2. For each string value inside dict arguments, re-check under the "shell"
+       tool name — catches no-destructive-shell even when the actual tool is
+       unknown (homegrown agents, wrappers, etc.).
+    """
     for arg in list(args) + list(kwargs.values()):
         violation = engine.check(f"generic.{method_name}", arg)
         if violation:
             _handle_violation(f"generic.{method_name}", violation, engine, {"input": arg})
+        # Second pass: treat each string value as a potential shell command so
+        # destructive patterns are caught regardless of the generic tool name.
+        if isinstance(arg, dict):
+            for key, val in arg.items():
+                if isinstance(val, str) and val:
+                    violation = engine.check("shell", val)
+                    if violation:
+                        _handle_violation("shell", violation, engine, {key: val})
 
 
 def _handle_violation(action: str, violation: dict, engine: LocalPolicyEngine, args: Any) -> None:

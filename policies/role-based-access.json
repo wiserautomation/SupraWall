@@ -1,0 +1,56 @@
+{
+  "$schema": "https://schema.supra-wall.com/v1/policy.schema.json",
+  "name": "Role-Based Access",
+  "version": "1.0.0",
+  "description": "Per-agent budget caps and role-scoped tool allow/deny lists. Assign each agent an identity and restrict which tools it may call based on its role.",
+  "roles": {
+    "reader": {
+      "description": "Read-only access. May query data but never write, delete, or send messages.",
+      "allow_tools": ["search", "read_file", "query_database", "list_files"],
+      "deny_tools": ["write_file", "delete_file", "send_email", "shell", "execute_code"]
+    },
+    "analyst": {
+      "description": "Can read data and run non-destructive code. Cannot write to production systems.",
+      "allow_tools": ["search", "read_file", "query_database", "execute_code", "plot_chart"],
+      "deny_tools": ["delete_file", "send_email", "shell", "write_to_production"]
+    },
+    "operator": {
+      "description": "Full access except destructive shell operations and credential management.",
+      "deny_tools": ["delete_file", "drop_table", "format_disk"],
+      "require_approval_tools": ["send_email", "write_file", "execute_code"]
+    },
+    "admin": {
+      "description": "Unrestricted — all actions still logged and audited.",
+      "allow_all": true
+    }
+  },
+  "budgets": {
+    "reader":   { "max_cost_usd": 0.50,  "max_tokens": 50000  },
+    "analyst":  { "max_cost_usd": 2.00,  "max_tokens": 200000 },
+    "operator": { "max_cost_usd": 10.00, "max_tokens": 1000000 },
+    "admin":    { "max_cost_usd": 50.00, "max_tokens": 5000000 }
+  },
+  "rules": [
+    {
+      "name": "no-cross-tenant-reads",
+      "description": "Agents may only query their own tenant's data. Cross-tenant IDs in query args are blocked.",
+      "tool_pattern": "(?i)\\b(query_database|sql_query|db_execute)\\b",
+      "args_pattern": "tenant_id\\s*[!=<>]+\\s*(?!'[^']*'\\b)",
+      "action": "DENY"
+    },
+    {
+      "name": "no-pii-in-logs",
+      "description": "Log-writing tools must not emit PII patterns (emails, SSNs, credit cards).",
+      "tool_pattern": "(?i)\\b(write_log|log_event|append_log)\\b",
+      "args_pattern": "(?i)(\\b[A-Za-z0-9._%+\\-]+@[A-Za-z0-9.\\-]+\\.[A-Za-z]{2,}\\b|\\b\\d{3}-\\d{2}-\\d{4}\\b)",
+      "action": "DENY"
+    },
+    {
+      "name": "require-approval-for-external-send",
+      "description": "Any tool that sends data externally (email, webhook, Slack) requires human sign-off.",
+      "tool_pattern": "(?i)\\b(send_email|post_webhook|send_slack|notify)\\b",
+      "args_pattern": ".*",
+      "action": "REQUIRE_APPROVAL"
+    }
+  ]
+}
