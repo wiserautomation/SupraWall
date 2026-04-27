@@ -1,6 +1,10 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import LangfuseClient from "./LangfuseClient";
@@ -17,7 +21,9 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     });
 }
 
-export default function vsLangfuse() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Live Enforcement", suprawall: true, comp: false, note: "Langfuse is post-hoc observability. SupraWall is real-time blocking." },
         { feature: "Tool Interception", suprawall: true, comp: false, note: "SupraWall intercepts and blocks tool execution at the SDK level." },
@@ -29,16 +35,19 @@ export default function vsLangfuse() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".comparison-verdict"]
         },
-        "url": "https://www.supra-wall.com/vs/langfuse"
+        "url": `https://www.supra-wall.com${getLocalizedPath("vs/langfuse", lang)}`,
+        "inLanguage": lang
     };
 
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -77,7 +86,7 @@ export default function vsLangfuse() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -92,11 +101,7 @@ export default function vsLangfuse() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Enterprise Agent Governance • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

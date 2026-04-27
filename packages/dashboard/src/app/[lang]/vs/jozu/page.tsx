@@ -2,6 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Metadata } from "next";
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import CompetitorVsClient from "./CompetitorVsClient";
 
@@ -28,10 +32,12 @@ export const metadata: Metadata = {
     },
 };
 
-export default function JozuVsPage() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     return (
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
             <CompetitorVsClient competitor="Jozu" focus="Model Scanning" />
         </div>
     );

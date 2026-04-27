@@ -56,8 +56,13 @@ const VS_CARDS = [
     }
 ];
 
-export default function VsHubClient({ dictionary }: { dictionary: any }) {
+import { Locale } from "@/i18n/config";
+import { getLocalizedPath } from "@/i18n/slug-map";
+
+export default function VsHubClient({ lang = 'en', dictionary }: { lang?: Locale, dictionary: any }) {
     const t = dictionary.vs;
+    const prefix = (path: string) => getLocalizedPath(path, lang);
+
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}
@@ -93,7 +98,7 @@ export default function VsHubClient({ dictionary }: { dictionary: any }) {
                                     <div className="p-3 bg-blue-500/10 rounded-xl text-blue-500 w-fit text-[10px] font-black uppercase tracking-widest">{art.pill}</div>
                                     <h3 className="text-4xl font-black italic uppercase italic tracking-tighter leading-none group-hover:text-blue-400 transition-colors uppercase italic">{t.cards.vs} <br />{art.title}</h3>
                                     <p className="text-neutral-500 text-base font-bold italic tracking-tighter leading-relaxed uppercase opacity-80">{art.desc}</p>
-                                    <Link href={`/vs/${art.title.toLowerCase().replace(/ /g, '-')}`} className="inline-flex items-center gap-2 text-white font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
+                                    <Link href={prefix(`/vs/${art.title.toLowerCase().replace(/ /g, '-')}`)} className="inline-flex items-center gap-2 text-white font-black uppercase tracking-widest text-xs hover:gap-4 transition-all">
                                         {t.cards.details} <ArrowRight className="w-4 h-4 text-blue-500" />
                                     </Link>
                                 </div>

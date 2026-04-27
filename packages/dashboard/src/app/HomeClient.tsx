@@ -16,6 +16,7 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
 import Image from "next/image";
+import { getLocalizedPath } from "@/i18n/slug-map";
 
 // ── Shared Components ──
 
@@ -190,24 +191,6 @@ export function LiveSavings() {
 
 // ── Attacks Blocked Counter (real data from oss-stats API) ──
 
-export function AttacksBlockedCounter() {
-    const [stats, setStats] = useState<{ blocks: number; installs: number; github_stars: number | null } | null>(null);
-    const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true);
-        fetch("/api/v1/oss-stats/public")
-            .then(r => r.json())
-            .then(data => setStats(data))
-            .catch(() => {});
-    }, []);
-
-    if (!mounted) return null;
-
-    const blocks = stats?.blocks ?? 0;
-    const installs = stats?.installs ?? 0;
-    const stars = stats?.github_stars;
-
     return (
         <div className="w-full py-10 border-t border-white/5">
             <div className="flex flex-wrap justify-center gap-10 md:gap-16">
@@ -237,11 +220,34 @@ export function AttacksBlockedCounter() {
             </div>
             <p className="mt-4 text-center text-[10px] text-neutral-700 uppercase tracking-widest">
                 Live · updated every 5 minutes ·{" "}
-                <a href="/traces" className="hover:text-neutral-500 transition-colors underline">Browse public traces →</a>
+                <Link href={getLocalizedPath("/traces", lang)} className="hover:text-neutral-500 transition-colors underline">Browse public traces →</Link>
             </p>
         </div>
     );
 }
+
+export function AttacksBlockedCounter({ lang = 'en' }: { lang?: string }) {
+    const [stats, setStats] = useState<{ blocks: number; installs: number; github_stars: number | null } | null>(null);
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+        fetch("/api/v1/oss-stats/public")
+            .then(r => r.json())
+            .then(data => setStats(data))
+            .catch(() => {});
+    }, []);
+
+    if (!mounted) return null;
+
+    const blocks = stats?.blocks ?? 0;
+    const installs = stats?.installs ?? 0;
+    const stars = stats?.github_stars;
+
+    return <AttacksBlockedCounterUI blocks={blocks} installs={installs} stars={stars} lang={lang} />;
+}
+
+function AttacksBlockedCounterUI({ blocks, installs, stars, lang }: any) {
 
 // ── Threat Card (Interactive) ──
 
@@ -339,14 +345,14 @@ const THREAT_CARDS = [
     },
 ];
 
-export function ThreatCardsGrid() {
+export function ThreatCardsGrid({ lang = 'en' }: { lang?: string }) {
     const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {THREAT_CARDS.map((card, i) => (
                 <Link
-                    href={card.href}
+                    href={getLocalizedPath(card.href, lang)}
                     key={card.id}
                     className="group relative block"
                     onMouseEnter={() => setHoveredCard(card.id)}
@@ -444,49 +450,49 @@ export function ThreatCardsGrid() {
 
 // ── ICP Entry Points ──
 
-export function ICPEntryPoints() {
+export function ICPEntryPoints({ lang = 'en' }: { lang?: string }) {
     const personas = [
         {
             role: "Developer",
             title: "Ship Secure Agents in Minutes",
             pain: "\"I spent 3 days writing validation for tool calls. Then prompt injection bypassed all of it.\"",
             features: [
-                { label: "Credential Vault", href: "/features/vault", desc: "Zero-knowledge secret injection" },
-                { label: "Budget Limits", href: "/features/budget-limits", desc: "Hard caps, no runaway bills" },
-                { label: "One-Line Integration", href: "/docs/quickstart", desc: "pip install suprawall-sdk" },
+                { label: "Credential Vault", href: getLocalizedPath("/features/vault", lang), desc: "Zero-knowledge secret injection" },
+                { label: "Budget Limits", href: getLocalizedPath("/features/budget-limits", lang), desc: "Hard caps, no runaway bills" },
+                { label: "One-Line Integration", href: getLocalizedPath("/docs/quickstart", lang), desc: "pip install suprawall-sdk" },
             ],
             icon: <TerminalIcon className="w-8 h-8" />,
             color: "emerald",
             cta: "Start Building →",
-            ctaHref: "/docs/quickstart",
+            ctaHref: getLocalizedPath("/docs/quickstart", lang),
         },
         {
             role: "CTO / VP Engineering",
             title: "One Platform, Not Six Tools",
             pain: "\"We're paying for Lakera + Portkey + Guardrails AI + a custom token counter + compliance consulting. It's a mess.\"",
             features: [
-                { label: "Unified Dashboard", href: "/dashboard", desc: "All 6 capabilities in one view" },
-                { label: "Policy Engine", href: "/features/policy-engine", desc: "Deterministic ALLOW/BLOCK rules" },
-                { label: "Usage-Based Pricing", href: "/pricing", desc: "Pay per eval, not per feature" },
+                { label: "Unified Dashboard", href: getLocalizedPath("/dashboard", lang), desc: "All 6 capabilities in one view" },
+                { label: "Policy Engine", href: getLocalizedPath("/features/policy-engine", lang), desc: "Deterministic ALLOW/BLOCK rules" },
+                { label: "Usage-Based Pricing", href: getLocalizedPath("/pricing", lang), desc: "Pay per eval, not per feature" },
             ],
             icon: <LayoutDashboard className="w-8 h-8" />,
             color: "blue",
             cta: "See the Dashboard →",
-            ctaHref: "/dashboard",
+            ctaHref: getLocalizedPath("/dashboard", lang),
         },
         {
             role: "Compliance Officer",
             title: "Prove Oversight to Auditors",
             pain: "\"The EU AI Act deadline is here. We have zero evidence our AI systems are compliant.\"",
             features: [
-                { label: "PDF Evidence Reports", href: "/features/audit-trail", desc: "One-click EU AI Act export" },
-                { label: "Article-by-Article Status", href: "/compliance", desc: "Art. 9, 11, 12, 14 badges" },
-                { label: "Signed Audit Logs", href: "/features/audit-trail", desc: "Timestamped, immutable records" },
+                { label: "PDF Evidence Reports", href: getLocalizedPath("/features/audit-trail", lang), desc: "One-click EU AI Act export" },
+                { label: "Article-by-Article Status", href: getLocalizedPath("/compliance", lang), desc: "Art. 9, 11, 12, 14 badges" },
+                { label: "Signed Audit Logs", href: getLocalizedPath("/features/audit-trail", lang), desc: "Timestamped, immutable records" },
             ],
             icon: <FileText className="w-8 h-8" />,
             color: "purple",
             cta: "Download Sample Report →",
-            ctaHref: "/features/audit-trail",
+            ctaHref: getLocalizedPath("/features/audit-trail", lang),
         },
     ];
 
@@ -667,7 +673,7 @@ const TEMPLATE_COLORS: Record<string, any> = {
     }
 };
 
-export function ComplianceTemplatesSection() {
+export function ComplianceTemplatesSection({ lang = 'en' }: { lang?: string }) {
     const templates = [
         {
             industry: "FINANCIAL SERVICES",
@@ -766,14 +772,14 @@ export function ComplianceTemplatesSection() {
     );
 }
 
-export function ResourceHub({ lang }: { lang: string }) {
+export function ResourceHub({ lang = 'en' }: { lang?: string }) {
     const resources = [
-        { title: "EU AI Act Compliance", href: `/${lang}/eu-ai-act`, desc: "Article-by-article breakdown for high-risk AI systems." },
-        { title: "GDPR for AI Agents", href: `/${lang}/gdpr`, desc: "Automated PII scrubbing and data protection guardrails." },
-        { title: "Agent Audit Trails", href: `/${lang}/learn/ai-agent-audit-trail-logging`, desc: "How to generate signed evidence for regulatory audits." },
-        { title: "Secure Vault", href: `/${lang}/features/vault`, desc: "Permissioned credential injection for autonomous systems." },
-        { title: "Prompt Injection Protection", href: `/${lang}/features/prompt-shield`, desc: "Hardening agents against context-override attacks." },
-        { title: "Runtime Policy Engine", href: `/${lang}/features/policy-engine`, desc: "Deterministic controls for non-deterministic models." }
+        { title: "EU AI Act Compliance", href: getLocalizedPath("/eu-ai-act", lang), desc: "Article-by-article breakdown for high-risk AI systems." },
+        { title: "GDPR for AI Agents", href: getLocalizedPath("/gdpr", lang), desc: "Automated PII scrubbing and data protection guardrails." },
+        { title: "Agent Audit Trails", href: getLocalizedPath("/learn/ai-agent-audit-trail-logging", lang), desc: "How to generate signed evidence for regulatory audits." },
+        { title: "Secure Vault", href: getLocalizedPath("/features/vault", lang), desc: "Permissioned credential injection for autonomous systems." },
+        { title: "Prompt Injection Protection", href: getLocalizedPath("/features/prompt-shield", lang), desc: "Hardening agents against context-override attacks." },
+        { title: "Runtime Policy Engine", href: getLocalizedPath("/features/policy-engine", lang), desc: "Deterministic controls for non-deterministic models." }
     ];
 
     return (
@@ -786,7 +792,7 @@ export function ResourceHub({ lang }: { lang: string }) {
                             Security <span className="text-emerald-500">Resource Hub</span>
                         </h2>
                     </div>
-                    <Link href={`/${lang}/learn`} className="text-sm font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-2">
+                    <Link href={getLocalizedPath("/learn", lang)} className="text-sm font-black uppercase tracking-widest text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-2">
                         View All Articles <ArrowRight className="w-4 h-4" />
                     </Link>
                 </div>

@@ -103,10 +103,10 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                 </section>
 
                 <section id="threats" className="py-40 px-6 bg-black relative overflow-hidden">
-                    <ThreatCardsGrid />
+                    <ThreatCardsGrid lang={lang} />
                 </section>
 
-                <ComplianceTemplatesSection />
+                <ComplianceTemplatesSection lang={lang} />
 
                 <section id="how-it-works" className="py-40 px-6 bg-black">
                     <div className="max-w-7xl mx-auto space-y-24">
@@ -115,13 +115,13 @@ export default function HomeWrapper({ dictionary, lang }: { dictionary: any, lan
                 </section>
 
                 <section className="py-40 px-6 bg-[#030303] border-y border-white/5 relative overflow-hidden">
-                    <ICPEntryPoints />
+                    <ICPEntryPoints lang={lang} />
                 </section>
 
                 <ResourceHub lang={lang} />
             </main>
 
-            <Footer />
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

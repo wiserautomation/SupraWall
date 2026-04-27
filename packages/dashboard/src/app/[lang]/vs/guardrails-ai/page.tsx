@@ -1,6 +1,10 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import GuardrailsAIClient from "./GuardrailsAIClient";
@@ -15,7 +19,9 @@ export const metadata: Metadata = {
     },
 };
 
-export default function vsGuardrailsAI() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Runtime Interception", suprawall: true, guard: false, note: "Guardrails AI is mostly validation-focused (pre/post-llm)." },
         { feature: "Action Blocking", suprawall: true, guard: false, note: "SupraWall specifically blocks tool/env actions at runtime." },
@@ -27,16 +33,19 @@ export default function vsGuardrailsAI() {
     const speakableSchema = {
         "@context": "https://schema.org",
         "@type": "WebPage",
+        "inLanguage": lang,
         "speakable": {
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".comparison-verdict"]
         },
-        "url": "https://www.supra-wall.com/vs/guardrails-ai"
+        "url": `https://www.supra-wall.com${getLocalizedPath("vs/guardrails-ai", lang)}`,
+        "inLanguage": lang
     };
 
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -75,7 +84,7 @@ export default function vsGuardrailsAI() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -92,11 +101,7 @@ export default function vsGuardrailsAI() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Action-Level Security Dashboard • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

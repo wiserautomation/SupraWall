@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import fs from 'fs';
 import path from 'path';
 import { i18n } from '../i18n/config';
-import { SLUG_MAP } from '../i18n/slug-map';
+import { SLUG_MAP, getLocalizedPath } from '../i18n/slug-map';
 import { newsArticles } from './[lang]/news/newsData';
 import { sectorTemplates } from '../data/compliance-matrix';
 
@@ -58,15 +58,6 @@ function getRoutes(dir: string, baseRoute = '', isLocaleRoot = false): string[] 
     }
 
     return routes;
-}
-
-/**
- * Helper to localize a full path
- */
-function getLocalizedPath(internalPath: string, locale: string): string {
-    const parts = internalPath.split('/').filter(Boolean);
-    const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
-    return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
 }
 
 /**

@@ -3,7 +3,7 @@
 
 import { Metadata } from 'next';
 import { i18n, Locale } from './config';
-import { SLUG_MAP } from './slug-map';
+import { SLUG_MAP, getLocalizedPath } from './slug-map';
 
 const BASE_URL = 'https://www.supra-wall.com';
 
@@ -30,13 +30,6 @@ export async function generateLocalizedMetadata({
 }): Promise<Metadata> {
     const { lang } = await params;
     
-    // Helper to localize a full path
-    const getLocalizedPath = (locale: string) => {
-        const parts = internalPath.split('/').filter(Boolean);
-        const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
-        return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
-    };
-
     const buildFullUrl = (path: string) => {
         try {
             return new URL(path.replace(/^\/+/, ''), BASE_URL.replace(/\/+$/, '') + '/').toString();

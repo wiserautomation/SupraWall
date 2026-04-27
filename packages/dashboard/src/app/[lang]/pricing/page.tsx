@@ -4,6 +4,7 @@
 import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { i18n, Locale } from "@/i18n/config";
+import { getLocalizedPath } from "@/i18n/slug-map";
 import PricingClient from "./PricingClient";
 
 import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
@@ -26,12 +27,14 @@ export default async function Page({
 }) {
     const { lang } = (await params) as { lang: Locale };
     const dictionary = await getDictionary(lang);
+    const localizedUrl = `https://www.supra-wall.com${getLocalizedPath('pricing', lang)}`;
+    
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "SupraWall Pricing",
         "description": "Enterprise-grade security and compliance for autonomous AI agents.",
-        "url": `https://www.supra-wall.com/${lang}/pricing`,
+        "url": localizedUrl,
         "inLanguage": lang,
     };
 

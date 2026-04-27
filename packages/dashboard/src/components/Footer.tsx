@@ -3,17 +3,12 @@
 
 import Link from "next/link";
 import { Shield, Triangle, Database, Lock } from "lucide-react";
-import { SLUG_MAP } from "@/i18n/slug-map";
+import { SLUG_MAP, getLocalizedPath } from "@/i18n/slug-map";
 
 export function Footer({ lang = 'en', dictionary }: { lang?: string, dictionary?: any }) {
     const prefix = (href: string) => {
         if (href.startsWith('http')) return href;
-        
-        const pathParts = href.split('/').filter(Boolean);
-        const localizedParts = pathParts.map(part => SLUG_MAP[part]?.[lang] || part);
-        const finalPath = localizedParts.join('/');
-        
-        return `/${lang}${finalPath ? '/' + finalPath : ''}`;
+        return getLocalizedPath(href, lang);
     };
 
     return (

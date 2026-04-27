@@ -1,6 +1,10 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import PortkeyClient from "./PortkeyClient";
@@ -14,7 +18,9 @@ export const metadata: Metadata = {
 
 };
 
-export default function vsPortkey() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Runtime Interception", suprawall: true, portkey: false, note: "Portkey is a gateway; it sees traffic but doesn't intercept tool inputs *locally*." },
         { feature: "Action Blocking", suprawall: true, portkey: false, note: "SupraWall blocks the result of the prompt (the tool call)." },
@@ -26,6 +32,7 @@ export default function vsPortkey() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -52,7 +59,7 @@ export default function vsPortkey() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -60,11 +67,7 @@ export default function vsPortkey() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Enterprise Agent Observability Audit • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

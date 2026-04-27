@@ -1,6 +1,10 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import StraikerClient from "./StraikerClient";
@@ -25,10 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
     });
 }
 
-export default function vsStraikerPage() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         mainEntity: [
             {
                 "@type": "Question",
@@ -114,7 +121,7 @@ export default function vsStraikerPage() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-40 pb-32 px-6 overflow-hidden">
                 <div className="max-w-7xl mx-auto space-y-20">
@@ -193,7 +200,7 @@ export default function vsStraikerPage() {
                             <p className="text-lg text-neutral-400 mt-6 leading-relaxed">
                                 When security tooling requires a sales call before you can test it, developers route around it.
                                 SupraWall's{" "}
-                                <Link href="/learn/what-is-agent-runtime-security" className="text-emerald-500 underline">
+                                <Link href={getLocalizedPath("/learn/what-is-agent-runtime-security", lang)} className="text-emerald-500 underline">
                                     SDK-level interception
                                 </Link>{" "}
                                 is harder to bypass than application-layer guardrails because it hooks directly into framework
@@ -212,7 +219,7 @@ export default function vsStraikerPage() {
                                 </p>
                                 <div className="pt-6">
                                     <Link
-                                        href="/login"
+                                        href={getLocalizedPath("/login", lang)}
                                         className="px-10 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:bg-neutral-100 transition-all flex items-center gap-2 w-fit"
                                     >
                                         Start Free in 5 Minutes <ArrowRight className="w-4 h-4" />

@@ -20,6 +20,9 @@ export const SLUG_MAP: Record<string, Record<string, string>> = {
     de: 'compliance-dashboard',
     fr: 'tableau-de-bord-conformite',
     es: 'panel-de-cumplimiento',
+    it: 'dashboard-conformita',
+    pl: 'panel-zgodnosci',
+    nl: 'compliance-overzicht'
   },
   'compliance-templates': {
     de: 'compliance-vorlagen',
@@ -146,11 +149,33 @@ export const SLUG_MAP: Record<string, Record<string, string>> = {
     de: 'ueber-uns',
     fr: 'a-propos',
     es: 'sobre-nosotros',
+    it: 'chi-siamo',
+    pl: 'o-nas',
+    nl: 'over-ons'
   },
   'features': {
     de: 'funktionen',
     fr: 'fonctionnalites',
     es: 'caracteristicas',
+    it: 'funzionalita',
+    pl: 'funkcje',
+    nl: 'functies'
+  },
+  'learn': {
+    de: 'lernen',
+    fr: 'apprendre',
+    es: 'aprender',
+    it: 'imparare',
+    pl: 'wiedza',
+    nl: 'leren'
+  },
+  'vs': {
+    de: 'vergleich',
+    fr: 'comparer',
+    es: 'comparar',
+    it: 'confronta',
+    pl: 'porownaj',
+    nl: 'vergelijken'
   }
 };
 
@@ -167,4 +192,14 @@ export function getPublicSlug(internalPath: string, locale: string): string {
   }
   
   return internalSlug;
+}
+
+/**
+ * getLocalizedPath: Single source of truth for converting internal paths to public localized URLs.
+ * Handles multi-segment paths by localizing each segment if a mapping exists.
+ */
+export function getLocalizedPath(internalPath: string, locale: string): string {
+    const parts = internalPath.split('/').filter(Boolean);
+    const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
+    return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
 }

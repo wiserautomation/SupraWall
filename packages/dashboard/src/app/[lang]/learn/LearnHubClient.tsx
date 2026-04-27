@@ -70,10 +70,11 @@ const LEARN_CATEGORIES = [
 ];
 
 import { Locale } from "@/i18n/config";
+import { getLocalizedPath } from "@/i18n/slug-map";
 
 export default function LearnHubClient({ lang = 'en', dictionary }: { lang?: Locale, dictionary: any }) {
     const t = dictionary.learn;
-    const prefix = (path: string) => `/${lang}${path}`;
+    const prefix = (path: string) => getLocalizedPath(path, lang);
     return (
         <main className="overflow-hidden bg-[#030303]">
             {/* 🚀 HERO */}

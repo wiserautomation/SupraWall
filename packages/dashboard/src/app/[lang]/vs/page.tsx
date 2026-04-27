@@ -4,28 +4,14 @@
 import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { i18n, Locale } from "@/i18n/config";
-import { SLUG_MAP } from "../../../i18n/slug-map";
+import { getLocalizedPath } from "../../../i18n/slug-map";
 import VsHubClient from "./VsHubClient";
 import { getDictionary } from "../../../i18n/getDictionary";
+import { generateLocalizedMetadata } from "@/i18n/generate-metadata";
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
-    const { lang } = await params;
-    const baseUrl = "https://www.supra-wall.com";
-    const isDefault = lang === i18n.defaultLocale;
-    const internalSlug = 'vs';
-
-    // Build alternates for hreflang pointing to public aliases
-    const languages: Record<string, string> = {};
-    i18n.locales.forEach((l) => {
-        const publicSlug = SLUG_MAP[internalSlug]?.[l] || internalSlug;
-        languages[l] = `${baseUrl}/${l}/${publicSlug}`;
-    });
-    const defaultPublicSlug = SLUG_MAP[internalSlug]?.['en'] || internalSlug;
-    languages["x-default"] = `${baseUrl}/en/${defaultPublicSlug}`;
-
-    const currentPublicSlug = SLUG_MAP[internalSlug]?.[lang] || internalSlug;
-
-    return {
+    return generateLocalizedMetadata({
+        params,
         title: "SupraWall vs Alternatives | AI Agent Security Comparison",
         description: "Compare SupraWall against Galileo, NVIDIA NeMo, Guardrails AI, Straiker, Lakera, and Portkey. Honest feature-by-feature breakdown for AI teams.",
         keywords: [
@@ -33,28 +19,12 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
             "ai agent security comparison",
             "best ai agent security platform",
             "ai guardrails comparison 2026",
-            "ai agent security alternatives",
             "Galileo alternative",
             "NeMo alternative",
-            "Guardrails AI alternative",
-            "compare ai agent security tools"
+            "Guardrails AI alternative"
         ],
-        alternates: {
-            canonical: `${baseUrl}/${lang}/${currentPublicSlug}`,
-            languages,
-        },
-        robots: {
-            index: true,
-            follow: true,
-        },
-        openGraph: {
-            title: "SupraWall vs Alternatives | AI Agent Security Comparison",
-            description: "Compare SupraWall against Galileo, NVIDIA NeMo, Guardrails AI, Straiker, Lakera, and Portkey",
-            url: `${baseUrl}/${lang}/${currentPublicSlug}`,
-            siteName: "SupraWall",
-            type: "website",
-        },
-    };
+        internalPath: "vs"
+    });
 }
 
 export default async function VsHubPage({
@@ -64,19 +34,21 @@ export default async function VsHubPage({
 }) {
     const { lang } = (await params) as { lang: Locale };
     const dictionary = await getDictionary(lang);
+    const localizedUrl = `https://www.supra-wall.com${getLocalizedPath('vs', lang)}`;
+    
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
         "name": "SupraWall vs Alternatives",
         "description": "Compare SupraWall against Galileo, NVIDIA NeMo, Guardrails AI, Straiker, Lakera, and Portkey. Honest feature-by-feature breakdown for AI teams.",
-        "url": `https://www.supra-wall.com/${lang}/vs`,
+        "url": localizedUrl,
         "mainEntity": {
             "@type": "ItemList",
             "itemListElement": [
-                { "@type": "ListItem", "position": 1, "name": "SupraWall vs Galileo", "url": "https://www.supra-wall.com/vs/galileo" },
-                { "@type": "ListItem", "position": 2, "name": "SupraWall vs NVIDIA NeMo", "url": "https://www.supra-wall.com/vs/nemo-guardrails" },
-                { "@type": "ListItem", "position": 3, "name": "SupraWall vs Guardrails AI", "url": "https://www.supra-wall.com/vs/guardrails-ai" },
-                { "@type": "ListItem", "position": 4, "name": "SupraWall vs Lakera", "url": "https://www.supra-wall.com/vs/lakera" }
+                { "@type": "ListItem", "position": 1, "name": "SupraWall vs Galileo", "url": `https://www.supra-wall.com${getLocalizedPath('vs/galileo', lang)}` },
+                { "@type": "ListItem", "position": 2, "name": "SupraWall vs NVIDIA NeMo", "url": `https://www.supra-wall.com${getLocalizedPath('vs/nemo-guardrails', lang)}` },
+                { "@type": "ListItem", "position": 3, "name": "SupraWall vs Guardrails AI", "url": `https://www.supra-wall.com${getLocalizedPath('vs/guardrails-ai', lang)}` },
+                { "@type": "ListItem", "position": 4, "name": "SupraWall vs Lakera", "url": `https://www.supra-wall.com${getLocalizedPath('vs/lakera', lang)}` }
             ]
         },
         "breadcrumb": {
@@ -84,7 +56,7 @@ export default async function VsHubPage({
             "@type": "BreadcrumbList",
             "itemListElement": [
                 { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://www.supra-wall.com" },
-                { "@type": "ListItem", "position": 2, "name": "Comparisons", "item": `https://www.supra-wall.com/${lang}/vs` }
+                { "@type": "ListItem", "position": 2, "name": "Comparisons", "item": localizedUrl }
             ]
         }
     };
@@ -93,7 +65,7 @@ export default async function VsHubPage({
         <div className="min-h-screen bg-black text-white selection:bg-blue-500/30">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <Navbar lang={lang} dictionary={dictionary} />
-            <VsHubClient dictionary={dictionary} />
+            <VsHubClient lang={lang} dictionary={dictionary} />
         </div>
     );
 }

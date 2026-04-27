@@ -1,6 +1,10 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
 import HeliconeClient from "./HeliconeClient";
@@ -14,7 +18,9 @@ export const metadata: Metadata = {
     },
 };
 
-export default function vsHelicone() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Action Blocking", suprawall: true, comp: false, note: "Helicone monitors requests; SupraWall intercepts and blocks tool execution." },
         { feature: "Per-Agent Budget", suprawall: "Hard Caps", comp: "Soft Track", note: "SupraWall sets deterministic dollar limits per agent identity." },
@@ -26,6 +32,7 @@ export default function vsHelicone() {
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
+        "inLanguage": lang,
         "mainEntity": [
             {
                 "@type": "Question",
@@ -52,7 +59,7 @@ export default function vsHelicone() {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
             />
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -60,11 +67,7 @@ export default function vsHelicone() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Real-time Agent Governance • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

@@ -4,11 +4,17 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Check, X, Shield, Zap, Info, ArrowRight, BarChart2, AlertCircle, Globe, Cloud, Lock } from "lucide-react";
 import Link from "next/link";
 
-export default function vsAzureAI() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Cloud-Agnostic", suprawall: true, azure: false, note: "Azure AI Studio security is locked to Azure subscriptions. SupraWall works on any cloud or local VPC." },
         { feature: "RSA-Signed Audit Trail", suprawall: true, azure: "Logs only", note: "SupraWall satisfies EU AI Act Article 13/14 with cryptographically signed execution records." },
@@ -19,7 +25,7 @@ export default function vsAzureAI() {
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -118,7 +124,7 @@ export default function vsAzureAI() {
                             SupraWall fuels <strong className="text-blue-500">Azure Security Center</strong> with deterministic tool-call data. Most enterprises use Azure for infrastructure and SupraWall for the specialized AI Act compliance layer that Microsoft's general-purpose tools don't cover.
                         </p>
                         <div className="pt-4 flex justify-center">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
+                            <Link href={getLocalizedPath("/login", lang)} className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
                             </Link>
                         </div>
@@ -127,11 +133,7 @@ export default function vsAzureAI() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Enterprise Agentic Security Audit • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

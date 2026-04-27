@@ -4,11 +4,17 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { getLocalizedPath } from "@/i18n/slug-map";
+import { Footer } from "@/components/Footer";
+import { getDictionary } from "@/i18n/getDictionary";
+import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Check, X, Shield, Zap, Info, ArrowRight, BarChart2, AlertCircle, Globe, Cloud, Lock } from "lucide-react";
 import Link from "next/link";
 
-export default function vsAwsBedrock() {
+export default async function vsPage({ params }: { params: Promise<{ lang: string }> }) {
+    const { lang } = (await params) as { lang: Locale };
+    const dictionary = await getDictionary(lang);
     const comparisonData = [
         { feature: "Multi-Cloud Portability", suprawall: true, bedrock: false, note: "Bedrock security (Guardrails) only works on AWS. SupraWall works on AWS, Azure, GCP, and On-Prem." },
         { feature: "Framework-Native", suprawall: true, bedrock: "Partial", note: "SupraWall integrates directly into LangChain & CrewAI; Bedrock is a separate API layer." },
@@ -19,7 +25,7 @@ export default function vsAwsBedrock() {
 
     return (
         <div className="min-h-screen bg-black text-white selection:bg-emerald-500/30">
-            <Navbar />
+            <Navbar lang={lang} dictionary={dictionary} />
 
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-5xl mx-auto space-y-20">
@@ -118,7 +124,7 @@ export default function vsAwsBedrock() {
                             SupraWall integrates with <strong className="text-white text-glow">AWS Security Hub</strong>. You don't have to choose between AWS infrastructure and SupraWall security. Use Bedrock for compute, and SupraWall for the cross-platform, framework-layer audit trail your compliance team needs.
                         </p>
                         <div className="pt-4 flex justify-center">
-                            <Link href="/login" className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
+                            <Link href={getLocalizedPath("/login", lang)} className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
                             </Link>
                         </div>
@@ -127,11 +133,7 @@ export default function vsAwsBedrock() {
                 </div>
             </main>
 
-            <footer className="py-20 border-t border-white/5 text-center">
-                <p className="text-neutral-800 text-[10px] font-black uppercase tracking-[0.5em]">
-                    Enterprise Agentic Security Audit • 2026
-                </p>
-            </footer>
+            <Footer lang={lang} dictionary={dictionary} />
         </div>
     );
 }

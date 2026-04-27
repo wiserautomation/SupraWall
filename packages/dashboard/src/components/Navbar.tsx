@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Locale } from "../i18n/config";
+import { getLocalizedPath } from "../i18n/slug-map";
 
 export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?: any }) {
     const [openMenu, setOpenMenu] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export function Navbar({ lang = 'en', dictionary }: { lang?: Locale, dictionary?
     const common = d.common || { starOnGithub: "Star on GitHub", deployOnCloud: "Deploy on Cloud", selfHost: "Self-Host" };
     const navbar = d.navbar || { platform: "Platform", solutions: "Solutions", integrations: "Integrations", resources: "Resources", company: "Company", pricing: "Pricing" };
 
-    const prefix = (href: string) => href.startsWith('http') ? href : `/${lang}${href === '/' ? '' : href}`;
+    const prefix = (href: string) => href.startsWith('http') ? href : getLocalizedPath(href, lang);
 
     const features = [
         { href: prefix("/features/vault"), icon: <KeyRound className="w-4 h-4 text-emerald-400" />, label: "Credential Vault", desc: "Zero-knowledge secrets" },
