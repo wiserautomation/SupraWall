@@ -32,7 +32,7 @@ export default async function LearnHubPage({
         "name": "AI Agent Security Hub",
         "description": "Comprehensive guides, tutorials, and best practices for securing AI agents in production.",
         "url": `https://www.supra-wall.com/${lang}/learn`,
-        "inLanguage": lang,
+        "inLanguage": "en",
         "mainEntity": {
             "@type": "ItemList",
             "itemListElement": [
@@ -56,7 +56,7 @@ export default async function LearnHubPage({
     const faqSchema = {
         "@context": "https://schema.org",
         "@type": "FAQPage",
-        "inLanguage": lang,
+        "inLanguage": "en",
         "mainEntity": [
             {
                 "@type": "Question",

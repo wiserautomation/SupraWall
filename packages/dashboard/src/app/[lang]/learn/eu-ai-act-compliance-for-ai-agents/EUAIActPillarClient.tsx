@@ -150,7 +150,7 @@ export default function EUAIActPillarClient({ dictionary, lang }: { dictionary: 
                         Implement Articles 12 & 14 in 60 seconds with our official framework SDKs.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
-                        <Link href={`/${lang}/login`} className="px-16 py-8 bg-white text-black font-black text-3xl rounded-3xl hover:bg-emerald-500 hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.1)] tracking-tighter flex items-center gap-4 group italic">
+                        <Link href={`/en/login`} className="px-16 py-8 bg-white text-black font-black text-3xl rounded-3xl hover:bg-emerald-500 hover:text-white transition-all shadow-[0_0_100px_rgba(255,255,255,0.1)] tracking-tighter flex items-center gap-4 group italic">
                              Get Protected <ArrowRight className="w-10 h-10 group-hover:translate-x-4 transition-transform" />
                         </Link>
                     </div>
