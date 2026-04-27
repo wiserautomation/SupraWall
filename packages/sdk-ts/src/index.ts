@@ -4,6 +4,7 @@
 const DEFAULT_CLOUD_FUNCTION_URL =
     "https://www.supra-wall.com/api/v1/evaluate";
 const SDK_VERSION = "1.1.0";
+import { trackBlock, trackWrap } from "./telemetry";
 
 let _tenantIdWarned = false;
 function getDefaultTenantId(): string {
@@ -481,6 +482,10 @@ async function internalEvaluate(
             };
         }
 
+        if (decision === "DENY") {
+            trackBlock(metadata.model); // metadata.model acts as a proxy for framework context if not explicit
+        }
+
         return {
             decision: data.decision,
             reason: data.reason,
@@ -499,6 +504,7 @@ async function internalEvaluate(
 
         logger.error("[SupraWall] Network error reaching control plane.", e);
         if (onNetworkError === "fail-closed") {
+            trackBlock("network-error");
             return { decision: "DENY", reason: "SupraWall unreachable. Action blocked (fail-closed mode)." };
         }
         return { decision: "ALLOW" };
@@ -558,6 +564,9 @@ export function withSupraWall<T extends AgentInstance>(
 
     const originalExecuteTool = agentInstance.executeTool.bind(agentInstance);
 
+    // Track wrap event for telemetry
+    trackWrap("generic");
+
     agentInstance.executeTool = async (toolName: string, args: any) => {
         const result = await internalEvaluate(toolName, args, options);
 
@@ -591,6 +600,8 @@ export function createSupraWallMiddleware(options: SupraWallOptions) {
         apiKey,
         logger = console,
     } = options;
+
+    trackWrap("mcp");
 
     return async function supraWallMiddleware(
         toolName: string,
@@ -642,18 +653,22 @@ export function protect(agentOrTools: any, options: SupraWallOptions): any {
             v && typeof v === 'object' && ('execute' in v || 'parameters' in v)
         );
 
+
         if (looksLikeVercel) {
+            trackWrap("vercel-ai");
             return wrapVercelTools(agentOrTools, options);
         }
     }
 
     // 2. Detect LangChain (has withConfig, invoke, or metadata/callbacks)
     if (typeof agentOrTools.withConfig === 'function' || 'callbacks' in agentOrTools) {
+        trackWrap("langchain");
         return wrapLangChain(agentOrTools, options);
     }
 
     // 3. Detect OpenClaw / Browser Agents (has browser property and execute method)
     if (agentOrTools.browser && typeof agentOrTools.execute === 'function') {
+        trackWrap("openclaw");
         return wrapOpenClaw(agentOrTools, options);
     }
 

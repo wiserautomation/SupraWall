@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     let recentError: string | null = null;
     try {
         const res = await fetch(
-            "https://pypistats.org/api/packages/suprawall/recent",
+            "https://pypistats.org/api/packages/suprawall-sdk/recent",
             { next: { revalidate: CACHE_SECS } }
         );
         if (res.ok) {
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
     let dailyError: string | null = null;
     try {
         const res = await fetch(
-            "https://pypistats.org/api/packages/suprawall/system?period=month",
+            "https://pypistats.org/api/packages/suprawall-sdk/system?period=month",
             { next: { revalidate: CACHE_SECS } }
         );
         if (res.ok) {

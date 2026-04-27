@@ -416,6 +416,16 @@ def main() -> int:
         results.append(result)
         print(f"          → {result.get('url')}")
 
+        # Seed telemetry counter so "Attacks Blocked" matches the gallery
+        if not args.dry_run:
+            try:
+                import httpx
+                tel_url = f"{args.api_base.rstrip('/')}/api/v1/telemetry/event"
+                with httpx.Client(timeout=5.0) as client:
+                    client.post(tel_url, json={"event": "block", "framework": scenario["framework"]})
+            except Exception:
+                pass
+
         if i < len(_SCENARIOS) - 1:
             time.sleep(args.pace)
 

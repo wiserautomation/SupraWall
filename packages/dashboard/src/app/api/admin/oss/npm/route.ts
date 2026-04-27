@@ -18,6 +18,7 @@ const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_
 
 const PACKAGES = [
     "suprawall",
+    "@suprawall/sdk",
     "@suprawall/langchain",
     "@suprawall/langgraph",
     "@suprawall/vercel-ai",
@@ -41,7 +42,7 @@ export async function GET(req: NextRequest) {
             const encoded = encodeURIComponent(pkg);
             try {
                 const res = await fetch(
-                    `https://api.npmjs.org/downloads/range/last-30-days/${encoded}`,
+                    `https://api.npmjs.org/downloads/range/last-month/${encoded}`,
                     { next: { revalidate: CACHE_SECS } }
                 );
                 if (!res.ok) return { package: pkg, total: 0, daily: [], error: `HTTP ${res.status}` };
