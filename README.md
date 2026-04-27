@@ -16,9 +16,11 @@
 
 [Quickstart](#quickstart) · [How it works](#how-it-works) · [Frameworks](#works-with-any-agent-stack) · [**EU AI Act templates**](#eu-ai-act-compliance--shipped-not-promised) · [Cloud](#self-host-or-cloud) · [Docs](https://www.supra-wall.com/docs)
 
-<!-- LAUNCH VIDEO — links out to YouTube; GitHub strips iframes -->
+<!-- LAUNCH VIDEO — autoplay MP4 with GIF fallback, wrapped in a YouTube link for HD viewing -->
 <a href="https://youtu.be/jTGoVOWx3_k">
-  <img src="https://img.youtube.com/vi/jTGoVOWx3_k/maxresdefault.jpg" alt="Watch the SupraWall launch video — deterministic firewall for AI agents" width="760">
+  <video src="assets/launch-demo.mp4" autoplay loop muted playsinline width="760" poster="assets/launch-demo.gif">
+    <img src="assets/launch-demo.gif" alt="SupraWall intercepting a destructive tool call in real time" width="760">
+  </video>
 </a>
 
 *Every blocked action becomes a [shareable trace](#shareable-attack-traces). Public proof your agent didn't fire.*
