@@ -191,6 +191,7 @@ export function LiveSavings() {
 
 // ── Attacks Blocked Counter (real data from oss-stats API) ──
 
+function AttacksBlockedCounterUI({ blocks, installs, stars, lang }: any) {
     return (
         <div className="w-full py-10 border-t border-white/5">
             <div className="flex flex-wrap justify-center gap-10 md:gap-16">
@@ -246,8 +247,6 @@ export function AttacksBlockedCounter({ lang = 'en' }: { lang?: string }) {
 
     return <AttacksBlockedCounterUI blocks={blocks} installs={installs} stars={stars} lang={lang} />;
 }
-
-function AttacksBlockedCounterUI({ blocks, installs, stars, lang }: any) {
 
 // ── Threat Card (Interactive) ──
 

@@ -40,8 +40,7 @@ export default async function vsPage({ params }: { params: Promise<{ lang: strin
             "@type": "SpeakableSpecification",
             "cssSelector": [".quick-summary-table", ".answer-first-paragraph", ".comparison-verdict"]
         },
-        "url": `https://www.supra-wall.com${getLocalizedPath("vs/langfuse", lang)}`,
-        "inLanguage": lang
+        "url": `https://www.supra-wall.com${getLocalizedPath("vs/langfuse", lang)}`
     };
 
     const faqSchema = {

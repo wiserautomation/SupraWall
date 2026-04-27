@@ -41,14 +41,14 @@ export async function generateLocalizedMetadata({
     // Build alternates for hreflang
     const languages: Record<string, string> = {};
     i18n.locales.forEach((locale) => {
-        languages[locale] = buildFullUrl(getLocalizedPath(locale));
+        languages[locale] = buildFullUrl(getLocalizedPath(internalPath, locale));
     });
     
     // Add x-default (English)
-    languages['x-default'] = buildFullUrl(getLocalizedPath('en'));
+    languages['x-default'] = buildFullUrl(getLocalizedPath(internalPath, 'en'));
 
     // Current page's canonical URL
-    const canonical = buildFullUrl(getLocalizedPath(lang));
+    const canonical = buildFullUrl(getLocalizedPath(internalPath, lang));
 
     return {
         title,

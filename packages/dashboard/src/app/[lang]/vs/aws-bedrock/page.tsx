@@ -1,9 +1,7 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-"use client";
 
-import { motion } from "framer-motion";
 import { getLocalizedPath } from "@/i18n/slug-map";
 import { Footer } from "@/components/Footer";
 import { getDictionary } from "@/i18n/getDictionary";
@@ -32,13 +30,11 @@ export default async function vsPage({ params }: { params: Promise<{ lang: strin
 
                     {/* Hero Section */}
                     <div className="text-center space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            animate={{ opacity: 1, scale: 1 }}
+                        <div
                             className="inline-flex items-center px-4 py-1.5 rounded-full border border-orange-500/20 bg-orange-500/5 text-[10px] font-black text-orange-400 tracking-[0.2em] uppercase"
                         >
                             Infrastructure Comparison
-                        </motion.div>
+                        </div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-none uppercase italic">
                             SupraWall vs <br />
                             <span className="text-orange-500 text-glow whitespace-nowrap">AWS Bedrock.</span>
