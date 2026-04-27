@@ -163,6 +163,7 @@ def compute_audit_hash(trace: Trace) -> str:
         },
         sort_keys=True,
         separators=(",", ":"),
+        ensure_ascii=False,
         default=str,
     )
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()

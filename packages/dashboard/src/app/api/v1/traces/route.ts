@@ -40,26 +40,31 @@ function checkRateLimit(ip: string): boolean {
 // Mirrors the Python SDK's compute_audit_hash() canonicalisation.
 // ---------------------------------------------------------------------------
 
+function sortObject(obj: any): any {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (Array.isArray(obj)) return obj.map(sortObject);
+    return Object.keys(obj)
+        .sort()
+        .reduce((res: any, key: string) => {
+            res[key] = sortObject(obj[key]);
+            return res;
+        }, {});
+}
+
 function verifyAuditHash(body: Record<string, any>): boolean {
     const { audit_hash, ...rest } = body;
     if (!audit_hash || typeof audit_hash !== "string") return false;
 
-    const canonical = JSON.stringify(
-        {
-            id: rest.id,
-            blocked_at: rest.blocked_at,
-            framework: rest.framework,
-            attempted_action: rest.attempted_action,
-            agent_reasoning: rest.agent_reasoning,
-            matched_policy: rest.matched_policy,
-            environment: rest.environment,
-            sdk_version: rest.sdk_version,
-        },
-        Object.keys({
-            id: 1, blocked_at: 1, framework: 1, attempted_action: 1,
-            agent_reasoning: 1, matched_policy: 1, environment: 1, sdk_version: 1,
-        }).sort()
-    );
+    const canonical = JSON.stringify(sortObject({
+        agent_reasoning: rest.agent_reasoning,
+        attempted_action: rest.attempted_action,
+        blocked_at: rest.blocked_at,
+        environment: rest.environment,
+        framework: rest.framework,
+        id: rest.id,
+        matched_policy: rest.matched_policy,
+        sdk_version: rest.sdk_version,
+    }));
 
     const expected = crypto.createHash("sha256").update(canonical, "utf8").digest("hex");
     return expected === audit_hash;

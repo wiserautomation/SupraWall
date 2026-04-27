@@ -91,7 +91,12 @@ export async function GET(req: NextRequest) {
             fbDetail = "Connection failed: " + err.message;
         }
     }
-    sources.firestore = { configured: fbConfigured, reachable: fbReachable, last_seen_at: fbLastSeen, detail: fbDetail };
+    sources.firestore = { 
+        configured: fbConfigured, 
+        reachable: fbReachable, 
+        last_seen_at: fbLastSeen, 
+        detail: fbDetail + ` (Project: ${process.env.FIREBASE_PROJECT_ID})`
+    };
 
     // -----------------------------------------------------------------------
     // 3. Stripe
@@ -115,7 +120,12 @@ export async function GET(req: NextRequest) {
             stripeDetail = "API call failed: " + err.message;
         }
     }
-    sources.stripe = { configured: stripeConfigured, reachable: stripeReachable, last_seen_at: stripeLastSeen, detail: stripeDetail };
+    sources.stripe = { 
+        configured: stripeConfigured, 
+        reachable: stripeReachable, 
+        last_seen_at: stripeLastSeen, 
+        detail: stripeDetail + ` (Key: ${process.env.STRIPE_SECRET_KEY?.slice(0, 7)}...${process.env.STRIPE_SECRET_KEY?.slice(-4)})`
+    };
 
     // -----------------------------------------------------------------------
     // 4. GA4 (Google Analytics)

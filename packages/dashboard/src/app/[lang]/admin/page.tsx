@@ -59,7 +59,7 @@ function DataSourcesStrip() {
     const [checkedAt, setCheckedAt] = useState<string | null>(null);
 
     useEffect(() => {
-        adminFetch("/api/admin/health")
+        adminFetch(`/api/admin/health?t=${Date.now()}`)
             .then(r => r.json())
             .then(data => { setSources(data.sources); setCheckedAt(data.checked_at); })
             .catch(() => {});
