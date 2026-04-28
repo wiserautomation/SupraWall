@@ -21,7 +21,7 @@ from .local_policy import LocalPolicyEngine
 from .runtime.trace import generate_trace_id
 
 log = logging.getLogger("suprawall")
-SDK_VERSION = "1.1.0"
+SDK_VERSION = "1.1.1"
 
 # Thread-local context that adapters and share_url() both read.
 _fw_ctx = threading.local()
