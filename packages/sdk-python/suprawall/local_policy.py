@@ -3,7 +3,6 @@
 
 import json
 import re
-from pathlib import Path
 from typing import Any, Optional
 
 # Default rules ship with the package — no API key, no network, no YAML dep required.
@@ -28,6 +27,7 @@ _DEFAULT_RULES = [
             r"|\brd\s+/s"                     # Windows rd /s
             r"|format\s+[c-zC-Z]:"            # Windows format C:
             r"|>\s*/dev/(?!null\b)"           # redirect to /dev/sd*, /dev/hd*
+            r"|>>?\s*/(?:etc|root|sys|proc|boot)/"  # shell redirect to system paths
             r")"
         ),
     },

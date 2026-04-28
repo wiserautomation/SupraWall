@@ -333,24 +333,26 @@ def _check_call_args(args: tuple, kwargs: dict, engine: LocalPolicyEngine, metho
     """Checks invocation arguments for policy violations (generic-agent fallback).
 
     Two passes per argument:
-    1. Standard check with tool name — catches no-secret-exfil and any
-       tool-pattern rules that happen to match "generic.<method>".
-    2. For each string value inside dict arguments, re-check under the "shell"
-       tool name — catches no-destructive-shell even when the actual tool is
-       unknown (homegrown agents, wrappers, etc.).
+    1. Standard check with "generic.<method>" — catches no-secret-exfil and any
+       tool-pattern rule that happens to match the generic tool name.
+    2. Re-check every string (bare positional OR value inside a dict) under the
+       "shell" tool name so destructive shell patterns fire regardless of what
+       the real tool name is.
     """
     for arg in list(args) + list(kwargs.values()):
         violation = engine.check(f"generic.{method_name}", arg)
         if violation:
             _handle_violation(f"generic.{method_name}", violation, engine, {"input": arg})
-        # Second pass: treat each string value as a potential shell command so
-        # destructive patterns are caught regardless of the generic tool name.
-        if isinstance(arg, dict):
-            for key, val in arg.items():
-                if isinstance(val, str) and val:
-                    violation = engine.check("shell", val)
-                    if violation:
-                        _handle_violation("shell", violation, engine, {key: val})
+        # Second pass: collect every string to check as a potential shell command.
+        strings: list = []
+        if isinstance(arg, str):
+            strings = [("input", arg)]
+        elif isinstance(arg, dict):
+            strings = [(k, v) for k, v in arg.items() if isinstance(v, str) and v]
+        for key, val in strings:
+            violation = engine.check("shell", val)
+            if violation:
+                _handle_violation("shell", violation, engine, {key: val})
 
 
 def _handle_violation(action: str, violation: dict, engine: LocalPolicyEngine, args: Any) -> None:
