@@ -1,14 +1,11 @@
 import "server-only";
 import admin from 'firebase-admin';
+import { cleanPrivateKey } from "./utils";
 
 function getFirebaseAdmin(): admin.app.App {
     if (admin.apps.length > 0 && admin.apps[0] !== null) return admin.apps[0] as admin.app.App;
 
-    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    if (privateKey) {
-        // Handle escaped newlines and remove surrounding quotes if any
-        privateKey = privateKey.replace(/\\n/g, '\n').replace(/^["']|["']$/g, '').trim();
-    }
+    const privateKey = cleanPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
 
     const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
     const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
