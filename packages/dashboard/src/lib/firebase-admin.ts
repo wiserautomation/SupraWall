@@ -1,14 +1,13 @@
 import "server-only";
 import admin from 'firebase-admin';
-import { cleanPrivateKey } from "./utils";
+import { cleanPrivateKey, cleanEnvVar } from "./utils";
 
 function getFirebaseAdmin(): admin.app.App {
     if (admin.apps.length > 0 && admin.apps[0] !== null) return admin.apps[0] as admin.app.App;
 
     const privateKey = cleanPrivateKey(process.env.FIREBASE_PRIVATE_KEY);
-
-    const projectId = process.env.FIREBASE_PROJECT_ID?.trim();
-    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL?.trim();
+    const projectId = cleanEnvVar(process.env.FIREBASE_PROJECT_ID);
+    const clientEmail = cleanEnvVar(process.env.FIREBASE_CLIENT_EMAIL);
 
 
     if (projectId && clientEmail && privateKey) {

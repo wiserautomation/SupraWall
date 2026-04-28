@@ -4,7 +4,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
 import { getAdminAuth } from "@/lib/firebase-admin";
-import { cleanPrivateKey } from "@/lib/utils";
+import { cleanPrivateKey, cleanEnvVar } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
         // --- 2. Initialize Analytics Client ---
         const analyticsDataClient = new BetaAnalyticsDataClient({
             credentials: {
-                client_email: process.env.FIREBASE_CLIENT_EMAIL,
+                client_email: cleanEnvVar(process.env.FIREBASE_CLIENT_EMAIL),
                 private_key: cleanPrivateKey(process.env.FIREBASE_PRIVATE_KEY),
             },
         });
