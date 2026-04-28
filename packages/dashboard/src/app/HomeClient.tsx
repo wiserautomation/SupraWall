@@ -69,30 +69,34 @@ export function SwarmVisualization() {
 // ── Tech Tabs (Code Snippets) ──
 
 export function TechTabs() {
-    const [activeTechTab, setActiveTechTab] = useState("TypeScript");
+    const [activeTechTab, setActiveTechTab] = useState("Python");
 
     const techExamples: Record<string, any> = {
-        "TypeScript": {
-            before: `const agent = createAgent();\n// ⚠️ No governance window\nawait agent.invoke({ task: "..." });\n// Unrestricted tool usage 💀`,
-            after: `import { secure_agent } from "suprawall";\n\n// 🛡️ Zero-Trust Interception\nconst secured = secure_agent(myAgent, {\n  api_key: "sw_..."\n});\n\n// Every action is now governed\nawait secured.invoke({ task: "..." });\n// ✅ Tools intercepted & audited`
-        },
         "Python": {
-            before: `from crewai import Agent\n\n# ⚠️ Autonomous swarm risk\nagent = Agent(...)\nagent.start()\n# Unlimited tool access 💀`,
-            after: `from suprawall import secure_agent\n\n# 🛡️ Hard-coded security shim\nsecured = secure_agent(my_agent, api_key="sw_...")\n\n# Agent is automatically protected\n# ✅ Destructive acts blocked deterministically`
+            title: "60-Second Smoke Test",
+            subtitle: "No LLM, no API keys, no framework — see the policy engine block a destructive call directly:",
+            code: `from suprawall import LocalPolicyEngine\n\nengine = LocalPolicyEngine()  # ships with safe defaults\n\n# Intercept a destructive shell command\nverdict = engine.check(tool_name="terminal", args={"command": "rm -rf /"})\nprint(verdict)\n# → {'name': 'no-destructive-shell', 'action': 'DENY', ...}`
+        },
+        "LangChain": {
+            title: "Zero-Trust Wrapper",
+            subtitle: "Wrap any agent in one line. Intercepts every tool call before execution.",
+            code: `from suprawall import wrap_with_firewall\nfrom langchain.agents import AgentExecutor\n\n# Your existing agent\nagent = AgentExecutor(...)\n\n# 🛡️ Hard-coded security perimeter\nsafe_agent = wrap_with_firewall(agent)\n\nsafe_agent.invoke({"input": "Delete my database"})\n# → raises SupraWallBlocked before the tool ever runs`
+        },
+        "TypeScript": {
+            title: "Node.js Support",
+            subtitle: "Native TypeScript support for Vercel AI SDK, LangChain.js, and AutoGen.",
+            code: `import { wrapWithFirewall } from "suprawall";\n\n// 🛡️ Secure any function or tool-calling loop\nconst secured = wrapWithFirewall(myAgent);\n\ntry {\n  await secured.invoke({ task: "..." });\n} catch (e) {\n  console.log("Action Blocked:", e.policyId);\n}`
         },
         "MCP": {
-            before: `const server = new Server(...);\n// ⚠️ Direct tool execution\nserver.on("call_tool", ...);\n# No per-user policy 💀`,
-            after: `import { secure_mcp } from "suprawall";\n\n// 🛡️ Secure Model Context Protocol\nconst secured = secure_mcp(server);\n\n// ✅ Tool calls governed via SupraWall\nawait secured.start();`
-        },
-        "Vercel AI": {
-            before: `const { text } = await generateText({...});\n// ⚠️ No pre-execution check\n# System at mercy of LLM 💀`,
-            after: `import { secure } from "suprawall";\n\n// 🛡️ Middleware protection\nconst { text } = await secure(generateText)({\n  ...config\n});\n\n// ✅ Fail-safe security layer`
+            title: "Model Context Protocol",
+            subtitle: "Secure Claude Code or any MCP server with one command.",
+            code: `npx suprawall mcp-proxy --server-command "npx @modelcontextprotocol/server-everything"\n\n# All tool calls from Claude are now governed\n# by your local SupraWall policy engine.`
         }
     };
 
     return (
         <div className="space-y-6">
-            <div className="flex gap-2 p-1 bg-neutral-900/50 border border-white/5 rounded-2xl backdrop-blur-sm">
+            <div className="flex flex-wrap gap-2 p-1 bg-neutral-900/50 border border-white/5 rounded-2xl backdrop-blur-sm">
                 {Object.keys(techExamples).map((tech) => (
                     <button
                         key={tech}
@@ -100,7 +104,7 @@ export function TechTabs() {
                             setActiveTechTab(tech);
                             sendGAEvent('event', 'tech_tab_click', { tech });
                         }}
-                        className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 ${activeTechTab === tech ? 'bg-emerald-600 text-white shadow-xl' : 'text-neutral-500 hover:text-white'}`}
+                        className={`flex-1 py-3 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300 min-w-[100px] ${activeTechTab === tech ? 'bg-emerald-600 text-white shadow-xl' : 'text-neutral-500 hover:text-white'}`}
                     >
                         {tech}
                     </button>
@@ -108,12 +112,16 @@ export function TechTabs() {
             </div>
 
             <div className="grid grid-cols-1 gap-4 text-left">
-                <div className="space-y-3">
+                <div className="space-y-6">
+                    <div className="px-2">
+                        <h4 className="text-xl font-black italic uppercase text-white tracking-tighter mb-2">{techExamples[activeTechTab].title}</h4>
+                        <p className="text-sm text-neutral-500 font-medium italic">{techExamples[activeTechTab].subtitle}</p>
+                    </div>
                     <div className="bg-[#0A0A0A] border border-emerald-500/40 rounded-[2.5rem] p-10 font-mono text-xs md:text-sm overflow-x-auto text-emerald-100 shadow-[0_0_50px_rgba(16,185,129,0.1)] relative group">
                         <div className="absolute top-6 right-8 p-1.5 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] opacity-0 group-hover:opacity-100 transition-opacity">
                             SECURED BY SUPRAWALL
                         </div>
-                        <pre className="leading-relaxed opacity-90">{techExamples[activeTechTab].after}</pre>
+                        <pre className="leading-relaxed opacity-90">{techExamples[activeTechTab].code}</pre>
                     </div>
                 </div>
             </div>

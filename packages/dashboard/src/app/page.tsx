@@ -267,6 +267,53 @@ export default function LandingPage() {
                     </div>
                 </section>
 
+                {/* 🛡️ SHAREABLE TRACES */}
+                <section className="py-40 px-6 bg-black relative">
+                    <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
+                        <div className="order-2 lg:order-1 relative">
+                            <div className="absolute -inset-20 bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+                            <div className="bg-[#050505] border-2 border-white/10 rounded-[3rem] p-10 font-mono text-sm shadow-2xl relative overflow-hidden group">
+                                <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
+                                    <span className="text-xs font-black uppercase tracking-widest text-blue-500">Trace ID: #A-00847</span>
+                                    <div className="flex gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                        <span className="text-[10px] font-black uppercase text-emerald-500">Signed & Validated</span>
+                                    </div>
+                                </div>
+                                <div className="space-y-4 opacity-80">
+                                    <p className="text-neutral-500">Attempted Action:</p>
+                                    <p className="text-white bg-white/5 p-4 rounded-xl border border-white/10">Wire <span className="text-blue-400">$50,000</span> to account <span className="text-neutral-600">REDACTED</span></p>
+                                    <p className="text-neutral-500 pt-4">Enforcement Result:</p>
+                                    <p className="text-rose-500 font-bold">BLOCKED by budget-guardrail.json</p>
+                                    <p className="text-neutral-500 pt-4">Audit Hash:</p>
+                                    <p className="text-[10px] text-neutral-600 break-all font-mono">SHA-256: 8f9a2b...3c1d4e (RSA Signed)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="space-y-8 order-1 lg:order-2">
+                            <TagBadge>Proof of Non-Execution</TagBadge>
+                            <h2 className="text-6xl md:text-8xl font-black italic tracking-tighter leading-[0.8] uppercase text-glow">
+                                Shareable <br />
+                                <span className="text-blue-500 font-bold">Attack Traces.</span>
+                            </h2>
+                            <p className="text-2xl text-neutral-400 font-medium leading-relaxed italic">
+                                Every block produces a structured, signed record of what your agent tried to do and why SupraWall stopped it. Share a public URL as proof for customers or auditors.
+                            </p>
+                            <div className="bg-white/5 border border-white/10 rounded-2xl p-6 font-mono text-xs text-blue-400">
+                                try &#123; <br />
+                                &nbsp;&nbsp;safe_agent.invoke(&#123; input: &quot;Wire $50k&quot; &#125;); <br />
+                                &#125; catch (e) &#123; <br />
+                                &nbsp;&nbsp;console.log(e.share_url()); <br />
+                                &nbsp;&nbsp;// &rarr; https://supra-wall.com/trace/A-00847 <br />
+                                &#125;
+                            </div>
+                            <p className="text-sm text-neutral-500 font-medium leading-relaxed">
+                                <span className="text-white font-bold">Privacy First:</span> Traces never leave your machine unless you explicitly call share_url(). PII (emails, cards, keys) is auto-redacted locally before any upload.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
                 {/* 🏷️ COMPLIANCE TEMPLATES — Proof point */}
                 <ComplianceTemplatesSection />
 
@@ -280,9 +327,9 @@ export default function LandingPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                             {[
-                                { step: "01", title: "Intercept", desc: "Every tool call your agent fires is caught by SupraWall before it hits your database, API, or filesystem.", icon: <Network className="w-8 h-8" /> },
-                                { step: "02", title: "Evaluate", desc: "Checks the payload against your hard-coded policy engine. ALLOW, BLOCK, or REQUIRE_APPROVAL — outside the LLM context.", icon: <Shield className="w-8 h-8" /> },
-                                { step: "03", title: "Enforce", desc: "Blocked calls return a structured error back to your agent, forcing it to self-correct. You get a signed audit log.", icon: <Zap className="w-8 h-8" /> }
+                                { step: "01", title: "Intercept", desc: "Every tool call routed through SupraWall before the runtime sees it. <1ms latency. Hard-coded — no LLM.", icon: <Network className="w-8 h-8" /> },
+                                { step: "02", title: "Evaluate", desc: "Budget caps, PII scrubbing, SQL/shell injection blocks. <2ms latency. Enforced as code.", icon: <Shield className="w-8 h-8" /> },
+                                { step: "03", title: "Enforce", desc: "Every decision RSA-signed, timestamped, and exportable. Maps to EU AI Act Art. 9, 13, 14.", icon: <Zap className="w-8 h-8" /> }
                             ].map((s, idx) => (
                                 <div key={idx} className="p-12 rounded-[3.5rem] bg-neutral-900/40 border border-white/5 space-y-8 hover:border-emerald-500/30 transition-all group">
                                     <div className="flex items-center justify-between">
@@ -440,14 +487,44 @@ export default function LandingPage() {
                     </div>
                 </section>
 
-                {/* 🔧 TECH ECOSYSTEM */}
-                <section className="py-20 border-y border-white/5 bg-[#020202]">
-                    <div className="max-w-7xl mx-auto px-6 space-y-12">
-                        <p className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.5em] text-center italic">One command to secure any stack</p>
-                        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-10 items-center justify-center opacity-40 hover:opacity-100 transition-opacity">
-                            {['Python', 'TypeScript', 'LangChain', 'CrewAI', 'AutoGen', 'Vercel AI', 'AWS Marketplace', 'MCP'].map((tech) => (
-                                <div key={tech} className="text-sm font-black text-white italic text-center uppercase tracking-widest">{tech}</div>
-                            ))}
+                {/* 🔧 FRAMEWORK COMPATIBILITY */}
+                <section className="py-40 px-6 bg-black">
+                    <div className="max-w-4xl mx-auto space-y-16">
+                        <div className="text-center space-y-4">
+                            <TagBadge>Framework Agnostic</TagBadge>
+                            <h2 className="text-4xl md:text-6xl font-black italic uppercase tracking-tighter text-white">Works with any <span className="text-emerald-500">agent stack.</span></h2>
+                            <p className="text-neutral-500 font-bold uppercase tracking-widest text-xs italic">SupraWall wraps the tool boundary, which every agent has.</p>
+                        </div>
+
+                        <div className="rounded-[2.5rem] border border-white/5 bg-neutral-900/20 overflow-hidden">
+                            <table className="w-full text-left border-separate border-spacing-0">
+                                <thead>
+                                    <tr>
+                                        <th className="p-6 text-[10px] font-black uppercase tracking-widest text-neutral-500 border-b border-white/5">Framework</th>
+                                        <th className="p-6 text-[10px] font-black uppercase tracking-widest text-neutral-500 border-b border-white/5">Status</th>
+                                        <th className="p-6 text-[10px] font-black uppercase tracking-widest text-neutral-500 border-b border-white/5">Plugin</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="text-sm font-bold">
+                                    {[
+                                        { name: "LangChain (Py + TS)", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "LangGraph", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "CrewAI", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "AutoGen", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "OpenAI Agents SDK", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "Anthropic SDK", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "Claude Code", status: "✅ via MCP", plugin: "suprawall-mcp" },
+                                        { name: "Vercel AI SDK", status: "✅ First-class", plugin: "Built-in" },
+                                        { name: "Custom / Homegrown", status: "✅ Supported", plugin: "One-line wrap" }
+                                    ].map((f, i) => (
+                                        <tr key={i} className="hover:bg-white/[0.02] transition-colors">
+                                            <td className="p-6 border-b border-white/5 text-white italic">{f.name}</td>
+                                            <td className="p-6 border-b border-white/5 text-emerald-500 text-[10px] uppercase tracking-widest">{f.status}</td>
+                                            <td className="p-6 border-b border-white/5 text-neutral-500 text-[10px] uppercase tracking-widest">{f.plugin}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </section>
@@ -517,6 +594,29 @@ export default function LandingPage() {
                                         </Link>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* 🧠 WHY DETERMINISTIC MATTERS */}
+                <section className="py-40 px-6 bg-black relative overflow-hidden">
+                    <div className="absolute inset-0 bg-rose-500/[0.02] blur-[150px] rounded-full pointer-events-none" />
+                    <div className="max-w-4xl mx-auto space-y-12 relative z-10 text-center">
+                        <TagBadge>The Philosophy</TagBadge>
+                        <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-none">Rules belong in code, <br /><span className="text-rose-500 font-bold underline decoration-white/10 italic">not in prompts.</span></h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left pt-12">
+                            <div className="space-y-4">
+                                <h4 className="text-xl font-black italic uppercase text-white">The Probabilistic Trap</h4>
+                                <p className="text-neutral-500 font-medium leading-relaxed italic">
+                                    The dominant security pattern today is another LLM judging the first LLM. It works ~80% of the time, fails silently the other 20%, costs tokens on every call, and produces unauditable decisions.
+                                </p>
+                            </div>
+                            <div className="space-y-4">
+                                <h4 className="text-xl font-black italic uppercase text-emerald-500">The Deterministic Shield</h4>
+                                <p className="text-neutral-400 font-medium leading-relaxed italic">
+                                    SupraWall takes the opposite stance. A deterministic policy either matches or it doesn&apos;t. The decision is reproducible, the latency is constant, and there&apos;s no prompt that can talk it out of doing its job.
+                                </p>
                             </div>
                         </div>
                     </div>
