@@ -17,6 +17,12 @@ import { getAdminAuth } from "@/lib/firebase-admin";
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "")
     .split(",").map(e => e.trim()).filter(Boolean);
 
+const PACKAGES = [
+    "suprawall-sdk",
+    "langchain-suprawall",
+    "suprawall-hermes",
+];
+
 const CACHE_SECS = 6 * 60 * 60;
 
 export async function GET(req: NextRequest) {
@@ -30,58 +36,76 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Fetch overall recent downloads
-    let recent: { last_day: number; last_week: number; last_month: number } | null = null;
-    let recentError: string | null = null;
-    try {
-        const res = await fetch(
-            "https://pypistats.org/api/packages/suprawall-sdk/recent",
-            { next: { revalidate: CACHE_SECS } }
-        );
-        if (res.ok) {
-            const data = await res.json();
-            recent = {
-                last_day: data.data?.last_day ?? 0,
-                last_week: data.data?.last_week ?? 0,
-                last_month: data.data?.last_month ?? 0,
-            };
-        } else {
-            recentError = `HTTP ${res.status}`;
-        }
-    } catch (err: any) {
-        recentError = err.message;
-    }
+    const results = await Promise.all(
+        PACKAGES.map(async pkg => {
+            let recent: { last_day: number; last_week: number; last_month: number } | null = null;
+            let daily: { date: string; downloads: number }[] = [];
+            let errors: { recent: string | null; daily: string | null } = { recent: null, daily: null };
 
-    // Fetch 30-day daily breakdown (system category = all installs)
-    let daily: { date: string; downloads: number }[] = [];
-    let dailyError: string | null = null;
-    try {
-        const res = await fetch(
-            "https://pypistats.org/api/packages/suprawall-sdk/system?period=month",
-            { next: { revalidate: CACHE_SECS } }
-        );
-        if (res.ok) {
-            const data = await res.json();
-            // Sum across OS variants per day
-            const byDay: Record<string, number> = {};
-            for (const row of data.data ?? []) {
-                byDay[row.date] = (byDay[row.date] ?? 0) + (row.downloads ?? 0);
+            try {
+                const res = await fetch(
+                    `https://pypistats.org/api/packages/${pkg}/recent`,
+                    { next: { revalidate: CACHE_SECS } }
+                );
+                if (res.ok) {
+                    const data = await res.json();
+                    recent = {
+                        last_day: data.data?.last_day ?? 0,
+                        last_week: data.data?.last_week ?? 0,
+                        last_month: data.data?.last_month ?? 0,
+                    };
+                } else {
+                    errors.recent = `HTTP ${res.status}`;
+                }
+            } catch (err: any) {
+                errors.recent = err.message;
             }
-            daily = Object.entries(byDay)
-                .map(([date, downloads]) => ({ date, downloads }))
-                .sort((a, b) => a.date.localeCompare(b.date));
-        } else {
-            dailyError = `HTTP ${res.status}`;
+
+            try {
+                const res = await fetch(
+                    `https://pypistats.org/api/packages/${pkg}/system?period=month`,
+                    { next: { revalidate: CACHE_SECS } }
+                );
+                if (res.ok) {
+                    const data = await res.json();
+                    const byDay: Record<string, number> = {};
+                    for (const row of data.data ?? []) {
+                        byDay[row.date] = (byDay[row.date] ?? 0) + (row.downloads ?? 0);
+                    }
+                    daily = Object.entries(byDay)
+                        .map(([date, downloads]) => ({ date, downloads }))
+                        .sort((a, b) => a.date.localeCompare(b.date));
+                } else {
+                    errors.daily = `HTTP ${res.status}`;
+                }
+            } catch (err: any) {
+                errors.daily = err.message;
+            }
+
+            return { package: pkg, recent, daily, errors };
+        })
+    );
+
+    const combinedDailyMap: Record<string, number> = {};
+    for (const r of results) {
+        for (const d of r.daily) {
+            combinedDailyMap[d.date] = (combinedDailyMap[d.date] ?? 0) + d.downloads;
         }
-    } catch (err: any) {
-        dailyError = err.message;
     }
+    const combinedDaily = Object.entries(combinedDailyMap)
+        .map(([date, downloads]) => ({ date, downloads }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+    const totalRecent = {
+        last_day: results.reduce((sum, r) => sum + (r.recent?.last_day ?? 0), 0),
+        last_week: results.reduce((sum, r) => sum + (r.recent?.last_week ?? 0), 0),
+        last_month: results.reduce((sum, r) => sum + (r.recent?.last_month ?? 0), 0),
+    };
 
     return NextResponse.json({
-        package: "suprawall",
-        recent,
-        daily,
-        errors: { recent: recentError, daily: dailyError },
+        packages: results,
+        recent: totalRecent,
+        daily: combinedDaily,
         fetched_at: new Date().toISOString(),
     });
 }

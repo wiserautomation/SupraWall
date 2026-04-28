@@ -22,6 +22,7 @@ import { adminFetch } from "@/lib/admin-fetch";
 type Telemetry = {
     totals: { blocks: number; installs: number; wraps: number };
     framework_breakdown: { framework: string; wraps: number }[];
+    plugin_breakdown: { plugin: string; uses: number }[];
     fetched_at: string;
 };
 
@@ -32,9 +33,9 @@ type NpmData = {
 };
 
 type PypiData = {
+    packages: { package: string; recent: { last_day: number; last_week: number; last_month: number } | null; daily: { date: string; downloads: number }[]; errors: any }[];
     recent: { last_day: number; last_week: number; last_month: number } | null;
     daily: { date: string; downloads: number }[];
-    errors: { recent: string | null; daily: string | null };
     fetched_at: string;
 };
 
@@ -211,29 +212,55 @@ export default function OssMetricsPage() {
                     <StatCard label="Agents Wrapped"  value={telemetry?.totals.wraps ?? 0} sub="wrap_with_firewall() calls" icon={Download} color="blue" />
                 </div>
 
-                {(telemetry?.framework_breakdown ?? []).length > 0 && (
-                    <Card className="bg-black border-white/5">
-                        <CardHeader className="pb-2">
-                            <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">
-                                Framework breakdown (wraps)
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <BarChart data={telemetry!.framework_breakdown} layout="vertical">
-                                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" horizontal={false} />
-                                    <XAxis type="number" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
-                                    <YAxis type="category" dataKey="framework" stroke="#444" fontSize={10} tickLine={false} axisLine={false} width={80} />
-                                    <Tooltip
-                                        contentStyle={{ backgroundColor: "rgba(0,0,0,0.9)", border: "1px solid #222", borderRadius: "10px" }}
-                                        cursor={{ fill: "rgba(255,255,255,0.03)" }}
-                                    />
-                                    <Bar dataKey="wraps" fill="#b8ff00" radius={[0, 4, 4, 0]} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        </CardContent>
-                    </Card>
-                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(telemetry?.framework_breakdown ?? []).length > 0 && (
+                        <Card className="bg-black border-white/5">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">
+                                    Framework breakdown (wraps)
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="h-48">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={telemetry!.framework_breakdown} layout="vertical">
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" horizontal={false} />
+                                        <XAxis type="number" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                                        <YAxis type="category" dataKey="framework" stroke="#444" fontSize={10} tickLine={false} axisLine={false} width={80} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: "rgba(0,0,0,0.9)", border: "1px solid #222", borderRadius: "10px" }}
+                                            cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                                        />
+                                        <Bar dataKey="wraps" fill="#b8ff00" radius={[0, 4, 4, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    )}
+
+                    {(telemetry?.plugin_breakdown ?? []).length > 0 && (
+                        <Card className="bg-black border-white/5">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-[10px] font-black text-neutral-500 uppercase tracking-[0.3em]">
+                                    Plugin breakdown (uses)
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent className="h-48">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={telemetry!.plugin_breakdown} layout="vertical">
+                                        <CartesianGrid strokeDasharray="3 3" stroke="#ffffff08" horizontal={false} />
+                                        <XAxis type="number" stroke="#444" fontSize={10} tickLine={false} axisLine={false} />
+                                        <YAxis type="category" dataKey="plugin" stroke="#444" fontSize={10} tickLine={false} axisLine={false} width={80} />
+                                        <Tooltip
+                                            contentStyle={{ backgroundColor: "rgba(0,0,0,0.9)", border: "1px solid #222", borderRadius: "10px" }}
+                                            cursor={{ fill: "rgba(255,255,255,0.03)" }}
+                                        />
+                                        <Bar dataKey="uses" fill="#60a5fa" radius={[0, 4, 4, 0]} />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
             </section>
 
             {/* ── Package Downloads ── */}
@@ -254,15 +281,16 @@ export default function OssMetricsPage() {
                             color="purple"
                         />
                     ))}
-                    {pypi?.recent && (
+                    {pypi?.packages.map(pkg => (
                         <StatCard
-                            label="suprawall (PyPI)"
-                            value={pypi.recent.last_month}
+                            key={pkg.package}
+                            label={`${pkg.package} (PyPI)`}
+                            value={pkg.recent?.last_month ?? 0}
                             sub="last 30 days"
                             icon={Download}
                             color="amber"
                         />
-                    )}
+                    ))}
                 </div>
 
                 {combinedDownloads.length > 0 && (

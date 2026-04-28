@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
         let totalInstalls = 0;
         let totalWraps = 0;
         const frameworkBreakdown: { framework: string; wraps: number }[] = [];
+        const pluginBreakdown: { plugin: string; uses: number }[] = [];
 
         for (const row of res.rows) {
             const count = Number(row.value_int);
@@ -46,13 +47,18 @@ export async function GET(req: NextRequest) {
             else if (row.key.startsWith("wrap:")) {
                 frameworkBreakdown.push({ framework: row.key.slice(5), wraps: count });
             }
+            else if (row.key.startsWith("plugin:")) {
+                pluginBreakdown.push({ plugin: row.key.slice(7), uses: count });
+            }
         }
 
         frameworkBreakdown.sort((a, b) => b.wraps - a.wraps);
+        pluginBreakdown.sort((a, b) => b.uses - a.uses);
 
         return NextResponse.json({
             totals: { blocks: totalBlocks, installs: totalInstalls, wraps: totalWraps },
             framework_breakdown: frameworkBreakdown,
+            plugin_breakdown: pluginBreakdown,
             fetched_at: new Date().toISOString(),
         });
     } catch (err: any) {

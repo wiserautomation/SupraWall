@@ -23,7 +23,7 @@ type TelemetryEvent = typeof ALLOWED_EVENTS[number];
  * Framework-specific wrap counts are stored as "wrap:<framework>".
  */
 router.post("/event", async (req: Request, res: Response) => {
-    const { event, framework } = req.body;
+    const { event, framework, plugin } = req.body;
 
     if (!ALLOWED_EVENTS.includes(event as TelemetryEvent)) {
         return res.status(400).json({ error: `Unsupported event type. Allowed: ${ALLOWED_EVENTS.join(", ")}` });
@@ -42,10 +42,16 @@ router.post("/event", async (req: Request, res: Response) => {
     try {
         await upsertKey(event);
 
-        // For wraps, also track per-framework breakdown
-        if (event === "wrap" && framework && typeof framework === "string") {
+        // Track per-framework breakdown
+        if (framework && typeof framework === "string") {
             const safe = framework.replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
             if (safe) await upsertKey(`wrap:${safe}`);
+        }
+
+        // Track per-plugin breakdown
+        if (plugin && typeof plugin === "string") {
+            const safe = plugin.replace(/[^a-z0-9_-]/gi, "").slice(0, 32);
+            if (safe) await upsertKey(`plugin:${safe}`);
         }
 
         return res.status(201).json({ ok: true });
