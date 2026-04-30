@@ -7,6 +7,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
+import Link from "next/link";
 import GuardrailsAIClient from "./GuardrailsAIClient";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
