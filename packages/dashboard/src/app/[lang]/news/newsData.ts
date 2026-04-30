@@ -20,6 +20,7 @@ export interface NewsArticle {
     body: {
         paragraphs: string[];
     };
+    href?: string; // optional override for the article's public URL
 }
 
 export const newsArticles: NewsArticle[] = [
@@ -31,6 +32,7 @@ export const newsArticles: NewsArticle[] = [
         category: "THREAT INTEL",
         readingTime: 12,
         published: true,
+        href: "/blog/llm-as-judge-fails-agent-security",
         supraWallAngle: "SupraWall intercepts the execution of an action, not just the text of the intent. This deterministic approach closes the 20% gap left by probabilistic LLM judges.",
         relatedLinks: [
             { href: "/vs/lakera", label: "SupraWall vs Lakera Guard" },
