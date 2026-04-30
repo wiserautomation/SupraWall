@@ -24,6 +24,28 @@ export interface NewsArticle {
 
 export const newsArticles: NewsArticle[] = [
     {
+        slug: "llm-as-judge-fails-agent-security",
+        title: "LLM-as-Judge Fails for Agent Security",
+        excerpt: "Every major AI guardrail product uses an LLM to judge another LLM. It works 80% of the time. We document 4 bypass patterns with real payloads — and show why deterministic pre-execution interception is the only reliable alternative.",
+        date: "2026-04-30",
+        category: "THREAT INTEL",
+        readingTime: 12,
+        published: true,
+        supraWallAngle: "SupraWall intercepts the execution of an action, not just the text of the intent. This deterministic approach closes the 20% gap left by probabilistic LLM judges.",
+        relatedLinks: [
+            { href: "/vs/lakera", label: "SupraWall vs Lakera Guard" },
+            { href: "/vs/guardrails-ai", label: "SupraWall vs Guardrails AI" },
+            { href: "/learn/ai-agent-security-glossary", label: "AI Agent Security Glossary" },
+        ],
+        body: {
+            paragraphs: [
+                "Every major guardrail tool — including Lakera, NeMo Guardrails, Guardrails AI, and the OpenAI Moderation API — is built on the same underlying architecture: a secondary LLM evaluates the primary LLM's output or intent and returns a probability score.",
+                "This works for content safety, but it's fundamentally broken for agent security. Agents execute actions, they don't just output text. An LLM-judge sees the text of a tool call, but it doesn't intercept the tool call itself.",
+                "In our research, we've identified 4 systematic bypass patterns — Context Window Displacement, Indirect Tool Chaining, Unicode Homoglyph Substitution, and Confidence Hijacking — that allow malicious payloads to pass through LLM-as-judge systems with nearly 100% success rates.",
+            ],
+        },
+    },
+    {
         slug: "eu-commission-misses-guidance-deadline-august-enforcement-stands",
         title: "EU Commission Misses Its Own Deadline — But August 2026 Enforcement Is Not Moving",
         excerpt: "The European Commission failed to publish its promised guidance on high-risk AI obligations by February 2, 2026, leaving operators scrambling — while confirming the August enforcement deadline remains fixed.",

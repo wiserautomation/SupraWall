@@ -119,6 +119,11 @@ export default async function vsPage({ params }: { params: Promise<{ lang: strin
                         <p className="text-neutral-400 max-w-2xl mx-auto leading-relaxed font-medium">
                             Lakera and SupraWall are complementary. Use <strong className="text-white text-glow">Lakera Guard</strong> as your broad-spectrum linguistic shield, and <strong className="text-emerald-500">SupraWall</strong> as your surgical tool-level firewall. Combining them creates a complete defense-in-depth strategy.
                         </p>
+                        <div className="py-4">
+                            <Link href="/blog/llm-as-judge-fails-agent-security" className="text-emerald-500 font-black uppercase text-xs tracking-widest hover:text-white transition-colors">
+                                → See how LLM judges fail on 4 real attack patterns
+                            </Link>
+                        </div>
                         <div className="pt-4 flex justify-center">
                             <Link href={getLocalizedPath("/login", lang)} className="px-10 py-5 bg-white text-black font-black uppercase tracking-tighter text-xl rounded-2xl hover:bg-emerald-500 hover:text-white transition-all transform hover:scale-105">
                                 Start Your Implementation
