@@ -5,9 +5,10 @@
 
 import { CodeBlock } from "@/components/CodeBlock";
 import { Shield, Zap, Users, Layout, Terminal, CheckCircle2 } from "lucide-react";
-import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function CrewAIDocs() {
+    const { lang } = useParams() as { lang: string };
     return (
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
             <div className="space-y-4">
@@ -87,8 +88,8 @@ crew.kickoff()`}
             </div>
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
-                <Link href="/docs/frameworks/autogen" className="text-neutral-400 hover:text-white transition-colors text-sm">← AutoGen</Link>
-                <Link href="/docs/examples" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">Policy Examples →</Link>
+                <Link href={`/${lang}/docs/frameworks/autogen`} className="text-neutral-400 hover:text-white transition-colors text-sm">← AutoGen</Link>
+                <Link href={`/${lang}/docs/examples`} className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">Policy Examples →</Link>
             </div>
         </div>
     );
