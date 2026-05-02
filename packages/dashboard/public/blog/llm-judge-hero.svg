@@ -1,0 +1,28 @@
+<svg width="1000" height="280" viewBox="0 0 1000 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1000" height="280" fill="#0A0A0A"/>
+  
+  <!-- Left Panel: LLM-as-Judge -->
+  <text x="50" y="40" fill="#FF0000" font-family="monospace" font-size="14" font-weight="bold">LLM-as-Judge Architecture</text>
+  <text x="50" y="80" fill="#FFFFFF" font-family="monospace" font-size="12">[Agent] → [Tool Call: "DELETE /account/847"]</text>
+  <path d="M150 95V120" stroke="#808080" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="160" y="130" fill="#808080" font-family="monospace" font-size="10">[LLM Judge API]</text>
+  <text x="160" y="145" fill="#808080" font-family="monospace" font-size="10">"Is this dangerous?"</text>
+  <text x="160" y="160" fill="#FF0000" font-family="monospace" font-size="10">Score: 0.73 (UNCERTAIN)</text>
+  <path d="M150 170V195" stroke="#808080" stroke-width="1" stroke-dasharray="2 2"/>
+  <text x="50" y="210" fill="#FFFFFF" font-family="monospace" font-size="12">[Action Executes Anyway]</text>
+  <text x="50" y="225" fill="#FF0000" font-family="monospace" font-size="12">847 instances deleted ✗</text>
+
+  <!-- Divider -->
+  <line x1="500" y1="30" x2="500" y2="250" stroke="#808080" stroke-width="1" stroke-dasharray="4 4"/>
+
+  <!-- Right Panel: SupraWall -->
+  <text x="550" y="40" fill="#B8FF00" font-family="monospace" font-size="14" font-weight="bold">SupraWall Architecture</text>
+  <text x="550" y="80" fill="#FFFFFF" font-family="monospace" font-size="12">[Agent] → [Tool Call: "DELETE /account/847"]</text>
+  <path d="M650 95V120" stroke="#B8FF00" stroke-width="1"/>
+  <text x="660" y="130" fill="#B8FF00" font-family="monospace" font-size="10">[SupraWall SDK Intercept]</text>
+  <text x="660" y="145" fill="#B8FF00" font-family="monospace" font-size="10">Policy: DENY delete_account</text>
+  <text x="660" y="160" fill="#B8FF00" font-family="monospace" font-size="10">Latency: 1.2ms</text>
+  <path d="M650 170V195" stroke="#B8FF00" stroke-width="1"/>
+  <text x="550" y="210" fill="#FFFFFF" font-family="monospace" font-size="12">[Action BLOCKED]</text>
+  <text x="550" y="225" fill="#B8FF00" font-family="monospace" font-size="12">Signed audit log generated ✓</text>
+</svg>
