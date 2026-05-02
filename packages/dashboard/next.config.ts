@@ -58,7 +58,18 @@ const nextConfig: NextConfig = {
         source: '/beta',
         destination: '/en/beta',
         permanent: false,
-      }
+      },
+      // 301: moved LLM-as-Judge article from /news/ to /blog/
+      {
+        source: '/news/llm-as-judge-fails-agent-security',
+        destination: '/blog/llm-as-judge-fails-agent-security',
+        permanent: true,
+      },
+      {
+        source: '/:locale/news/llm-as-judge-fails-agent-security',
+        destination: '/:locale/blog/llm-as-judge-fails-agent-security',
+        permanent: true,
+      },
     ];
   },
   async headers() {
