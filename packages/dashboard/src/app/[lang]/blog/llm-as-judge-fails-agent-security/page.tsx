@@ -243,7 +243,7 @@ export default async function BlogArticlePage({ params }: { params: Promise<{ la
                    <div className="text-center p-6 border border-white/5 bg-white/[0.01] rounded-3xl">
                       <div className="text-4xl font-black text-[#B8FF00] mb-1">~80%</div>
                       <div className="text-[10px] font-black text-neutral-500 uppercase tracking-widest">LLM judge accuracy on agent tool calls</div>
-                      <div className="text-[9px] text-neutral-700 mt-2">Source: Perez et al., &quot;Judging the Judges,&quot; NeurIPS 2024</div>
+                      <div className="text-[9px] text-neutral-700 mt-2">Source: Shi et al., &quot;Judging the Judges,&quot; 2024</div>
                    </div>
                    <div className="text-center p-6 border border-white/5 bg-white/[0.01] rounded-3xl">
                       <div className="text-4xl font-black text-[#B8FF00] mb-1">3–4/4</div>
