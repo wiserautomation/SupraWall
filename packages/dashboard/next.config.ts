@@ -49,13 +49,14 @@ const nextConfig: NextConfig = {
       { source: '/tools',               destination: '/en/tools/llm-cost-calculator', permanent: true },
       { source: '/tools/:path*',        destination: '/en/tools/:path*', permanent: true },
 
-      // ── Blog article moves ─────────────────────────────────────────────
-      // LLM-as-Judge moved from /news/ to /blog/
-      { source: '/news/llm-as-judge-fails-agent-security',            destination: '/blog/llm-as-judge-fails-agent-security', permanent: true },
-      { source: '/:locale/news/llm-as-judge-fails-agent-security',   destination: '/:locale/blog/llm-as-judge-fails-agent-security', permanent: true },
+      // ── Blog article: legacy /news/ URL → /blog/ (→ the live page) ──────────
+      { source: '/news/llm-as-judge-fails-agent-security',     destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
+      { source: '/en/news/llm-as-judge-fails-agent-security',  destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
+      // bare /blog/ (no locale) → inject /en/
+      { source: '/blog/llm-as-judge-fails-agent-security',     destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
       // state-of-ai-agent-security-2026 moved to /research/
-      { source: '/:locale/blog/state-of-ai-agent-security-2026',     destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      { source: '/blog/state-of-ai-agent-security-2026',             destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/en/blog/state-of-ai-agent-security-2026',    destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/blog/state-of-ai-agent-security-2026',       destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
 
 
       // ── Non-en locale news → English news (content is English-only) ────
@@ -86,10 +87,14 @@ const nextConfig: NextConfig = {
       { source: '/pl/blog',        destination: '/en/news', permanent: true },
       { source: '/nl/blog',        destination: '/en/news', permanent: true },
 
-      // ── /en/blog/* (English blog posts that don't have a page) → /en/news ──
-      { source: '/en/blog/state-of-ai-agent-security-2026',  destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      { source: '/en/blog/:slug',                             destination: '/en/news', permanent: false },
-      { source: '/blog/:slug',                                destination: '/en/news', permanent: false },
+      // ── /en/blog/* ghost slugs (known-invalid, not the live article) ─────
+      { source: '/en/blog/state-of-ai-agent-security-2026',          destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
+      // NOTE: do NOT add a catch-all /en/blog/:slug here.
+      // The live article at /en/blog/llm-as-judge-fails-agent-security is a real page.
+      // Unknown /blog/ slugs that don't match a real page will naturally 404.
+      // A bare /blog/:slug without locale prefix needs to route to /en/
+      { source: '/blog/llm-as-judge-fails-agent-security',            destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
+      { source: '/blog/eu-ai-act-langchain-compliance',               destination: '/en/news', permanent: true },
 
       // ── Root-level /spec and /audit → actual root paths ───────────────
       { source: '/en/spec',  destination: '/spec',  permanent: true },
