@@ -70,7 +70,7 @@ export default async function NewsIndexPage({
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
             />
             <Navbar lang={lang} dictionary={dictionary} />
-            <NewsIndexClient />
+            <NewsIndexClient lang={lang} />
         </div>
     );
 }

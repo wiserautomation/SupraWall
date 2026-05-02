@@ -206,6 +206,7 @@ export const newsArticles: NewsArticle[] = [
         category: "INDUSTRY",
         readingTime: 8,
         published: true,
+        href: "/en/research/state-of-ai-agent-security-2026",
         supraWallAngle: "SupraWall's growth in 2026 is a direct result of this industry-wide realization: Prompt engineering is for behavior; SDKs are for security.",
         relatedLinks: [
             { href: "/en/learn/what-is-agent-runtime-security", label: "Agent Runtime Security (ARS)" },

@@ -10,7 +10,7 @@ import { newsArticles, getArticle, formatDate, CATEGORY_COLORS, NewsArticle } fr
 import { i18n, Locale } from "@/i18n/config";
 
 interface Props {
-    params: { slug: string; lang: string };
+    params: Promise<{ slug: string; lang: string }>;
 }
 
 export function generateStaticParams() {
@@ -24,8 +24,8 @@ export function generateStaticParams() {
     return params;
 }
 
-export function generateMetadata({ params }: Props): Metadata {
-    const { lang, slug } = params;
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { lang, slug } = await params;
     
     // News content is currently English-only
     if (lang !== 'en') return { title: "Not Found", robots: "noindex, nofollow" };
@@ -65,8 +65,8 @@ export function generateMetadata({ params }: Props): Metadata {
     };
 }
 
-export default function NewsArticlePage({ params }: Props) {
-    const { slug, lang } = params;
+export default async function NewsArticlePage({ params }: Props) {
+    const { slug, lang } = await params;
     
     // News content is currently English-only. 
     // Prevent rendering on other language paths to avoid thin content indexing.

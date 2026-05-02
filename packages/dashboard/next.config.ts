@@ -55,6 +55,8 @@ const nextConfig: NextConfig = {
       // bare /blog/ (no locale) → inject /en/
       { source: '/blog/llm-as-judge-fails-agent-security',     destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
       // state-of-ai-agent-security-2026 moved to /research/
+      { source: '/en/news/state-of-ai-agent-security-2026',          destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/news/state-of-ai-agent-security-2026',             destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
       { source: '/en/blog/state-of-ai-agent-security-2026',    destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
       { source: '/blog/state-of-ai-agent-security-2026',       destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
 
