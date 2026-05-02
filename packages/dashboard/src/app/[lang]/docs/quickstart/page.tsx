@@ -6,6 +6,7 @@
 import { CodeBlock } from "@/components/CodeBlock";
 import { Zap, Key, Terminal, Shield, CheckCircle2, ArrowRight } from "lucide-react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
 export default function QuickstartDocs() {
     const { lang } = useParams() as { lang: string };

@@ -6,6 +6,7 @@
 import { CodeBlock } from "@/components/CodeBlock";
 import { Shield, Zap, Users, Layout, Terminal, CheckCircle2 } from "lucide-react";
 import { useParams } from "next/navigation";
+import Link from "next/link";
 
 export default function CrewAIDocs() {
     const { lang } = useParams() as { lang: string };
