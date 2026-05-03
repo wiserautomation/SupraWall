@@ -62,7 +62,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             title: article.title,
             description: article.excerpt,
         },
-        robots: "index, follow",
     };
 }
 

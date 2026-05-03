@@ -1,5 +1,6 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
+import { i18n } from './config';
 
 /**
  * SLUG_MAP: The single source of truth for localized URL aliases.
