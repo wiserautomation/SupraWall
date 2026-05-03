@@ -44,7 +44,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Prevent infinite loops from internal rewrites
-  if (request.headers.has('x-internal-rewrite')) {
+  if (request.nextUrl.searchParams.has('_sw_rw')) {
     return;
   }
 
@@ -90,10 +90,9 @@ export function middleware(request: NextRequest) {
     // Internal rewrite for the default locale to keep the URL clean
     const url = new URL(request.url);
     url.pathname = `/${i18n.defaultLocale}${pathname === '/' ? '' : pathname}`;
+    url.searchParams.set('_sw_rw', '1');
     
-    const response = NextResponse.rewrite(url);
-    response.headers.set('x-internal-rewrite', 'true');
-    return response;
+    return NextResponse.rewrite(url);
   }
 
   // Redirect for other locales

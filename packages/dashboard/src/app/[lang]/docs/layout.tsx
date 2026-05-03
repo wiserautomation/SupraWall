@@ -5,7 +5,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign, Sparkles, Search } from "lucide-react";
+import { Shield, BrickWall, BookOpen, Key, Terminal, Code, Cpu, Activity, Lightbulb, ExternalLink, Zap, Puzzle, BadgeDollarSign, Sparkles, Search, FlaskConical } from "lucide-react";
 import { AskAI } from "@/components/AskAI";
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
@@ -19,6 +19,7 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
                 { name: "Introduction", href: `/${lang}/docs`, icon: BookOpen },
                 { name: "Quickstart", href: `/${lang}/docs/quickstart`, icon: Zap },
                 { name: "AI Assistant Guide", href: `/${lang}/docs/ai-assistants`, icon: Sparkles },
+                { name: "Benchmarks", href: `/${lang}/docs/benchmarks`, icon: FlaskConical },
             ]
         },
         {
