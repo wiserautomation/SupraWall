@@ -30,9 +30,10 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   // Build alternates for hreflang
   const languages: Record<string, string> = {};
   i18n.locales.forEach((l) => {
-    languages[l] = `${baseUrl}/${l}`;
+    const prefix = l === i18n.defaultLocale ? '' : `/${l}`;
+    languages[l] = `${baseUrl}${prefix}`;
   });
-  languages['x-default'] = `${baseUrl}/en`;
+  languages['x-default'] = baseUrl;
 
   return {
     metadataBase: new URL(baseUrl),

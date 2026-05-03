@@ -372,7 +372,7 @@ memory.save_context({"input": "set up Stripe"},
                   </code>{" "}
                   — never{" "}
                   <code className="text-red-400 bg-red-500/10 px-2 py-0.5 rounded text-xs">
-                    sk_live_4eC39HqLy...
+                    sk_live_YOUR_STRIPE_KEY...
                   </code>
                 </p>
               </div>
@@ -400,7 +400,7 @@ memory.save_context({"input": "set up Stripe"},
               </div>
               <div className="bg-neutral-900 border border-white/5 rounded-[2.5rem] p-8 font-mono text-sm overflow-x-auto">
                 <pre className="text-neutral-300 leading-relaxed">{`# Step 1: Store your secret (once, via CLI)
-# $ suprawall vault set stripe_key "sk_live_4eC39HqLy..."
+# $ suprawall vault set stripe_key "sk_live_YOUR_STRIPE_KEY..."
 # $ suprawall vault set db_password "prod_X7!kM9..."
 
 # Step 2: Configure vault scope + wrap agent

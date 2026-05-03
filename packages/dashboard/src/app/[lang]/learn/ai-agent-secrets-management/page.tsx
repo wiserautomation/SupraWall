@@ -466,19 +466,19 @@ file_contents = read_file("/etc/environment")  # contains all credentials`}</pre
               sees it.
             </p>
             <div className="bg-neutral-900 border border-white/5 rounded-[2.5rem] p-8 font-mono text-sm overflow-x-auto">
-              <pre className="text-neutral-300 leading-relaxed">{`# BEFORE — agent context contains raw credential
+              <pre className="text-neutral-300 leading-relaxed">{`# BEFORE — agent context contains raw credential (INSECURE)
 agent_context = {
     "task": "charge customer $49",
-    "stripe_key": "sk_live_4eC39HqLy..."  # ← LLM sees this
+    "stripe_key": "sk_live_EXAMPLE_REPLACE_WITH_YOUR_KEY"  # ← LLM sees this
 }
 
-# AFTER — agent context contains only a vault reference
+# AFTER — agent context contains only a vault reference (SECURE)
 agent_context = {
     "task": "charge customer $49",
     "stripe_key": "[VAULT_REF:stripe_production]"  # ← LLM never sees raw key
 }
 # SupraWall intercepts the stripe.charge tool call,
-# resolves the vault reference, injects sk_live_... at SDK level`}</pre>
+# resolves the vault reference, injects your key at SDK level`}</pre>
             </div>
             <p className="text-neutral-400 text-lg leading-relaxed font-medium">
               This shifts the security boundary. With traditional secrets
@@ -583,7 +583,7 @@ agent_context = {
 import os
 from langchain.agents import AgentExecutor
 
-os.environ["STRIPE_KEY"] = "sk_live_..."  # LLM can read this
+os.environ["STRIPE_KEY"] = "sk_live_YOUR_STRIPE_KEY"  # LLM can read this
 agent = AgentExecutor(agent=llm, tools=tools)
 
 # Secure: SupraWall vault with scope policy
@@ -608,7 +608,7 @@ secured = protect(
                 Store the credential via CLI before deploying:
               </p>
               <div className="bg-neutral-900 border border-white/5 rounded-[2.5rem] p-8 font-mono text-sm overflow-x-auto">
-                <pre className="text-neutral-300 leading-relaxed">{`suprawall vault set stripe_production "sk_live_4eC39HqLy..."
+                <pre className="text-neutral-300 leading-relaxed">{`suprawall vault set stripe_production "sk_live_YOUR_STRIPE_KEY..."
 suprawall vault policy set stripe_production --agent billing-bot --scope stripe.charges.create`}</pre>
               </div>
             </div>
