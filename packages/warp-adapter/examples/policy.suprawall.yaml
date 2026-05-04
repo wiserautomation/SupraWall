@@ -1,0 +1,31 @@
+rules:
+  # Block destructive shell commands (built-in default, shown explicitly here)
+  - name: no-destructive-shell
+    description: >
+      Shell commands with destructive patterns (rm -rf, dd, mkfs, etc.) are blocked.
+    tool_pattern: '(?i)\b(shell_exec|shell|bash|terminal|run_command|execute_code)\b'
+    args_pattern: >-
+      (?i)(rm\s+-[rfRFsS]{1,4}|rmdir\s|dd\s+if=|mkfs|shred\s|wipe\s|truncate\s+-s\s*0
+      |\bdel\s+/[sfqp]|\brd\s+/s|format\s+[c-zC-Z]:|>\s*/dev/(?!null\b)|>>?\s*/(?:etc|root|sys|proc|boot)/)
+
+  # Block writes to system paths
+  - name: no-write-outside-cwd
+    description: File writes to system paths (/etc, /root, /sys, /proc, /boot) are blocked.
+    tool_pattern: '(?i)\b(write_file|file_write)\b'
+    args_pattern: '(^/etc/|^/root/|^/sys/|^/proc/|^/boot/|[\\]Windows[\\]System32)'
+
+  # Block credential exfiltration
+  - name: no-secret-exfil
+    description: >
+      Detected a credential pattern in tool arguments. Exfiltration of API keys,
+      tokens, or secrets is blocked.
+    args_pattern: >-
+      (?i)(sk-[a-zA-Z0-9]{32,}|AKIA[A-Z0-9]{16}|gh[po]_[a-zA-Z0-9]{36,}
+      |xoxb-[a-zA-Z0-9\-]+|eyJhbGci[a-zA-Z0-9\._\-]{20,})
+
+  # Require human confirmation before writing to production config files
+  - name: ask-production-writes
+    description: Production config changes require human confirmation.
+    tool_pattern: '(?i)\b(write_file|file_write)\b'
+    args_pattern: 'production'
+    action: ask

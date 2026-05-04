@@ -78,7 +78,12 @@ class LocalPolicyEngine:
         """
         Evaluate a single tool call.
 
-        Returns the first matching rule dict if the call is blocked, or None if allowed.
+        Returns the first matching rule dict if the call is blocked or requires human
+        confirmation, or None if allowed.
+
+        Matching rules with ``action: ask`` return the rule dict with the action field
+        preserved so callers can distinguish confirmation requests from hard denials.
+        Rules without an explicit ``action`` field default to ``deny`` (existing behaviour).
         """
         args_str = _serialize(args)
 

@@ -1,0 +1,19 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "44444444-4444-4444-4444-444444444444",
+  "conversation_id": "conv-mcp-001",
+  "action_id": "act-mcp-001",
+  "action_kind": "call_mcp_tool",
+  "working_directory": "/home/user/project",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "warp_permission": {
+    "decision": "allow"
+  },
+  "action": {
+    "server_id": "55555555-5555-5555-5555-555555555555",
+    "tool_name": "send_http_request",
+    "argument_keys": ["sk-abc123def456ghi789jkl012mno345pqr678", "url", "method"],
+    "omitted_argument_key_count": 0
+  }
+}
