@@ -2,7 +2,7 @@
 
 **Source:** warpdotdev/warp PR #9957 (`Add agent policy hooks enforcement`)
 **Branch tip:** `97c11d3`
-**PR status as of 2026-05-04:** Draft — awaiting maintainer agreement on design; linked issue #10029 opened by @etherman-os.
+**PR status as of 2026-05-05:** Draft — awaiting maintainer agreement on design; linked issue #10029 opened by @etherman-os.
 **Automated review:** oz-for-oss bot — Approved with 2 minor suggestions; 0 critical / 0 important issues.
 **Human review:** @zachbai noted lack of prior design agreement on a 9k-line implementation. No Warp staff member has formally commented beyond this.
 
@@ -209,3 +209,59 @@ def check(self, tool_name: str, args: Any) -> Optional[dict]:
 3. **`check()` takes `tool_name + args` but Warp sends structured action objects.** The `policy_bridge.py` layer will map each Warp action type to a synthetic tool name and args string that the existing rule patterns can match against.
 
 **Scope assessment:** The `ask` extension is ~20 lines, non-breaking (existing rules without `action:` field default to `deny`). Within the ~50-line threshold — safe to proceed without re-scoping.
+
+---
+
+## Phase 4 — Real-world integration status (2026-05-05)
+
+**Status: Blocked on Warp build — documenting per plan failure-mode protocol.**
+
+PR #9957 is currently in **Draft** status. @etherman-os converted it after @zachbai flagged that the 9k-line implementation lacked prior design agreement. Issue #10029 was opened to propose the feature formally. Until Warp maintainers accept the design direction, the PR cannot be merged into a shippable Warp binary.
+
+**What this means for our adapter:**
+- The adapter code (Phases 1–3) is fully complete and tested against the v1 schema spec.
+- We cannot run a live Warp Agent session with hook dispatch until either:
+  a. PR #9957 is un-drafted and merged, OR
+  b. We build Warp locally from the `97c11d3` branch (Rust build, ~20 min on first compile).
+
+**Concrete blockers for Phase 4 completion:**
+1. `gh` CLI not available in the build environment to `gh pr checkout 9957`.
+2. Rust toolchain not installed — `cargo build` on the Warp repo would be required.
+3. The PR's Draft status means Warp's hook dispatch code path may change materially before merge.
+
+**Recommended next action for Alejandro:**
+- Watch PR #9957 and issue #10029 for maintainer response.
+- If the PR transitions from Draft → Ready for Review, that's the signal to do Phase 4.
+- Until then, the adapter is spec-complete and testable against the fixture suite. Publishing the SupraWall PR against `main` (Phase 5) can proceed independently.
+
+**Competitive signal check:** No third party (Lakera or otherwise) has appeared on PR #9957. Our position as the first external adapter is still clear.
+
+---
+
+## Phase 4 — If running manually
+
+To complete Phase 4 locally once Warp's PR is in a buildable state:
+
+```bash
+# 1. Clone Warp and check out the PR branch
+git clone https://github.com/warpdotdev/warp.git warp-pr9957
+cd warp-pr9957
+git fetch origin pull/9957/head:feature/policy-hooks
+git checkout feature/policy-hooks
+
+# 2. Build (requires Rust + Warp's build deps)
+cargo build --release
+
+# 3. Configure adapter in your Warp Agent Profile
+# See examples/warp_profile_config.md for the exact JSON shape
+
+# 4. Run a Warp Agent session and trigger each surface:
+#    - shell exec: ask agent to run `ls -la` (allow) then `rm -rf /tmp/test` (deny)
+#    - file write: ask agent to edit /etc/hosts (deny) or local file (allow/ask)
+#    - MCP tool call: configure an MCP server, have agent call a tool
+#    - file read: ask agent to read a file
+#    - MCP resource read: ask agent to read an MCP resource
+
+# 5. Observe events arriving at adapter stderr (JSONL audit records)
+#    Document any schema mismatches vs SPEC_NOTES.md
+```
