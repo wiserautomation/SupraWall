@@ -99,7 +99,10 @@ Rules without `action:` default to `deny` — no existing rules break. The SDK c
 ## Try it
 
 ```bash
-pip install suprawall-warp-adapter
+# Install from source (not yet on PyPI — published after live integration verification)
+git clone https://github.com/wiserautomation/SupraWall.git
+cd SupraWall/packages/warp-adapter
+pip install -e .
 
 # Test against a fixture — compacts the JSON to a single line per the protocol
 python -c "import json,pathlib; print(json.dumps(json.loads(pathlib.Path('tests/fixtures/shell_exec_dangerous.json').read_text())))" \
