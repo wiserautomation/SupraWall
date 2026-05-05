@@ -40,7 +40,8 @@
         "FIREBASE_PROJECT_ID",
         "FIREBASE_PROJECT_ID_2",
         "FIREBASE_CLIENT_EMAIL",
-        "MAILERLITE_API_KEY"
+        "MAILERLITE_API_KEY",
+        "ADMIN_EMAILS"
       ]
     },
     "lint": {

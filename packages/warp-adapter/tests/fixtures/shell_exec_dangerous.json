@@ -1,0 +1,21 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "11111111-1111-1111-1111-111111111111",
+  "conversation_id": "conv-dangerous-001",
+  "action_id": "act-dangerous-001",
+  "action_kind": "execute_command",
+  "working_directory": "/home/user/project",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "active_profile_id": "default",
+  "warp_permission": {
+    "decision": "ask",
+    "reason": "Warp requires confirmation for destructive commands"
+  },
+  "action": {
+    "command": "rm -rf /home/user/project/dist",
+    "normalized_command": "rm -rf /home/user/project/dist",
+    "is_read_only": false,
+    "is_risky": true
+  }
+}

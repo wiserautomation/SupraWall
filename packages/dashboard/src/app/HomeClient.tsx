@@ -785,7 +785,7 @@ export function ResourceHub({ lang = 'en' }: { lang?: string }) {
         { title: "GDPR for AI Agents", href: getLocalizedPath("/gdpr", lang), desc: "Automated PII scrubbing and data protection guardrails." },
         { title: "Agent Audit Trails", href: getLocalizedPath("/learn/ai-agent-audit-trail-logging", lang), desc: "How to generate signed evidence for regulatory audits." },
         { title: "Secure Vault", href: getLocalizedPath("/features/vault", lang), desc: "Permissioned credential injection for autonomous systems." },
-        { title: "Prompt Injection Protection", href: getLocalizedPath("/features/prompt-shield", lang), desc: "Hardening agents against context-override attacks." },
+        { title: "LLM-as-Judge Fails for Agent Security", href: getLocalizedPath("/blog/llm-as-judge-fails-agent-security", lang), desc: "4 documented bypass patterns. Why probabilistic guardrails cannot secure agent tool calls." },
         { title: "Runtime Policy Engine", href: getLocalizedPath("/features/policy-engine", lang), desc: "Deterministic controls for non-deterministic models." }
     ];
 

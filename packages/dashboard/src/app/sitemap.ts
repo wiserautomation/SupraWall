@@ -95,7 +95,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const baseRoutes = getRoutes(appDir);
     
     // Explicitly add dynamic routes
-    const newsRoutes = newsArticles.filter((a: any) => a.published).map((a: any) => `/news/${a.slug}`);
+    const newsRoutes = newsArticles
+        .filter((a: any) => a.published && !a.href) // Only include news that haven't been moved to /blog or /research
+        .map((a: any) => `/news/${a.slug}`);
     const sectorRoutes = sectorTemplates.map((t: any) => `/compliance-templates/${t.slug}`);
     
     const sitemapEntries: MetadataRoute.Sitemap = [];
@@ -114,8 +116,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 return;
             }
 
-            // FILTER 2: News and Sector templates are currently English-only
-            if (locale !== 'en' && (internalPath.startsWith('news/') || internalPath.startsWith('compliance-templates/'))) {
+            // FILTER 2: News, Blog, Research, and Sector templates are currently English-only
+            if (locale !== 'en' && (
+                internalPath.startsWith('news/') || 
+                internalPath.startsWith('blog/') || 
+                internalPath.startsWith('research/') ||
+                internalPath.startsWith('compliance-templates/')
+            )) {
                 return;
             }
 

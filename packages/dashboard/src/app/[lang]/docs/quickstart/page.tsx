@@ -5,9 +5,11 @@
 
 import { CodeBlock } from "@/components/CodeBlock";
 import { Zap, Key, Terminal, Shield, CheckCircle2, ArrowRight } from "lucide-react";
+import { useParams } from "next/navigation";
 import Link from "next/link";
 
 export default function QuickstartDocs() {
+    const { lang } = useParams() as { lang: string };
     return (
         <div className="space-y-10 animate-in fade-in zoom-in-95 duration-500 pb-20">
             <div className="space-y-4">
@@ -126,15 +128,15 @@ def my_agent_action():
                     <p className="text-neutral-400">
                         Enable continuous security auditing by adding the SupraWall Scan action to your repository. Detect risks before they reach production.
                     </p>
-                    <Link href={`/docs/integrations/github-action`} className="inline-flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">
+                    <Link href={`/${lang}/docs/integrations/github-action`} className="inline-flex items-center gap-2 text-sm font-semibold text-blue-400 hover:text-blue-300 transition-colors">
                         Setup GitHub Action <ArrowRight className="w-4 h-4" />
                     </Link>
                 </section>
             </div>
 
             <div className="flex justify-between items-center pt-8 border-t border-white/10">
-                <Link href="/docs" className="text-neutral-400 hover:text-white transition-colors text-sm">← Introduction</Link>
-                <Link href="/docs/mcp" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">Claude (MCP) →</Link>
+                <Link href={`/${lang}/docs`} className="text-neutral-400 hover:text-white transition-colors text-sm">← Introduction</Link>
+                <Link href={`/${lang}/docs/mcp`} className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors flex items-center">Claude (MCP) →</Link>
             </div>
         </div>
     );

@@ -1,0 +1,21 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "66666666-6666-6666-6666-666666666666",
+  "conversation_id": "conv-ask-001",
+  "action_id": "act-ask-001",
+  "action_kind": "write_files",
+  "working_directory": "/home/user/project",
+  "run_until_completion": true,
+  "hook_autoapproval_enabled": false,
+  "warp_permission": {
+    "decision": "ask"
+  },
+  "action": {
+    "paths": ["/home/user/project/config/production.yaml"],
+    "diff_stats": {
+      "files_changed": 1,
+      "additions": 5,
+      "deletions": 2
+    }
+  }
+}

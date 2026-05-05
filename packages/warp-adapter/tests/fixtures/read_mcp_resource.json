@@ -1,0 +1,15 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "77777777-7777-7777-7777-777777777777",
+  "conversation_id": "conv-rm-001",
+  "action_id": "act-rm-001",
+  "action_kind": "read_mcp_resource",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "warp_permission": { "decision": "allow" },
+  "action": {
+    "server_id": "55555555-5555-5555-5555-555555555555",
+    "name": "Database Schema",
+    "uri": "postgres://localhost:5432/db/schema"
+  }
+}

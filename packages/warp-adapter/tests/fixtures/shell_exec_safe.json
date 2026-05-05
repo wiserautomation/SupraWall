@@ -1,0 +1,20 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "22222222-2222-2222-2222-222222222222",
+  "conversation_id": "conv-safe-001",
+  "action_id": "act-safe-001",
+  "action_kind": "execute_command",
+  "working_directory": "/home/user/project",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "active_profile_id": "default",
+  "warp_permission": {
+    "decision": "allow"
+  },
+  "action": {
+    "command": "ls -la",
+    "normalized_command": "ls -la",
+    "is_read_only": true,
+    "is_risky": false
+  }
+}

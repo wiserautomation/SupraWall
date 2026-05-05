@@ -1,10 +1,7 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-"use client";
-
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { Metadata } from "next";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { 
@@ -14,14 +11,15 @@ import {
 import Link from "next/link";
 import { TagBadge } from "@/app/HomeClient";
 
+export const metadata: Metadata = {
+    title: "Self-Host SupraWall: Local Agent Governance for Air-Gapped Environments (2026)",
+    description: "Deploy SupraWall on-prem via Docker or Kubernetes. Maintain 100% data residency for high-security banking, healthcare, and defense AI agents. Full zero-trust vault and HITL support.",
+    alternates: {
+        canonical: "https://www.supra-wall.com/self-host",
+    },
+};
+
 export default function SelfHostPage() {
-    const router = useRouter();
-
-    useEffect(() => {
-        // Stealth launch redirect
-        router.push('/login');
-    }, [router]);
-
     return (
         <div className="min-h-screen bg-black text-neutral-200 font-sans selection:bg-emerald-500/30">
             <Navbar />

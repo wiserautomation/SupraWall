@@ -23,35 +23,42 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ lang: string; sector: string }> }): Promise<Metadata> {
     const { lang, sector } = await params;
 
-    // Sector templates are currently English-only for SEO
-    if (lang !== 'en') return { title: "Not Found", robots: "noindex, nofollow" };
-
     const template = getTemplateBySlug(sector);
-    if (!template) return {};
+    if (!template) return { title: "Not Found" };
 
     const dictionary = await getDictionary(lang as Locale);
     const localized = (dictionary as any).complianceTemplates?.sectors?.[sector];
-    if (!localized) return {};
+    if (!localized) return { title: "Not Found" };
 
     const baseUrl = 'https://www.supra-wall.com';
     
-    // Build alternates for hreflang (point all to English for now if translated version not indexed)
+    // Build alternates for hreflang
     const languages: Record<string, string> = {
-        'en': `${baseUrl}/en/compliance-templates/${sector}`,
-        'x-default': `${baseUrl}/en/compliance-templates/${sector}`
+        'en': `${baseUrl}/compliance-templates/${sector}`,
+        'x-default': `${baseUrl}/compliance-templates/${sector}`,
     };
 
+    i18n.locales.forEach((l) => {
+        if (l !== 'en') {
+            languages[l] = `${baseUrl}/${l}/compliance-templates/${sector}`;
+        }
+    });
+
+    const canonical = lang === 'en' 
+        ? `${baseUrl}/compliance-templates/${sector}`
+        : `${baseUrl}/${lang}/compliance-templates/${sector}`;
+
     return {
-        title: `${localized.title} | Annex III Compliance Blueprint`,
+        title: `${localized.title} | SupraWall AI Compliance`,
         description: localized.opening,
         alternates: {
-            canonical: `${baseUrl}/en/compliance-templates/${sector}`,
+            canonical: canonical,
             languages,
         },
         openGraph: {
             title: localized.title,
             description: localized.opening,
-            url: `${baseUrl}/en/compliance-templates/${sector}`,
+            url: canonical,
             siteName: "SupraWall",
             type: "article",
         },

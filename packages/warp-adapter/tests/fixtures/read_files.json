@@ -1,0 +1,14 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "66666666-6666-6666-6666-666666666666",
+  "conversation_id": "conv-rf-001",
+  "action_id": "act-rf-001",
+  "action_kind": "read_files",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "warp_permission": { "decision": "allow" },
+  "action": {
+    "paths": ["/home/user/project/secret.key"],
+    "omitted_path_count": 0
+  }
+}

@@ -14,9 +14,9 @@ import Link from "next/link";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "How to Set Token Limits for AI Agents",
+  title: "How to Set Token Limits for AI Agents (Prevent Runaway Costs) 2026",
   description:
-    "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
+    "AI agents with no token limits burn budgets and hit rate limits. Learn 3 methods to set hard token caps for LangChain, OpenAI Agents, and CrewAI — plus auto-termination when limits are hit. Free setup guide.",
   keywords: [
     "set AI agent token limits",
     "LangChain token budget",
@@ -30,9 +30,9 @@ export const metadata: Metadata = {
       "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
   },
   openGraph: {
-    title: "How to Set Token Limits for AI Agents",
+    title: "How to Set Token Limits for AI Agents (Prevent Runaway Costs) 2026",
     description:
-      "Step-by-step guide to setting token budget limits for AI agents in Python and TypeScript. Prevent runaway LLM costs in 5 minutes with SupraWall.",
+      "AI agents with no token limits burn budgets and hit rate limits. Learn 3 methods to set hard token caps for LangChain, OpenAI Agents, and CrewAI — plus auto-termination when limits are hit. Free setup guide.",
     url: "https://www.supra-wall.com/learn/how-to-set-token-limits-ai-agents",
     siteName: "SupraWall",
     type: "article",

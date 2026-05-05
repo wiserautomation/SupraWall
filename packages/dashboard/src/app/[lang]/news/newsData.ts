@@ -20,9 +20,33 @@ export interface NewsArticle {
     body: {
         paragraphs: string[];
     };
+    href?: string; // optional override for the article's public URL
 }
 
 export const newsArticles: NewsArticle[] = [
+    {
+        slug: "llm-as-judge-fails-agent-security",
+        title: "LLM-as-Judge Fails for Agent Security",
+        excerpt: "Every major AI guardrail product uses an LLM to judge another LLM. It works 80% of the time. We document 4 bypass patterns with real payloads — and show why deterministic pre-execution interception is the only reliable alternative.",
+        date: "2026-04-30",
+        category: "THREAT INTEL",
+        readingTime: 12,
+        published: true,
+        href: "/blog/llm-as-judge-fails-agent-security",
+        supraWallAngle: "SupraWall intercepts the execution of an action, not just the text of the intent. This deterministic approach closes the 20% gap left by probabilistic LLM judges.",
+        relatedLinks: [
+            { href: "/vs/lakera", label: "SupraWall vs Lakera Guard" },
+            { href: "/vs/guardrails-ai", label: "SupraWall vs Guardrails AI" },
+            { href: "/learn/ai-agent-security-glossary", label: "AI Agent Security Glossary" },
+        ],
+        body: {
+            paragraphs: [
+                "Every major guardrail tool — including Lakera, NeMo Guardrails, Guardrails AI, and the OpenAI Moderation API — is built on the same underlying architecture: a secondary LLM evaluates the primary LLM's output or intent and returns a probability score.",
+                "This works for content safety, but it's fundamentally broken for agent security. Agents execute actions, they don't just output text. An LLM-judge sees the text of a tool call, but it doesn't intercept the tool call itself.",
+                "In our research, we've identified 4 systematic bypass patterns — Context Window Displacement, Indirect Tool Chaining, Unicode Homoglyph Substitution, and Confidence Hijacking — that allow malicious payloads to pass through LLM-as-judge systems with nearly 100% success rates.",
+            ],
+        },
+    },
     {
         slug: "eu-commission-misses-guidance-deadline-august-enforcement-stands",
         title: "EU Commission Misses Its Own Deadline — But August 2026 Enforcement Is Not Moving",
@@ -182,6 +206,7 @@ export const newsArticles: NewsArticle[] = [
         category: "INDUSTRY",
         readingTime: 8,
         published: true,
+        href: "/en/research/state-of-ai-agent-security-2026",
         supraWallAngle: "SupraWall's growth in 2026 is a direct result of this industry-wide realization: Prompt engineering is for behavior; SDKs are for security.",
         relatedLinks: [
             { href: "/en/learn/what-is-agent-runtime-security", label: "Agent Runtime Security (ARS)" },

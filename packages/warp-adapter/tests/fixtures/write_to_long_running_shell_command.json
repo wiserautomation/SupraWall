@@ -1,0 +1,16 @@
+{
+  "schema_version": "warp.agent_policy_hook.v1",
+  "event_id": "55555555-5555-5555-5555-555555555555",
+  "conversation_id": "conv-wl-001",
+  "action_id": "act-wl-001",
+  "action_kind": "write_to_long_running_shell_command",
+  "working_directory": "/home/user",
+  "run_until_completion": false,
+  "hook_autoapproval_enabled": false,
+  "warp_permission": { "decision": "allow" },
+  "action": {
+    "block_id": "blk-123",
+    "input": "echo hello",
+    "mode": "tty"
+  }
+}

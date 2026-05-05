@@ -1,5 +1,6 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
+import { i18n } from './config';
 
 /**
  * SLUG_MAP: The single source of truth for localized URL aliases.
@@ -201,5 +202,7 @@ export function getPublicSlug(internalPath: string, locale: string): string {
 export function getLocalizedPath(internalPath: string, locale: string): string {
     const parts = internalPath.split('/').filter(Boolean);
     const localizedParts = parts.map(part => SLUG_MAP[part]?.[locale] || part);
-    return `/${locale}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
+    const prefix = locale === i18n.defaultLocale ? '' : `/${locale}`;
+    const path = `${prefix}/${localizedParts.join('/')}`.replace(/\/+/g, '/').replace(/\/$/, '');
+    return path || '/';
 }

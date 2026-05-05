@@ -129,7 +129,12 @@ const terms = [
   {
     term: "LLM Guardrails",
     definition:
-      "Controls applied specifically at the language model layer — input filtering, output classification, content policy enforcement — to prevent models from generating harmful or policy-violating text. LLM guardrails are distinct from agent runtime guardrails: they operate on text tokens and are not able to intercept or block tool calls. Both layers are necessary in a defense-in-depth security architecture for production agents.",
+      "Controls applied specifically at the language model layer — input filtering, output classification, content policy enforcement — to prevent models from generating harmful or policy-violating text. LLM guardrails are distinct from agent runtime guardrails: they operate on text tokens and are not able to intercept or block tool calls. See our research on why probabilistic LLM-as-judge guardrails fail for autonomous agents.",
+  },
+  {
+    term: "LLM-as-Judge",
+    definition:
+      "A security pattern in which a secondary language model is used to evaluate the intent or output of a primary agent model. While effective for content safety, this approach is probabilistic and vulnerable to bypass patterns like context window displacement and confidence hijacking. In agentic workflows, relying on a judge for security creates an execution gap that can only be closed by deterministic interception. Read the full technical breakdown of LLM-as-judge failure modes.",
   },
   {
     term: "MCP (Model Context Protocol)",
@@ -290,6 +295,12 @@ export default function AIAgentSecurityGlossaryPage() {
                   </p>
                   <p className="text-neutral-400 text-sm leading-relaxed">
                     {item.definition}
+                    {item.term === "LLM Guardrails" && (
+                      <Link href="/blog/llm-as-judge-fails-agent-security" className="ml-1 text-emerald-500 hover:underline"> [Research] </Link>
+                    )}
+                    {item.term === "LLM-as-Judge" && (
+                      <Link href="/blog/llm-as-judge-fails-agent-security" className="ml-1 text-emerald-500 hover:underline"> [Technical Breakdown] </Link>
+                    )}
                   </p>
                 </div>
               ))}

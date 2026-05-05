@@ -43,17 +43,27 @@ function getLocale(request: NextRequest): string {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // Prevent infinite loops from internal rewrites
+  if (request.nextUrl.searchParams.has('_sw_rw')) {
+    return;
+  }
+
   // Check if there is any supported locale in the pathname
   const locale = i18n.locales.find(
     (l) => pathname.startsWith(`/${l}/`) || pathname === `/${l}`
   );
 
   if (locale) {
-    // RESOLVE LOCALIZED SLUGS
-    // Example: /de/funktionen -> /de/features
-    const parts = pathname.split('/').filter(Boolean); // [de, funktionen]
+    // SEO FIX: If the locale is the default ('en'), redirect to the non-prefixed path
+    if (locale === i18n.defaultLocale) {
+      const newPath = pathname.replace(`/${locale}`, '') || '/';
+      return NextResponse.redirect(new URL(newPath, request.url), 301);
+    }
+
+    // RESOLVE LOCALIZED SLUGS (for non-default locales)
+    const parts = pathname.split('/').filter(Boolean);
     const currentLocale = parts[0];
-    const pathSegments = parts.slice(1); // [funktionen]
+    const pathSegments = parts.slice(1);
 
     let hasUpdate = false;
     const resolvedSegments = pathSegments.map(segment => {
@@ -73,14 +83,21 @@ export function middleware(request: NextRequest) {
     return;
   }
 
-  // Redirect if there is no locale
+  // Handle non-prefixed paths
   const detectedLocale = getLocale(request);
   
-  // Create a new URL for the redirect
+  if (detectedLocale === i18n.defaultLocale) {
+    // Internal rewrite for the default locale to keep the URL clean
+    const url = new URL(request.url);
+    url.pathname = `/${i18n.defaultLocale}${pathname === '/' ? '' : pathname}`;
+    url.searchParams.set('_sw_rw', '1');
+    
+    return NextResponse.rewrite(url);
+  }
+
+  // Redirect for other locales
   const url = new URL(request.url);
   url.pathname = `/${detectedLocale}${pathname === '/' ? '' : pathname}`;
-  
-  // Use 301 (Permanent Redirect) for marketing SEO
   return NextResponse.redirect(url, 301);
 }
 

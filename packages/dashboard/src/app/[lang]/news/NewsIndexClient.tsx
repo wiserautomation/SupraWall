@@ -8,7 +8,7 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { newsArticles, CATEGORIES, CATEGORY_COLORS, formatDate, type NewsCategory } from "./newsData";
 
-export default function NewsIndexClient() {
+export default function NewsIndexClient({ lang }: { lang: string }) {
     const [active, setActive] = useState<"ALL" | NewsCategory>("ALL");
 
     const filtered = newsArticles.filter(
@@ -64,7 +64,7 @@ export default function NewsIndexClient() {
                             {filtered.map((article) => (
                                 <Link
                                     key={article.slug}
-                                    href={`/news/${article.slug}`}
+                                href={article.href ?? `/${lang}/news/${article.slug}`}
                                     className="group flex flex-col justify-between p-6 bg-white/[0.05] border border-white/5 rounded-2xl hover:border-emerald-500/20 hover:bg-white/[0.04] transition-all"
                                 >
                                     <div className="space-y-4">

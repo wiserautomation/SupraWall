@@ -294,6 +294,10 @@ Active issues good for first-time contributors are tagged [`good first issue`](h
 
 ---
 
+## Integrations
+
+**Warp integration:** see [packages/warp-adapter/](packages/warp-adapter/) for the reference adapter conforming to `warp.agent_policy_hook.v1` — intercepts Warp Agent shell commands, file writes, and MCP tool calls before they execute.
+
 ## Links
 
 [Website](https://www.supra-wall.com) · [Docs](https://www.supra-wall.com/docs) · [Cloud](https://www.supra-wall.com/cloud) · [Blog](https://www.supra-wall.com/blog) · [X / @The_real_Peghin](https://x.com/The_real_Peghin) · [License: Apache 2.0](LICENSE)

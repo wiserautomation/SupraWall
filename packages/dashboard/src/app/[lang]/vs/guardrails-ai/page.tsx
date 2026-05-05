@@ -7,6 +7,7 @@ import { getDictionary } from "@/i18n/getDictionary";
 import { Locale } from "@/i18n/config";
 import { Navbar } from "@/components/Navbar";
 import { Metadata } from "next";
+import Link from "next/link";
 import GuardrailsAIClient from "./GuardrailsAIClient";
 import { QuickSummaryTable } from "@/components/QuickSummaryTable";
 
@@ -94,6 +95,11 @@ export default async function vsPage({ params }: { params: Promise<{ lang: strin
                             SupraWall addresses this by implementing a deterministic security shim at the SDK layer.
                         </p>
                         <QuickSummaryTable rows={summaryRows} />
+                        <div className="py-8 border-y border-white/5 text-center">
+                            <Link href="/blog/llm-as-judge-fails-agent-security" className="text-emerald-500 font-black uppercase text-xs tracking-widest hover:text-white transition-colors">
+                                → Why probabilistic validation fails for tool calls: Read the Research
+                            </Link>
+                        </div>
                     </div>
 
                     <GuardrailsAIClient comparisonData={comparisonData} />
