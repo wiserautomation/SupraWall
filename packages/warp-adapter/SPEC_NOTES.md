@@ -229,10 +229,21 @@ PR #9957 is currently in **Draft** status. @etherman-os converted it after @zach
 2. Rust toolchain not installed — `cargo build` on the Warp repo would be required.
 3. The PR's Draft status means Warp's hook dispatch code path may change materially before merge.
 
-**Recommended next action for Alejandro:**
-- Watch PR #9957 and issue #10029 for maintainer response.
-- If the PR transitions from Draft → Ready for Review, that's the signal to do Phase 4.
-- Until then, the adapter is spec-complete and testable against the fixture suite. Publishing the SupraWall PR against `main` (Phase 5) can proceed independently.
+**Phase 4 trigger conditions — specific signals to watch:**
+
+| Signal | Action |
+|---|---|
+| PR #9957 transitions from Draft → Ready for Review | Strongest signal. Start Phase 4 immediately. |
+| Any Warp staff member (not `oz-for-oss[bot]`) comments on PR #9957 | Means the spec is live for Warp internally. High-value window. |
+| @etherman-os pushes new commits addressing bot review items | Spec is stabilizing. Good time to start Phase 4 and file any schema-change observations. |
+| Issue #10029 receives a meaningful maintainer response | Design direction accepted. Phase 4 is now unblocked strategically. |
+
+**Pause Phase 4 even if above signals fire if:**
+- Another reference adapter (Lakera or other) appears in PR #9957 comments. That's an operator-level strategic decision, not engineering. Surface to Alejandro before proceeding.
+
+**Monitoring setup:** Enable GitHub notifications on PR #9957, issue #10029, and @etherman-os's public activity. The window between "PR moves out of Draft" and "Warp staff makes a decision" may be 24–48 hours.
+
+**60-day repurposing trigger:** If PR #9957 has not moved out of Draft by **2026-07-05**, evaluate repurposing the adapter as a cross-runtime policy hook reference (not Warp-specific). Candidate runtimes: Cursor agent mode, Cline, Aider, OpenInterpreter, AutoGen Studio. The stdio/newline-delimited JSON protocol and the `allow`/`deny`/`ask` decision model are portable; the Warp-specific action surface names are the only binding. Calendar reminder: **2026-07-05**.
 
 **Competitive signal check:** No third party (Lakera or otherwise) has appeared on PR #9957. Our position as the first external adapter is still clear.
 

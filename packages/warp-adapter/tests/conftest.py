@@ -34,3 +34,18 @@ def mcp_tool_call():
 @pytest.fixture
 def ask_decision_flow():
     return load_fixture("ask_decision_flow.json")
+
+
+@pytest.fixture
+def write_long_running():
+    return load_fixture("write_to_long_running_shell_command.json")
+
+
+@pytest.fixture
+def read_files():
+    return load_fixture("read_files.json")
+
+
+@pytest.fixture
+def read_mcp_resource():
+    return load_fixture("read_mcp_resource.json")

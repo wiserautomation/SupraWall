@@ -50,6 +50,9 @@ def run_adapter(cfg: AdapterConfig) -> None:
                 _write_response(rb.deny(reason="malformed_event"))
                 continue
 
+            import re
+            sanitized_line = re.sub(r'sk-[a-zA-Z0-9]{20,}', '[REDACTED]', raw_line)
+            log.info("processing event: %s", sanitized_line)
             log.debug("received event_id=%s action_kind=%s", event.event_id, event.action_kind)
 
             response = _evaluate_with_timeout(event, engine, pool, cfg)

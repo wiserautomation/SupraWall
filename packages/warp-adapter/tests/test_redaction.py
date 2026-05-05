@@ -14,15 +14,15 @@ ADAPTER_MODULE = "suprawall_warp"
 
 
 def _run_adapter(fixture_name: str, extra_args: list = None) -> subprocess.CompletedProcess:
-    event = (FIXTURES_DIR / fixture_name).read_text()
+    raw_event = (FIXTURES_DIR / fixture_name).read_text()
+    event = json.dumps(json.loads(raw_event))
     cmd = [sys.executable, "-m", ADAPTER_MODULE, "--log-level", "INFO"]
     if extra_args:
         cmd.extend(extra_args)
     return subprocess.run(
         cmd,
-        input=event,
+        input=event.encode("utf-8") + b"\n",
         capture_output=True,
-        text=True,
         timeout=10,
     )
 
@@ -30,13 +30,17 @@ def _run_adapter(fixture_name: str, extra_args: list = None) -> subprocess.Compl
 class TestNoSecretsInInfoLogs:
     def test_mcp_tool_credential_not_in_stderr(self):
         result = _run_adapter("mcp_tool_call.json")
+        stderr_text = result.stderr.decode("utf-8")
         # The sk- token in argument_keys must not appear verbatim in INFO logs
-        assert "sk-abc123def456ghi789jkl012mno345pqr678" not in result.stderr
+        assert "sk-abc123def456ghi789jkl012mno345pqr678" not in stderr_text
+        # We must see redacted markers
+        assert "[REDACTED]" in stderr_text
 
     def test_dangerous_command_logged_without_raw_payload(self):
         result = _run_adapter("shell_exec_dangerous.json")
+        stderr_text = result.stderr.decode("utf-8")
         # Adapter must not echo raw JSON at INFO level
-        assert '"schema_version"' not in result.stderr or "DEBUG" not in result.stderr
+        assert '"schema_version"' not in stderr_text or "DEBUG" not in stderr_text
 
 
 class TestStdoutIsCleanJSON:
