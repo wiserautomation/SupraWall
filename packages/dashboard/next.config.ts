@@ -39,26 +39,18 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // ── Locale-less root paths → inject /en/ ───────────────────────────
-      { source: '/login',               destination: '/en/login',      permanent: false },
-      { source: '/admin/:path*',        destination: '/en/admin/:path*', permanent: false },
-      { source: '/dashboard/:path*',    destination: '/en/dashboard/:path*', permanent: false },
-      { source: '/beta',                destination: '/en/beta',        permanent: false },
+      // ── Locale-less root paths → naturally handled by middleware ────────────────
       // Bare integration/tool paths crawled without locale
-      { source: '/integrations/:path*', destination: '/en/integrations/:path*', permanent: true },
-      { source: '/tools',               destination: '/en/tools/llm-cost-calculator', permanent: true },
-      { source: '/tools/:path*',        destination: '/en/tools/:path*', permanent: true },
+      { source: '/tools',               destination: '/tools/llm-cost-calculator', permanent: true },
 
       // ── Blog article: legacy /news/ URL → /blog/ (→ the live page) ──────────
-      { source: '/news/llm-as-judge-fails-agent-security',     destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
-      { source: '/en/news/llm-as-judge-fails-agent-security',  destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
-      // bare /blog/ (no locale) → inject /en/
-      { source: '/blog/llm-as-judge-fails-agent-security',     destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
+      { source: '/news/llm-as-judge-fails-agent-security',     destination: '/blog/llm-as-judge-fails-agent-security', permanent: true },
+      { source: '/en/news/llm-as-judge-fails-agent-security',  destination: '/blog/llm-as-judge-fails-agent-security', permanent: true },
       // state-of-ai-agent-security-2026 moved to /research/
-      { source: '/en/news/state-of-ai-agent-security-2026',          destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      { source: '/news/state-of-ai-agent-security-2026',             destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      { source: '/en/blog/state-of-ai-agent-security-2026',    destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      { source: '/blog/state-of-ai-agent-security-2026',       destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/en/news/state-of-ai-agent-security-2026',          destination: '/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/news/state-of-ai-agent-security-2026',             destination: '/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/en/blog/state-of-ai-agent-security-2026',    destination: '/research/state-of-ai-agent-security-2026', permanent: true },
+      { source: '/blog/state-of-ai-agent-security-2026',       destination: '/research/state-of-ai-agent-security-2026', permanent: true },
 
 
       // ── Non-en locale news → English news (content is English-only) ────
@@ -89,13 +81,8 @@ const nextConfig: NextConfig = {
       { source: '/pl/blog',        destination: '/en/news', permanent: true },
       { source: '/nl/blog',        destination: '/en/news', permanent: true },
 
-      // ── /en/blog/* ghost slugs (known-invalid, not the live article) ─────
-      { source: '/en/blog/state-of-ai-agent-security-2026',          destination: '/en/research/state-of-ai-agent-security-2026', permanent: true },
-      // NOTE: do NOT add a catch-all /en/blog/:slug here.
-      // The live article at /en/blog/llm-as-judge-fails-agent-security is a real page.
-      // Unknown /blog/ slugs that don't match a real page will naturally 404.
-      // A bare /blog/:slug without locale prefix needs to route to /en/
-      { source: '/blog/llm-as-judge-fails-agent-security',            destination: '/en/blog/llm-as-judge-fails-agent-security', permanent: true },
+      // ── Ghost slugs (known-invalid, not the live article) ─────
+      { source: '/en/blog/state-of-ai-agent-security-2026',          destination: '/research/state-of-ai-agent-security-2026', permanent: true },
       { source: '/blog/eu-ai-act-langchain-compliance',               destination: '/en/news', permanent: true },
 
       // ── Root-level /spec and /audit → actual root paths ───────────────
@@ -209,8 +196,8 @@ const nextConfig: NextConfig = {
       { source: '/nl/quickstart', destination: '/en/quickstart', permanent: true },
 
       // ── Non-en for-* audience pages → /en equivalents ─────────────────
-      { source: '/:locale/for-enterprise',  destination: '/en/for-enterprise',  permanent: true },
-      { source: '/:locale/for-developers',  destination: '/en/for-developers',  permanent: true },
+      { source: '/:locale/for-enterprise',  destination: '/for-enterprise',  permanent: true },
+      { source: '/:locale/for-developers',  destination: '/for-developers',  permanent: true },
     ];
   },
   async headers() {
