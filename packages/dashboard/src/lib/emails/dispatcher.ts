@@ -1,7 +1,7 @@
 // Copyright 2026 SupraWall Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { sendTransactionalEmail } from './mailerlite';
+import { sendTransactionalEmail } from './brevo';
 import { phase1Templates } from './phase1';
 import { BASE_EMAIL_TEMPLATE } from './templates/base';
 

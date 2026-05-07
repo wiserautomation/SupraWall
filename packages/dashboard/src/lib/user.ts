@@ -33,8 +33,33 @@ export async function getEffectiveTenantId(userId: string): Promise<string> {
 }
 
 export async function getTenantAdminEmails(tenantId: string): Promise<string[]> {
-    // In a real multi-tenant app, you'd query the DB for users associated with this tenant
-    // For now, we'll return the system admins as a fallback if no tenant-specific admins are found.
-    // This is a placeholder for real tenant isolation logic.
-    return [process.env.DEFAULT_ADMIN_EMAIL || 'admin@supra-wall.com'];
+    const emails: string[] = [];
+
+    try {
+        // 1. Try to resolve the tenantId as a Firebase UID
+        const user = await getAdminAuth().getUser(tenantId);
+        if (user.email) {
+            emails.push(user.email);
+        }
+    } catch (error) {
+        // tenantId might not be a UID or user doesn't exist
+    }
+
+    // 2. Fallback to ADMIN_EMAILS environment variable
+    const adminEmails = (process.env.ADMIN_EMAILS || process.env.DEFAULT_ADMIN_EMAIL || '')
+        .split(',')
+        .map(e => e.trim())
+        .filter(Boolean);
+    
+    if (adminEmails.length > 0) {
+        emails.push(...adminEmails);
+    }
+
+    // 3. Last resort fallback
+    if (emails.length === 0) {
+        emails.push('admin@supra-wall.com');
+    }
+
+    // Return unique emails
+    return [...new Set(emails)];
 }

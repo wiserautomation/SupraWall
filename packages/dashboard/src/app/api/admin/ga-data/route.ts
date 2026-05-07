@@ -8,7 +8,7 @@ import { cleanPrivateKey, cleanEnvVar } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const PROPERTY_ID = "525946717";
+const PROPERTY_ID = process.env.GA_PROPERTY_ID || "525946717";
 const ADMIN_EMAILS_RAW = (process.env.ADMIN_EMAILS || process.env.NEXT_PUBLIC_ADMIN_EMAILS || "").split(",").map(e => e.trim()).filter(Boolean);
 const ADMIN_EMAILS = ADMIN_EMAILS_RAW.length > 0 ? ADMIN_EMAILS_RAW : [];
 
@@ -112,6 +112,7 @@ export async function GET(req: NextRequest) {
             topPages,
             topGeos,
             warning,
+            propertyId: PROPERTY_ID,
             fetched_at: new Date().toISOString(),
         });
 

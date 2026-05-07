@@ -14,7 +14,7 @@ import { scrubPii } from '@/lib/guardrail-scrubber';
 import { analyzeCall, updateBaseline, type SemanticAnalysisResult, type SemanticLayerMode } from '@/lib/semantic-server';
 import { pool as pgPool, ensureSchema } from '@/lib/db_sql';
 import { dispatchEmail } from '@/lib/emails/dispatcher';
-import { getUserEmail } from '@/lib/user';
+import { getUserEmail, getTenantAdminEmails } from '@/lib/user';
 
 // ── Types ──
 
@@ -220,14 +220,14 @@ export async function POST(req: NextRequest) {
                 logThreat(tenantId, agentId, toolName, threatResult.threatType!, threatResult.severity!, threatResult.detail || threatResult.reason!);
 
                 // Trigger Security Alert Email (SW-A-003)
-                getUserEmail(userId).then(email => {
-                    if (email) {
+                getTenantAdminEmails(tenantId).then(emails => {
+                    for (const email of emails) {
                         dispatchEmail("SW-A-003", email, {
                             agent_name: agentName,
                             threat_type: threatResult.threatType,
                             tool_target: toolName,
                             incident_log_url: `https://app.supra-wall.com/dashboard/threats`
-                        }).catch(err => console.error("[Email] Threat alert failed:", err));
+                        }).catch(err => console.error(`[Email] Threat alert failed for ${email}:`, err));
                     }
                 });
 
@@ -257,8 +257,8 @@ export async function POST(req: NextRequest) {
                 
                 // If we just crossed 80% and haven't alerted yet (using a simple flag for now)
                 if (spend >= threshold && spend < limit && !agentData.budgetAlert80Sent) {
-                    getUserEmail(userId).then(email => {
-                        if (email) {
+                    getTenantAdminEmails(tenantId).then(emails => {
+                        for (const email of emails) {
                             dispatchEmail("SW-A-001", email, {
                                 agent_name: agentName,
                                 current_spend: spend.toFixed(2),
@@ -266,11 +266,11 @@ export async function POST(req: NextRequest) {
                                 burn_rate: "N/A",
                                 time_to_cap: "estimated < 24h",
                                 hit_timestamp: new Date().toISOString()
-                            }).catch(err => console.error("[Email] Budget alert failed:", err));
-                            
-                            // Flag it in DB to prevent spam
-                            db.collection("agents").doc(agentId).update({ budgetAlert80Sent: true }).catch(() => {});
+                            }).catch(err => console.error(`[Email] Budget alert failed for ${email}:`, err));
                         }
+                        
+                        // Flag it in DB to prevent spam (after initiating dispatch)
+                        db.collection("agents").doc(agentId).update({ budgetAlert80Sent: true }).catch(() => {});
                     });
                 }
             }
@@ -412,8 +412,8 @@ export async function POST(req: NextRequest) {
             await logAudit(tenantId, agentId, toolName, finalArgsString, "PAUSED", estimatedCost, "Awaiting human approval", sessionId, agentRole, isLoop, source);
             
             // Trigger HITL Approval Email (SW-HITL-001)
-            getUserEmail(userId).then(email => {
-                if (email) {
+            getTenantAdminEmails(tenantId).then(emails => {
+                for (const email of emails) {
                     dispatchEmail("SW-HITL-001", email, {
                         agent_name: agentName,
                         action_summary: `Tool call: ${toolName}`,
@@ -424,7 +424,7 @@ export async function POST(req: NextRequest) {
                         approve_url: `https://app.supra-wall.com/approvals/${requestId}/approve`,
                         deny_url: `https://app.supra-wall.com/approvals/${requestId}/deny`,
                         dashboard_url: `https://app.supra-wall.com/dashboard/approvals`
-                    }).catch(err => console.error("[Email] HITL alert failed:", err));
+                    }).catch(err => console.error(`[Email] HITL alert failed for ${email}:`, err));
                 }
             });
 

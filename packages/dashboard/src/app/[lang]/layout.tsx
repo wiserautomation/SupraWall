@@ -145,7 +145,7 @@ export default async function LocaleLayout({
         />
         {children}
 
-        <GoogleAnalytics gaId="G-5LXMT6RZQS" />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-9KGGJST414"} />
       </body>
     </html>
   );
