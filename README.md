@@ -145,9 +145,10 @@ SupraWall is framework-agnostic. It wraps the *tool boundary*, which every agent
 | Anthropic SDK | ✅ First-class | Built into core SDK |
 | Claude Code / OpenClaw | ✅ Via MCP | [`suprawall-mcp-plugin`](https://github.com/wiserautomation/suprawall-mcp-plugin) |
 | Vercel AI SDK | ✅ First-class | Built into core SDK |
+| **Cline** | ✅ New | [`@suprawall/cline`](https://github.com/wiserautomation/suprawall-plugins/tree/main/cline) |
 | Custom / homegrown | ✅ | One-line `wrap_with_firewall()` wrapper |
 
-Languages: Python, TypeScript, Go, C#. More via the MCP plugin.
+Languages: Python, TypeScript, Go, C#. Works with **10 frameworks**. More via the MCP plugin.
 
 ---
 
@@ -293,6 +294,10 @@ We're a small team (Wiser Automation) and we want SupraWall to be a community-ow
 Active issues good for first-time contributors are tagged [`good first issue`](https://github.com/wiserautomation/SupraWall/labels/good%20first%20issue).
 
 ---
+
+## What's New
+
+- **Cline integration** (`@suprawall/cline`) — wrap any Cline coding agent's `onBeforeToolUse` hook with SupraWall's policy engine. [See plugin →](https://github.com/wiserautomation/suprawall-plugins/tree/main/cline)
 
 ## Integrations
 
